@@ -1,0 +1,5163 @@
+# Copyright (C) 2026 PristaDigital
+# This file is distributed under the GPLv3 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Nashenski Commerce 0.10.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
+"POT-Creation-Date: 2026-10-09 17:19+0000\n"
+"PO-Revision-Date: 2026-10-09 17:19+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: nashenski-commerce\n"
+
+#. translators: 1: Nashenski Commerce, 2: five stars.
+#: app/Admin/Admin_Menus.php:78
+#, php-format
+msgid "If you like %1$s please leave us a %2$s rating. A huge thanks in advance!"
+msgstr ""
+
+#: app/Admin/Admin_Menus.php:79 app/Admin/Settings_Page.php:23 app/Admin/Settings_Page.php:280
+msgid "Nashenski Commerce"
+msgstr ""
+
+#: app/Admin/Admin_Menus.php:80
+msgid "five star"
+msgstr ""
+
+#: app/Admin/BoxNow.php:20
+msgid "BOX NOW Delivery"
+msgstr ""
+
+#: app/Admin/BoxNow.php:82
+msgid "Send to"
+msgstr ""
+
+#: app/Admin/BoxNow.php:83 app/Admin/Econt.php:127 app/Admin/Pigeon.php:210 app/Admin/Speedy.php:177 app/Admin/Tabs/CVC_Tab.php:62 app/Admin/Tabs/Econt_Tab.php:102
+msgid "Send From"
+msgstr ""
+
+#: app/Admin/BoxNow.php:84
+msgid "Warehouse/Automat"
+msgstr ""
+
+#: app/Admin/BoxNow.php:85 app/Admin/Econt.php:108 app/Admin/Speedy.php:155 app/Shipping/Econt/Method.php:182 app/Shipping/Speedy/Method.php:189
+msgid "Automat"
+msgstr ""
+
+#: app/Admin/BoxNow.php:86
+msgid "Total price"
+msgstr ""
+
+#: app/Admin/BoxNow.php:87 app/Admin/Tabs/BoxNow_Tab.php:56
+msgid "Allow returns"
+msgstr ""
+
+#: app/Admin/BoxNow.php:88 app/Admin/CVC.php:81 app/Admin/Econt.php:85 app/Admin/Pigeon.php:173 app/Admin/Speedy.php:133
+msgid "Update shipment status"
+msgstr ""
+
+#: app/Admin/BoxNow.php:89 app/Admin/CVC.php:83 app/Admin/Econt.php:87 app/Admin/fragments/label-column.php:21 app/Admin/Pigeon.php:175 app/Admin/Speedy.php:135
+msgid "Generate label"
+msgstr ""
+
+#: app/Admin/BoxNow.php:90 app/Admin/CVC.php:84 app/Admin/Econt.php:88 app/Admin/Pigeon.php:176 app/Admin/Speedy.php:136
+msgid "Delete label"
+msgstr ""
+
+#: app/Admin/BoxNow.php:91 app/Admin/CVC.php:85 app/Admin/Econt.php:89 app/Admin/Order/Columns.php:27 app/Admin/Pigeon.php:177 app/Admin/Speedy.php:137
+msgid "Label"
+msgstr ""
+
+#: app/Admin/BoxNow.php:92 app/Admin/CVC.php:87 app/Admin/Econt.php:91 app/Admin/Pigeon.php:179 app/Admin/Speedy.php:139
+msgid "Selected"
+msgstr ""
+
+#: app/Admin/BoxNow.php:93 app/Admin/CVC.php:88 app/Admin/Econt.php:92 app/Admin/Pigeon.php:180 app/Admin/Speedy.php:140 app/Front_End/Checkout/Pickers.php:306
+msgid "Choose"
+msgstr ""
+
+#: app/Admin/BoxNow.php:94 app/Admin/CVC.php:100 app/Admin/Econt.php:111 app/Admin/Pigeon.php:193 app/Admin/Speedy.php:158
+msgid "Label data"
+msgstr ""
+
+#: app/Admin/BoxNow.php:95 app/Admin/CVC.php:108 app/Admin/Econt.php:118 app/Admin/Pigeon.php:200 app/Admin/Speedy.php:167
+msgid "Shipment status"
+msgstr ""
+
+#: app/Admin/BoxNow.php:96 app/Admin/Tabs/BoxNow_Tab.php:158
+msgid "Box size"
+msgstr ""
+
+#: app/Admin/BoxNow.php:97 app/Admin/Tabs/BoxNow_Tab.php:144
+msgid "Automatically pack products to boxes"
+msgstr ""
+
+#: app/Admin/BoxNow.php:98 app/Admin/Tabs/BoxNow_Tab.php:148
+msgid "Small Box"
+msgstr ""
+
+#: app/Admin/BoxNow.php:99 app/Admin/Tabs/BoxNow_Tab.php:152
+msgid "Medium Box"
+msgstr ""
+
+#: app/Admin/BoxNow.php:100 app/Admin/Tabs/BoxNow_Tab.php:156
+msgid "Large Box"
+msgstr ""
+
+#: app/Admin/BoxNow.php:101 app/Admin/Econt.php:131 app/Admin/Econt.php:139 app/Admin/Pigeon.php:214 app/Admin/Speedy.php:181
+msgid "Pack"
+msgstr ""
+
+#: app/Admin/BoxNow.php:102 app/Admin/Econt.php:132 app/Admin/Pigeon.php:215 app/Admin/Speedy.php:182
+msgid "Add Pack"
+msgstr ""
+
+#: app/Admin/BoxNow.php:103 app/Admin/Econt.php:133 app/Admin/Pigeon.php:216 app/Admin/Speedy.php:183
+msgid "Remove Pack"
+msgstr ""
+
+#: app/Admin/BoxNow.php:104 app/Admin/CVC.php:104 app/Admin/Econt.php:114 app/Admin/Pigeon.php:196
+msgid "Weight"
+msgstr ""
+
+#: app/Admin/BoxNow.php:105 app/Admin/Tabs/BoxNow_Tab.php:88 app/Admin/Tabs/BoxNow_Tab.php:106 app/Admin/Tabs/BoxNow_Tab.php:122 app/Invoice/Document/BaseDocument.php:99
+msgid "Price"
+msgstr ""
+
+#: app/Admin/BoxNow.php:106 app/Admin/Tabs/BoxNow_Tab.php:48 app/Admin/Tabs/CVC_Tab.php:44 app/Admin/Tabs/Econt_Tab.php:56 app/Admin/Tabs/Speedy_Tab.php:44 app/Front_End/Withdrawal.php:372
+msgid "Name"
+msgstr ""
+
+#: app/Admin/BoxNow.php:402
+msgid "Cash on delivery orders cannot be split into multiple packets."
+msgstr ""
+
+#: app/Admin/BoxNow.php:464
+msgid "BOX NOW did not answer. Check the connection settings and try again."
+msgstr ""
+
+#: app/Admin/BoxNow.php:508 app/Admin/Import_Sources.php:204 app/Admin/Migration.php:87 app/Admin/Pigeon.php:552 app/Admin/Recommended_Settings.php:134 app/Admin/Speedy.php:896
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: app/Admin/BoxNow.php:513 app/Admin/Pigeon.php:557 app/Admin/Speedy.php:901
+msgid "This link has expired. Reload the order page and try again."
+msgstr ""
+
+#: app/Admin/Changelog.php:36 app/Admin/Changelog.php:57
+msgid "Nashenski Commerce changelog"
+msgstr ""
+
+#: app/Admin/Changelog.php:36
+msgid "Changelog"
+msgstr ""
+
+#: app/Admin/Changelog.php:43
+msgid "Sorry, you are not allowed to view this page."
+msgstr ""
+
+#: app/Admin/CVC.php:20
+msgid "CVC Delivery"
+msgstr ""
+
+#: app/Admin/CVC.php:82 app/Admin/Econt.php:86 app/Admin/Pigeon.php:174 app/Admin/Speedy.php:134
+msgid "Update label"
+msgstr ""
+
+#: app/Admin/CVC.php:86 app/Admin/Econt.php:90 app/Admin/Pigeon.php:178 app/Admin/Recommended_Settings.php:67 app/Admin/Speedy.php:138
+msgid "Default"
+msgstr ""
+
+#: app/Admin/CVC.php:89 app/Admin/Econt.php:93 app/Admin/Pigeon.php:181 app/Admin/Speedy.php:141
+msgid "Delivery is payed by"
+msgstr ""
+
+#: app/Admin/CVC.php:90 app/Admin/Econt.php:94 app/Admin/Pigeon.php:182 app/Admin/Speedy.php:142 app/Admin/Tabs/Settings_Tab.php:27
+msgid "Cash on delivery"
+msgstr ""
+
+#: app/Admin/CVC.php:91 app/Admin/Econt.php:95 app/Admin/Pigeon.php:183 app/Admin/Speedy.php:143
+msgid "Pack count"
+msgstr ""
+
+#: app/Admin/CVC.php:92 app/Admin/Econt.php:96 app/Admin/Pigeon.php:184 app/Admin/Speedy.php:144
+msgid "Shipment type"
+msgstr ""
+
+#: app/Admin/CVC.php:93 app/Admin/Econt.php:97 app/Admin/Pigeon.php:185 app/Admin/Speedy.php:145 app/functions.php:106 app/functions.php:131
+msgid "Other"
+msgstr ""
+
+#: app/Admin/CVC.php:94 app/Admin/Econt.php:98 app/Admin/Pigeon.php:186 app/Admin/Speedy.php:146
+msgid "bl. vh. et."
+msgstr ""
+
+#: app/Admin/CVC.php:95 app/Admin/Econt.php:99 app/Admin/Pigeon.php:187 app/Admin/Speedy.php:147
+msgid "Street number"
+msgstr ""
+
+#: app/Admin/CVC.php:96 app/Admin/Econt.php:106 app/Admin/Pigeon.php:188 app/Admin/Speedy.php:153
+msgid "Street/Quarter"
+msgstr ""
+
+#: app/Admin/CVC.php:97 app/Admin/Econt.php:107 app/Admin/Pigeon.php:189 app/Admin/Speedy.php:154 app/Admin/Tabs/CVC_Tab.php:56 app/Admin/Tabs/CVC_Tab.php:78
+msgid "Office"
+msgstr ""
+
+#: app/Admin/CVC.php:98 app/Admin/Econt.php:109 app/Admin/Pigeon.php:190 app/Admin/Speedy.php:156 app/Admin/Tabs/CVC_Tab.php:60 app/Admin/Tabs/Econt_Tab.php:100
+msgid "Address"
+msgstr ""
+
+#: app/Admin/CVC.php:99 app/Admin/Econt.php:110 app/Admin/Pigeon.php:192 app/Admin/Speedy.php:157 app/Export/Builder/Fields.php:83 app/Front_End/Checkout/Appearance.php:175
+msgid "Delivery type"
+msgstr ""
+
+#: app/Admin/CVC.php:101 app/Admin/Econt.php:112 app/Admin/Pigeon.php:194 app/Admin/Speedy.php:159
+msgid "Buyer"
+msgstr ""
+
+#: app/Admin/CVC.php:102 app/Admin/Econt.php:113 app/Admin/Pigeon.php:195 app/Admin/Speedy.php:160
+msgid "Sender"
+msgstr ""
+
+#: app/Admin/CVC.php:103
+msgid "Contract"
+msgstr ""
+
+#: app/Admin/CVC.php:105 app/Admin/Econt.php:115 app/Admin/Pigeon.php:197 app/Admin/Speedy.php:164 app/Shipping/CVC/Method.php:189 app/Shipping/Pigeon/Method.php:196
+msgid "Fixed price"
+msgstr ""
+
+#: app/Admin/CVC.php:106 app/Admin/Econt.php:116 app/Admin/Pigeon.php:198 app/Admin/Speedy.php:165
+msgid "Copy Label Data"
+msgstr ""
+
+#: app/Admin/CVC.php:107
+msgid "You just copied the label data used for the cvc API."
+msgstr ""
+
+#: app/Admin/CVC.php:109 app/Admin/Econt.php:119 app/Admin/Pigeon.php:203 app/Admin/Speedy.php:168
+msgid "Time:"
+msgstr ""
+
+#: app/Admin/CVC.php:110 app/Admin/Econt.php:120 app/Admin/Pigeon.php:204 app/Admin/Speedy.php:169
+msgid "Event:"
+msgstr ""
+
+#: app/Admin/CVC.php:111 app/Admin/Econt.php:121 app/Admin/Pigeon.php:205 app/Admin/Speedy.php:170
+msgid "Details:"
+msgstr ""
+
+#: app/Admin/CVC.php:112 app/Admin/Econt.php:122 app/Admin/Pigeon.php:206 app/Admin/Speedy.php:171 app/functions.php:243 app/Shipping/CVC/Method.php:148
+msgid "Review and test"
+msgstr ""
+
+#: app/Admin/CVC.php:113 app/Admin/Econt.php:123 app/Admin/Pigeon.php:207 app/Admin/Speedy.php:172 app/Admin/Tabs/Econt_Tab.php:60 app/Admin/Tabs/Pigeon_Tab.php:65
+msgid "Declared value"
+msgstr ""
+
+#: app/Admin/CVC.php:114 app/Admin/Econt.php:124 app/Admin/Pigeon.php:209 app/Admin/Speedy.php:174
+msgid "Description"
+msgstr ""
+
+#: app/Admin/Econt.php:24
+msgid "Econt Delivery"
+msgstr ""
+
+#: app/Admin/Econt.php:100 app/Admin/Speedy.php:148 app/Front_End/Checkout/Pickers.php:299 app/Shipping/Econt/Address.php:22
+msgid "Block"
+msgstr ""
+
+#: app/Admin/Econt.php:101 app/Admin/Speedy.php:149 app/Front_End/Checkout/Pickers.php:300 app/Shipping/Econt/Address.php:23
+msgid "Entrance"
+msgstr ""
+
+#: app/Admin/Econt.php:102 app/Admin/Speedy.php:150 app/Front_End/Checkout/Pickers.php:301 app/Shipping/Econt/Address.php:24
+msgid "Floor"
+msgstr ""
+
+#: app/Admin/Econt.php:103 app/Admin/Speedy.php:151 app/Front_End/Checkout/Pickers.php:302 app/Shipping/Econt/Address.php:25
+msgid "Apartment"
+msgstr ""
+
+#: app/Admin/Econt.php:104 app/Shipping/Econt/Method.php:652
+msgid "Street number is required."
+msgstr ""
+
+#: app/Admin/Econt.php:105 app/Shipping/Econt/Method.php:654
+msgid "Fill in at least one of block, entrance, floor or apartment."
+msgstr ""
+
+#: app/Admin/Econt.php:117
+msgid "You just copied the label data used for the Econt API."
+msgstr ""
+
+#: app/Admin/Econt.php:125 app/Admin/Order/MetaBox.php:63 app/Admin/Tabs/Econt_Tab.php:82 app/Export/Builder/Fields.php:114
+msgid "Invoice number"
+msgstr ""
+
+#: app/Admin/Econt.php:126
+msgid "Partial delivery"
+msgstr ""
+
+#: app/Admin/Econt.php:128 app/Admin/Pigeon.php:211 app/Admin/Speedy.php:178
+msgid "Length"
+msgstr ""
+
+#: app/Admin/Econt.php:129 app/Admin/Pigeon.php:212 app/Admin/Speedy.php:179 app/Front_End/Checkout/Field_Editor.php:616
+msgid "Width"
+msgstr ""
+
+#: app/Admin/Econt.php:130 app/Admin/Pigeon.php:213 app/Admin/Speedy.php:180
+msgid "Height"
+msgstr ""
+
+#: app/Admin/Econt.php:140
+msgid "Document"
+msgstr ""
+
+#: app/Admin/Econt.php:141
+msgid "Pallet"
+msgstr ""
+
+#: app/Admin/Econt.php:142
+msgid "Cargo"
+msgstr ""
+
+#: app/Admin/Econt.php:143
+msgid "Document-Pallet"
+msgstr ""
+
+#: app/Admin/EU_Vat.php:24
+msgid "Enable VIES validation"
+msgstr ""
+
+#: app/Admin/EU_Vat.php:24
+msgid "Validate the VAT number with the European VIES system or only with regex."
+msgstr ""
+
+#: app/Admin/EU_Vat.php:27
+msgid "Tax Classes for Digital Goods"
+msgstr ""
+
+#: app/Admin/EU_Vat.php:27
+msgid "This option tells the plugin which of your tax classes are for digital goods. This affects the taxable location of the user as of 1st Jan 2015."
+msgstr ""
+
+#: app/Admin/EU_Vat.php:38 app/Admin/EU_Vat.php:80 app/Export/Builder/Fields.php:65 app/Front_End/Checkout/Company_Fields.php:104 app/Front_End/Checkout/EU_Vat.php:81 app/Front_End/Checkout/EU_Vat.php:225
+msgid "VAT number"
+msgstr ""
+
+#: app/Admin/EU_Vat.php:52
+msgid "EU VAT"
+msgstr ""
+
+#: app/Admin/EU_Vat.php:69
+msgid "This order is out of scope for EU VAT."
+msgstr ""
+
+#: app/Admin/EU_Vat.php:84
+msgid "Validation was not possible"
+msgstr ""
+
+#: app/Admin/EU_Vat.php:92
+msgid "IP Address"
+msgstr ""
+
+#: app/Admin/EU_Vat.php:93 app/Admin/EU_Vat.php:110 app/Admin/EU_Vat.php:116
+msgid "Unknown"
+msgstr ""
+
+#: app/Admin/EU_Vat.php:97
+msgid "IP Country"
+msgstr ""
+
+#: app/Admin/EU_Vat.php:105
+msgid "(self-declared)"
+msgstr ""
+
+#: app/Admin/EU_Vat.php:115
+msgid "Billing Country"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:26 app/Admin/Export_Builder.php:94
+msgid "You do not have permission to do this."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:43 app/Admin/Export_Builder.php:100
+msgid "Add at least one column."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:69
+msgid "Give the export a name."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:104
+msgid "Excel files need the PHP Zip extension, which this server does not have. Choose CSV instead."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:137
+msgid "New export"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:138
+msgid "Ready-made"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:139
+msgid "Saved exports"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:140
+msgid "Add"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:141 app/Admin/Settings_Page.php:528 app/Admin/Settings_Page.php:622 app/Admin/Settings_Page.php:686 app/Front_End/Checkout/Field_Editor.php:597 app/Front_End/Checkout/Field_Editor.php:617
+msgid "Remove"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:142 app/Front_End/Checkout/Field_Editor.php:590
+msgid "Move up"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:143 app/Front_End/Checkout/Field_Editor.php:591
+msgid "Move down"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:144
+msgid "Column heading"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:145
+msgid "No columns yet. Add fields from the list."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:146
+msgid "Saved."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:147
+msgid "Deleted."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:148
+msgid "Delete this saved export?"
+msgstr ""
+
+#. translators: 1: rows shown, 2: rows in the file, 3: file name
+#: app/Admin/Export_Builder.php:150
+#, php-format
+msgid "First %1$d of %2$d rows. File: %3$s"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:151
+msgid "Nothing matches these filters."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:152 app/Plugin.php:216
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:153
+msgid "Order meta key, for example _billing_company_eik"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:154 app/Export/Builder/Fields.php:145
+msgid "Order meta"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:181
+msgid "Other shipping"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:184
+msgid "Custom export"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:185
+msgid "Build your own file: choose the records, the columns and their order, the format and the file name. Preview it, save it for next month and download it."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:188
+msgid "Start from"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:190
+msgid "Delete this saved export"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:195
+msgid "What to export"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:197
+msgid "Orders"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:197
+msgid "One row per order"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:198 app/Export/Builder/Builder.php:65
+msgid "Products sold"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:198
+msgid "One row per product line"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:199 app/Admin/Help_Page.php:70 app/Admin/Help_Page.php:83 app/Admin/Order/Columns.php:24 app/Admin/Settings_Page.php:93 app/Admin/Tabs/Export_Tab.php:28
+msgid "Documents"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:199
+msgid "One row per invoice, credit note or order document"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:204
+msgid "Which records"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:206 app/Admin/Settings_Page.php:607 app/Admin/Settings_Page.php:607 app/Admin/Settings_Page.php:608
+msgid "From"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:207 app/Admin/Settings_Page.php:607 app/Admin/Settings_Page.php:607 app/Admin/Settings_Page.php:608
+msgid "To"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:208
+msgid "By"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:210
+msgid "order date"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:211
+msgid "payment date"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:212
+msgid "completion date"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:217
+msgid "This month"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:218
+msgid "Last month"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:219
+msgid "This year"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:220
+msgid "Last year"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:223
+msgid "Order status"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:227 app/Export/Builder/Fields.php:88 app/Invoice/Document/BaseDocument.php:192
+msgid "Payment method"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:231 app/Export/Builder/Fields.php:82
+msgid "Courier"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:235 app/Export/Builder/Fields.php:108
+msgid "Document type"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:238
+msgid "Only orders with a company invoice"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:239
+msgid "Leave a list empty to include everything."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:243
+msgid "Columns"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:246 app/Admin/Export_Builder.php:246
+msgid "Find a field"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:248
+msgid "Add an order meta field"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:251
+msgid "Drag to reorder. Click a heading to rename it."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:258
+msgid "File"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:266
+msgid "Separator"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:268
+msgid "Semicolon ;"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:269
+msgid "Comma ,"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:270
+msgid "Tab"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:271
+msgid "Vertical bar |"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:274
+msgid "Encoding"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:276
+msgid "UTF-8 for Excel"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:278
+msgid "Windows-1251 (older accounting software)"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:281
+msgid "Decimal mark"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:287
+msgid "Dates"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:298
+msgid "File name"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:299
+msgid "Root element"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:300
+msgid "Row element"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:302
+msgid "In the file name, {from}, {to}, {today} and {source} are replaced with the dates and the record type."
+msgstr ""
+
+#: app/Admin/Export_Builder.php:303
+msgid "Headings in the first row"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:308
+msgid "Save as"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:308
+msgid "For example: Monthly sales for the accountant"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:309
+msgid "Save export"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:311
+msgid "Preview"
+msgstr ""
+
+#: app/Admin/Export_Builder.php:312
+msgid "Download file"
+msgstr ""
+
+#: app/Admin/Help_Page.php:20
+msgid "Getting started"
+msgstr ""
+
+#: app/Admin/Help_Page.php:27
+msgid "How to use it"
+msgstr ""
+
+#: app/Admin/Help_Page.php:39
+msgid "Support"
+msgstr ""
+
+#. translators: %s: link to the support forum
+#: app/Admin/Help_Page.php:44
+#, php-format
+msgid "Ask questions and report problems in the %s."
+msgstr ""
+
+#: app/Admin/Help_Page.php:45
+msgid "support forum"
+msgstr ""
+
+#: app/Admin/Help_Page.php:58
+msgid "WooCommerce > Settings > Shipping"
+msgstr ""
+
+#. translators: %s: link to the Overview section
+#: app/Admin/Help_Page.php:62
+#, php-format
+msgid "In %s, turn on the couriers you work with, invoices and the customer checks you need, and save."
+msgstr ""
+
+#: app/Admin/Help_Page.php:62 app/Admin/Help_Page.php:80 app/Admin/Settings_Page.php:81
+msgid "Overview"
+msgstr ""
+
+#. translators: %s: link to the Couriers section
+#: app/Admin/Help_Page.php:64
+#, php-format
+msgid "In %s, enter the login or API keys the courier gave you for online shops."
+msgstr ""
+
+#: app/Admin/Help_Page.php:64 app/Admin/Help_Page.php:81 app/Admin/Settings_Page.php:85 app/Admin/Settings_Page.php:344
+msgid "Couriers"
+msgstr ""
+
+#. translators: %s: link to WooCommerce shipping zones
+#: app/Admin/Help_Page.php:66
+#, php-format
+msgid "In %s, add the courier shipping methods to your zone: one method per delivery type (to an office, to a locker, to an address)."
+msgstr ""
+
+#. translators: %s: link to the Checkout section
+#: app/Admin/Help_Page.php:68
+#, php-format
+msgid "In %s, choose the countries, the checkout fields and the look of the shipping options."
+msgstr ""
+
+#: app/Admin/Help_Page.php:68 app/Admin/Help_Page.php:82 app/Admin/Help_Page.php:101 app/Admin/Settings_Page.php:89
+msgid "Checkout"
+msgstr ""
+
+#. translators: %s: link to the Documents section
+#: app/Admin/Help_Page.php:70
+#, php-format
+msgid "In %s, fill in your company details and choose when invoices are made. Add your logo for the PDF documents."
+msgstr ""
+
+#. translators: %s: link to the Exports section
+#: app/Admin/Help_Page.php:72
+#, php-format
+msgid "Every month, create the NRA audit file in %s and submit it by the 15th, or have it emailed to your accountant."
+msgstr ""
+
+#: app/Admin/Help_Page.php:72 app/Admin/Help_Page.php:84 app/Admin/Settings_Page.php:101
+msgid "Exports"
+msgstr ""
+
+#: app/Admin/Help_Page.php:87
+msgid "Couriers and shipping methods"
+msgstr ""
+
+#. translators: %s: link to the Overview section
+#: app/Admin/Help_Page.php:89
+#, php-format
+msgid "Turn a courier on in %s. Its page appears in Couriers and its methods can be added to your shipping zones."
+msgstr ""
+
+#: app/Admin/Help_Page.php:90
+msgid "Add one method per delivery type to a zone: to an office, to a parcel locker and to an address. BOX NOW has one method, for its lockers."
+msgstr ""
+
+#. translators: %s: link to the Couriers section
+#: app/Admin/Help_Page.php:92
+#, php-format
+msgid "Enter the login in %s. Demo logins only reach the courier's test system, where nothing is really shipped. If the courier refuses a login, the courier page says so."
+msgstr ""
+
+#: app/Admin/Help_Page.php:93
+msgid "Without a login, customers can still choose: Econt offices and lockers from Econt's list, Speedy offices on Speedy's map, Pigeon Express offices and lockers and BOX NOW lockers from the lists they publish. CVC offices need a login. Waybills always need one."
+msgstr ""
+
+#: app/Admin/Help_Page.php:94
+msgid "Cities, offices and lockers are kept on your site and refreshed once a week. \"Reload offices and cities\" on a courier page refreshes them at once."
+msgstr ""
+
+#: app/Admin/Help_Page.php:96
+msgid "Shipping prices"
+msgstr ""
+
+#: app/Admin/Help_Page.php:97
+msgid "With a login, the courier calculates each price with your contract. Without one, or when the courier does not answer, the courier's public price list is used. You can edit it on the courier page and compare it with the courier website."
+msgstr ""
+
+#: app/Admin/Help_Page.php:98
+msgid "Each shipping method in a zone can have a free shipping amount and a fixed price."
+msgstr ""
+
+#: app/Admin/Help_Page.php:99
+msgid "When a courier publishes new prices, a notice says so. Save that courier's prices or press Dismiss."
+msgstr ""
+
+#: app/Admin/Help_Page.php:102
+msgid "Works with the classic checkout, the block checkout and checkout pages made with a page builder, including step-by-step checkouts."
+msgstr ""
+
+#: app/Admin/Help_Page.php:103
+msgid "When the customer picks a courier, they choose an office, a locker or an address right under it, from a list or on the courier's map. Until then the option says \"Complete the fields to calculate\"."
+msgstr ""
+
+#. translators: %s: link to the Checkout section
+#: app/Admin/Help_Page.php:105
+#, php-format
+msgid "In %s > Checkout fields you set the order, Required, Optional or Hidden and the width of every field, and add your own fields."
+msgstr ""
+
+#: app/Admin/Help_Page.php:106
+msgid "\"Company invoice fields\" adds \"I want an invoice for a company\" with company name, EIK, VAT number, MOL, town and address."
+msgstr ""
+
+#: app/Admin/Help_Page.php:107
+msgid "\"Shipping options look\" sets cards or the plain look of your theme, colours, borders, corners and spacing. Empty settings follow your design tokens or theme."
+msgstr ""
+
+#: app/Admin/Help_Page.php:109
+msgid "Waybills, couriers and order statuses"
+msgstr ""
+
+#: app/Admin/Help_Page.php:110
+msgid "Open an order to create, update, print or cancel its waybill in the courier box."
+msgstr ""
+
+#: app/Admin/Help_Page.php:111
+msgid "In the \"Order actions\" box of an order, and in the bulk actions of the orders list: \"Create waybill\" makes the waybill from the customer's choices, \"Request a courier\" books a pickup with Econt or Speedy for all the chosen waybills, \"Check the shipment now\" reads the status from the courier."
+msgstr ""
+
+#: app/Admin/Help_Page.php:112
+msgid "Econt courier requests skip weekends and holidays by themselves. Speedy picks the next possible day."
+msgstr ""
+
+#: app/Admin/Help_Page.php:113
+msgid "\"Generate label after checkout\" on a courier page makes the waybill as soon as an order is placed."
+msgstr ""
+
+#. translators: %s: link to the Overview section
+#: app/Admin/Help_Page.php:115
+#, php-format
+msgid "In %s > Waybills and order statuses: put the order number on the waybill, and choose the status orders get when the parcel is delivered or goes back to you. Open orders are checked every hour."
+msgstr ""
+
+#: app/Admin/Help_Page.php:116
+msgid "Customers see \"Track your parcel\" with the waybill number on their order page, and get it in the order emails."
+msgstr ""
+
+#: app/Admin/Help_Page.php:118 app/Admin/Tabs/Nra_Tab.php:176
+msgid "Invoices and documents"
+msgstr ""
+
+#: app/Admin/Help_Page.php:119
+msgid "The order document is made for every order. Invoices are made as set in \"When to generate invoices?\", and credit notes for refunds."
+msgstr ""
+
+#: app/Admin/Help_Page.php:120
+msgid "To make an invoice by hand, open the order and use \"Make invoice\" in the PDF Files box. You can change the number; the next automatic number continues after it."
+msgstr ""
+
+#. translators: %s: link to the Documents section
+#: app/Admin/Help_Page.php:122
+#, php-format
+msgid "The look of the PDF files (logo, colours, font, spacing) is in %s > PDF appearance. Every document is made in Bulgarian and in English."
+msgstr ""
+
+#: app/Admin/Help_Page.php:123
+msgid "Copies can go to your accountant by email, and the monthly NRA audit file too."
+msgstr ""
+
+#: app/Admin/Help_Page.php:125
+msgid "NRA audit file and exports"
+msgstr ""
+
+#. translators: %s: link to the Exports section
+#: app/Admin/Help_Page.php:127
+#, php-format
+msgid "%s has the NRA audit file (Ordinance N-18), the invoice archive and the Microinvest Delta file for a chosen month. The audit file is checked against the NRA schema and has no order limit."
+msgstr ""
+
+#: app/Admin/Help_Page.php:128
+msgid "The custom export takes orders, products sold or documents, with your filters, columns and order, as CSV, Excel, JSON or XML. Save an export to run it again next month."
+msgstr ""
+
+#: app/Admin/Help_Page.php:130 app/Front_End/Withdrawal.php:422 app/Front_End/Withdrawal.php:436
+msgid "EU withdrawal function"
+msgstr ""
+
+#. translators: %s: link to the Checkout section
+#: app/Admin/Help_Page.php:132
+#, php-format
+msgid "Turn it on in %s > EU withdrawal function. A \"Withdraw from contract here\" link appears at the bottom of every page, on each order in My Account and in the order emails."
+msgstr ""
+
+#: app/Admin/Help_Page.php:133
+msgid "Place the link yourself with the shortcode [nashenski_withdrawal_link] (button=\"yes\" makes it a button)."
+msgstr ""
+
+#: app/Admin/Help_Page.php:134
+msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
+msgstr ""
+
+#: app/Admin/Help_Page.php:136 app/Admin/Settings_Page.php:97 app/Admin/Tabs/Settings_Tab.php:41 app/Reports/Reports.php:126
+msgid "Customer checks"
+msgstr ""
+
+#: app/Admin/Help_Page.php:137
+msgid "nekorekten.com, Connectix and NepoStop tell you whether a phone number has a history of refused parcels. Nashenski Commerce can show a warning on the order and hide cash on delivery for such customers."
+msgstr ""
+
+#: app/Admin/Help_Page.php:139 app/Admin/Help_Page.php:171
+msgid "Moving from another plugin"
+msgstr ""
+
+#: app/Admin/Help_Page.php:140
+msgid "Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping."
+msgstr ""
+
+#: app/Admin/Help_Page.php:141
+msgid "It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods and, from the N-18 plugin, the company details and document numbers. Then the old plugin is switched off. Its own data stays in the database."
+msgstr ""
+
+#: app/Admin/Help_Page.php:142
+msgid "Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import."
+msgstr ""
+
+#: app/Admin/Help_Page.php:144
+msgid "When something does not work"
+msgstr ""
+
+#: app/Admin/Help_Page.php:145
+msgid "\"Nothing found\" under a courier: check the login on the courier page. In BOX NOW demo mode there are only two test lockers, both in Sofia."
+msgstr ""
+
+#: app/Admin/Help_Page.php:146
+msgid "No courier options at checkout: add the methods to the shipping zone of the customer's address and give your products a weight."
+msgstr ""
+
+#: app/Admin/Help_Page.php:147
+msgid "\"Complete the fields to calculate\" does not go away: the customer has not chosen an office, a locker or an address yet."
+msgstr ""
+
+#: app/Admin/Help_Page.php:148
+msgid "No documents: turn on \"Invoices and N-18\" in Overview and check \"When to generate documents?\" in Documents."
+msgstr ""
+
+#: app/Admin/Help_Page.php:160 app/Admin/Import_Sources.php:177
+msgid "Bulgarisation for WooCommerce"
+msgstr ""
+
+#: app/Admin/Help_Page.php:172
+msgid "These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use and switches the plugin off."
+msgstr ""
+
+#. translators: %s: date
+#: app/Admin/Help_Page.php:182
+#, php-format
+msgid "Imported on %s"
+msgstr ""
+
+#: app/Admin/Help_Page.php:185
+msgid "Import and switch off"
+msgstr ""
+
+#. translators: %d: number of settings
+#: app/Admin/Help_Page.php:206
+#, php-format
+msgid "%d setting changed."
+msgid_plural "%d settings changed."
+msgstr[0] ""
+msgstr[1] ""
+
+#: app/Admin/Help_Page.php:219
+msgid "Recommended settings"
+msgstr ""
+
+#: app/Admin/Help_Page.php:220
+msgid "Settings that suit most Bulgarian stores. Tick the ones you want and apply them; nothing else changes."
+msgstr ""
+
+#: app/Admin/Help_Page.php:224
+msgid "Apply"
+msgstr ""
+
+#: app/Admin/Help_Page.php:225
+msgid "Setting"
+msgstr ""
+
+#: app/Admin/Help_Page.php:226 app/Plugin.php:221
+msgid "Now"
+msgstr ""
+
+#: app/Admin/Help_Page.php:227
+msgid "Recommended"
+msgstr ""
+
+#: app/Admin/Help_Page.php:228
+msgid "Why"
+msgstr ""
+
+#: app/Admin/Help_Page.php:241
+msgid "Already set"
+msgstr ""
+
+#: app/Admin/Help_Page.php:258
+msgid "Apply recommended settings"
+msgstr ""
+
+#: app/Admin/Help_Page.php:260
+msgid "All recommended settings are in place."
+msgstr ""
+
+#: app/Admin/Import_Sources.php:67
+msgid "Econt Express shipping method (mreja.net)"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:68
+msgid "BOX NOW Delivery (mreja.net)"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:69
+msgid "Ordinance N-18 light regime (mreja.net)"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:70
+msgid "Change Speedy and Econt Shipping Methods (mreja.net)"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:71
+msgid "Drusoft Shipping for Econt"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:72
+msgid "Drusoft Shipping for Speedy"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:73
+msgid "Econt Delivery (Econt)"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:74
+msgid "Speedy Shipping (Speedy)"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:75
+msgid "WooCommerce Speedy Offices"
+msgstr ""
+
+#. translators: %s: plugin name
+#: app/Admin/Import_Sources.php:141
+#, php-format
+msgid "Imported from %s:"
+msgstr ""
+
+#. translators: %s: plugin names
+#: app/Admin/Import_Sources.php:158
+#, php-format
+msgid "Nashenski Commerce can take over the data of %s, then switch it off."
+msgstr ""
+
+#: app/Admin/Import_Sources.php:162
+msgid "Review and import"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:164 app/Admin/Settings_Page.php:455
+msgid "Dismiss"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:275 app/Admin/Import_Sources.php:297
+msgid "The Econt key of that plugin works only with Econt's \"Deliver with Econt\" service. Enter your Econt username and password in Couriers > Econt."
+msgstr ""
+
+#. translators: %d: number
+#: app/Admin/Import_Sources.php:316
+#, php-format
+msgid "%d setting"
+msgid_plural "%d settings"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number
+#: app/Admin/Import_Sources.php:318
+#, php-format
+msgid "%d order waybill"
+msgid_plural "%d order waybills"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number
+#: app/Admin/Import_Sources.php:320
+#, php-format
+msgid "%d shipping zone method"
+msgid_plural "%d shipping zone methods"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number
+#: app/Admin/Import_Sources.php:325
+#, php-format
+msgid "%d document number"
+msgid_plural "%d document numbers"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of orders
+#: app/Admin/Import_Sources.php:332
+#, php-format
+msgid "%d order keeps everything the old plugin saved on it (see \"From earlier plugins\" on the order)"
+msgid_plural "%d orders keep everything the old plugin saved on them (see \"From earlier plugins\" on the order)"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: plugin name
+#: app/Admin/Import_Sources.php:360
+#, php-format
+msgid "%s was switched off."
+msgstr ""
+
+#: app/Admin/Import_Sources.php:496
+msgid "From earlier plugins"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:504
+msgid "What the earlier plugins saved on this order, kept when their data was imported."
+msgstr ""
+
+#: app/Admin/Import_Sources.php:543 app/Export/Builder/Fields.php:233
+msgid "Order document"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:544 app/Admin/Order/Documents.php:126 app/Export/Builder/Fields.php:234
+msgid "Invoice"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:545 app/Export/Builder/Fields.php:235
+msgid "Credit note"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:546
+msgid "Cancelled order document"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:697 app/Admin/Settings_Page.php:510 app/Front_End/Checkout/Pickers.php:272
+msgid "To an office"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:698 app/Front_End/Checkout/Pickers.php:273 app/Front_End/Checkout/Pickers.php:274 app/Front_End/Checkout/Pickers.php:275
+msgid "To a parcel locker"
+msgstr ""
+
+#: app/Admin/Import_Sources.php:699 app/Admin/Settings_Page.php:512
+msgid "To an address"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:26 app/Admin/ImpossibleVatPrice.php:27 app/Admin/ImpossibleVatPrice.php:102
+msgid "Mathematically impossible prices"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:60
+msgid "Preparing..."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:61 app/Admin/ImpossibleVatPrice.php:130
+msgid "Not started."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:62 app/Admin/ImpossibleVatPrice.php:121
+msgid "Scan products"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:63
+msgid "Scanning..."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:64
+msgid "An error occurred during scanning."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:65
+msgid "AJAX error during scanning."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:66
+msgid "Scanning finished."
+msgstr ""
+
+#. translators: 1: current page, 2: number of pages
+#: app/Admin/ImpossibleVatPrice.php:68
+#, php-format
+msgid "Scanning... page %1$s of %2$s"
+msgstr ""
+
+#. translators: 1: products checked, 2: products with a problem
+#: app/Admin/ImpossibleVatPrice.php:70
+#, php-format
+msgid "Checked: %1$s | Problematic: %2$s"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:71 app/Admin/ImpossibleVatPrice.php:122
+msgid "Fix all"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:72 app/Admin/ImpossibleVatPrice.php:87
+msgid "Fixing..."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:73
+msgid "Fix"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:74
+msgid "Edit"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:75
+msgid "Problematic"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:76
+msgid "Fixed"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:77
+msgid "Missing target price"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:78
+msgid "AJAX error"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:79
+msgid "Error"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:80
+msgid "No problematic prices found."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:81
+msgid "No problematic prices remain."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:82
+msgid "There are no rows to fix."
+msgstr ""
+
+#. translators: 1: prices fixed so far, 2: prices to fix
+#: app/Admin/ImpossibleVatPrice.php:84
+#, php-format
+msgid "Fixing all... %1$s / %2$s"
+msgstr ""
+
+#. translators: 1: prices fixed, 2: prices not fixed
+#: app/Admin/ImpossibleVatPrice.php:86
+#, php-format
+msgid "Fixed: %1$s | Not fixed: %2$s"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:96
+msgid "You do not have permission to access this page."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:105
+msgid "This tool scans products and shows only problematic prices."
+msgstr ""
+
+#. translators: %s: link to an article about the problem
+#: app/Admin/ImpossibleVatPrice.php:106
+#, php-format
+msgid "You can learn more about this problem <a target=\"_blank\" href=\"%s\">here</a>."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:110
+msgid "Store setting:"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:111
+msgid "Prices are entered including tax"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:111
+msgid "Prices are entered excluding tax"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:116
+msgid "This check is mainly applicable when prices are entered including tax."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:138
+msgid "ID"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:139 app/Export/Builder/Fields.php:119 app/Invoice/Document/BaseDocument.php:87
+msgid "Product"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:140
+msgid "Type"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:141 app/Export/Builder/Fields.php:120
+msgid "SKU"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:142 app/Front_End/Checkout/Field_Editor.php:614
+msgid "Field"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:143
+msgid "Entered price"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:144
+msgid "Tax"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:145
+msgid "Nearest"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:146
+msgid "Down"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:147
+msgid "Up"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:148 app/Export/Builder/Fields.php:37
+msgid "Status"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:149
+msgid "Actions"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:163 app/Admin/ImpossibleVatPrice.php:226
+msgid "You do not have permission."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:241
+msgid "Invalid data."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:252
+msgid "The product was not found."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:261 app/Admin/ImpossibleVatPrice.php:326
+msgid "Regular price"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:263 app/Admin/ImpossibleVatPrice.php:337
+msgid "Sale price"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:269
+msgid "The price is no longer problematic."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:278
+msgid "The target price no longer matches."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:305
+msgid "The price was fixed."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:392 app/Admin/ImpossibleVatPrice.php:399 app/Admin/ImpossibleVatPrice.php:406
+msgid "The sale price was cleared because it was greater than or equal to the regular price."
+msgstr ""
+
+#. translators: %s: sale price
+#: app/Admin/ImpossibleVatPrice.php:413
+#, php-format
+msgid "The sale price was adjusted to %s so it stays below the regular price."
+msgstr ""
+
+#. translators: 1: settings, 2: shipping method settings, 3: shipping zone methods, 4: order shipping lines, 5: order data rows
+#: app/Admin/Migration.php:64
+#, php-format
+msgid "Import finished: %1$d settings, %2$d shipping method settings, %3$d shipping zone methods, %4$d order shipping lines and %5$d order data rows."
+msgstr ""
+
+#: app/Admin/Order/Accountant_Email.php:9
+msgid "Accountant Document Copies"
+msgstr ""
+
+#: app/Admin/Order/Accountant_Email.php:10
+msgid "This email sends invoice and credit notice copies to the accountant."
+msgstr ""
+
+#: app/Admin/Order/Accountant_Email.php:11 app/Admin/Order/Accountant_Email.php:95
+msgid "Document Copy"
+msgstr ""
+
+#: app/Admin/Order/Accountant_Email.php:12 app/Admin/Order/Accountant_Email.php:91
+msgid "[{site_title}]: Document copy for order #{order_number}"
+msgstr ""
+
+#. translators: %s: order number
+#: app/Admin/Order/Accountant_Email.php:70 app/Admin/Order/Accountant_Email.php:85
+#, php-format
+msgid "Please find attached the document copies for order #%s."
+msgstr ""
+
+#: app/Admin/Order/Actions.php:43 app/Admin/Order/Actions.php:114
+msgid "Regenerate PDF's"
+msgstr ""
+
+#. translators: %s: number of orders
+#: app/Admin/Order/Actions.php:69
+#, php-format
+msgid "%s order documents were regenerated."
+msgid_plural "%s orders documents were regenerated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: app/Admin/Order/Actions.php:77
+msgid "Invoice PDF"
+msgstr ""
+
+#: app/Admin/Order/Actions.php:78
+msgid "Invoice Copy PDF"
+msgstr ""
+
+#: app/Admin/Order/Actions.php:79
+msgid "Refunded Invoice PDF"
+msgstr ""
+
+#: app/Admin/Order/Actions.php:80
+msgid "Refunded Invoice Copy PDF"
+msgstr ""
+
+#: app/Admin/Order/Actions.php:93
+msgid "English"
+msgstr ""
+
+#: app/Admin/Order/Actions.php:111
+msgid "Generate Invoice"
+msgstr ""
+
+#: app/Admin/Order/Actions.php:155
+msgid "The invoice number must be 1 to 10 digits."
+msgstr ""
+
+#. translators: %s: invoice number
+#: app/Admin/Order/Actions.php:174
+#, php-format
+msgid "Number %s is already used by another order. Choose another invoice number."
+msgstr ""
+
+#: app/Admin/Order/Columns.php:53 app/Admin/Order/MetaBox.php:42
+msgid "EN"
+msgstr ""
+
+#: app/Admin/Order/Documents.php:125 app/Export/Builder/Fields.php:34 app/Reports/Reports.php:113
+msgid "Order"
+msgstr ""
+
+#: app/Admin/Order/Documents.php:127
+msgid "Invoice Copy"
+msgstr ""
+
+#: app/Admin/Order/Documents.php:128
+msgid "Refunded Order"
+msgstr ""
+
+#: app/Admin/Order/Documents.php:129
+msgid "Refunded Invoice"
+msgstr ""
+
+#: app/Admin/Order/Documents.php:130
+msgid "Refunded Invoice Copy"
+msgstr ""
+
+#: app/Admin/Order/Documents.php:131 app/Invoice/Document/Proforma.php:10
+msgid "Pro forma"
+msgstr ""
+
+#: app/Admin/Order/MetaBox.php:19
+msgid "PDF Files"
+msgstr ""
+
+#: app/Admin/Order/MetaBox.php:68
+msgid "Make invoice"
+msgstr ""
+
+#: app/Admin/Order/MetaBox.php:69
+msgid "Uses the PDF look you set under Documents. Saves the order too."
+msgstr ""
+
+#: app/Admin/Pigeon.php:27 app/Admin/Tabs/Pigeon_Tab.php:15 app/Admin/Tabs/Settings_Tab.php:18 app/functions.php:621 app/Shipping/Pigeon/Method.php:163
+msgid "Pigeon Express"
+msgstr ""
+
+#: app/Admin/Pigeon.php:191
+msgid "Locker"
+msgstr ""
+
+#: app/Admin/Pigeon.php:199
+msgid "You just copied the label data used for the Pigeon Express API."
+msgstr ""
+
+#: app/Admin/Pigeon.php:201
+msgid "Reference number"
+msgstr ""
+
+#: app/Admin/Pigeon.php:202
+msgid "Tracking codes"
+msgstr ""
+
+#: app/Admin/Pigeon.php:208 app/Admin/Speedy.php:173 app/Front_End/Checkout/Pickers.php:295
+msgid "Street or quarter"
+msgstr ""
+
+#: app/Admin/Pigeon.php:217
+msgid "Return at my expense"
+msgstr ""
+
+#: app/Admin/Pigeon.php:218
+msgid "Note for courier"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:22
+msgid "On"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:22 app/Admin/Recommended_Settings.php:52 app/Admin/Tabs/Shipping_Tab.php:22
+msgid "Off"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:24 app/Front_End/Checkout/Field_Editor.php:561
+msgid "Required"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:25 app/Front_End/Checkout/Field_Editor.php:562
+msgid "Optional"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:26 app/Admin/Tabs/Fields_Tab.php:27 app/Front_End/Checkout/Field_Editor.php:563
+msgid "Hidden"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:34 app/Admin/Tabs/Shipping_Tab.php:19
+msgid "Customer countries"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:35
+msgid "Every order is for Bulgaria and customers do not see the country field."
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:36
+msgid "Bulgaria only"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:36 app/Admin/Tabs/Shipping_Tab.php:17
+msgid "Bulgaria, Greece and Romania"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:36
+msgid "WooCommerce settings"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:42
+msgid "Courier logos at checkout"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:43 app/Admin/Setting_Help.php:71
+msgid "Customers recognise the courier at a glance."
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:50 app/Admin/Tabs/Shipping_Tab.php:25
+msgid "Transliterate addresses"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:51
+msgid "Couriers find Bulgarian addresses typed in Latin letters."
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:52 app/Admin/Tabs/Shipping_Tab.php:23
+msgid "Bulgarian addresses in Cyrillic"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:52 app/Admin/Tabs/Shipping_Tab.php:24
+msgid "Cyrillic in Bulgaria, Latin abroad"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:57
+msgid "Phone field"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:58
+msgid "Couriers call or text the customer before delivery."
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:65
+msgid "Postcode field"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:66
+msgid "Bulgarian couriers deliver by city and office, so the postcode should not stop an order."
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:72
+msgid "Store currency"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:73
+msgid "Bulgaria uses the euro since 1 January 2026."
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:79
+msgid "Currency position"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:80
+msgid "Prices read the Bulgarian way: 12,50 €."
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:81
+msgid "Left"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:81
+msgid "Right"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:81
+msgid "Left with space"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:81
+msgid "Right with space"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:86
+msgid "Decimal separator"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:87 app/Admin/Recommended_Settings.php:94
+msgid "Bulgarian number format."
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:93
+msgid "Thousand separator"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:95
+msgid "Space"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:95
+msgid "None"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:104
+msgid "Prices entered with tax"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:105
+msgid "Prices in Bulgaria are shown and entered with VAT included."
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:106 app/Front_End/Checkout/Field_Editor.php:481 app/Shipping/CVC/Method.php:165 app/Shipping/CVC/Method.php:176 app/Shipping/Econt/Method.php:200 app/Shipping/Pigeon/Method.php:184
+msgid "Yes"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:106 app/Front_End/Checkout/Field_Editor.php:481 app/functions.php:241 app/Shipping/CVC/Method.php:153 app/Shipping/CVC/Method.php:164 app/Shipping/CVC/Method.php:175
+msgid "No"
+msgstr ""
+
+#: app/Admin/Recommended_Settings.php:129
+msgid "(not set)"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:105
+msgid "Help"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:225
+msgid "Enable"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:309
+msgid "Turn on documents in the Overview to also get the NRA audit file, the invoice archive and the Microinvest Delta file here."
+msgstr ""
+
+#. translators: %s: courier name
+#: app/Admin/Settings_Page.php:374
+#, php-format
+msgid "Connected to %s. Prices and labels use your account."
+msgstr ""
+
+#: app/Admin/Settings_Page.php:385
+msgid "Reload offices and cities"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:386
+msgid "Downloads the latest cities, offices and lockers (and your profile) from the courier. They also update by themselves once a week."
+msgstr ""
+
+#: app/Admin/Settings_Page.php:406
+msgid "Offices and cities will be downloaded again the next time they are needed."
+msgstr ""
+
+#. translators: %s: courier names with links
+#: app/Admin/Settings_Page.php:453
+#, php-format
+msgid "New published prices were found for %s. Open the courier, press \"Check the courier website\" and decide whether to use them."
+msgstr ""
+
+#: app/Admin/Settings_Page.php:473
+msgid "Public prices"
+msgstr ""
+
+#. translators: 1: link to the courier price list, 2: date
+#: app/Admin/Settings_Page.php:476
+#, php-format
+msgid "Used to price orders when this courier is not connected or does not answer, so customers can always order. The built-in prices come from the %1$s (valid from %2$s). Edit them, or let Nashenski Commerce check the courier website for newer prices."
+msgstr ""
+
+#: app/Admin/Settings_Page.php:477
+msgid "courier's published price list"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:478
+msgid "unknown"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:484
+msgid "Use public prices"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:485
+msgid "Price orders with this list when there is no working courier login"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:491
+msgid "Price list"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:511
+msgid "To a locker"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:524
+msgid "Up to (kg)"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:538 app/Admin/Settings_Page.php:631 app/Plugin.php:217
+msgid "Remove row"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:544
+msgid "Heavier: base"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:551
+msgid "+ per kg above the last row"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:559 app/Admin/Settings_Page.php:636
+msgid "Add row"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:562
+msgid "Prices include VAT"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:563
+msgid "Extra surcharge (fuel, toll) %"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:564
+msgid "Cash on delivery fee %"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:565
+msgid "at least"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:566 app/Pricing/Updater.php:416
+msgid "Valid from"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:571
+msgid "Check the courier website"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:572
+msgid "Restore the built-in prices"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:576
+msgid "Prices are for parcels you hand in at a courier office. Changes take effect after you save."
+msgstr ""
+
+#: app/Admin/Settings_Page.php:685
+msgid "Choose image"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:714
+msgid "Standardised audit file (Annex 38)"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:715
+msgid "The monthly XML file for the NRA under Ordinance N-18. There is no limit on the number of orders."
+msgstr ""
+
+#: app/Admin/Settings_Page.php:716
+msgid "Create XML file"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:723
+msgid "Invoice archive"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:724
+msgid "A ZIP file with all invoices and credit notes of the month."
+msgstr ""
+
+#: app/Admin/Settings_Page.php:725
+msgid "Download archive"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:730
+msgid "Microinvest Delta"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:731
+msgid "The documents of the month in the import format of Microinvest Delta."
+msgstr ""
+
+#: app/Admin/Settings_Page.php:732
+msgid "Create file"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:736
+msgid "Ready-made files"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:748
+msgid "Month"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:753
+msgid "Older orders"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:755
+msgid "Create missing documents for orders placed before the plugin was installed"
+msgstr ""
+
+#: app/Admin/Setting_Help.php:19
+msgid "Demo works with the courier's test system and nothing is really shipped. Switch to Live with your real login before you start sending."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:23
+msgid "Turns the courier on: its shipping methods for your zones, its page in Couriers and the waybill box on each order."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:24
+msgid "Turns on invoices, credit notes, the PDF look and the NRA audit file. The order document is made for every order either way."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:25
+msgid "The courier prints it on the waybill, so whoever packs or delivers the parcel knows which order it is."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:26
+msgid "The status an order gets when the courier reports the parcel delivered."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:26
+msgid "Usually Completed. \"Do not change\" only adds a note to the order."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:27
+msgid "For example Cancelled or On hold. The note on the order says what the courier reported."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:31
+msgid "The username of your Econt account."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:31
+msgid "For a test, choose Demo and use the demo login shown under Environment."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:32
+msgid "The password of your Econt account."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:32
+msgid "Stored on your site and sent only to Econt."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:33
+msgid "The Speedy username for online shops. It is not your MySpeedy login."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:33
+msgid "Speedy gives it with your contract. Without a contract, write to telesales@speedy.bg."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:34
+msgid "The password that goes with the Speedy username."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:34
+msgid "Stored on your site and sent only to Speedy."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:35
+msgid "From the email BOX NOW sends with your contract."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:35
+msgid "Demo and live have different keys. Choose the environment that matches them."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:36
+msgid "Given by Pigeon Express for your account."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:36
+msgid "Without them customers still choose Pigeon offices and lockers from Pigeon's public list, but waybills need them."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:37
+msgid "Given by CVC for your account."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:37
+msgid "Without it, CVC offices are not offered at checkout and waybills cannot be made."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:38
+msgid "When the courier cannot price an order (no login, or no answer), the price comes from the list below. Off: the option shows no price then."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:39
+msgid "The courier's published prices by weight for each delivery type."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:39
+msgid "Edit them, or press \"Check the courier website\" to compare with the latest published prices."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:42
+msgid "An account can have several sender profiles. Waybills are made with the one you choose."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:43
+msgid "Sender contact on the waybill."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:43
+msgid "The courier contacts this person about pickups and problems with a parcel."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:44
+msgid "Sender phone on the waybill."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:44
+msgid "The courier calls this number about pickups and problems with a parcel."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:45
+msgid "Sender email on the waybill."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:45
+msgid "The courier writes to this address about your parcels."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:46
+msgid "Use it only when the waybill contents miss sizes or colours of the products."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:47
+msgid "The waybill is made as soon as the order is placed and its number goes into the order emails. Leave it off if you check orders before shipping."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:48
+msgid "Insures the parcel for the order value. The courier charges a little extra for it."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:49
+msgid "Uses the product dimensions to fit the order into the courier's box sizes. Products without dimensions count as the default size."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:50
+msgid "Your cash on delivery agreement with Econt: how and when Econt pays the collected money to you."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:51
+msgid "How you pay Econt for the shipments you send."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:52
+msgid "Econt shows the customer either your invoice number or a packing list of the products."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:53
+msgid "Address: the courier comes to you. Office: you take the parcels to a courier office, which is often cheaper. Save to see the next fields."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:54
+msgid "Where your parcels start. Prices are calculated from here."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:55
+msgid "Speedy pays the collected money back by postal money transfer. Needs that agreement with Speedy and cannot be combined with ordinary cash on delivery."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:56
+msgid "Speedy issues the cash receipt for the collected amount on your behalf. Needs that agreement with Speedy."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:57
+msgid "Adds the administrative fee from your Speedy contract to the price, when the customer pays for delivery."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:58
+msgid "CVC pays the collected money back by postal money transfer. Needs that agreement with CVC."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:59
+msgid "Turn on if your CVC contract says you pay for the shipments."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:60
+msgid "The warehouse or locker BOX NOW collects your parcels from."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:61
+msgid "The customer can return the parcel at a BOX NOW locker."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:62
+msgid "BOX NOW has no price calculation in its API, so you set the prices here. Save after choosing to see the right table."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:63
+msgid "Each row is a range and the price the customer pays in it."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:64
+msgid "For example 200: BOX NOW is not offered for bigger orders."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:65
+msgid "Orders above this total ship for free with BOX NOW."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:66
+msgid "The locker compartment size for orders whose products have no dimensions."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:67
+msgid "An extra Pigeon Express service. It may cost extra and must be in your contract."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:70
+msgid "Bulgaria only also hides the country field. \"WooCommerce settings\" keeps the countries of WooCommerce > Settings > General."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:72
+msgid "Couriers search addresses in Cyrillic. Addresses typed in Latin letters are converted, so the parcel still finds the customer."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:73
+msgid "Names on the waybill then match the customer's ID card."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:74
+msgid "For themes with a narrow order summary: the shipping options take the full width."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:75
+msgid "The company details go on the invoice and into the NRA audit file."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:76
+msgid "Hidden: customers cannot leave a note with the order."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:77
+msgid "Order, visibility and width of every checkout field, and your own fields."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:77
+msgid "The notes above the table say which checkouts follow which part."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:78
+msgid "Cards with a border, or the plain list of your theme."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:78
+msgid "Cards make the chosen courier stand out."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:79
+msgid "Shows \"To an office\", \"To a parcel locker\" or \"To an address\" under each option."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:80
+msgid "Empty: the colour of your design tokens or theme."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:80
+msgid "Any CSS colour, for example #1a7f37 or var(--primary)."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:81
+msgid "Empty: the size of your design tokens or theme."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:81
+msgid "Any CSS size, for example 8px, 0.5rem or var(--space-s)."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:82
+msgid "Required by EU law from 19 June 2026 for shops with online checkout."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:83
+msgid "Or place the link yourself with the shortcode [nashenski_withdrawal_link]."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:84
+msgid "14 days is the legal minimum; give more if your terms promise more."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:87
+msgid "As in the Commercial Register."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:88
+msgid "The person who represents the company."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:89
+msgid "9 or 13 digits. The NRA audit file cannot be made without it."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:90
+msgid "For a company that is not registered for VAT: invoices carry the note about Article 113(9) and show no VAT. Works while WooCommerce taxes are off."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:91
+msgid "Starts with BG. Leave empty if you are not registered for VAT."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:92
+msgid "Customers who ask for a company invoice must then enter the company VAT number."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:93 app/Admin/Setting_Help.php:96
+msgid "Shown on your documents."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:94
+msgid "Town of the registered address."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:95
+msgid "Registered address, shown on invoices."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:96
+msgid "Customers and the NRA may write to this address about documents."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:97
+msgid "The NRA gives it when you register the online shop."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:98
+msgid "The shop address as registered with the NRA."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:99
+msgid "Needed by shops that take card or bank payments without a fiscal receipt (Ordinance N-18, Article 52o)."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:100
+msgid "Which orders get an invoice automatically."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:100
+msgid "\"Only for companies\" makes invoices for customers who ticked \"I want an invoice for a company\". Any order can also get one by hand."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:101
+msgid "When the order document and invoice are made."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:101
+msgid "\"Order completed\" waits until you complete the order, so cancelled orders get no documents."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:102
+msgid "Use it when the courier issues its own receipt for the delivery charge."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:103
+msgid "The number of the next order document, 10 digits."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:104
+msgid "Leave empty to number invoices together with order documents."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:105
+msgid "Days from the invoice date to the payment due date."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:106
+msgid "Printed as the person who prepared the document."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:107
+msgid "Bulgarian invoices may carry an identification code instead of a signature."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:108
+msgid "Printed at the bottom of every document."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:108
+msgid "For example your bank account or a thank-you line."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:109
+msgid "Bulgarian invoices often show the total in words."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:110
+msgid "Turn on to send the copies to your accountant."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:111
+msgid "Your accountant's email address."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:112
+msgid "The file is due by the 15th of the next month. Your accountant gets it on the 1st."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:113
+msgid "Products in these tax classes count as digital goods for EU VAT: the customer's country rate applies."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:114
+msgid "The VAT group of your sales in the NRA audit file. Most shops sell in group B (20%)."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:115
+msgid "How you pay customers back for cancelled orders."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:115
+msgid "Goes into the NRA audit file for refunded orders."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:116
+msgid "Yes: for cash on delivery orders with this method, the delivery charge is left out of the order document and the NRA file, because the courier collects it and gives its own receipt."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:117
+msgid "The NRA payment type of this payment method."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:117
+msgid "How the NRA audit file reports payments made with this method."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:118
+msgid "The number of the virtual POS terminal from your bank."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:118
+msgid "Needed in the NRA audit file for card payments."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:119
+msgid "The identifier of the payment provider, if it gave you one."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:119
+msgid "Goes into the NRA audit file with each payment."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:120
+msgid "A PNG or JPG about 600 pixels wide prints sharp."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:121
+msgid "How big the logo is at the top of the document."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:121
+msgid "Larger logos push the document down; Small keeps long orders on one page."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:122
+msgid "Turn off when your logo already has these details."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:123
+msgid "Documents then keep the colours of your site."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:124
+msgid "Pick a colour or type a hex code."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:124
+msgid "Dark text on a light table header prints best."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:125
+msgid "Both have Cyrillic letters."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:126
+msgid "Size of the document text."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:126
+msgid "Smaller text fits more products on a page."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:127
+msgid "The page size of the PDF documents."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:127
+msgid "A4 suits most office printers."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:128
+msgid "Compact fits long orders on one page."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:129
+msgid "How dates look on the documents."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:129
+msgid "Bulgarian documents usually use day.month.year."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:130
+msgid "Turn off to keep phone numbers and emails off printed documents."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:131
+msgid "The space where the customer signs on receipt."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:134
+msgid "Asks this service about the customer's phone number when you open an order. Needs the service's key below."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:135
+msgid "A warning sign in the orders list for customers with reports."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:136
+msgid "Customers with refused parcels then pay online or by bank transfer."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:137
+msgid "From your account on the service's website."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:138
+msgid "Lower means stricter: more customers get a warning."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:139
+msgid "Shares your waybills with NepoStop, so its data about refused parcels grows. Tell your customers in your privacy policy."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:142
+msgid "The name customers see at checkout."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:142
+msgid "Short is best, for example \"To an office\". The courier logo is shown next to it."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:143
+msgid "Add one method per delivery type to the zone."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:143
+msgid "Office and parcel locker show a list and a map; address shows the street search."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:144
+msgid "Whether the customer may open or test the parcel before paying."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:144
+msgid "Not possible at parcel lockers. If the customer refuses after a test, the return is paid as your contract says."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:145
+msgid "The courier texts the customer about the delivery. It may cost extra."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:146
+msgid "Delivery and pickup on Saturdays. It may cost extra."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:147
+msgid "Orders above this total ship for free with this method."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:147
+msgid "You still pay the courier; the customer sees \"Free\"."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:148
+msgid "A set delivery price instead of the courier's calculation."
+msgstr ""
+
+#: app/Admin/Setting_Help.php:148
+msgid "The difference to the real courier price is yours."
+msgstr ""
+
+#: app/Admin/Speedy.php:25
+msgid "Speedy Delivery"
+msgstr ""
+
+#: app/Admin/Speedy.php:152
+msgid "Fill in at least one of street number, block, entrance, floor or apartment."
+msgstr ""
+
+#: app/Admin/Speedy.php:161
+msgid "Physical Weight"
+msgstr ""
+
+#: app/Admin/Speedy.php:162
+msgid "Volumetric weight"
+msgstr ""
+
+#: app/Admin/Speedy.php:163
+msgid "Chargeable weight"
+msgstr ""
+
+#: app/Admin/Speedy.php:166
+msgid "You just copied the label data used for the Speedy API."
+msgstr ""
+
+#: app/Admin/Speedy.php:175
+msgid "A4 with copy on same page"
+msgstr ""
+
+#: app/Admin/Speedy.php:176
+msgid "A4 with copy on single page"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:15 app/Admin/Tabs/Settings_Tab.php:17 app/functions.php:620 app/Shipping/BoxNow/Method.php:131
+msgid "BOX NOW"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:29 app/Admin/Tabs/Econt_Tab.php:30
+msgid "Demo"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:33 app/Admin/Tabs/Connectix_Tab.php:24 app/Admin/Tabs/Econt_Tab.php:34 app/Admin/Tabs/Pigeon_Tab.php:30
+msgid "Live"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:35 app/Admin/Tabs/Connectix_Tab.php:30 app/Admin/Tabs/Econt_Tab.php:36 app/Admin/Tabs/Pigeon_Tab.php:36
+msgid "Environment"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:35 app/Admin/Tabs/Connectix_Tab.php:30 app/Admin/Tabs/Pigeon_Tab.php:36
+msgid "Select used environment."
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:36
+msgid "Client ID"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:36
+msgid "Enter your Client ID."
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:37
+msgid "Client Secret"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:37
+msgid "Enter your Client Secret."
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:49 app/Admin/Tabs/CVC_Tab.php:45 app/Admin/Tabs/Econt_Tab.php:57 app/Admin/Tabs/Speedy_Tab.php:45 app/Export/Builder/Fields.php:51 app/Front_End/Checkout/Field_Editor.php:107
+msgid "Phone"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:50 app/Admin/Tabs/CVC_Tab.php:46
+msgid "E-mail"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:54
+msgid "Location"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:57 app/Admin/Tabs/CVC_Tab.php:50 app/Admin/Tabs/Econt_Tab.php:59 app/Admin/Tabs/Pigeon_Tab.php:49 app/Admin/Tabs/Speedy_Tab.php:50
+msgid "Generate label after checkout"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:57 app/Admin/Tabs/CVC_Tab.php:50 app/Admin/Tabs/Econt_Tab.php:59 app/Admin/Tabs/Pigeon_Tab.php:49 app/Admin/Tabs/Speedy_Tab.php:50
+msgid "This option will try to generate your label immediately after user checkout. Also, will add the tracking number in the order email."
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:63 app/Admin/Tabs/BoxNow_Tab.php:95
+msgid "From/To in kg"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:67 app/Admin/Tabs/BoxNow_Tab.php:110
+msgid "From/To Order Total"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:71 app/Admin/Tabs/BoxNow_Tab.php:130
+msgid "From/To kg and Order Total"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:75
+msgid "Price type"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:78
+msgid "After you select the option, you must save the settings in order the correct price settings to be shown."
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:86 app/Admin/Tabs/BoxNow_Tab.php:118
+msgid "kg"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:87 app/Admin/Tabs/BoxNow_Tab.php:104 app/Admin/Tabs/BoxNow_Tab.php:121
+msgid " to "
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:89 app/Admin/Tabs/BoxNow_Tab.php:105 app/Admin/Tabs/BoxNow_Tab.php:123
+msgid "+ Add new row"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:120
+msgid "and"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:138
+msgid "Hide shipping over cart total price"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:138
+msgid "If filled will hide the shipping method if the cart total price is over the sum."
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:139 app/Shipping/CVC/Method.php:181 app/Shipping/Econt/Method.php:205 app/Shipping/Pigeon/Method.php:188 app/Shipping/Speedy/Method.php:201
+msgid "Free shipping over"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:139 app/Shipping/CVC/Method.php:184 app/Shipping/Econt/Method.php:208 app/Shipping/Pigeon/Method.php:191 app/Shipping/Speedy/Method.php:204
+msgid "Free shipping over total cart price."
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:158
+msgid "Default box size"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:168
+msgid "BOX NOW account"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:169
+msgid "Client ID and secret from your BOX NOW e-shop account. After saving, the sender and price options appear."
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:179
+msgid "Where you hand over parcels"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:182
+msgid "What customers pay"
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:183
+msgid "How Nashenski Commerce calculates the BOX NOW price at checkout."
+msgstr ""
+
+#: app/Admin/Tabs/BoxNow_Tab.php:199
+msgid "Incorrect Client ID or Client Secret."
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:14 app/Admin/Tabs/Connectix_Tab.php:60 app/Admin/Tabs/Settings_Tab.php:24 app/Reports/Providers/Connectix.php:10
+msgid "Connectix"
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:28 app/Admin/Tabs/Pigeon_Tab.php:34
+msgid "Sandbox"
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:31
+msgid "Token"
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:31
+msgid "Enter the provided token from connectix.bg."
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:35 app/Client/Connectix.php:112
+msgid "Low"
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:39 app/Admin/Tabs/Nra_Tab.php:105 app/Client/Connectix.php:116
+msgid "Medium"
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:43 app/Client/Connectix.php:120
+msgid "High"
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:47 app/Client/Connectix.php:124
+msgid "Ultra high"
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:49 app/Admin/Tabs/NepoStop_Tab.php:22
+msgid "Level of Warning"
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:49
+msgid "Choose level of warning that will trigger notification or disable COD."
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:50
+msgid "Send tracking information"
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:50
+msgid "By enabling this option, the plugin will send Speedy and Econt tracking numbers to Connectix.bg. This way, you will help the service work better."
+msgstr ""
+
+#: app/Admin/Tabs/Connectix_Tab.php:71
+msgid "Token is incorrect."
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:15 app/Admin/Tabs/Settings_Tab.php:19 app/functions.php:622 app/Shipping/CVC/Method.php:134
+msgid "CVC"
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:27
+msgid "API Token"
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:27
+msgid "Enter your token."
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:44
+msgid "Enter sender name."
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:45
+msgid "Enter sender phone."
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:46
+msgid "Enter sender email."
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:47 app/Admin/Tabs/Speedy_Tab.php:46
+msgid "Cash on delivery as PPP."
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:48
+msgid "Pay by contract"
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:49 app/Admin/Tabs/Econt_Tab.php:58 app/Admin/Tabs/Speedy_Tab.php:49
+msgid "Force variations in label"
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:49 app/Admin/Tabs/Econt_Tab.php:58 app/Admin/Tabs/Speedy_Tab.php:49
+msgid "Add additional variations information. Please use this option only if you want the variation data to be available in the label print and it's missing."
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:51 app/Admin/Tabs/Econt_Tab.php:128 app/Admin/Tabs/Pigeon_Tab.php:85 app/Admin/Tabs/Speedy_Tab.php:79
+msgid "City"
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:62 app/Admin/Tabs/Econt_Tab.php:102 app/Admin/Tabs/Pigeon_Tab.php:61 app/Admin/Tabs/Speedy_Tab.php:63
+msgid "Select from where you will send the packages and save to show more options."
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:69 app/Admin/Tabs/Econt_Tab.php:124
+msgid "Select Address"
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:92
+msgid "CVC account"
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:93
+msgid "The API token CVC gave you. After saving, your sender options appear."
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:103 app/Admin/Tabs/Econt_Tab.php:181 app/Admin/Tabs/Pigeon_Tab.php:118 app/Admin/Tabs/Speedy_Tab.php:114
+msgid "Where you send from"
+msgstr ""
+
+#: app/Admin/Tabs/CVC_Tab.php:124
+msgid "API Token is incorrect."
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:15 app/Admin/Tabs/Settings_Tab.php:15 app/functions.php:618 app/Shipping/Econt/Method.php:172
+msgid "Econt"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:36
+msgid "Select used environment. For demo you can use Username: \"iasp-dev\" and Password: \"1Asp-dev\". For live environment use your credentials or create a registration at <a target=\"_blank\" href=\"https://login.econt.com/register/\">Econt Delivery</a>"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:37 app/Admin/Tabs/Speedy_Tab.php:27
+msgid "Username"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:37 app/Admin/Tabs/Speedy_Tab.php:27
+msgid "Enter your username."
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:38 app/Admin/Tabs/Speedy_Tab.php:28
+msgid "Password"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:38 app/Admin/Tabs/Speedy_Tab.php:28
+msgid "Enter your password."
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:54 app/Admin/Tabs/Speedy_Tab.php:42
+msgid "Select profile"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:54 app/Admin/Tabs/Speedy_Tab.php:42
+msgid "Select the profile you want to use and save to show or update the other options."
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:60 app/Admin/Tabs/Pigeon_Tab.php:65 app/Admin/Tabs/Speedy_Tab.php:51
+msgid "Adds declared value to the label if payment is COD."
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:61 app/Admin/Tabs/Pigeon_Tab.php:50 app/Admin/Tabs/Speedy_Tab.php:52
+msgid "Automatically calculate box size"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:61 app/Admin/Tabs/Pigeon_Tab.php:50 app/Admin/Tabs/Speedy_Tab.php:52
+msgid "Automatically calculate LxWxH of the box for the parcel."
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:62
+msgid "Cash on delivery agreement"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:62
+msgid "Choose cash on delivery agreement"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:69
+msgid "Credit"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:73 app/functions.php:102
+msgid "Cash"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:75
+msgid "Sender payment type"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:75
+msgid "Select how you will pay for the shipments."
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:86
+msgid "Packing list"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:88
+msgid "Packing list or invoice number"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:88
+msgid "Select if you want to have packing list or invoice number in the label."
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:138 app/Admin/Tabs/Pigeon_Tab.php:96 app/Admin/Tabs/Speedy_Tab.php:90
+msgid "Choose a city and save in order to show offices."
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:151
+msgid "No agreement"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:170
+msgid "Econt account"
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:171
+msgid "Use the user and password of an Econt e-shop integration. After saving, your profiles and label options appear."
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:216
+msgid "Username and password are incorrect. Create API keys in your Econt account under \"Integration for online shops\"."
+msgstr ""
+
+#: app/Admin/Tabs/Econt_Tab.php:224
+msgid "No profiles was found. Please contact with Econt."
+msgstr ""
+
+#: app/Admin/Tabs/Export_Tab.php:13
+msgid "Export"
+msgstr ""
+
+#. translators: %s: link to the Documents settings
+#: app/Admin/Tabs/Export_Tab.php:27
+#, php-format
+msgid "Fill in the company EIK (9 or 13 digits) in %s and save, then create the file again."
+msgstr ""
+
+#: app/Admin/Tabs/Export_Tab.php:42 app/Admin/Tabs/Export_Tab.php:96 app/Admin/Tabs/Export_Tab.php:118
+msgid "No orders found for this month."
+msgstr ""
+
+#. translators: %s: comma separated order IDs
+#: app/Admin/Tabs/Export_Tab.php:55
+#, php-format
+msgid "Some of the orders was not included because the payment method options was not found or the payment method was disabled. List of orders id's: %s"
+msgstr ""
+
+#: app/Admin/Tabs/Export_Tab.php:67
+msgid "Found errors in file:"
+msgstr ""
+
+#. translators: %s: file address
+#: app/Admin/Tabs/Export_Tab.php:81 app/Admin/Tabs/Export_Tab.php:102
+#, php-format
+msgid "File generated successfully! <a href=\"%s\" download target=\"_blank\">Download</a>"
+msgstr ""
+
+#: app/Admin/Tabs/Fields_Tab.php:14 app/Front_End/Checkout/Field_Editor.php:530
+msgid "Checkout fields"
+msgstr ""
+
+#: app/Admin/Tabs/Fields_Tab.php:21
+msgid "Company invoice fields"
+msgstr ""
+
+#: app/Admin/Tabs/Fields_Tab.php:21
+msgid "Add \"I want an invoice for a company\" to the checkout. When ticked, the customer fills in company name, EIK, VAT number, MOL, town and address, and the invoice is made out to the company."
+msgstr ""
+
+#: app/Admin/Tabs/Fields_Tab.php:26 app/Front_End/Checkout/Field_Editor.php:560
+msgid "Default (as WooCommerce shows it)"
+msgstr ""
+
+#: app/Admin/Tabs/Fields_Tab.php:30 app/Admin/Tabs/Fields_Tab.php:48
+msgid "Order notes"
+msgstr ""
+
+#: app/Admin/Tabs/Fields_Tab.php:33
+msgid "Classic checkout only. In the block checkout, turn order notes on or off in the Checkout block settings."
+msgstr ""
+
+#: app/Admin/Tabs/Fields_Tab.php:44 app/Export/Builder/Fields.php:61
+msgid "Company invoice"
+msgstr ""
+
+#: app/Admin/Tabs/Fields_Tab.php:45
+msgid "Works in the classic checkout, the block checkout and page builder checkouts. In a builder checkout made of single field elements, the fields appear after the billing fields unless you placed them yourself."
+msgstr ""
+
+#: app/Admin/Tabs/Nekorekten_Tab.php:14 app/Admin/Tabs/Nekorekten_Tab.php:50 app/Admin/Tabs/Settings_Tab.php:23 app/Reports/Providers/Nekorekten.php:15
+msgid "nekorekten.com"
+msgstr ""
+
+#: app/Admin/Tabs/Nekorekten_Tab.php:23
+msgid "API key"
+msgstr ""
+
+#. translators: %s: link to nekorekten.com
+#: app/Admin/Tabs/Nekorekten_Tab.php:28
+#, php-format
+msgid "Create a key in your %s profile under \"API keys\" and allow your server's IP address."
+msgstr ""
+
+#: app/Admin/Tabs/Nekorekten_Tab.php:35
+msgid "Reports for a warning"
+msgstr ""
+
+#: app/Admin/Tabs/Nekorekten_Tab.php:36
+msgid "Number of reports"
+msgstr ""
+
+#: app/Admin/Tabs/Nekorekten_Tab.php:38
+msgid "From how many reports about a phone number the order shows a warning and cash on delivery is turned off at checkout."
+msgstr ""
+
+#: app/Admin/Tabs/Nekorekten_Tab.php:59
+msgid "Enter your nekorekten.com API key."
+msgstr ""
+
+#: app/Admin/Tabs/Nekorekten_Tab.php:62
+msgid "nekorekten.com did not accept the API key. Check the key and the allowed IP addresses in your nekorekten.com profile."
+msgstr ""
+
+#: app/Admin/Tabs/NepoStop_Tab.php:14 app/Admin/Tabs/NepoStop_Tab.php:33 app/Admin/Tabs/Settings_Tab.php:25 app/Reports/Providers/NepoStop.php:10
+msgid "NepoStop"
+msgstr ""
+
+#: app/Admin/Tabs/NepoStop_Tab.php:21 app/Admin/Tabs/Pigeon_Tab.php:37
+msgid "API Key"
+msgstr ""
+
+#: app/Admin/Tabs/NepoStop_Tab.php:21
+msgid "Enter the provided API key from nepostop.com."
+msgstr ""
+
+#: app/Admin/Tabs/NepoStop_Tab.php:22
+msgid "In percentages"
+msgstr ""
+
+#: app/Admin/Tabs/NepoStop_Tab.php:22
+msgid "Enter how many percentages will trigger a warning or disable COD."
+msgstr ""
+
+#: app/Admin/Tabs/NepoStop_Tab.php:23
+msgid "Automatically upload labels to nepostop.com"
+msgstr ""
+
+#: app/Admin/Tabs/NepoStop_Tab.php:23
+msgid "By enabling this option, the plugin will send Speedy and Econt tracking numbers to nepostop.com and you can track them from their platform. This way, you will help the service work better."
+msgstr ""
+
+#: app/Admin/Tabs/NepoStop_Tab.php:44
+msgid "API Key is incorrect."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:15
+msgid "Company Name"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:15
+msgid "Your company name."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:16 app/Export/Builder/Fields.php:66 app/Front_End/Checkout/Company.php:116
+msgid "MOL"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:16
+msgid "Your company MOL."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:17 app/Export/Builder/Fields.php:64 app/Front_End/Checkout/Company.php:58 app/Front_End/Checkout/Company.php:122 app/Front_End/Checkout/Company_Fields.php:103
+msgid "EIK"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:17
+msgid "Your company EIK."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:18
+msgid "Company registered under Article 113(9) of the Bulgarian VAT Act"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:19
+msgid "VAT Number"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:19
+msgid "Your company VAT Number. To be filled in if you have a VAT registration."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:20
+msgid "VAT number required on checkout?"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:21
+msgid "Company phone Number"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:21
+msgid "Contact phone number of your company."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:22 app/Front_End/Checkout/Company.php:128
+msgid "Settlement"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:22
+msgid "The place of registration of your company."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:23 app/Front_End/Checkout/Company.php:134
+msgid "Company Address"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:23
+msgid "The registration address of your company."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:24
+msgid "Contact email"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:25
+msgid "NRA unique number"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:25
+msgid "The number received by the NRA when submitting information under Art. 52p according to Annex № 33."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:26
+msgid "Domain Name"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:26
+msgid "Web address of the e-shop. It is introduced in the same way as when submitting information under Art. 52p according to Annex № 33 in the portal for electronic services of the NRA."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:29
+msgid "Enable N-18"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:29
+msgid "Turn on the NRA audit file (XML) in Exports. The order document is made for every order either way."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:33
+msgid "Disable invoice generation"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:37
+msgid "Add only fields on checkout"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:41
+msgid "Only for companies"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:45
+msgid "Always"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:47
+msgid "When to generate invoices?"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:51
+msgid "Order created"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:55
+msgid "Order completed"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:57
+msgid "When to generate documents?"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:58
+msgid "Remove delivery from documents"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:58
+msgid "This option will remove the delivery from invoices and XML file."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:59
+msgid "Next NRA Document Number"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:59
+msgid "The document number of the next order."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:60
+msgid "Next Invoice/Credit notice Number"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:60
+msgid "If it' filled the invoices will have different number than the NRA documents."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:61
+msgid "Due days"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:61
+msgid "Days added to documents due date."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:62
+msgid "Prepared by"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:62
+msgid "Enter the name of the compiler of the automatically generated documents, which will be displayed in them."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:63
+msgid "Identification code"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:63
+msgid "Enter an ID in the invoices and credit memos that replace the compiler's signature."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:64
+msgid "Footer text"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:65
+msgid "Total in words"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:65
+msgid "Print the total in Bulgarian words under the table, in euro. Older orders in leva stay in leva."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:66
+msgid "Generate separate copy documents"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:66
+msgid "When enabled, invoice and credit notice copies will be generated as separate documents instead of being merged with the original. The copies can be sent to an accountant email."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:67
+msgid "Accountant email"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:67
+msgid "Separate several addresses with commas. Gets the invoice and credit notice copies when separate copy documents are on, and the monthly audit file when that is on."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:68
+msgid "Email the audit file every month"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:68
+msgid "On the 1st of each month, the NRA audit file (XML, Ordinance N-18) of the month before goes to the accountant email."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:74
+msgid "Group - A"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:78
+msgid "Group - B"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:82
+msgid "Group - G"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:84
+msgid "Vat Group"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:84
+msgid "group \"A\" - for goods and services, the sales of which are exempt from taxation, for goods and services, the sales of which are subject to 0% VAT, as well as for sales, for which VAT is not charged; group \"B\" - for goods and services, the sales of which are subject to 20% value added tax; group \"D\" - for goods and services, the sales of which are subject to 9% value added tax; combined - the group is determined for each product in the store separately."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:85
+msgid "Return method"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:85
+msgid "How to return the amount when the client cancel the order."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:102
+msgid "Logo"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:102
+msgid "Shown at the top of every document. Without one, the site logo from the theme or the site icon is used."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:104 app/Admin/Tabs/Nra_Tab.php:124
+msgid "Small"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:106 app/Admin/Tabs/Nra_Tab.php:126
+msgid "Large"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:107
+msgid "Logo size"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:108
+msgid "Website details"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:108
+msgid "Show the website name, address, email and phone under the logo"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:112
+msgid "Follow TokenForge colours"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:112
+msgid "Use the TokenForge palette for the colours below, now and after you change it"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:115
+msgid "Title colour"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:115
+msgid "Document title and website name."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:116 app/Front_End/Checkout/Appearance.php:179
+msgid "Accent colour"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:116
+msgid "Lines under the header and above the footer."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:117
+msgid "Text colour"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:118
+msgid "Table header background"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:120
+msgid "Sans serif (DejaVu Sans)"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:121
+msgid "Serif (DejaVu Serif)"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:122
+msgid "Font"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:122
+msgid "Both fonts print Cyrillic and Latin."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:125 app/Admin/Tabs/Nra_Tab.php:134
+msgid "Normal"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:127
+msgid "Text size"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:129
+msgid "A4"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:130
+msgid "Letter"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:131
+msgid "Paper size"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:133
+msgid "Compact"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:135
+msgid "Spacious"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:136 app/Front_End/Checkout/Appearance.php:187
+msgid "Spacing"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:136
+msgid "Line spacing of the supplier and customer boxes and padding of the tables."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:139
+msgid "Date format"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:140
+msgid "Phone and email"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:140
+msgid "Show the phone and email of the supplier and the customer"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:141
+msgid "Received by"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:141
+msgid "Show the \"Received\" box with the customer name"
+msgstr ""
+
+#. translators: %s: payment method name
+#: app/Admin/Tabs/Nra_Tab.php:158
+#, php-format
+msgid "Payment method: %s"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:172
+msgid "Company details"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:173
+msgid "Printed on invoices and used in the NRA audit file."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:179
+msgid "VAT and refunds"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:182
+msgid "Shipping on documents"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:185
+msgid "PDF appearance"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:187
+msgid "TokenForge is active: its colours fill in the fields below, and with \"Follow TokenForge colours\" on, documents keep matching the website."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:188
+msgid "Logo, colours, font and paper of invoices, credit notes and order documents."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:203
+msgid "Payment Type"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:203
+msgid "Manner of payment of the order according to the NRA system."
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:204
+msgid "Virtual POS №"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:205
+msgid "Identifier"
+msgstr ""
+
+#. translators: %s: shipping method name
+#: app/Admin/Tabs/Nra_Tab.php:221
+#, php-format
+msgid "Is %s courier?"
+msgstr ""
+
+#: app/Admin/Tabs/Nra_Tab.php:222
+msgid "If set to yes, all deliveries with PPP will be removed from documents and XML export"
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:37
+msgid "Enter your API key."
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:38
+msgid "API Secret"
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:38
+msgid "Enter your API secret."
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:64
+msgid "Pay with POS"
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:64
+msgid "POS payment available."
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:66
+msgid "Paper Return Receipt"
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:66
+msgid "Request for a paper receipt"
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:67
+msgid "Return Receipt"
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:67
+msgid "Request for a return receipt in electronic format"
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:68
+msgid "Service Return Documents"
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:68
+msgid "Return of original documents from the recipient to the sender after signing."
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:69
+msgid "ID Verification and Document Signature"
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:69
+msgid "Verify ID and sign documents electronically."
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:70
+msgid "COD Card Fee"
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:70
+msgid "Charge a fee for COD card payments."
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:86
+msgid "Enter your address."
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:107
+msgid "Pigeon Express account"
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:108
+msgid "The API key and secret Pigeon Express gave you. After saving, your sender options appear."
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:122
+msgid "Extra services on labels"
+msgstr ""
+
+#. translators: %s: Pigeon Express price page address
+#: app/Admin/Tabs/Pigeon_Tab.php:124
+#, php-format
+msgid "You can see the current prices on the <a href=\"%s\" target=\"_blank\">Pigeon Express website</a> or according to your agreed upon terms."
+msgstr ""
+
+#: app/Admin/Tabs/Pigeon_Tab.php:141
+msgid "API Key and API Secret are incorrect."
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:8 app/Plugin.php:78 app/Plugin.php:200
+msgid "Settings"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:15
+msgid "Delivery to Econt offices, lockers and addresses"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:16 app/Admin/Tabs/Speedy_Tab.php:15 app/functions.php:619 app/Shipping/Speedy/Method.php:179
+msgid "Speedy"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:16
+msgid "Delivery to Speedy offices, lockers and addresses"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:17
+msgid "Delivery to BOX NOW lockers"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:18
+msgid "Delivery to Pigeon Express offices, lockers and addresses"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:19
+msgid "Delivery to CVC offices and addresses"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:20
+msgid "Invoices and N-18"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:20
+msgid "Order documents, invoices, credit notes and the NRA audit file"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:23
+msgid "Reports about the customer's phone number from nekorekten.com"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:24
+msgid "Delivery history of the customer from connectix.bg"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:25
+msgid "Share of refused parcels for the customer's phone number from nepostop.com"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:26
+msgid "Orders list"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:26
+msgid "Add a \"Reports\" column to the orders list"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:27
+msgid "Check the phone number at checkout and hide cash on delivery when reports are found"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:27
+msgid "nekorekten.com answers at most 10 checks a minute; Nashenski Commerce remembers answers for 10 minutes."
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:37
+msgid "What Nashenski Commerce does in this store"
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:38
+msgid "Turn on the couriers you work with and the documents you need. Each one adds its own settings: couriers in the Couriers section, documents in the Documents section."
+msgstr ""
+
+#: app/Admin/Tabs/Settings_Tab.php:42
+msgid "Find out before shipping whether a customer tends to refuse parcels. Turn on a service, save, and enter its API key below."
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:8 app/Export/Builder/Fields.php:100 app/Shipping/CheckoutLayout.php:16
+msgid "Shipping"
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:16
+msgid "Bulgaria only (country field hidden)"
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:18
+msgid "As set in WooCommerce > Settings > General"
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:19
+msgid "With Bulgaria only, every order is for Bulgaria and customers do not see the country field."
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:20
+msgid "Courier logos"
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:20
+msgid "Show the courier logo next to each shipping option at checkout and in the cart."
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:25
+msgid "Converts the address the customer typed when the order is placed, for example \"Ruse, ul. Tsar Osvoboditel\" to \"Русе, ул. Цар Освободител\". Labels use the converted address. Orders also get a \"Transliterate addresses\" action."
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:26
+msgid "Transliterate names too"
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:26
+msgid "Also convert first and last names."
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:27
+msgid "Alternative shipping options layout ( checkout )"
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:27
+msgid "Make shipping options on 2 rows and full width in the checkout table."
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:37
+msgid "Countries and delivery options"
+msgstr ""
+
+#: app/Admin/Tabs/Shipping_Tab.php:38
+msgid "Applies to every checkout: classic, block and page builder checkouts."
+msgstr ""
+
+#: app/Admin/Tabs/Speedy_Tab.php:47
+msgid "Cash on delivery with cash receipt."
+msgstr ""
+
+#: app/Admin/Tabs/Speedy_Tab.php:48
+msgid "Administrative fee on price calculations"
+msgstr ""
+
+#: app/Admin/Tabs/Speedy_Tab.php:48
+msgid "Usage of administrative fee is enabled and configured in client contract. Ignored if not applicable for user."
+msgstr ""
+
+#: app/Admin/Tabs/Speedy_Tab.php:63
+msgid "If you choose \"Address\" the profile address will be used."
+msgstr ""
+
+#: app/Admin/Tabs/Speedy_Tab.php:103
+msgid "Speedy account"
+msgstr ""
+
+#: app/Admin/Tabs/Speedy_Tab.php:104
+msgid "The user and password of your Speedy API account. After saving, your client profiles and label options appear."
+msgstr ""
+
+#: app/Admin/Tabs/Speedy_Tab.php:151
+msgid "Username and password are incorrect."
+msgstr ""
+
+#: app/Admin/Tabs/Speedy_Tab.php:156
+msgid "No profiles was found. Please contact with Speedy."
+msgstr ""
+
+#: app/Client/Connectix.php:108
+msgid "No Info"
+msgstr ""
+
+#: app/Client/Speedy.php:35
+msgid "Speedy is not connected."
+msgstr ""
+
+#: app/Export/Builder/Builder.php:60
+msgid "Sales for the accountant"
+msgstr ""
+
+#: app/Export/Builder/Builder.php:71
+msgid "Shipments"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:35
+msgid "Order ID"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:36 app/Front_End/Withdrawal.php:374
+msgid "Order number"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:38 app/Invoice/Document/BaseDocument.php:60 app/Invoice/Document/CreditNotice.php:34 app/Invoice/Document/NRARefunded.php:33
+msgid "Order date"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:39
+msgid "Paid on"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:40
+msgid "Completed on"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:41
+msgid "Currency"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:42
+msgid "Customer note"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:43
+msgid "Created via"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:46
+msgid "Customer"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:47
+msgid "Customer name"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:48 app/Front_End/Checkout/Field_Editor.php:99
+msgid "First name"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:49 app/Front_End/Checkout/Field_Editor.php:100
+msgid "Last name"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:50 app/Front_End/Checkout/Field_Editor.php:570
+msgid "Email"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:52
+msgid "Customer account ID"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:53
+msgid "Billing street"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:54
+msgid "Billing address line 2"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:55
+msgid "Billing town"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:56
+msgid "Billing region"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:57
+msgid "Billing postcode"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:58
+msgid "Billing country"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:62
+msgid "Company invoice (yes/no)"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:63 app/Front_End/Checkout/Company.php:28 app/Front_End/Checkout/Company_Fields.php:102 app/Front_End/Checkout/Field_Editor.php:101
+msgid "Company name"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:67
+msgid "Company town"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:68
+msgid "Company address"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:69
+msgid "Buyer (company or person)"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:72
+msgid "Delivery"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:73
+msgid "Recipient"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:74
+msgid "Recipient phone"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:75
+msgid "Delivery street or office"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:76
+msgid "Delivery address line 2"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:77
+msgid "Delivery town"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:78
+msgid "Delivery region"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:79
+msgid "Delivery postcode"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:80
+msgid "Delivery country"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:81
+msgid "Shipping method"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:84
+msgid "Waybill number"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:87
+msgid "Payment"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:89
+msgid "Payment method ID"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:90 app/Invoice/Document/BaseDocument.php:200
+msgid "Transaction ID"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:91
+msgid "Paid (yes/no)"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:94
+msgid "Amounts"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:95 app/Invoice/Order/Order.php:196 app/Invoice/Order/Order.php:201
+msgid "Total"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:96
+msgid "Total without VAT"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:97
+msgid "VAT"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:98
+msgid "Products subtotal"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:99 app/Invoice/Order/Order.php:192
+msgid "Discount"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:101 app/Shipping/Speedy/Method.php:731
+msgid "Fees"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:102
+msgid "Refunded"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:103
+msgid "Number of items"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:104
+msgid "Products (names)"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:109
+msgid "Document number"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:110
+msgid "Document date"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:115
+msgid "Invoice date"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:118
+msgid "Product line"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:121
+msgid "Product ID"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:122
+msgid "Variation ID"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:123
+msgid "Quantity"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:124
+msgid "Unit price"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:125
+msgid "Line subtotal"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:126
+msgid "Line total"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:127
+msgid "Line VAT"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:128
+msgid "VAT rate %"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:236
+msgid "Refund document"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:292 app/Export/Builder/Fields.php:330
+msgid "yes"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:292 app/Export/Builder/Fields.php:330
+msgid "no"
+msgstr ""
+
+#: app/Export/Builder/Fields.php:316 app/Export/Builder/Fields.php:317 app/Front_End/Checkout/Pickers.php:280 app/Front_End/Checkout/Pickers.php:281 app/Front_End/Checkout/Pickers.php:282
+msgid "Parcel locker"
+msgstr ""
+
+#. translators: 1: total, 2: VAT, 3: refunded total
+#: app/Export/Nra/Export.php:223
+#, php-format
+msgid "Total: %1$s | Total vat: %2$s | Returned Total: %3$s"
+msgstr ""
+
+#: app/Export/Nra/Export.php:258
+msgid "The PHP XMLWriter extension is required to create the NRA XML file."
+msgstr ""
+
+#. translators: 1: month (YYYY-MM), 2: shop name
+#: app/Export/Nra/Monthly.php:59
+#, php-format
+msgid "NRA audit file for %1$s - %2$s"
+msgstr ""
+
+#. translators: 1: month (YYYY-MM), 2: shop name
+#: app/Export/Nra/Monthly.php:61
+#, php-format
+msgid "The audit file (Ordinance N-18) of %2$s for %1$s is attached. It was made by Nashenski Commerce."
+msgstr ""
+
+#. translators: %s: shipping method name
+#: app/Export/Nra/Order.php:121 app/Invoice/Order/Order.php:124
+#, php-format
+msgid "Shipping: %s"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:130
+msgid "Empty fields follow TokenForge, for example var(--primary), and change with it."
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:132
+msgid "Empty fields follow the design tokens of your CSS framework, for example var(--primary)."
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:134
+msgid "Empty fields follow your theme: its text colour with light borders."
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:157
+msgid "Shipping options look"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:158
+msgid "Any CSS value works: a colour (#1d4ed8), a size (8px) or a token (var(--primary))."
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:163
+msgid "Layout"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:168
+msgid "Cards: each option in its own box, the chosen one opens its office or address fields"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:169
+msgid "Plain: keep the look of the theme or builder"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:176
+msgid "Show \"To an office\", \"To a parcel locker\" or \"To your address\" under each option"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:179
+msgid "Border of the chosen option, focus ring and buttons."
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:180
+msgid "Chosen option background"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:181
+msgid "Option border"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:182
+msgid "Secondary text"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:182
+msgid "Delivery type and office addresses."
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:183
+msgid "Option corners"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:184
+msgid "Field border"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:184
+msgid "Search, street and number fields."
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:185
+msgid "Field background"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:186
+msgid "Field corners"
+msgstr ""
+
+#: app/Front_End/Checkout/Appearance.php:188
+msgid "Logo height"
+msgstr ""
+
+#: app/Front_End/Checkout/Company.php:38 app/Front_End/Checkout/Company_Fields.php:93 app/Front_End/Checkout/Company_Fields.php:95
+msgid "I want an invoice for a company"
+msgstr ""
+
+#: app/Front_End/Checkout/Company.php:47 app/Front_End/Checkout/Company_Fields.php:105
+msgid "MOL (responsible person)"
+msgstr ""
+
+#: app/Front_End/Checkout/Company.php:69 app/Front_End/Checkout/Company_Fields.php:106
+msgid "Registered town"
+msgstr ""
+
+#: app/Front_End/Checkout/Company.php:80 app/Front_End/Checkout/Company_Fields.php:107
+msgid "Registered address"
+msgstr ""
+
+#: app/Front_End/Checkout/Company.php:105
+msgid "Do you want a company invoice?"
+msgstr ""
+
+#: app/Front_End/Checkout/Company.php:110
+msgid "Company"
+msgstr ""
+
+#: app/Front_End/Checkout/Company_Fields.php:114 app/Front_End/Checkout/Field_Editor.php:441
+msgid "(optional)"
+msgstr ""
+
+#: app/Front_End/Checkout/Company_Fields.php:139
+msgid "The EIK has 9 or 13 digits."
+msgstr ""
+
+#: app/Front_End/Checkout/EU_Vat.php:150
+msgid "Invalid country code"
+msgstr ""
+
+#: app/Front_End/Checkout/EU_Vat.php:162
+msgid "Error communicating with the VAT validation server - please try again"
+msgstr ""
+
+#. translators: 1: "VAT number", 2: the number the customer entered, 3: billing country code
+#: app/Front_End/Checkout/EU_Vat.php:225
+#, php-format
+msgid "You have entered an invalid %1$s (%2$s) for your billing country (%3$s)."
+msgstr ""
+
+#. translators: 1: VAT number, 2: billing country code
+#: app/Front_End/Checkout/EU_Vat.php:255
+#, php-format
+msgid "You have entered an invalid VAT number (%1$s) for your billing country (%2$s)."
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:102
+msgid "Street address"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:103
+msgid "Apartment, suite, unit (address line 2)"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:104
+msgid "Town / City"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:105
+msgid "Region / State"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:106
+msgid "Postcode"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:391
+msgid "Choose an option"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:531
+msgid "Order, width and visibility of the billing fields, and your own fields. Show, require and hide apply to the billing and the shipping address in every checkout. The order also applies to the address in the block checkout, where the email always comes first and your own fields appear under it. Width and the place of the email apply to the classic checkout and page builder checkouts that show WooCommerce's billing fields; builder checkouts made of single field elements follow the order you placed them in."
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:536
+msgid "Fields"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:557 app/Front_End/Withdrawal.php:373
+msgid "Email address"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:566
+msgid "Text"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:567
+msgid "Text area"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:568
+msgid "List"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:569
+msgid "Checkbox"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:572 app/Front_End/Checkout/Pickers.php:298
+msgid "Number"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:573
+msgid "Date"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:580
+msgid "One choice per line"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:596
+msgid "Full width"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:596
+msgid "Half width"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:613
+msgid "Position"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:615
+msgid "Show"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:629
+msgid "Add your own field"
+msgstr ""
+
+#: app/Front_End/Checkout/Field_Editor.php:630
+msgid "Use the arrows to change the order. Two half-width fields next to each other share a line. With company invoice fields on, the company name belongs to them."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:125
+msgid "Complete the fields to calculate"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:139
+msgid "Free shipping"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:276
+msgid "To your address"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:283
+msgid "Search by town, name or address"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:284
+msgid "Change"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:285
+msgid "Choose on the map"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:286
+msgid "Choose an office on the map"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:287
+msgid "Close"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:288
+msgid "Loading..."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:289
+msgid "Nothing found. Check the town in the address above."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:290
+msgid "No match. Try another word."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:291
+msgid "Enter your town in the address above to see the list."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:292
+msgid "Choose it on the map. The price comes from the courier's public price list."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:293
+msgid "This is an office. Choose a parcel locker, or pick the office delivery option."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:294
+msgid "This is a parcel locker. Choose an office, or pick the parcel locker delivery option."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:296
+msgid "Start typing the street or quarter"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:297
+msgid "Street and number"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:303
+msgid "Note for the courier (optional)"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:304
+msgid "The list could not be loaded. Please try again."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:305
+msgid "Try again"
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:332
+msgid "bl."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:333
+msgid "entr."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:334
+msgid "fl."
+msgstr ""
+
+#: app/Front_End/Checkout/Pickers.php:335
+msgid "ap."
+msgstr ""
+
+#: app/Front_End/Checkout/Transliterate_Address.php:91
+msgid "Transliterate addresses (Cyrillic in Bulgaria, Latin abroad)"
+msgstr ""
+
+#: app/Front_End/Checkout/Transliterate_Address.php:98
+msgid "Addresses transliterated."
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:81
+msgid "Withdraw from contract here"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:147
+msgid "Ordered without an account?"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:278
+msgid "The full order"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:279
+msgid "Specific items only"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:290
+msgid "Withdrawal requested"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:303
+msgid "Withdrawal"
+msgstr ""
+
+#. translators: %s: date and time
+#: app/Front_End/Withdrawal.php:345
+#, php-format
+msgid "The customer withdrew from the contract on %s. See the \"Withdrawal from contract\" box."
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:361
+msgid "Withdrawal from contract"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:371
+msgid "Submitted"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:375
+msgid "Withdrawing"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:376
+msgid "Additional details"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:376
+msgid "None provided"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:388
+msgid "The customer received an acknowledgement by email with these details and the date and time of submission."
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:389
+msgid "This withdrawal was sent before Nashenski Commerce kept the submitted details. The date and the choice come from the order note; the full details are in the emails WooCommerce sent to you and to the customer."
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:415
+msgid "Customers can withdraw from an order online, as Directive 2011/83/EU (Article 11a) asks from 19 June 2026: WooCommerce's withdrawal form with a \"confirm withdrawal\" step, a dated acknowledgement email to the customer and an email to you. Its look follows your site; the emails follow WooCommerce > Settings > Emails. Mention the withdrawal function in your terms."
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:423
+msgid "Needs WooCommerce 11.1 or newer."
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:442
+msgid "Withdrawal function"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:443
+msgid "Turn on the withdrawal form and the \"Withdraw from contract here\" links"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:449
+msgid "Link on every page"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:454
+msgid "At the bottom of every page"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:455
+msgid "I place it myself (menu, footer template or shortcode)"
+msgstr ""
+
+#. translators: 1: shortcode, 2: address of the withdrawal form
+#: app/Front_End/Withdrawal.php:459
+#, php-format
+msgid "Shortcode for any page or builder: %1$s (add button=\"yes\" for a button). Address for menus: %2$s"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:467
+msgid "Withdrawal period (days)"
+msgstr ""
+
+#: app/Front_End/Withdrawal.php:468
+msgid "The link shows on an order (My Account, order page, order emails) until this many days after the order is completed. The form itself is always open."
+msgstr ""
+
+#: app/functions.php:94
+msgid "On a payment account"
+msgstr ""
+
+#: app/functions.php:98
+msgid "Card"
+msgstr ""
+
+#: app/functions.php:115
+msgid "Released under Art. 3 payment without PPP"
+msgstr ""
+
+#: app/functions.php:119
+msgid "Virtual POS terminal"
+msgstr ""
+
+#: app/functions.php:123
+msgid "Cash on delivery with PPP"
+msgstr ""
+
+#: app/functions.php:127
+msgid "Payment service provider"
+msgstr ""
+
+#: app/functions.php:135
+msgid "Reflected with receipt"
+msgstr ""
+
+#: app/functions.php:157
+msgid "Standard"
+msgstr ""
+
+#: app/functions.php:242 app/Shipping/CVC/Method.php:154
+msgid "Review only"
+msgstr ""
+
+#: app/functions.php:428 app/functions.php:457
+msgid "This page has expired. Reload it and try again."
+msgstr ""
+
+#: app/functions.php:432
+msgid "You cannot create labels."
+msgstr ""
+
+#: app/functions.php:688
+msgid "Label created."
+msgstr ""
+
+#: app/functions.php:689
+msgid "Label updated."
+msgstr ""
+
+#: app/functions.php:690
+msgid "Label deleted."
+msgstr ""
+
+#. translators: %s: waybill number
+#: app/functions.php:707
+#, php-format
+msgid "Label number: %s."
+msgstr ""
+
+#: app/Invoice/Document/BaseDocument.php:64 app/Invoice/Document/CreditNotice.php:38 app/Invoice/Document/NRARefunded.php:37
+msgid "Date of tax. event"
+msgstr ""
+
+#: app/Invoice/Document/BaseDocument.php:68 app/Invoice/Document/CreditNotice.php:42 app/Invoice/Document/NRARefunded.php:41
+msgid "Due date"
+msgstr ""
+
+#: app/Invoice/Document/BaseDocument.php:72 app/Invoice/Document/CreditNotice.php:46 app/Invoice/Document/NRARefunded.php:45
+msgid "Place of transaction"
+msgstr ""
+
+#: app/Invoice/Document/BaseDocument.php:76 app/Invoice/Document/CreditNotice.php:50 app/Invoice/Document/NRARefunded.php:49
+msgid "Order Number"
+msgstr ""
+
+#: app/Invoice/Document/BaseDocument.php:91
+msgid "Qty"
+msgstr ""
+
+#: app/Invoice/Document/BaseDocument.php:95
+msgid "Vat"
+msgstr ""
+
+#: app/Invoice/Document/BaseDocument.php:103 app/Invoice/Vat1139.php:37
+msgid "Total amount"
+msgstr ""
+
+#. translators: %s: company EIK
+#: app/Invoice/Document/BaseDocument.php:131 app/Invoice/Document/BaseDocument.php:160
+#, php-format
+msgid "EIK: %s"
+msgstr ""
+
+#. translators: %s: VAT number
+#: app/Invoice/Document/BaseDocument.php:133 app/Invoice/Document/BaseDocument.php:162
+#, php-format
+msgid "VAT Number: %s"
+msgstr ""
+
+#. translators: %s: name of the responsible person (MOL)
+#: app/Invoice/Document/BaseDocument.php:135 app/Invoice/Document/BaseDocument.php:164
+#, php-format
+msgid "MOL: %s"
+msgstr ""
+
+#. translators: %s: phone number
+#: app/Invoice/Document/BaseDocument.php:138 app/Invoice/Document/BaseDocument.php:148
+#, php-format
+msgid "Phone: %s"
+msgstr ""
+
+#. translators: %s: email address
+#: app/Invoice/Document/BaseDocument.php:140 app/Invoice/Document/BaseDocument.php:150
+#, php-format
+msgid "E-mail: %s"
+msgstr ""
+
+#: app/Invoice/Document/BaseDocument.php:196
+msgid "Bank account"
+msgstr ""
+
+#: app/Invoice/Document/BaseDocument.php:204
+msgid "Compiled by"
+msgstr ""
+
+#: app/Invoice/Document/BaseDocument.php:208
+msgid "Received"
+msgstr ""
+
+#: app/Invoice/Document/BaseDocument.php:233
+msgid "Bank name"
+msgstr ""
+
+#: app/Invoice/Document/CreditNotice.php:14
+msgid "Credit Notice - Original"
+msgstr ""
+
+#: app/Invoice/Document/CreditNotice.php:26
+msgid "To invoice №"
+msgstr ""
+
+#: app/Invoice/Document/CreditNotice.php:57 app/Invoice/Document/CreditNoticeCopy.php:13
+msgid "Credit Notice - Copy"
+msgstr ""
+
+#: app/Invoice/Document/Invoice.php:12
+msgid "Sale Invoice - Original"
+msgstr ""
+
+#: app/Invoice/Document/Invoice.php:23 app/Invoice/Document/InvoiceCopy.php:12
+msgid "Sale Invoice - Copy"
+msgstr ""
+
+#: app/Invoice/Document/NRA.php:13
+msgid "Order - Original"
+msgstr ""
+
+#: app/Invoice/Document/NRARefunded.php:20
+msgid "Refunded Order - Original"
+msgstr ""
+
+#: app/Invoice/Order/Order.php:217
+msgid "Total due"
+msgstr ""
+
+#: app/Invoice/PDF/Style.php:192
+msgid "2 October 2026 (month in the language of the document)"
+msgstr ""
+
+#: app/Invoice/PDF/view.php:88
+msgid "Billing from"
+msgstr ""
+
+#: app/Invoice/PDF/view.php:89
+msgid "Billing to"
+msgstr ""
+
+#. translators: 1: page number, 2: number of pages
+#: app/Invoice/PDF/view.php:166
+#, php-format
+msgid "Page %1$s of %2$s"
+msgstr ""
+
+#: app/Invoice/Vat1139.php:38
+msgid "Amount due"
+msgstr ""
+
+#: app/Invoice/Vat1139.php:45
+msgid "The invoice has been issued on the basis of Article 113, paragraph 9 of the Bulgarian VAT Act."
+msgstr ""
+
+#. translators: %s: link to the settings
+#: app/Plugin.php:78
+#, php-format
+msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
+msgstr ""
+
+#: app/Plugin.php:215
+msgid "The file was downloaded."
+msgstr ""
+
+#: app/Plugin.php:218
+msgid "Built-in prices restored. Save to keep them."
+msgstr ""
+
+#: app/Plugin.php:219
+msgid "Your prices match the courier website."
+msgstr ""
+
+#: app/Plugin.php:220
+msgid "The courier website has different prices:"
+msgstr ""
+
+#: app/Plugin.php:222
+msgid "Website"
+msgstr ""
+
+#: app/Plugin.php:223
+msgid "Use these prices"
+msgstr ""
+
+#: app/Plugin.php:224
+msgid "New prices filled in. Check them and save."
+msgstr ""
+
+#: app/Pricing/Updater.php:36
+msgid "There is no public price list for this courier."
+msgstr ""
+
+#. translators: %s: courier website address
+#: app/Pricing/Updater.php:46
+#, php-format
+msgid "The courier website did not let Nashenski Commerce read the price list (%s). Open it, compare and edit the prices by hand."
+msgstr ""
+
+#: app/Pricing/Updater.php:72
+msgid "The price list on the courier website has changed and could not be read safely. Your prices were not changed."
+msgstr ""
+
+#: app/Pricing/Updater.php:417
+msgid "Extra surcharge %"
+msgstr ""
+
+#: app/Pricing/Updater.php:418
+msgid "Cash on delivery %"
+msgstr ""
+
+#: app/Pricing/Updater.php:419
+msgid "Cash on delivery minimum"
+msgstr ""
+
+#. translators: 1: weight in kg, 2: office, locker or address
+#: app/Pricing/Updater.php:430
+#, php-format
+msgid "Up to %1$s kg, %2$s"
+msgstr ""
+
+#: app/Pricing/Updater.php:445
+msgid "Unknown courier."
+msgstr ""
+
+#. translators: %s: level, for example High
+#: app/Reports/Providers/Connectix.php:41 app/Reports/Providers/Connectix.php:74 app/Reports/Providers/Connectix.php:87 app/Reports/Providers/Connectix.php:110
+#, php-format
+msgid "Possibility that the shipment will not be picked up: %s"
+msgstr ""
+
+#: app/Reports/Providers/Connectix.php:50
+msgid "Connectix did not answer. Check the token and the environment in Customer checks."
+msgstr ""
+
+#. translators: %s: error message
+#: app/Reports/Providers/Connectix.php:54
+#, php-format
+msgid "Error: %s"
+msgstr ""
+
+#. translators: %d: number of reports
+#: app/Reports/Providers/Nekorekten.php:34
+#, php-format
+msgid "nekorekten.com has %d report about this phone number."
+msgid_plural "nekorekten.com has %d reports about this phone number."
+msgstr[0] ""
+msgstr[1] ""
+
+#: app/Reports/Providers/Nekorekten.php:68
+msgid "nekorekten.com did not answer. Check the API key in the settings."
+msgstr ""
+
+#: app/Reports/Providers/Nekorekten.php:70
+msgid "No reports were found for this phone number."
+msgstr ""
+
+#. translators: %d: number of reports
+#: app/Reports/Providers/Nekorekten.php:75
+#, php-format
+msgid "%d report was found for this phone number."
+msgid_plural "%d reports were found for this phone number."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: percentage
+#: app/Reports/Providers/NepoStop.php:37 app/Reports/Providers/NepoStop.php:52 app/Reports/Providers/NepoStop.php:65 app/Reports/Providers/NepoStop.php:102
+#, php-format
+msgid "This client has %s%% undelivered shipments."
+msgstr ""
+
+#: app/Reports/Providers/NepoStop.php:67
+msgid "No data found for this phone number."
+msgstr ""
+
+#. translators: %s: percentage
+#: app/Reports/Providers/NepoStop.php:70
+#, php-format
+msgid "This client has %s%% undelivered shipments, which is below the set threshold."
+msgstr ""
+
+#. translators: %s: number of shipments
+#: app/Reports/Providers/NepoStop.php:75
+#, php-format
+msgid "Total shipments: %s"
+msgstr ""
+
+#. translators: 1: number of shipments, 2: percentage
+#: app/Reports/Providers/NepoStop.php:77
+#, php-format
+msgid "Delivered shipments: %1$s ( %2$s%% )"
+msgstr ""
+
+#. translators: 1: number of shipments, 2: percentage
+#: app/Reports/Providers/NepoStop.php:79
+#, php-format
+msgid "Undelivered shipments: %1$s ( %2$s%% )"
+msgstr ""
+
+#: app/Reports/Reports.php:96 app/Reports/Reports.php:225
+msgid "Reports"
+msgstr ""
+
+#: app/Reports/Reports.php:117
+msgid "Refresh data"
+msgstr ""
+
+#. translators: %s: link to the Customer checks settings
+#: app/Reports/Reports.php:125
+#, php-format
+msgid "Not checked: turned on without an API key or token. Add it in %s, or turn the service off there."
+msgstr ""
+
+#: app/Reports/Reports.php:160
+msgid "Customer has reports for refused parcels. See the Reports box."
+msgstr ""
+
+#: app/Reports/Reports.php:161
+msgid "No reports for this customer."
+msgstr ""
+
+#: app/Reports/Reports.php:174
+msgid "Not checked"
+msgstr ""
+
+#: app/Reports/Reports.php:178
+msgid "No reports"
+msgstr ""
+
+#. translators: %d: number of reports
+#: app/Reports/Reports.php:182
+#, php-format
+msgid "%d report"
+msgid_plural "%d reports"
+msgstr[0] ""
+msgstr[1] ""
+
+#: app/Shipping/Automation.php:70
+msgid "Create waybill"
+msgstr ""
+
+#: app/Shipping/Automation.php:71
+msgid "Request a courier (Econt, Speedy)"
+msgstr ""
+
+#: app/Shipping/Automation.php:72
+msgid "Check the shipment now"
+msgstr ""
+
+#: app/Shipping/Automation.php:79
+msgid "Do not change"
+msgstr ""
+
+#: app/Shipping/Automation.php:85
+msgid "Waybills and order statuses"
+msgstr ""
+
+#: app/Shipping/Automation.php:86
+msgid "For every courier you use. On each order, and for many orders at once in the orders list, you also get \"Create waybill\", \"Request a courier\" and \"Check the shipment now\"."
+msgstr ""
+
+#: app/Shipping/Automation.php:91
+msgid "Order number on the waybill"
+msgstr ""
+
+#: app/Shipping/Automation.php:92
+msgid "Econt and Speedy get it in their reference field, BOX NOW on the label, Pigeon Express in the note for the courier and CVC in front of the contents."
+msgstr ""
+
+#: app/Shipping/Automation.php:98
+msgid "When the parcel is delivered"
+msgstr ""
+
+#: app/Shipping/Automation.php:105
+msgid "When the parcel goes back to you"
+msgstr ""
+
+#: app/Shipping/Automation.php:106
+msgid "Refused by the customer or returned. Orders that are processing or on hold and have an Econt, Speedy, BOX NOW or CVC waybill are checked every hour, and each change is noted on the order. Pigeon Express does not publish its statuses yet."
+msgstr ""
+
+#. translators: %s: order number
+#: app/Shipping/Automation.php:125
+#, php-format
+msgid "Order %s"
+msgstr ""
+
+#: app/Shipping/Automation.php:179
+msgid "Track your parcel:"
+msgstr ""
+
+#: app/Shipping/Automation.php:235
+msgid "This order has no waybill yet."
+msgstr ""
+
+#: app/Shipping/Automation.php:239
+msgid "The shipment status can only be read for Econt, Speedy, BOX NOW and CVC, with their login."
+msgstr ""
+
+#. translators: %s: waybill number
+#: app/Shipping/Automation.php:251
+#, php-format
+msgid "The courier delivered parcel %s."
+msgstr ""
+
+#. translators: %s: waybill number
+#: app/Shipping/Automation.php:253
+#, php-format
+msgid "Parcel %s is going back to you (refused or returned)."
+msgstr ""
+
+#: app/Shipping/Automation.php:341
+msgid "delivered"
+msgstr ""
+
+#: app/Shipping/Automation.php:341
+msgid "going back to you"
+msgstr ""
+
+#: app/Shipping/Automation.php:341
+msgid "still on its way"
+msgstr ""
+
+#. translators: 1: order number, 2: result
+#: app/Shipping/Automation.php:345
+#, php-format
+msgid "Order %1$s: %2$s"
+msgstr ""
+
+#. translators: %s: waybill number
+#: app/Shipping/Automation.php:359
+#, php-format
+msgid "already has waybill %s"
+msgstr ""
+
+#: app/Shipping/Automation.php:363
+msgid "not sent with a courier that has a login"
+msgstr ""
+
+#. translators: %s: error message
+#: app/Shipping/Automation.php:371
+#, php-format
+msgid "could not be sent: %s"
+msgstr ""
+
+#. translators: %s: waybill number
+#: app/Shipping/Automation.php:378
+#, php-format
+msgid "waybill %s created"
+msgstr ""
+
+#: app/Shipping/Automation.php:379
+msgid "the courier did not create the waybill; open the order to see why"
+msgstr ""
+
+#. translators: %s: order number
+#: app/Shipping/Automation.php:396
+#, php-format
+msgid "Order %s: only Econt and Speedy waybills can get a courier request here."
+msgstr ""
+
+#. translators: 1: waybill number, 2: the courier's answer
+#: app/Shipping/Automation.php:407
+#, php-format
+msgid "Courier request for waybill %1$s failed: %2$s"
+msgstr ""
+
+#. translators: %s: waybill number
+#: app/Shipping/Automation.php:409
+#, php-format
+msgid "Courier requested for waybill %s."
+msgstr ""
+
+#. translators: 1: courier, 2: waybill numbers, 3: result
+#: app/Shipping/Automation.php:413
+#, php-format
+msgid "%1$s, waybills %2$s: %3$s"
+msgstr ""
+
+#: app/Shipping/Automation.php:413
+msgid "courier requested"
+msgstr ""
+
+#: app/Shipping/Automation.php:429
+msgid "you send from an Econt office, so no courier comes to you"
+msgstr ""
+
+#: app/Shipping/Automation.php:457
+msgid "Econt did not accept the request."
+msgstr ""
+
+#: app/Shipping/Automation.php:485
+msgid "Speedy did not accept the request."
+msgstr ""
+
+#: app/Shipping/BoxNow/Method.php:16
+msgid "Nashenski Commerce - BOX NOW"
+msgstr ""
+
+#: app/Shipping/BoxNow/Method.php:17
+msgid "Enables BOX NOW delivery."
+msgstr ""
+
+#: app/Shipping/BoxNow/Method.php:128 app/Shipping/CVC/Method.php:131 app/Shipping/Econt/Method.php:169 app/Shipping/Pigeon/Method.php:160 app/Shipping/Speedy/Method.php:176
+msgid "Title"
+msgstr ""
+
+#: app/Shipping/BoxNow/Method.php:130 app/Shipping/CVC/Method.php:133 app/Shipping/Econt/Method.php:171 app/Shipping/Pigeon/Method.php:162 app/Shipping/Speedy/Method.php:178
+msgid "This controls the title which the user sees during checkout."
+msgstr ""
+
+#: app/Shipping/BoxNow/Method.php:319 app/Shipping/Econt/Method.php:678 app/Shipping/Speedy/Method.php:847
+msgid "Please choose a automat."
+msgstr ""
+
+#. translators: 1: waybill number, 2: tracking link
+#: app/Shipping/BoxNow/Method.php:478 app/Shipping/CVC/Method.php:492 app/Shipping/Econt/Method.php:772 app/Shipping/Pigeon/Method.php:588 app/Shipping/Speedy/Method.php:883
+#, php-format
+msgid "Label number: %1$s. %2$s"
+msgstr ""
+
+#: app/Shipping/BoxNow/Method.php:482 app/Shipping/CVC/Method.php:496 app/Shipping/Econt/Method.php:776 app/Shipping/Pigeon/Method.php:592 app/Shipping/Speedy/Method.php:887
+msgid "Track your order."
+msgstr ""
+
+#: app/Shipping/CVC/Method.php:15
+msgid "Nashenski Commerce - CVC"
+msgstr ""
+
+#: app/Shipping/CVC/Method.php:16
+msgid "Enables CVC delivery and automatically calculate shipping price."
+msgstr ""
+
+#: app/Shipping/CVC/Method.php:138 app/Shipping/Econt/Method.php:176 app/Shipping/Pigeon/Method.php:167 app/Shipping/Speedy/Method.php:183
+msgid "Delivery Type"
+msgstr ""
+
+#: app/Shipping/CVC/Method.php:159
+msgid "Saturday Delivery"
+msgstr ""
+
+#: app/Shipping/CVC/Method.php:167
+msgid "Saturday delivery/pickup."
+msgstr ""
+
+#: app/Shipping/CVC/Method.php:170 app/Shipping/Econt/Method.php:194
+msgid "SMS notification"
+msgstr ""
+
+#: app/Shipping/CVC/Method.php:178 app/Shipping/Econt/Method.php:202
+msgid "Send customer notification for delivery."
+msgstr ""
+
+#: app/Shipping/CVC/Method.php:192
+msgid "Enter a fixed price that will be payed by you, and will be included in the order."
+msgstr ""
+
+#: app/Shipping/CVC/Method.php:228 app/Shipping/Econt/Method.php:260 app/Shipping/Speedy/Method.php:248
+msgid "Calculation failed. Please try again."
+msgstr ""
+
+#. translators: %s: error message from the courier
+#: app/Shipping/CVC/Method.php:454
+#, php-format
+msgid "CVC - %s"
+msgstr ""
+
+#: app/Shipping/CVC/Method.php:456 app/Shipping/Econt/Method.php:657 app/Shipping/Pigeon/Method.php:524 app/Shipping/Speedy/Method.php:829
+msgid "Please choose delivery option!"
+msgstr ""
+
+#: app/Shipping/Econt/Method.php:20
+msgid "Nashenski Commerce - Econt"
+msgstr ""
+
+#: app/Shipping/Econt/Method.php:21
+msgid "Enables econt delivery and automatically calculate shipping price."
+msgstr ""
+
+#: app/Shipping/Econt/Method.php:213
+msgid "Maximum price payed by the client"
+msgstr ""
+
+#: app/Shipping/Econt/Method.php:216
+msgid "Enter a fixed price that the users will pay. The remaining will be payed by you."
+msgstr ""
+
+#: app/Shipping/Econt/Method.php:216
+msgid "Can be used only in Bulgaria"
+msgstr ""
+
+#: app/Shipping/Econt/Method.php:639
+msgid "Econt - "
+msgstr ""
+
+#: app/Shipping/Econt/Method.php:670 app/Shipping/Speedy/Method.php:839
+msgid "Please choose a office."
+msgstr ""
+
+#: app/Shipping/Econt/Method.php:686
+msgid "Please choose address."
+msgstr ""
+
+#. translators: %s: town
+#: app/Shipping/Econt/Office.php:30 app/Shipping/Speedy/Office.php:30
+#, php-format
+msgid "No automats were found at %s."
+msgstr ""
+
+#. translators: %s: town
+#: app/Shipping/Econt/Office.php:33 app/Shipping/Pigeon/Office.php:56 app/Shipping/Speedy/Office.php:33
+#, php-format
+msgid "No offices were found at %s."
+msgstr ""
+
+#: app/Shipping/Econt/Office.php:40 app/Shipping/Pigeon/Locker.php:40 app/Shipping/Pigeon/Office.php:43 app/Shipping/Speedy/Office.php:40
+msgid "Please select region."
+msgstr ""
+
+#: app/Shipping/Econt/Office.php:42 app/Shipping/Pigeon/Locker.php:42 app/Shipping/Pigeon/Office.php:45 app/Shipping/Speedy/Office.php:42
+msgid "Please enter a city."
+msgstr ""
+
+#. translators: 1: town, 2: region
+#. translators: %1$s is the city and %2$s is the state
+#: app/Shipping/Econt/Office.php:45 app/Shipping/Pigeon/Locker.php:45 app/Shipping/Pigeon/Office.php:48 app/Shipping/Speedy/Office.php:45
+#, php-format
+msgid "%1$s is not found in %2$s region."
+msgstr ""
+
+#. translators: %s: town
+#: app/Shipping/Pigeon/Locker.php:53
+#, php-format
+msgid "No lockers were found at %s."
+msgstr ""
+
+#: app/Shipping/Pigeon/Method.php:20
+msgid "Nashenski Commerce - Pigeon Express"
+msgstr ""
+
+#: app/Shipping/Pigeon/Method.php:21
+msgid "Enables Pigeon Express delivery and automatically calculate shipping price."
+msgstr ""
+
+#: app/Shipping/Pigeon/Method.php:173
+msgid "APS"
+msgstr ""
+
+#: app/Shipping/Pigeon/Method.php:199 app/Shipping/Speedy/Method.php:212
+msgid "Enter a fixed price that will be payed by the client, and will be included in the COD."
+msgstr ""
+
+#: app/Shipping/Pigeon/Method.php:241
+msgid "An error occurred while calculating the shipping price. Please try again later."
+msgstr ""
+
+#: app/Shipping/Pigeon/Method.php:521
+msgid "Pigeon Express - "
+msgstr ""
+
+#: app/Shipping/Pigeon/Method.php:536
+msgid "Please choose an office."
+msgstr ""
+
+#: app/Shipping/Pigeon/Method.php:544
+msgid "Please choose a locker."
+msgstr ""
+
+#: app/Shipping/Pigeon/Method.php:552
+msgid "Please choose an address."
+msgstr ""
+
+#: app/Shipping/Speedy/Method.php:33
+msgid "Nashenski Commerce - Speedy"
+msgstr ""
+
+#: app/Shipping/Speedy/Method.php:34
+msgid "Enables Speedy delivery and automatically calculate shipping price."
+msgstr ""
+
+#. translators: %s: error message from the courier
+#: app/Shipping/Speedy/Method.php:827
+#, php-format
+msgid "Speedy - %s"
+msgstr ""
+
+#. translators: %1$s is minimum php version and %2$s is minimum WP version
+#: nashenski-commerce.php:64
+#, php-format
+msgid "Nashenski Commerce requires PHP version %1$s+ and WP version %2$s+, plugin is currently NOT RUNNING."
+msgstr ""
+
+#: nashenski-commerce.php:74
+msgid "Nashenski Commerce is paused: please deactivate Bulgarisation for WooCommerce first. Your settings and orders can be imported afterwards."
+msgstr ""
+
+#: nashenski-commerce.php:83
+msgid "Nashenski Commerce - Please enable WooCommerce first."
+msgstr ""
+
+#: nashenski-commerce.php:94
+msgid "Please run `composer install` in the plugin folder `nashenski-commerce`"
+msgstr ""
+
+#. translators: %s: shipping destination
+#: templates/cart/cart-shipping.php:51
+#, php-format
+msgid "Shipping to %s."
+msgstr ""
+
+#: templates/cart/cart-shipping.php:52
+msgid "Change address"
+msgstr ""
+
+#: templates/cart/cart-shipping.php:54
+msgid "Shipping options will be updated during checkout."
+msgstr ""
+
+#: templates/cart/cart-shipping.php:62
+msgid "Shipping costs are calculated during checkout."
+msgstr ""
+
+#: templates/cart/cart-shipping.php:64
+msgid "Enter your address to view shipping options."
+msgstr ""
+
+#: templates/cart/cart-shipping.php:67
+msgid "There are no shipping options available. Please ensure that your address has been entered correctly, or contact us if you need any help."
+msgstr ""
+
+#. translators: %s: shipping destination
+#: templates/cart/cart-shipping.php:70
+#, php-format
+msgid "No shipping options were found for %s."
+msgstr ""
+
+#: templates/cart/cart-shipping.php:72
+msgid "Enter a different address"
+msgstr ""
+
+#. Plugin header
+#: nashenski-commerce.php
+msgid "Everything a WooCommerce store needs to sell in Bulgaria: Econt, Speedy, BOX NOW, CVC and Pigeon shipping, invoices, and the light regime of Ordinance N-18."
+msgstr ""
+
+#. Plugin header
+#: nashenski-commerce.php
+msgid "PristaDigital"
+msgstr ""

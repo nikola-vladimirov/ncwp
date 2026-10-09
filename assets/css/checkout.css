@@ -1,0 +1,428 @@
+/*
+ * Nashenski Commerce checkout styles (readable source, no build step).
+ *
+ * Colours, corners and spacing come from the --nashenski-* custom properties that the plugin
+ * prints from Checkout > Shipping options look (design tokens such as var(--primary) when a
+ * token framework is active, the theme's own text colour otherwise).
+ */
+
+:root {
+	--nashenski-accent: currentColor;
+	--nashenski-selected-bg: color-mix(in srgb, currentColor 5%, transparent);
+	--nashenski-border: color-mix(in srgb, currentColor 20%, transparent);
+	--nashenski-muted: color-mix(in srgb, currentColor 70%, transparent);
+	--nashenski-radius: 6px;
+	--nashenski-field-border: color-mix(in srgb, currentColor 30%, transparent);
+	--nashenski-field-bg: transparent;
+	--nashenski-field-radius: 4px;
+	--nashenski-gap: 0.75em;
+	--nashenski-logo-height: 1.4em;
+}
+
+/* ---------- shipping option labels ---------- */
+
+.nashenski-courier-logo {
+	display: inline-block;
+	width: auto;
+	max-width: none;
+	height: var(--nashenski-logo-height);
+	margin-inline-end: 0.5em;
+	vertical-align: middle;
+	object-fit: contain;
+}
+
+.nashenski-rate-type {
+	display: block;
+	margin-top: 0.15em;
+	color: var(--nashenski-muted);
+	font-size: 0.85em;
+	font-weight: 400;
+	line-height: 1.3;
+}
+
+.nashenski-rate-pending {
+	color: var(--nashenski-muted);
+	font-size: 0.9em;
+	font-weight: 400;
+	white-space: normal;
+}
+
+/* Fields the plugin keeps in the form but hides (for example the country when only Bulgaria is allowed). */
+.nashenski-hidden-field {
+	display: none !important;
+}
+
+/* ---------- picker panel ---------- */
+
+.nashenski-additional-fields:empty {
+	display: none;
+}
+
+.nashenski-picker {
+	display: grid;
+	gap: var(--nashenski-gap);
+	margin-block: var(--nashenski-gap);
+	text-align: start;
+}
+
+.nashenski-picker .nashenski-picker__label {
+	display: block;
+	margin: 0 0 0.3em;
+	font-size: 0.85em;
+	font-weight: 600;
+}
+
+.nashenski-picker .nashenski-picker__input {
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 2.75em;
+	margin: 0;
+	padding: 0.55em 0.8em;
+	border: 1px solid var(--nashenski-field-border);
+	border-radius: var(--nashenski-field-radius);
+	background: var(--nashenski-field-bg);
+	color: inherit;
+	font: inherit;
+	line-height: 1.4;
+}
+
+.nashenski-picker .nashenski-picker__input:focus {
+	border-color: var(--nashenski-accent);
+	outline: 2px solid var(--nashenski-accent);
+	outline-offset: 0;
+}
+
+.nashenski-picker__note {
+	margin: 0;
+	color: var(--nashenski-muted);
+	font-size: 0.9em;
+}
+
+.nashenski-picker__note--loading::before {
+	display: inline-block;
+	width: 0.9em;
+	height: 0.9em;
+	margin-inline-end: 0.5em;
+	border: 2px solid currentColor;
+	border-inline-end-color: transparent;
+	border-radius: 50%;
+	vertical-align: -0.1em;
+	animation: nashenski-spin 0.8s linear infinite;
+	content: "";
+}
+
+@keyframes nashenski-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.nashenski-picker__combo {
+	position: relative;
+}
+
+.nashenski-picker__list {
+	position: absolute;
+	z-index: 50;
+	top: 100%;
+	right: 0;
+	left: 0;
+	max-height: 18em;
+	margin: 4px 0 0;
+	padding: 4px;
+	overflow-y: auto;
+	border: 1px solid var(--nashenski-field-border);
+	border-radius: var(--nashenski-field-radius);
+	background: var(--white, Canvas);
+	color: var(--text-dark, CanvasText);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	list-style: none;
+}
+
+.nashenski-picker__option {
+	display: grid;
+	gap: 0.1em;
+	margin: 0;
+	padding: 0.5em 0.65em;
+	border-radius: calc(var(--nashenski-field-radius) - 1px);
+	cursor: pointer;
+	line-height: 1.35;
+}
+
+.nashenski-picker__option.is-active {
+	background: var(--nashenski-selected-bg);
+	box-shadow: inset 3px 0 0 var(--nashenski-accent);
+}
+
+.nashenski-picker__option--empty {
+	color: var(--nashenski-muted);
+	cursor: default;
+}
+
+.nashenski-picker__option-name {
+	font-weight: 600;
+}
+
+.nashenski-picker__option-detail {
+	color: var(--nashenski-muted);
+	font-size: 0.875em;
+}
+
+/* The chosen office or locker. */
+.nashenski-picker__chosen {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: start;
+	gap: 0.15em 1em;
+	padding: 0.75em 0.9em;
+	border: 1px solid var(--nashenski-accent);
+	border-radius: var(--nashenski-field-radius);
+	background: var(--nashenski-selected-bg);
+}
+
+.nashenski-picker__chosen-label {
+	grid-column: 1;
+	color: var(--nashenski-muted);
+	font-size: 0.8em;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+}
+
+.nashenski-picker__chosen-name {
+	grid-column: 1;
+	font-weight: 600;
+}
+
+.nashenski-picker__chosen-detail {
+	grid-column: 1;
+	color: var(--nashenski-muted);
+	font-size: 0.9em;
+}
+
+.nashenski-picker .nashenski-picker__change,
+.nashenski-picker .nashenski-picker__map-button {
+	width: auto;
+	min-height: 0;
+	margin: 0;
+	padding: 0.45em 0.9em;
+	border: 1px solid var(--nashenski-accent);
+	border-radius: var(--nashenski-field-radius);
+	background: transparent;
+	color: var(--nashenski-accent);
+	font: inherit;
+	font-size: 0.9em;
+	font-weight: 600;
+	line-height: 1.3;
+	text-transform: none;
+	cursor: pointer;
+}
+
+.nashenski-picker .nashenski-picker__change {
+	grid-column: 2;
+	grid-row: 1 / span 3;
+	align-self: center;
+}
+
+.nashenski-picker .nashenski-picker__map-button {
+	justify-self: start;
+}
+
+.nashenski-picker .nashenski-picker__change:hover,
+.nashenski-picker .nashenski-picker__map-button:hover,
+.nashenski-picker .nashenski-picker__change:focus-visible,
+.nashenski-picker .nashenski-picker__map-button:focus-visible {
+	background: var(--nashenski-selected-bg);
+}
+
+/* Street details: number, block, entrance, floor, apartment side by side. */
+.nashenski-picker__row {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(6.5em, 1fr));
+	gap: var(--nashenski-gap);
+}
+
+.nashenski-picker .nashenski-picker__field {
+	margin: 0;
+	padding: 0;
+}
+
+/* ---------- courier map ---------- */
+
+.nashenski-map {
+	width: min(960px, calc(100vw - 32px));
+	height: min(720px, calc(100vh - 32px));
+	padding: 0;
+	overflow: hidden;
+	border: 0;
+	border-radius: var(--nashenski-radius);
+	background: var(--white, Canvas);
+	color: var(--text-dark, CanvasText);
+}
+
+.nashenski-map[open] {
+	display: flex;
+	flex-direction: column;
+}
+
+.nashenski-map::backdrop {
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.nashenski-map__bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1em;
+	padding: 0.6em 1em;
+	border-bottom: 1px solid var(--nashenski-border);
+}
+
+.nashenski-map .nashenski-map__close {
+	width: auto;
+	min-height: 0;
+	margin: 0;
+	padding: 0.35em 0.8em;
+	border: 1px solid var(--nashenski-border);
+	border-radius: var(--nashenski-field-radius);
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+
+.nashenski-map__frame {
+	flex: 1;
+	width: 100%;
+	border: 0;
+}
+
+/* ---------- card layout (Checkout > Shipping options look > Cards) ---------- */
+
+/* Page builder shipping options. */
+.nashenski-shipping--cards .brx-shipping-options__option {
+	display: flex;
+	align-items: center;
+	gap: 0.75em;
+	margin: 0;
+	padding: 0.85em 1em;
+	border: 1px solid var(--nashenski-border);
+	border-radius: var(--nashenski-radius);
+	background: transparent;
+	transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.nashenski-shipping--cards .brx-shipping-options__option:hover {
+	border-color: var(--nashenski-accent);
+}
+
+.nashenski-shipping--cards .brx-shipping-options__option:has(input:checked) {
+	border-color: var(--nashenski-accent);
+	background: var(--nashenski-selected-bg);
+	box-shadow: inset 0 0 0 1px var(--nashenski-accent);
+}
+
+.nashenski-shipping--cards .brx-shipping-options__option .brx-shipping-options__option-layout {
+	flex: 1;
+	min-width: 0;
+}
+
+.nashenski-shipping--cards .brx-shipping-options__option .brx-shipping-options__label-group {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1em;
+}
+
+.nashenski-shipping--cards .brx-shipping-options__option .brx-shipping-options__label {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	column-gap: 0;
+}
+
+.nashenski-shipping--cards .brx-shipping-options__option .nashenski-rate-type {
+	flex-basis: 100%;
+}
+
+.nashenski-shipping--cards .brx-shipping-options__option .brx-shipping-options__secondary-label {
+	flex-shrink: 0;
+	text-align: end;
+}
+
+.nashenski-shipping--cards .brx-shipping-options__option .brx-shipping-options__secondary-label.nashenski-rate-pending {
+	max-width: 12em;
+	flex-shrink: 1;
+}
+
+/* The picker opens right under the chosen option, as part of the same card. */
+.nashenski-shipping--cards .brx-shipping-options__option:has(input:checked):has(+ .nashenski-additional-fields:not(:empty)) {
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.nashenski-shipping--cards .brx-shipping-options__option + .nashenski-additional-fields:not(:empty) {
+	margin-top: var(--nashenski-attach, 0px);
+	padding: 0 1em 0.25em;
+	border: 1px solid var(--nashenski-accent);
+	border-top: 0;
+	border-radius: 0 0 var(--nashenski-radius) var(--nashenski-radius);
+	background: var(--nashenski-selected-bg);
+	box-shadow: inset 1px 0 0 var(--nashenski-accent), inset -1px 0 0 var(--nashenski-accent), inset 0 -1px 0 var(--nashenski-accent);
+}
+
+/* Classic WooCommerce shipping list. */
+.nashenski-shipping--cards ul#shipping_method {
+	display: grid;
+	gap: 0.6em;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.nashenski-shipping--cards ul#shipping_method li {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 0 0.65em;
+	margin: 0;
+	padding: 0.8em 1em;
+	border: 1px solid var(--nashenski-border);
+	border-radius: var(--nashenski-radius);
+	text-indent: 0;
+}
+
+.nashenski-shipping--cards ul#shipping_method li:has(input:checked) {
+	border-color: var(--nashenski-accent);
+	background: var(--nashenski-selected-bg);
+	box-shadow: inset 0 0 0 1px var(--nashenski-accent);
+}
+
+.nashenski-shipping--cards ul#shipping_method li > input.shipping_method {
+	margin: 0;
+	accent-color: var(--nashenski-accent);
+}
+
+.nashenski-shipping--cards ul#shipping_method li > label {
+	display: block;
+	margin: 0;
+}
+
+.nashenski-shipping--cards ul#shipping_method li > .nashenski-additional-fields {
+	grid-column: 1 / -1;
+}
+
+/* Block checkout options already are cards; give the chosen one the accent. */
+.nashenski-shipping--cards .wc-block-components-radio-control__option.wc-block-components-radio-control__option-checked {
+	box-shadow: inset 0 0 0 2px var(--nashenski-accent);
+}
+
+.nashenski-block-pickers {
+	margin-top: var(--nashenski-gap);
+}
+
+.nashenski-map__note {
+	flex: 1;
+	color: #b32d2e;
+	font-size: 0.9em;
+}

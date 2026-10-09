@@ -1,0 +1,230 @@
+<?php
+namespace Nashenski\Shipping;
+
+defined( 'ABSPATH' ) || exit;
+
+class Register {
+	/**
+	 * Per courier: class folder, the classes that serve its checkout lists, the settings group of
+	 * "Generate label after checkout", and the priority that saves the label data of a new order.
+	 */
+	const COURIERS = array(
+		'econt' => array( 'Econt', array( 'Address', 'Office', 'APSBoxes' ), 'econt', 200 ),
+		'speedy' => array( 'Speedy', array( 'Address', 'Office' ), 'speedy', 200 ),
+		'boxnow' => array( 'BoxNow', array( 'Apm' ), 'boxnow_send_from', 200 ),
+		'pigeon' => array( 'Pigeon', array( 'Address', 'Office', 'Locker', 'APSBoxes', 'PackageBoxes' ), 'pigeon', 200 ),
+		'cvc' => array( 'CVC', array( 'Address', 'Office' ), 'cvc_sender', 20 ),
+	);
+
+	public function __construct( $container ) {
+		foreach ( self::COURIERS as $slug => list( $name, $parts, $label_group, $save_priority ) ) {
+			if ( 'yes' === nashenski_get_option( 'apis', 'enable_' . $slug ) ) {
+				self::register_courier( $slug, $name, $parts, $label_group, $save_priority );
+			}
+		}
+
+		if ( nashenski_is_shipping_enabled() ) {
+			add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'update_order_review' ), 0 );
+			add_action( 'woocommerce_order_item_shipping_after_calculate_taxes', array( __CLASS__, 'set_shipping_rate_taxes_for_recalculation' ), 10, 2 );
+		}
+	}
+
+	private static function register_courier( $slug, $name, $parts, $label_group, $save_priority ) {
+		$method = __NAMESPACE__ . '\\' . $name . '\\Method';
+		$admin = 'Nashenski\\Admin\\' . $name;
+		$cron = 'Nashenski\\Cron\\' . $name;
+
+		new $cron();
+
+		foreach ( $parts as $part ) {
+			$class = __NAMESPACE__ . '\\' . $name . '\\' . $part;
+			new $class();
+		}
+
+		new $admin();
+
+		add_filter( 'woocommerce_shipping_methods', function ( $methods ) use ( $method ) {
+			$methods[ $method::METHOD_ID ] = $method;
+
+			return $methods;
+		} );
+		add_action( 'woocommerce_after_checkout_validation', array( $method, 'validate_' . $slug . '_method' ), 20, 2 );
+		add_action( 'woocommerce_checkout_order_processed', array( $method, 'save_label_data_to_order' ), $save_priority, 2 );
+
+		if ( 'yes' === nashenski_get_option( $label_group, 'label_after_checkout' ) ) {
+			add_action( 'woocommerce_checkout_order_processed', array( $admin, 'generate_label_after_order_generated' ), 250 );
+		}
+
+		add_action( 'woocommerce_email_order_details', array( $method, 'add_label_number_to_email' ), 1, 4 );
+	}
+
+	public static function update_order_review() {
+		self::update_session();
+		
+	    $packages = WC()->cart->get_shipping_packages();
+
+	    foreach ( $packages as $key => $value ) {
+	        $shipping_session = "shipping_for_package_$key";
+	        unset( WC()->session->$shipping_session );
+	    }
+
+	    WC()->cart->calculate_shipping();
+	    
+	    return;
+	}
+
+	public static function set_shipping_rate_taxes_for_recalculation( $method, $calculate_tax_for ) {
+		if ( strpos( $method[ 'method_id' ], 'nashenski' ) === false ) {
+			return;
+		}
+
+		if ( wc_tax_enabled() ) {
+			$country = $calculate_tax_for['country'] ?? 'BG';
+			$method->set_taxes( nashenski_get_shipping_rate_taxes( $method->get_total(), $country ) );
+		}
+	}
+
+	private static function update_session() {
+		$wc = WC();
+
+		if ( ! $wc || ! $wc->session || ! $wc->customer ) {
+			return;
+		}
+
+		$post_data = self::get_checkout_post_data();
+
+		if ( empty( $post_data ) ) {
+			return;
+		}
+
+		if ( isset( $post_data['payment_method'] ) && is_string( $post_data['payment_method'] ) ) {
+			$wc->session->set( 'chosen_payment_method', $post_data['payment_method'] );
+		}
+
+		self::update_chosen_shipping_methods( $post_data['shipping_method'] ?? array() );
+
+		$customer_props = self::get_customer_address_props( $post_data, 'billing' );
+		$shipping_from  = ( wc_ship_to_billing_address_only() || empty( $post_data['ship_to_different_address'] ) ) ? 'billing' : 'shipping';
+
+		$customer_props = array_merge(
+			$customer_props,
+			self::get_customer_address_props( $post_data, $shipping_from, 'shipping' )
+		);
+
+		$should_save_customer = ! empty( $customer_props );
+
+		if ( $customer_props ) {
+			$wc->customer->set_props( $customer_props );
+		}
+
+		if ( array_key_exists( 'has_full_address', $post_data ) && is_scalar( $post_data['has_full_address'] ) ) {
+			$wc->customer->set_calculated_shipping( wc_string_to_bool( $post_data['has_full_address'] ) );
+			$should_save_customer = true;
+		}
+
+		if ( $should_save_customer ) {
+			$wc->customer->save();
+		}
+	}
+
+	/**
+	 * The checkout form sent with "update order review" plus the fields WooCommerce posts beside it
+	 * (country, s_country, shipping_method and so on). WooCommerce checked its nonce before.
+	 */
+	private static function get_checkout_post_data() {
+		$posted = array();
+
+		foreach ( $_POST as $key => $value ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( 'post_data' !== $key ) {
+				$posted[ $key ] = wc_clean( wp_unslash( $value ) );
+			}
+		}
+
+		return self::normalize_checkout_post_data( array_replace_recursive( nashenski_order_review_data(), $posted ) );
+	}
+
+	private static function normalize_checkout_post_data( $post_data ) {
+		$aliases = array(
+			'billing_country'    => 'country',
+			'billing_state'      => 'state',
+			'billing_postcode'   => 'postcode',
+			'billing_city'       => 'city',
+			'billing_address_1'  => 'address',
+			'billing_address_2'  => 'address_2',
+			'shipping_country'   => 's_country',
+			'shipping_state'     => 's_state',
+			'shipping_postcode'  => 's_postcode',
+			'shipping_city'      => 's_city',
+			'shipping_address_1' => 's_address',
+			'shipping_address_2' => 's_address_2',
+		);
+
+		foreach ( $aliases as $canonical_key => $alias_key ) {
+			if (
+				( ! array_key_exists( $canonical_key, $post_data ) || null === $post_data[ $canonical_key ] )
+				&& array_key_exists( $alias_key, $post_data )
+			) {
+				$post_data[ $canonical_key ] = $post_data[ $alias_key ];
+			}
+		}
+
+		return $post_data;
+	}
+
+	private static function update_chosen_shipping_methods( $posted_shipping_methods ) {
+		if ( is_string( $posted_shipping_methods ) ) {
+			$posted_shipping_methods = array( 0 => $posted_shipping_methods );
+		}
+
+		if ( ! is_array( $posted_shipping_methods ) ) {
+			return;
+		}
+
+		$chosen_shipping_methods = WC()->session->get( 'chosen_shipping_methods', array() );
+		$updated                 = false;
+
+		if ( ! is_array( $chosen_shipping_methods ) ) {
+			$chosen_shipping_methods = array();
+		}
+
+		foreach ( $posted_shipping_methods as $index => $method_id ) {
+			if ( ! is_string( $method_id ) ) {
+				continue;
+			}
+
+			if (
+				! array_key_exists( $index, $chosen_shipping_methods )
+				|| $chosen_shipping_methods[ $index ] !== $method_id
+			) {
+				$chosen_shipping_methods[ $index ] = $method_id;
+				$updated = true;
+			}
+		}
+
+		if ( $updated ) {
+			WC()->session->set( 'chosen_shipping_methods', $chosen_shipping_methods );
+		}
+	}
+
+	private static function get_customer_address_props( $post_data, $source_prefix, $target_prefix = null ) {
+		$target_prefix = $target_prefix ?: $source_prefix;
+		$props         = array();
+		$fields        = array( 'country', 'state', 'postcode', 'city', 'address_1', 'address_2' );
+
+		foreach ( $fields as $field ) {
+			$source_key = "{$source_prefix}_{$field}";
+
+			if ( ! array_key_exists( $source_key, $post_data ) ) {
+				continue;
+			}
+
+			$value = $post_data[ $source_key ];
+
+			if ( null !== $value && is_scalar( $value ) ) {
+				$props[ "{$target_prefix}_{$field}" ] = $value;
+			}
+		}
+
+		return $props;
+	}
+}

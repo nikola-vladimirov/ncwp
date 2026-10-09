@@ -1,0 +1,100 @@
+/* Nashenski Commerce: order list and order screen additions, in the WooCommerce order status style. */
+
+.nashenski-report-pill {
+	display: inline-flex;
+	max-width: 100%;
+	margin: -0.25em 0;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	border-radius: 4px;
+	background: #e5e5e5;
+	color: #454545;
+	line-height: 2.5em;
+	white-space: nowrap;
+}
+
+.nashenski-report-pill > span {
+	margin: 0 1em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.nashenski-report-pill--found {
+	background: #eba3a3;
+	color: #761919;
+}
+
+.nashenski-report-pill--none {
+	border: 0;
+	background: none;
+	color: #a7aaad;
+}
+
+.nashenski-reports-status {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.column-order_reports {
+	width: 9ch;
+}
+
+/* EU withdrawal: amber, like WooCommerce's "on hold". */
+.nashenski-withdrawal-pill {
+	background: #f8dda7;
+	color: #94660c;
+}
+
+.nashenski-withdrawal-summary {
+	display: block;
+	margin-top: 0.4em;
+	color: #646970;
+	line-height: 1.4;
+}
+
+.column-nashenski_withdrawal {
+	width: 14ch;
+}
+
+.nashenski-withdrawal-details th {
+	width: 30%;
+	font-weight: 600;
+}
+
+/* "Make invoice" in the PDF Files box. */
+.nashenski-make-invoice {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	border-top: 1px solid #f0f0f1;
+	padding-top: 10px;
+}
+
+.nashenski-make-invoice label {
+	flex-basis: 100%;
+	font-weight: 600;
+}
+
+.nashenski-make-invoice input {
+	width: 9em;
+}
+
+/* "From earlier plugins" box: what an imported plugin saved on the order. */
+.nashenski-legacy {
+	margin: 4px 0 12px;
+}
+
+.nashenski-legacy th {
+	width: 28%;
+	font-weight: 600;
+	word-break: break-word;
+}
+
+.nashenski-legacy td {
+	word-break: break-word;
+}
+
+.nashenski-legacy .nashenski-legacy {
+	margin: 0;
+}

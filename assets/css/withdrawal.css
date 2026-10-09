@@ -1,0 +1,239 @@
+/*
+ * Nashenski Commerce: EU withdrawal function (readable source, no build step).
+ *
+ * Styles WooCommerce's withdrawal form (My Account > withdraw-order) and the "Withdraw from
+ * contract here" links. Colours, corners and spacing come from the same --nashenski-* custom
+ * properties as the checkout (Checkout > Shipping options look): design tokens when a token
+ * framework is active, the theme's own colours otherwise. Fonts and buttons stay the theme's.
+ */
+
+/* ---------- the links ---------- */
+
+.nashenski-withdrawal-bar {
+	margin: 0;
+	padding: var(--nashenski-gap, 0.75em) 1em;
+	border-top: 1px solid var(--nashenski-border, color-mix(in srgb, currentColor 20%, transparent));
+	text-align: center;
+	font-size: 0.9em;
+}
+
+.nashenski-withdrawal-link {
+	color: var(--nashenski-accent, currentColor);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 0.15em;
+}
+
+.nashenski-withdrawal-link--button {
+	display: inline-block;
+	padding: 0.6em 1.1em;
+	border: 1px solid var(--nashenski-accent, currentColor);
+	border-radius: var(--nashenski-radius, 6px);
+	text-decoration: none;
+}
+
+.nashenski-withdrawal-link--button:hover,
+.nashenski-withdrawal-link--button:focus-visible {
+	background: var(--nashenski-selected-bg, color-mix(in srgb, currentColor 5%, transparent));
+}
+
+.nashenski-withdrawal-account {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5em 0.75em;
+	width: 100%;
+	margin: var(--nashenski-gap, 0.75em) 0 0;
+	padding-top: var(--nashenski-gap, 0.75em);
+	border-top: 1px solid var(--nashenski-border, color-mix(in srgb, currentColor 20%, transparent));
+}
+
+.nashenski-withdrawal-order {
+	margin: var(--nashenski-gap, 0.75em) 0 calc(var(--nashenski-gap, 0.75em) * 2);
+}
+
+/* ---------- the form ---------- */
+
+.woocommerce-order-withdrawal-content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--nashenski-gap, 0.75em);
+	max-width: 46rem;
+}
+
+.woocommerce-order-withdrawal-content > p,
+.woocommerce-order-withdrawal-content form > p {
+	margin: 0;
+}
+
+.woocommerce-order-withdrawal-content__intro {
+	font-size: 1.1em;
+	font-weight: 600;
+}
+
+.woocommerce-order-withdrawal-content__note {
+	display: block;
+	color: var(--nashenski-muted, inherit);
+	font-size: 0.9em;
+}
+
+/* Steps: "Your details" and "Review and confirm" as two tabs. */
+.woocommerce-order-withdrawal-content__steps {
+	display: flex;
+	gap: 0.5em;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: nashenski-step;
+}
+
+.woocommerce-order-withdrawal-content__step {
+	flex: 1;
+	padding: 0.5em 0.75em;
+	border-bottom: 3px solid var(--nashenski-border, color-mix(in srgb, currentColor 20%, transparent));
+	color: var(--nashenski-muted, inherit);
+	font-size: 0.9em;
+	counter-increment: nashenski-step;
+}
+
+.woocommerce-order-withdrawal-content__step::before {
+	content: counter(nashenski-step) ". ";
+}
+
+.woocommerce-order-withdrawal-content__step--current {
+	border-color: var(--nashenski-accent, currentColor);
+	color: inherit;
+	font-weight: 600;
+}
+
+.woocommerce-OrderWithdrawalForm {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--nashenski-gap, 0.75em);
+	padding: calc(var(--nashenski-gap, 0.75em) * 1.5);
+	border: 1px solid var(--nashenski-border, color-mix(in srgb, currentColor 20%, transparent));
+	border-radius: var(--nashenski-radius, 6px);
+}
+
+.woocommerce-OrderWithdrawalForm > *,
+.woocommerce-OrderWithdrawalForm .form-row {
+	flex: 1 1 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	float: none;
+}
+
+.woocommerce-OrderWithdrawalForm .form-row-first,
+.woocommerce-OrderWithdrawalForm .form-row-last {
+	flex: 1 1 14rem;
+}
+
+.woocommerce-OrderWithdrawalForm .clear {
+	display: none;
+}
+
+.woocommerce-OrderWithdrawalForm label,
+.woocommerce-OrderWithdrawalForm legend {
+	display: block;
+	margin-bottom: 0.3em;
+	font-weight: 600;
+}
+
+.woocommerce-OrderWithdrawalForm input.input-text,
+.woocommerce-OrderWithdrawalForm textarea {
+	width: 100%;
+	box-sizing: border-box;
+	border: 1px solid var(--nashenski-field-border, color-mix(in srgb, currentColor 30%, transparent));
+	border-radius: var(--nashenski-field-radius, 4px);
+	background: var(--nashenski-field-bg, transparent);
+}
+
+.woocommerce-OrderWithdrawalForm input.input-text:focus,
+.woocommerce-OrderWithdrawalForm textarea:focus {
+	outline: 2px solid var(--nashenski-accent, currentColor);
+	outline-offset: 1px;
+}
+
+/* "What do you want to withdraw?": two options side by side. */
+.woocommerce-order-withdrawal-content__radio-field {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5em;
+	border: 0;
+}
+
+.woocommerce-order-withdrawal-content__radio-field legend {
+	flex-basis: 100%;
+	padding: 0;
+}
+
+.woocommerce-order-withdrawal-content__radio-label {
+	display: flex !important;
+	flex: 1 1 12rem;
+	align-items: center;
+	gap: 0.5em;
+	margin: 0 !important;
+	padding: 0.6em 0.8em;
+	border: 1px solid var(--nashenski-border, color-mix(in srgb, currentColor 20%, transparent));
+	border-radius: var(--nashenski-radius, 6px);
+	font-weight: 400 !important;
+	cursor: pointer;
+}
+
+.woocommerce-order-withdrawal-content__radio-label:has(input:checked) {
+	border-color: var(--nashenski-accent, currentColor);
+	background: var(--nashenski-selected-bg, color-mix(in srgb, currentColor 5%, transparent));
+}
+
+.woocommerce-order-withdrawal-content__field-error {
+	display: block;
+	margin-top: 0.25em;
+	color: #b32d2e;
+	font-size: 0.9em;
+}
+
+.woocommerce-order-withdrawal-content__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5em;
+}
+
+.woocommerce-order-withdrawal-content__button--secondary {
+	background: transparent !important;
+	color: inherit !important;
+	border: 1px solid var(--nashenski-border, color-mix(in srgb, currentColor 20%, transparent)) !important;
+}
+
+/* Review: the details as a two-column list. */
+.woocommerce-order-withdrawal-content__review {
+	margin: 0;
+	border: 1px solid var(--nashenski-border, color-mix(in srgb, currentColor 20%, transparent));
+	border-radius: var(--nashenski-radius, 6px);
+}
+
+.woocommerce-order-withdrawal-content__review-row {
+	display: grid;
+	grid-template-columns: minmax(8rem, 1fr) 2fr;
+	gap: 0.5em 1em;
+	padding: 0.6em 0.9em;
+}
+
+.woocommerce-order-withdrawal-content__review-row + .woocommerce-order-withdrawal-content__review-row {
+	border-top: 1px solid var(--nashenski-border, color-mix(in srgb, currentColor 20%, transparent));
+}
+
+.woocommerce-order-withdrawal-content__review dt {
+	color: var(--nashenski-muted, inherit);
+}
+
+.woocommerce-order-withdrawal-content__review dd {
+	margin: 0;
+	font-weight: 600;
+}
+
+@media (max-width: 30em) {
+	.woocommerce-order-withdrawal-content__review-row {
+		grid-template-columns: 1fr;
+	}
+}
