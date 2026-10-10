@@ -5161,3 +5161,15 @@ msgstr ""
 #: nashenski-commerce.php
 msgid "PristaDigital"
 msgstr ""
+
+#: app/Document_Storage.php:170
+msgid "The document was not found or you do not have access to it."
+msgstr ""
+
+#: app/Reports/Reports.php:299
+msgid "Cash on delivery is not available for this order. Please choose another payment method."
+msgstr ""
+
+#: app/Shipping/Register.php:68
+msgid "The payment method changed after the shipping price was calculated. Please check the updated total and place the order again."
+msgstr ""

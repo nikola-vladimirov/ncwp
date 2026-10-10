@@ -198,24 +198,11 @@ class Export {
 		$totals = '';
 
 		if ( !empty( $data['content'] ) ) {
-			add_filter( 'upload_dir', array( 'Nashenski\Image_Uploader', 'change_upload_dir' ) );
-			$name = uniqid( wp_rand(), true );
-			$xml = wp_upload_bits( $name . '.xml', null, $data['content'] );
-			remove_filter( 'upload_dir', array( 'Nashenski\Image_Uploader', 'change_upload_dir' ) );
-	
-			if ( is_wp_error( $xml ) ) {
+			$attach_id = \Nashenski\Document_Storage::save( uniqid( wp_rand(), true ), 'xml', $data['content'] );
+
+			if ( ! $attach_id ) {
 				return;
 			}
-	
-			$attachment = array(
-				 'guid' => $xml[ 'file' ], 
-				 'post_mime_type' => $xml['type'],
-				 'post_title' => $name,
-				 'post_content' => '',
-				 'post_status' => 'inherit'
-			);
-	
-			$attach_id = wp_insert_attachment( $attachment, $xml[ 'file' ] );
 
 			if( !empty( $data['totals'] ) ) {
 				$totals  = sprintf( 
@@ -233,7 +220,8 @@ class Export {
 		}
 
 		return array(
-			'file' => ( isset($attach_id) ) ? wp_get_attachment_url( $attach_id ) : '',
+			'file' => ( isset($attach_id) ) ? \Nashenski\Document_Storage::export_url( $attach_id ) : '',
+			'attachment_id' => isset( $attach_id ) ? $attach_id : 0,
 			'not_included_orders' => $this->not_included_orders,
 			'totals' => $totals,
 			'errors' => $errors,

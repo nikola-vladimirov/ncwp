@@ -69,7 +69,7 @@ class Writer {
 			$line = array();
 
 			foreach ( $row as $i => $value ) {
-				$line[] = $convert( self::safe_cell( Builder::format( $value, $kinds[ $i ], $config ) ) );
+				$line[] = $convert( self::safe_cell( Builder::format( $value, $kinds[ $i ], $config ), $value, $kinds[ $i ] ) );
 			}
 
 			fputcsv( $handle, $line, $separator, '"', '' );
@@ -80,10 +80,23 @@ class Writer {
 	}
 
 	/**
-	 * Spreadsheets run text that starts with = + - @ as a formula; such text gets a leading quote.
+	 * Spreadsheets run text that starts with = + - @ (also tab, line breaks and the full-width
+	 * ＝ ＋ － ＠) as a formula; such text gets a leading quote (OWASP CSV injection). Only a money or
+	 * number column holding a real number keeps its minus sign: format() made it a plain number.
+	 *
+	 * @param string $text Formatted cell.
+	 * @param mixed  $raw  Value before formatting.
+	 * @param string $kind Column kind (text, money, number, date).
 	 */
-	private static function safe_cell( $text ) {
-		return preg_match( '/^(=|@|\t|\r|[+\-](?![\d\s.,]))/', $text ) ? "'" . $text : $text;
+	private static function safe_cell( $text, $raw, $kind ) {
+		if ( in_array( $kind, array( 'money', 'number' ), true ) && is_numeric( $raw ) ) {
+			return $text;
+		}
+
+		// false: not valid UTF-8, so it cannot be checked; quote it to be safe.
+		$match = preg_match( '/^[=+\-@\t\r\n＝＋－＠]/u', $text );
+
+		return 0 === $match ? $text : "'" . $text;
 	}
 
 	private static function json( $path, $config, $labels, $kinds, $rows ) {

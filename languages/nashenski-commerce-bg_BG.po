@@ -5166,3 +5166,15 @@ msgstr "Всичко, от което магазинът с WooCommerce има �
 #: nashenski-commerce.php
 msgid "PristaDigital"
 msgstr "PristaDigital"
+
+#: app/Document_Storage.php:170
+msgid "The document was not found or you do not have access to it."
+msgstr "Документът не е намерен или нямате достъп до него."
+
+#: app/Reports/Reports.php:299
+msgid "Cash on delivery is not available for this order. Please choose another payment method."
+msgstr "Наложеният платеж не е възможен за тази поръчка. Моля, изберете друг начин на плащане."
+
+#: app/Shipping/Register.php:68
+msgid "The payment method changed after the shipping price was calculated. Please check the updated total and place the order again."
+msgstr "Начинът на плащане беше променен след изчисляването на цената за доставка. Моля, проверете новата обща сума и направете поръчката отново."

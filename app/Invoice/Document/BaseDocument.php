@@ -342,49 +342,38 @@ class BaseDocument {
 			return;
 		}
 
-		add_filter( 'upload_dir', array( 'Nashenski\Image_Uploader', 'change_upload_dir' ) );
-		$upload_dir = wp_upload_dir();
-		remove_filter( 'upload_dir', array( 'Nashenski\Image_Uploader', 'change_upload_dir' ) );
+		// Unique files in the system temp folder: never web-served, never shared between requests.
+		$original = wp_tempnam( 'nashenski-original.pdf' );
+		$copy = wp_tempnam( 'nashenski-copy.pdf' );
 
-		$original = $upload_dir['path'] . '/original.pdf';
-		$copy = $upload_dir['path'] . '/copy.pdf';
+		try {
+			File::put_to_file( $original, $this->pdf->generate() );
+			$this->set_title( $copy_title );
+			File::put_to_file( $copy, $this->pdf->generate() );
 
-		File::put_to_file( $original, $this->pdf->generate() );
-		$this->set_title( $copy_title );
-		File::put_to_file( $copy, $this->pdf->generate() );
-
-		$merger = new PDFMerger();
-		$merger->addPDF( $original );
-		$merger->addPDF( $copy );
-		$merged = $merger->merge( 'string' );
-
-		wp_delete_file( $original );
-		wp_delete_file( $copy );
+			$merger = new PDFMerger();
+			$merger->addPDF( $original );
+			$merger->addPDF( $copy );
+			$merged = $merger->merge( 'string' );
+		} finally {
+			wp_delete_file( $original );
+			wp_delete_file( $copy );
+		}
 
 		$this->save_pdf( $merged );
 	}
 
 	/**
-	 * Upload the PDF to uploads/nashenski, attach it to the order (replacing the old file) and run
-	 * after_file_generated().
+	 * Store the PDF privately (Document_Storage), attach it to the order (replacing the old file)
+	 * and run after_file_generated().
 	 */
 	protected function save_pdf( $contents ) {
-		add_filter( 'upload_dir', array( 'Nashenski\Image_Uploader', 'change_upload_dir' ) );
 		$name = apply_filters( 'nashenski/admin/invoice/file_name', uniqid( wp_rand(), true ), $this );
-		$pdf = wp_upload_bits( $name . '.pdf', null, $contents );
-		remove_filter( 'upload_dir', array( 'Nashenski\Image_Uploader', 'change_upload_dir' ) );
+		$attach_id = \Nashenski\Document_Storage::save( $name, 'pdf', $contents );
 
-		if ( is_wp_error( $pdf ) ) {
+		if ( ! $attach_id ) {
 			return;
 		}
-
-		$attach_id = wp_insert_attachment( array(
-			'guid' => $pdf[ 'file' ],
-			'post_mime_type' => $pdf['type'],
-			'post_title' => $name,
-			'post_content' => '',
-			'post_status' => 'inherit'
-		), $pdf[ 'file' ] );
 
 		if ( $old_file = $this->woo_order->get_meta( $this->meta ) ) {
 			wp_delete_attachment( $old_file );

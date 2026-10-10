@@ -138,8 +138,8 @@ class Documents {
 					$files[] = array(
 						'meta' => $meta,
 						'name' => $name,
-						'file_url' => wp_get_attachment_url( $order->get_meta( $meta ) ),
-						'file_url_en' => $order->get_meta( $meta . '_en' ) ? wp_get_attachment_url( $order->get_meta( $meta . '_en' ) ) : '',
+						'file_url' => \Nashenski\Document_Storage::order_document_url( $order, $meta ),
+						'file_url_en' => $order->get_meta( $meta . '_en' ) ? \Nashenski\Document_Storage::order_document_url( $order, $meta . '_en' ) : '',
 					);
 				}
 			}

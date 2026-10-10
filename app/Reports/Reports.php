@@ -36,6 +36,7 @@ class Reports {
 
 		if ( nashenski_get_option( 'reports', 'check_on_checkout' ) === 'yes' ) {
 			add_action( 'woocommerce_available_payment_gateways', array( __CLASS__, 'filter_payment_methods' ) );
+			add_action( 'woocommerce_after_checkout_validation', array( __CLASS__, 'validate_cod' ), 10, 2 );
 			add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'unset_session' ), 30 );
 		}
 	}
@@ -262,6 +263,11 @@ class Reports {
 		$data = nashenski_order_review_data();
 		$phone = $data['billing_phone'] ?? '';
 
+		// Block checkout: the Store API keeps the phone on the cart's customer.
+		if ( '' === $phone && WC()->customer && method_exists( WC(), 'is_store_api_request' ) && WC()->is_store_api_request() ) {
+			$phone = (string) WC()->customer->get_billing_phone();
+		}
+
 		if ( '' === $phone ) {
 			return $available_gateways;
 		}
@@ -273,6 +279,25 @@ class Reports {
 		}
 	     
 	    return $available_gateways;
+	}
+
+	/**
+	 * filter_payment_methods() only hides cash on delivery in the order review; the order itself
+	 * (classic checkout, and the block checkout through Block_Checkout::validate()) is checked here.
+	 */
+	public static function validate_cod( $data, $errors ) {
+		$phone = (string) ( $data['billing_phone'] ?? '' );
+
+		if ( 'cod' !== ( $data['payment_method'] ?? '' ) || '' === $phone || ! WC()->session ) {
+			return;
+		}
+
+		$reports_by_phone = self::check_in_session( $phone );
+
+		if ( is_array( $reports_by_phone ) && count( $reports_by_phone ) > 0 ) {
+			WC()->session->set( 'refresh_totals', true );
+			$errors->add( 'validation', __( 'Cash on delivery is not available for this order. Please choose another payment method.', 'nashenski-commerce' ) );
+		}
 	}
 
 	public static function check_in_session( $phone ) {

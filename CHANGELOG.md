@@ -1,5 +1,25 @@
 # Nashenski Commerce changelog
 
+## 0.11.1 (2026-10-10)
+
+Security release. Please update.
+
+### Customer documents are private
+- Invoices, order documents, credit notes, pro formas and the NRA and Delta export files are kept in a private folder and are no longer public files. Before, anyone could find and download them through the WordPress media list.
+- Every document link now checks who opens it. Shop staff can open all documents. A customer with an account opens their own documents when logged in. A guest gets a link on the order page that works for 24 hours.
+- Documents made before this version are moved to the private folder in the background after the update. Their old direct addresses stop working; the links on the order screens keep working.
+- While an invoice with its copy was being made, the two halves were briefly public files with fixed names. They are now made in the server's temporary folder and deleted right after.
+
+### Checkout
+- Cash on delivery is checked when the order is placed, not only when the payment methods are shown. A customer flagged by Customer checks can no longer place a cash on delivery order by sending the order directly. In the block checkout, cash on delivery is now also hidden for them.
+- The order is refused when the payment method does not match the one the shipping price was calculated with. Before, a changed browser cookie could leave out the cash on delivery amount from the Econt, Speedy, CVC and Pigeon waybill and lower the shipping price. The customer sees the updated total and places the order again.
+
+### Exports
+- CSV exports escape every text cell that a spreadsheet would run as a formula, also when it starts with + or - followed by a number (for example a company name like "+1+1"). Amounts and numbers are not changed.
+
+### Fixed
+- A PHP warning when making a PDF before the VAT group is set.
+
 ## 0.11.0 (2026-10-09)
 
 ### Nothing from the old plugins is lost
