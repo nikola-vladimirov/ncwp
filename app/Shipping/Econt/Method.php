@@ -630,7 +630,11 @@ class Method extends \WC_Shipping_Method {
 
 		foreach ( $chosen_shippings as $key => $shipping ) {
 			if ( strpos( $shipping, 'nashenski_econt' ) !== false ) {
-				$data = WC()->session->get( 'shipping_for_package_' . $key )['rates'][ $shipping ];
+				$data = nashenski_chosen_rate( $key, $shipping );
+
+				if ( ! $data ) {
+					continue;
+				}
 
 				if ( $data->method_id === 'nashenski_econt' && ! $data->meta_data['validated'] ) {
 					$meta_data = $data->get_meta_data();

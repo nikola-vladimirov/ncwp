@@ -1062,3 +1062,13 @@ function nashenski_normalize_text_for_label( $text, $max_length = 200 ) {
 
 	return mb_substr( $text, 0, $max_length, 'UTF-8' );
 }
+
+/**
+ * The chosen shipping rate $rate_id of package $key, or null. The session copy can be cleared during
+ * checkout validation (see Register::validate_cod_choice), so the rates calculated in this request are the fallback.
+ */
+function nashenski_chosen_rate( $key, $rate_id ) {
+	$package = WC()->session ? WC()->session->get( 'shipping_for_package_' . $key ) : null;
+
+	return $package['rates'][ $rate_id ] ?? WC()->shipping()->get_packages()[ $key ]['rates'][ $rate_id ] ?? null;
+}

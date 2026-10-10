@@ -1,5 +1,15 @@
 # Nashenski Commerce changelog
 
+## 0.12.0 (2026-10-10)
+
+### Updates from the dashboard
+- New versions now show up in Dashboard > Updates and on the Plugins screen, and install with "Update now" like any other plugin. Automatic updates can be turned on too. "View version details" shows what changed.
+- Every new version on the main branch of the GitHub repository is published as a release by itself.
+- While the repository is private, each site needs a read-only GitHub token in wp-config.php. See Help > Updates.
+
+### Fixed
+- PHP warnings at checkout ("Trying to access array offset on null" in the Econt shipping method) when the shipping price had to be calculated again, for example after the payment method changed. The same was fixed for Speedy, BOX NOW, CVC and Pigeon Express. The courier checks now always run on the rates of the current checkout.
+
 ## 0.11.1 (2026-10-10)
 
 Security release. Please update.

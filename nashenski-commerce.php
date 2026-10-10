@@ -5,7 +5,7 @@ Plugin URI:   https://wordpress.org/plugins/nashenski-commerce/
 Description:  Everything a WooCommerce store needs to sell in Bulgaria: Econt, Speedy, BOX NOW, CVC and Pigeon shipping, invoices, and the light regime of Ordinance N-18.
 Requires Plugins: woocommerce
 Author:       PristaDigital
-Version:      0.11.1
+Version:      0.12.0
 Requires at least: 6.5
 Requires PHP: 7.4
 WC requires at least: 9.4.0
@@ -14,6 +14,7 @@ Text Domain:  nashenski-commerce
 Domain Path:  /languages
 License:      GPLv3 or later
 License URI:  https://www.gnu.org/licenses/gpl-3.0.html
+Update URI:   https://github.com/nikola-vladimirov/nashenski-commerce
 */
 
 /*

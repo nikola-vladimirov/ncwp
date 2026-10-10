@@ -310,7 +310,11 @@ class Method extends \WC_Shipping_Method {
 
 		foreach ( $chosen_shippings as $key => $shipping ) {
 			if ( strpos( $shipping, 'nashenski_boxnow' ) !== false ) {
-				$data = WC()->session->get( 'shipping_for_package_' . $key )['rates'][ $shipping ];
+				$data = nashenski_chosen_rate( $key, $shipping );
+
+				if ( ! $data ) {
+					continue;
+				}
 				
 				if ( $data->method_id === 'nashenski_boxnow' ) {
 					$cookie_data = self::get_cookie_data();

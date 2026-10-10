@@ -49,8 +49,8 @@ class Register {
 				continue;
 			}
 
-			$rates = WC()->session->get( 'shipping_for_package_' . $key )['rates'] ?? array();
-			$meta = isset( $rates[ $chosen ] ) ? $rates[ $chosen ]->get_meta_data() : array();
+			$rate = nashenski_chosen_rate( $key, $chosen );
+			$meta = $rate ? $rate->get_meta_data() : array();
 
 			// No calculated choice yet: the courier's own validation asks for one.
 			if ( empty( $meta['cookie_data'] ) || ! is_array( $meta['cookie_data'] ) ) {
