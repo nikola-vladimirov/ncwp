@@ -133,27 +133,15 @@ class Export {
 			$content .= implode( '|', $document );
 		}
 
-		add_filter( 'upload_dir', array( 'Nashenski\Image_Uploader', 'change_upload_dir' ) );
-		$txt = wp_upload_bits( $name . '.txt', null, $content );
-		remove_filter( 'upload_dir', array( 'Nashenski\Image_Uploader', 'change_upload_dir' ) );
+		$attach_id = \Nashenski\Document_Storage::save( $name, 'txt', $content );
 		unset( $content );
 
-		if ( is_wp_error( $txt ) ) {
+		if ( ! $attach_id ) {
 			return;
 		}
 
-		$attachment = array(
-			'guid' => $txt[ 'file' ], 
-			'post_mime_type' => $txt['type'],
-			'post_title' => $name,
-			'post_content' => '',
-			'post_status' => 'inherit'
-		);
-
-		$attach_id = wp_insert_attachment( $attachment, $txt[ 'file' ] );
-
 		return array(
-			'file' => wp_get_attachment_url( $attach_id ),
+			'file' => \Nashenski\Document_Storage::export_url( $attach_id ),
 		);
 	}
 }

@@ -26,6 +26,46 @@ class Register {
 		if ( nashenski_is_shipping_enabled() ) {
 			add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'update_order_review' ), 0 );
 			add_action( 'woocommerce_order_item_shipping_after_calculate_taxes', array( __CLASS__, 'set_shipping_rate_taxes_for_recalculation' ), 10, 2 );
+			add_action( 'woocommerce_after_checkout_validation', array( __CLASS__, 'validate_cod_choice' ), 1, 2 );
+		}
+	}
+
+	/**
+	 * The courier price and waybill (cash on delivery amount included or not) were calculated with
+	 * the payment method saved in the courier cookie. The order must be placed with a payment method
+	 * of the same kind, or the waybill would not collect the cash (or the price would be wrong).
+	 * On a mismatch the rates are calculated again and the customer is asked to check the total.
+	 */
+	public static function validate_cod_choice( $data, $errors ) {
+		if ( ! WC()->cart || ! WC()->session || ! WC()->cart->needs_shipping() ) {
+			return;
+		}
+
+		$cod = 'cod' === ( $data['payment_method'] ?? '' );
+		$mismatch = false;
+
+		foreach ( (array) WC()->session->get( 'chosen_shipping_methods' ) as $key => $chosen ) {
+			if ( 0 !== strpos( (string) $chosen, 'nashenski_' ) ) {
+				continue;
+			}
+
+			$rates = WC()->session->get( 'shipping_for_package_' . $key )['rates'] ?? array();
+			$meta = isset( $rates[ $chosen ] ) ? $rates[ $chosen ]->get_meta_data() : array();
+
+			// No calculated choice yet: the courier's own validation asks for one.
+			if ( empty( $meta['cookie_data'] ) || ! is_array( $meta['cookie_data'] ) ) {
+				continue;
+			}
+
+			if ( ( 'cod' === ( $meta['cookie_data']['payment'] ?? '' ) ) !== $cod ) {
+				$mismatch = true;
+				WC()->session->__unset( 'shipping_for_package_' . $key );
+			}
+		}
+
+		if ( $mismatch ) {
+			WC()->session->set( 'refresh_totals', true );
+			$errors->add( 'validation', __( 'The payment method changed after the shipping price was calculated. Please check the updated total and place the order again.', 'nashenski-commerce' ) );
 		}
 	}
 

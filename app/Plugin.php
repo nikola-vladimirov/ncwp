@@ -4,7 +4,7 @@ namespace Nashenski;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin {
-	const VERSION = '0.11.0';
+	const VERSION = '0.11.1';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
@@ -116,6 +116,7 @@ class Plugin {
 		}
 
 		// The order document is made for every order, so these load with documents off too.
+		new Document_Storage();
 		new Admin\Order\Actions();
 		new Admin\Order\MetaBox();
 

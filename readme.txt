@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.11.0
+Stable tag: 0.11.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -96,6 +96,11 @@ The plugin only contacts a service after you turn it on and enter your own accou
 * EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/
 
 == Changelog ==
+
+= 0.11.1 =
+* Security: invoices, order documents and export files are private and open only for shop staff, the customer who owns the order, or a guest through a 24-hour link. Existing documents are moved after the update.
+* Security: cash on delivery and the waybill's cash amount are checked when the order is placed.
+* Security: CSV exports escape every text that a spreadsheet would run as a formula.
 
 = 0.11.0 =
 * The import keeps everything an earlier plugin saved on each order (waybill records, tracking, N-18 documents and their PDF files) and shows it in "From earlier plugins" on the order. Customers keep seeing their old documents.

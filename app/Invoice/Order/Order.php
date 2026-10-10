@@ -28,7 +28,8 @@ class Order {
 		$this->vat_group = nashenski_get_option( 'shop', 'vat_group' );
 		$this->vat_percentages = nashenski_get_vat_groups();
 		$this->_tax = new \WC_Tax();
-		$this->vat = $this->vat_percentages[ $this->vat_group ];
+		// No VAT group chosen yet (Settings > Shop): same null as before, without the PHP warning.
+		$this->vat = $this->vat_percentages[ $this->vat_group ] ?? null;
 		$this->order_taxes = $this->woo_order->get_taxes();
 	}
 
