@@ -27,6 +27,42 @@ class Register {
 			add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'update_order_review' ), 0 );
 			add_action( 'woocommerce_order_item_shipping_after_calculate_taxes', array( __CLASS__, 'set_shipping_rate_taxes_for_recalculation' ), 10, 2 );
 			add_action( 'woocommerce_after_checkout_validation', array( __CLASS__, 'validate_cod_choice' ), 1, 2 );
+			add_action( 'woocommerce_checkout_process', array( __CLASS__, 'remember_shown_prices' ) );
+			add_action( 'woocommerce_after_checkout_validation', array( __CLASS__, 'validate_shown_prices' ), 2, 2 );
+		}
+	}
+
+	/** Package key => courier price the customer saw (null while it said "Complete the fields"). */
+	private static $shown = array();
+
+	/**
+	 * Classic checkout: the courier prices on screen, before the order prices the choice again (an
+	 * office or address chosen right before "Place order" was not priced on screen yet). The block
+	 * checkout has WooCommerce's own "order total changed" check.
+	 */
+	public static function remember_shown_prices() {
+		foreach ( (array) WC()->session->get( 'chosen_shipping_methods' ) as $key => $chosen ) {
+			$rate = WC()->session->get( 'shipping_for_package_' . $key )['rates'][ $chosen ] ?? null;
+
+			if ( $rate && 0 === strpos( (string) $chosen, 'nashenski_' ) ) {
+				self::$shown[ $key ] = \Nashenski\Front_End\Checkout\Pickers::is_pending( $rate ) ? null : (float) $rate->get_cost();
+			}
+		}
+	}
+
+	public static function validate_shown_prices( $data, $errors ) {
+		foreach ( self::$shown as $key => $cost ) {
+			$rate = nashenski_chosen_rate( $key, ( (array) WC()->session->get( 'chosen_shipping_methods' ) )[ $key ] ?? '' );
+
+			// Still not priced: the courier's own validation asks for the choice.
+			if ( ! $rate || \Nashenski\Front_End\Checkout\Pickers::is_pending( $rate ) || $cost === (float) $rate->get_cost() ) {
+				continue;
+			}
+
+			WC()->session->set( 'refresh_totals', true );
+			$errors->add( 'validation', __( 'The shipping price was calculated for your choice. Please check the updated total and place the order again.', 'nashenski-commerce' ) );
+
+			return;
 		}
 	}
 

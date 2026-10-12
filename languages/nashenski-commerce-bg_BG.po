@@ -3,10 +3,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.12.0\n"
+"Project-Id-Version: Nashenski Commerce 0.12.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-10 17:23+0000\n"
-"PO-Revision-Date: 2026-10-10 17:23+0000\n"
+"POT-Creation-Date: 2026-10-12 12:53+0000\n"
+"PO-Revision-Date: 2026-10-12 12:53+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -78,7 +78,7 @@ msgstr "Товарителница"
 msgid "Selected"
 msgstr "Избрано"
 
-#: app/Admin/BoxNow.php:93 app/Admin/CVC.php:88 app/Admin/Econt.php:92 app/Admin/Pigeon.php:180 app/Admin/Speedy.php:140 app/Front_End/Checkout/Pickers.php:306
+#: app/Admin/BoxNow.php:93 app/Admin/CVC.php:88 app/Admin/Econt.php:92 app/Admin/Pigeon.php:180 app/Admin/Speedy.php:140 app/Front_End/Checkout/Pickers.php:324
 msgid "Choose"
 msgstr "Избери"
 
@@ -270,19 +270,19 @@ msgstr "Описание"
 msgid "Econt Delivery"
 msgstr "Доставка с Еконт"
 
-#: app/Admin/Econt.php:100 app/Admin/Speedy.php:148 app/Front_End/Checkout/Pickers.php:299 app/Shipping/Econt/Address.php:22
+#: app/Admin/Econt.php:100 app/Admin/Speedy.php:148 app/Front_End/Checkout/Pickers.php:317 app/Shipping/Econt/Address.php:22
 msgid "Block"
 msgstr "Блок"
 
-#: app/Admin/Econt.php:101 app/Admin/Speedy.php:149 app/Front_End/Checkout/Pickers.php:300 app/Shipping/Econt/Address.php:23
+#: app/Admin/Econt.php:101 app/Admin/Speedy.php:149 app/Front_End/Checkout/Pickers.php:318 app/Shipping/Econt/Address.php:23
 msgid "Entrance"
 msgstr "Вход"
 
-#: app/Admin/Econt.php:102 app/Admin/Speedy.php:150 app/Front_End/Checkout/Pickers.php:301 app/Shipping/Econt/Address.php:24
+#: app/Admin/Econt.php:102 app/Admin/Speedy.php:150 app/Front_End/Checkout/Pickers.php:319 app/Shipping/Econt/Address.php:24
 msgid "Floor"
 msgstr "Етаж"
 
-#: app/Admin/Econt.php:103 app/Admin/Speedy.php:151 app/Front_End/Checkout/Pickers.php:302 app/Shipping/Econt/Address.php:25
+#: app/Admin/Econt.php:103 app/Admin/Speedy.php:151 app/Front_End/Checkout/Pickers.php:320 app/Shipping/Econt/Address.php:25
 msgid "Apartment"
 msgstr "Апартамент"
 
@@ -1168,11 +1168,11 @@ msgstr "Кредитно известие"
 msgid "Cancelled order document"
 msgstr "Документ за отказана поръчка"
 
-#: app/Admin/Import_Sources.php:697 app/Admin/Settings_Page.php:510 app/Front_End/Checkout/Pickers.php:272
+#: app/Admin/Import_Sources.php:697 app/Admin/Settings_Page.php:510 app/Front_End/Checkout/Pickers.php:290
 msgid "To an office"
 msgstr "До офис"
 
-#: app/Admin/Import_Sources.php:698 app/Front_End/Checkout/Pickers.php:273 app/Front_End/Checkout/Pickers.php:274 app/Front_End/Checkout/Pickers.php:275
+#: app/Admin/Import_Sources.php:698 app/Front_End/Checkout/Pickers.php:291 app/Front_End/Checkout/Pickers.php:292 app/Front_End/Checkout/Pickers.php:293
 msgid "To a parcel locker"
 msgstr "До автомат за пратки"
 
@@ -1538,7 +1538,7 @@ msgstr "Референтен номер"
 msgid "Tracking codes"
 msgstr "Кодове за проследяване"
 
-#: app/Admin/Pigeon.php:208 app/Admin/Speedy.php:173 app/Front_End/Checkout/Pickers.php:295
+#: app/Admin/Pigeon.php:208 app/Admin/Speedy.php:173 app/Front_End/Checkout/Pickers.php:313
 msgid "Street or quarter"
 msgstr "Улица или квартал"
 
@@ -1808,7 +1808,7 @@ msgstr "Такса за наложен платеж %"
 msgid "at least"
 msgstr "най-малко"
 
-#: app/Admin/Settings_Page.php:566 app/Pricing/Updater.php:416
+#: app/Admin/Settings_Page.php:566 app/Pricing/Updater.php:428
 msgid "Valid from"
 msgstr "В сила от"
 
@@ -3938,7 +3938,7 @@ msgstr "да"
 msgid "no"
 msgstr "не"
 
-#: app/Export/Builder/Fields.php:316 app/Export/Builder/Fields.php:317 app/Front_End/Checkout/Pickers.php:280 app/Front_End/Checkout/Pickers.php:281 app/Front_End/Checkout/Pickers.php:282
+#: app/Export/Builder/Fields.php:316 app/Export/Builder/Fields.php:317 app/Front_End/Checkout/Pickers.php:298 app/Front_End/Checkout/Pickers.php:299 app/Front_End/Checkout/Pickers.php:300
 msgid "Parcel locker"
 msgstr "Автомат за пратки"
 
@@ -4154,7 +4154,7 @@ msgstr "Списък"
 msgid "Checkbox"
 msgstr "Отметка"
 
-#: app/Front_End/Checkout/Field_Editor.php:572 app/Front_End/Checkout/Pickers.php:298
+#: app/Front_End/Checkout/Field_Editor.php:572 app/Front_End/Checkout/Pickers.php:316
 msgid "Number"
 msgstr "Номер"
 
@@ -4190,99 +4190,99 @@ msgstr "Добавяне на собствено поле"
 msgid "Use the arrows to change the order. Two half-width fields next to each other share a line. With company invoice fields on, the company name belongs to them."
 msgstr "Сменете реда със стрелките. Две съседни полета с половин ширина са на един ред. Когато полетата за фактура на фирма са включени, името на фирмата е част от тях."
 
-#: app/Front_End/Checkout/Pickers.php:125
+#: app/Front_End/Checkout/Pickers.php:143
 msgid "Complete the fields to calculate"
 msgstr "Попълнете данните за изчисляване"
 
-#: app/Front_End/Checkout/Pickers.php:139
+#: app/Front_End/Checkout/Pickers.php:157
 msgid "Free shipping"
 msgstr "Безплатна доставка"
 
-#: app/Front_End/Checkout/Pickers.php:276
+#: app/Front_End/Checkout/Pickers.php:294
 msgid "To your address"
 msgstr "До вашия адрес"
 
-#: app/Front_End/Checkout/Pickers.php:283
+#: app/Front_End/Checkout/Pickers.php:301
 msgid "Search by town, name or address"
 msgstr "Търсене по населено място, име или адрес"
 
-#: app/Front_End/Checkout/Pickers.php:284
+#: app/Front_End/Checkout/Pickers.php:302
 msgid "Change"
 msgstr "Промяна"
 
-#: app/Front_End/Checkout/Pickers.php:285
+#: app/Front_End/Checkout/Pickers.php:303
 msgid "Choose on the map"
 msgstr "Избор на картата"
 
-#: app/Front_End/Checkout/Pickers.php:286
+#: app/Front_End/Checkout/Pickers.php:304
 msgid "Choose an office on the map"
 msgstr "Изберете офис на картата"
 
-#: app/Front_End/Checkout/Pickers.php:287
+#: app/Front_End/Checkout/Pickers.php:305
 msgid "Close"
 msgstr "Затваряне"
 
-#: app/Front_End/Checkout/Pickers.php:288
+#: app/Front_End/Checkout/Pickers.php:306
 msgid "Loading..."
 msgstr "Зареждане..."
 
-#: app/Front_End/Checkout/Pickers.php:289
+#: app/Front_End/Checkout/Pickers.php:307
 msgid "Nothing found. Check the town in the address above."
 msgstr "Нищо не е намерено. Проверете населеното място в адреса по-горе."
 
-#: app/Front_End/Checkout/Pickers.php:290
+#: app/Front_End/Checkout/Pickers.php:308
 msgid "No match. Try another word."
 msgstr "Няма съвпадение. Опитайте с друга дума."
 
-#: app/Front_End/Checkout/Pickers.php:291
+#: app/Front_End/Checkout/Pickers.php:309
 msgid "Enter your town in the address above to see the list."
 msgstr "Въведете населеното си място в адреса по-горе, за да видите списъка."
 
-#: app/Front_End/Checkout/Pickers.php:292
+#: app/Front_End/Checkout/Pickers.php:310
 msgid "Choose it on the map. The price comes from the courier's public price list."
 msgstr "Изберете на картата. Цената се изчислява по публичния ценоразпис на куриера."
 
-#: app/Front_End/Checkout/Pickers.php:293
+#: app/Front_End/Checkout/Pickers.php:311
 msgid "This is an office. Choose a parcel locker, or pick the office delivery option."
 msgstr "Това е офис. Изберете автомат за пратки или опцията за доставка до офис."
 
-#: app/Front_End/Checkout/Pickers.php:294
+#: app/Front_End/Checkout/Pickers.php:312
 msgid "This is a parcel locker. Choose an office, or pick the parcel locker delivery option."
 msgstr "Това е автомат за пратки. Изберете офис или опцията за доставка до автомат."
 
-#: app/Front_End/Checkout/Pickers.php:296
+#: app/Front_End/Checkout/Pickers.php:314
 msgid "Start typing the street or quarter"
 msgstr "Започнете да пишете улицата или квартала"
 
-#: app/Front_End/Checkout/Pickers.php:297
+#: app/Front_End/Checkout/Pickers.php:315
 msgid "Street and number"
 msgstr "Улица и номер"
 
-#: app/Front_End/Checkout/Pickers.php:303
+#: app/Front_End/Checkout/Pickers.php:321
 msgid "Note for the courier (optional)"
 msgstr "Бележка за куриера (незадължително)"
 
-#: app/Front_End/Checkout/Pickers.php:304
+#: app/Front_End/Checkout/Pickers.php:322
 msgid "The list could not be loaded. Please try again."
 msgstr "Списъкът не можа да се зареди. Опитайте отново."
 
-#: app/Front_End/Checkout/Pickers.php:305
+#: app/Front_End/Checkout/Pickers.php:323
 msgid "Try again"
 msgstr "Опитайте отново"
 
-#: app/Front_End/Checkout/Pickers.php:332
+#: app/Front_End/Checkout/Pickers.php:350
 msgid "bl."
 msgstr "бл."
 
-#: app/Front_End/Checkout/Pickers.php:333
+#: app/Front_End/Checkout/Pickers.php:351
 msgid "entr."
 msgstr "вх."
 
-#: app/Front_End/Checkout/Pickers.php:334
+#: app/Front_End/Checkout/Pickers.php:352
 msgid "fl."
 msgstr "ет."
 
-#: app/Front_End/Checkout/Pickers.php:335
+#: app/Front_End/Checkout/Pickers.php:353
 msgid "ap."
 msgstr "ап."
 
@@ -4627,34 +4627,34 @@ msgid "There is no public price list for this courier."
 msgstr "За този куриер няма публичен ценоразпис."
 
 #. translators: %s: courier website address
-#: app/Pricing/Updater.php:46
+#: app/Pricing/Updater.php:58
 #, php-format
 msgid "The courier website did not let Nashenski Commerce read the price list (%s). Open it, compare and edit the prices by hand."
 msgstr "Сайтът на куриера не позволи на Нашенски Комерс да прочете ценоразписа (%s). Отворете го, сравнете и редактирайте цените ръчно."
 
-#: app/Pricing/Updater.php:72
+#: app/Pricing/Updater.php:84
 msgid "The price list on the courier website has changed and could not be read safely. Your prices were not changed."
 msgstr "Ценоразписът на сайта на куриера е променен и не може да се прочете надеждно. Цените ви не са променени."
 
-#: app/Pricing/Updater.php:417
+#: app/Pricing/Updater.php:429
 msgid "Extra surcharge %"
 msgstr "Допълнителна такса %"
 
-#: app/Pricing/Updater.php:418
+#: app/Pricing/Updater.php:430
 msgid "Cash on delivery %"
 msgstr "Наложен платеж %"
 
-#: app/Pricing/Updater.php:419
+#: app/Pricing/Updater.php:431
 msgid "Cash on delivery minimum"
 msgstr "Минимум за наложен платеж"
 
 #. translators: 1: weight in kg, 2: office, locker or address
-#: app/Pricing/Updater.php:430
+#: app/Pricing/Updater.php:442
 #, php-format
 msgid "Up to %1$s kg, %2$s"
 msgstr "До %1$s кг, %2$s"
 
-#: app/Pricing/Updater.php:445
+#: app/Pricing/Updater.php:457
 msgid "Unknown courier."
 msgstr "Непознат куриер."
 
@@ -5109,7 +5109,11 @@ msgstr "Изберете шкафче."
 msgid "Please choose an address."
 msgstr "Изберете адрес."
 
-#: app/Shipping/Register.php:68
+#: app/Shipping/Register.php:63
+msgid "The shipping price was calculated for your choice. Please check the updated total and place the order again."
+msgstr "Цената за доставка беше изчислена за вашия избор. Моля, проверете обновената сума и направете поръчката отново."
+
+#: app/Shipping/Register.php:104
 msgid "The payment method changed after the shipping price was calculated. Please check the updated total and place the order again."
 msgstr "Начинът на плащане е променен, след като цената за доставка е изчислена. Моля, проверете обновената сума и направете поръчката отново."
 

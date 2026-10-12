@@ -21,6 +21,7 @@ class Pickers {
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ), 20 );
 		add_action( 'woocommerce_after_shipping_rate', array( __CLASS__, 'render_container' ), 5, 2 );
+		add_filter( 'woocommerce_cart_shipping_packages', array( __CLASS__, 'add_choice' ) );
 		add_filter( 'woocommerce_package_rates', array( __CLASS__, 'mark_rates' ), 100, 2 );
 		add_filter( 'woocommerce_cart_shipping_method_full_label', array( __CLASS__, 'full_label' ), 20, 2 );
 		add_filter( 'bricks/dynamic_data/format_value', array( __CLASS__, 'builder_shipping_total' ), 10, 4 );
@@ -88,6 +89,23 @@ class Pickers {
 		$meta = $rate->get_meta_data();
 
 		return isset( $meta[ self::PENDING_META ] ) && 'yes' === $meta[ self::PENDING_META ];
+	}
+
+	/**
+	 * WooCommerce keeps calculated rates until the package changes, and the office or address
+	 * choice lives in the courier cookies. With the choice in the package, every request prices
+	 * the current choice, also an order placed before the checkout had updated the price.
+	 */
+	public static function add_choice( $packages ) {
+		$choice = md5( wp_json_encode( array_map( function ( $courier ) {
+			return nashenski_courier_cookie( 'nashenski--' . $courier . ( 'boxnow' === $courier ? '-apm' : '-address' ) );
+		}, \Nashenski\Plugin::COURIERS ) ) );
+
+		foreach ( $packages as $key => $package ) {
+			$packages[ $key ]['nashenski_choice'] = $choice;
+		}
+
+		return $packages;
 	}
 
 	/**
@@ -349,7 +367,8 @@ class Pickers {
 
 	/**
 	 * Put the chosen office or address into the order address when the customer did not type one
-	 * (stores often hide the address fields for office delivery).
+	 * (stores often hide the address fields for office delivery). With the street field hidden the
+	 * choice always wins, so an address saved from an earlier order cannot end up on this one.
 	 */
 	public static function fill_order_address( $order_id, $posted = array(), $order = null ) {
 		$order = $order instanceof \WC_Order ? $order : wc_get_order( $order_id );
@@ -374,9 +393,10 @@ class Pickers {
 			}
 
 			$changed = false;
+			$hidden = 'hidden' === Field_Editor::rule( 'address_1' );
 
 			foreach ( array( 'billing', 'shipping' ) as $kind ) {
-				if ( '' === (string) $order->{"get_{$kind}_address_1"}() ) {
+				if ( $hidden ? $text !== $order->{"get_{$kind}_address_1"}() : '' === (string) $order->{"get_{$kind}_address_1"}() ) {
 					$order->{"set_{$kind}_address_1"}( $text );
 					$changed = true;
 				}

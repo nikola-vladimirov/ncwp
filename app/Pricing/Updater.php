@@ -38,6 +38,18 @@ class Updater {
 
 		$response = wp_remote_get( $url, array( 'timeout' => 30 ) );
 
+		// Econt's server sends the PDF without a length and closes the connection without the TLS
+		// goodbye, which cURL with OpenSSL 3 reports as an error. PHP's own streams accept it.
+		if ( is_wp_error( $response ) ) {
+			$streams = function ( &$url, &$headers, &$data, &$type, &$options ) {
+				$options['transport'] = \WpOrg\Requests\Transport\Fsockopen::class;
+			};
+
+			add_action( 'requests-requests.before_request', $streams, 10, 5 );
+			$response = wp_remote_get( $url, array( 'timeout' => 30 ) );
+			remove_action( 'requests-requests.before_request', $streams, 10 );
+		}
+
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			return new \WP_Error(
 				'nashenski_prices_fetch',

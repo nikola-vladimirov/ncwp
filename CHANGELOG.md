@@ -1,5 +1,16 @@
 # Nashenski Commerce changelog
 
+## 0.12.1 (2026-10-12)
+
+### Checkout
+- A customer who typed the street number (or chose an office or locker) and pressed "Place order" straight away was told to choose a delivery option, although everything was filled in. The order now prices the choice that is on screen at that moment. This was most visible in the block checkout with the street address field hidden, and it is fixed for every courier and every checkout: classic, block and page builder checkouts.
+- An address changed right before "Place order" could be saved with its old street number on the order and on the waybill. The order now always gets the latest choice.
+- When the street address field is hidden, the chosen office or address always becomes the order address. Before, a street saved from an earlier order could stay on the new order. The customer types the address only once, in the courier fields.
+- If the shipping price was calculated only when the order was placed, the customer now sees the new total and places the order again, so nobody orders at a price they have not seen. The block checkout already did this through WooCommerce.
+
+### Courier price lists
+- The Econt price list can be read again. Econt's server now ends the file in a way that the usual connection method reports as an error, so Nashenski Commerce reads it another way when that happens.
+
 ## 0.12.0 (2026-10-10)
 
 ### Updates from the dashboard

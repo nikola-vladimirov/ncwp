@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.12.0
+Stable tag: 0.12.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -96,6 +96,10 @@ The plugin only contacts a service after you turn it on and enter your own accou
 * EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/
 
 == Changelog ==
+
+= 0.12.1 =
+* Checkout: pressing "Place order" right after typing the street number no longer asks to choose a delivery option, and the order always gets the latest office or address. Works with the street field hidden, in classic, block and page builder checkouts.
+* The Econt price list can be read again.
 
 = 0.12.0 =
 * New versions show up in Dashboard > Updates and can be installed from there, also automatically.
