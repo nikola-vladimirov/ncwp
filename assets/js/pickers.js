@@ -252,6 +252,7 @@
 			phone: a.phone || '',
 			state: a.state || '',
 			city: a.city || '',
+			postcode: a.postcode || '',
 			country: a.country || 'BG',
 			payment: data.payment || '',
 		};
@@ -822,14 +823,154 @@
 		);
 	}
 
+	/* ---------- the town, when the checkout hides the town or region field ---------- */
+
+	/*
+	 * The address with the town chosen in the picker, while it is still the town of the checkout:
+	 * the town field is hidden or empty, or says the same (also typed in Latin, "Varna").
+	 */
+	function withTown( address ) {
+		var town = cfg.townPicker ? recall( 'town' ) : null;
+		var typed = normalize( address.city );
+
+		if ( ! town || ( typed && typed !== normalize( town.name ) && typed !== normalize( town.typed ) ) ) {
+			return address;
+		}
+
+		return Object.assign( {}, address, { city: town.name, state: town.state, postcode: address.postcode || town.postcode } );
+	}
+
+	function regionOf( town ) {
+		return town.region ? String( t.region || '%s' ).replace( '%s', town.region ) : '';
+	}
+
+	/* props: address (from the checkout), onTown( town ). */
+	function TownPicker( props ) {
+		var address = props.address;
+		var _query = useState( address.city || '' ), query = _query[ 0 ], setQuery = _query[ 1 ];
+		var _towns = useState( [] ), towns = _towns[ 0 ], setTowns = _towns[ 1 ];
+		var _status = useState( 'idle' ), status = _status[ 0 ], setStatus = _status[ 1 ];
+		var _editing = useState( false ), editing = _editing[ 0 ], setEditing = _editing[ 1 ];
+		var current = withTown( address );
+		var known = current.city && current.state;
+
+		function choose( town ) {
+			remember( 'town', Object.assign( {}, town, { typed: address.city || '' } ) );
+			setEditing( false );
+			props.onTown( town );
+		}
+
+		// A town remembered from an earlier visit goes back into an empty checkout address.
+		useEffect( function () {
+			var town = recall( 'town' );
+
+			if ( town && ! address.city && current.city ) {
+				props.onTown( town );
+			}
+		}, [ address.city ] );
+
+		useEffect( function () {
+			if ( ( known && ! editing ) || normalize( query ).length < 2 ) {
+				return;
+			}
+
+			var timer = window.setTimeout( function () {
+				setStatus( 'loading' );
+				ajax( 'nashenski_search_towns', { query: query } )
+					.then( function ( response ) {
+						var found = response.towns || [];
+						var exact = found.filter( function ( town ) {
+							return 0 === town.rank;
+						} );
+
+						setTowns( found );
+						setStatus( 'ready' );
+
+						// The checkout's town field says which town: take it when only one place has that name.
+						if ( ! editing && address.city && 1 === exact.length && normalize( query ) === normalize( address.city ) ) {
+							choose( exact[ 0 ] );
+						}
+					} )
+					.catch( function () {
+						setStatus( 'error' );
+					} );
+			}, 250 );
+
+			return function () {
+				window.clearTimeout( timer );
+			};
+		}, [ query, known, editing ] );
+
+		if ( known && ! editing ) {
+			return h( 'div', { className: 'nashenski-picker nashenski-picker--town' },
+				h( 'div', { className: 'nashenski-picker__chosen' },
+					h( 'span', { className: 'nashenski-picker__chosen-label' }, t.town ),
+					h( 'span', { className: 'nashenski-picker__chosen-name' }, current.city ),
+					h( 'span', { className: 'nashenski-picker__chosen-detail' }, regionOf( recall( 'town' ) || {} ) ),
+					h( 'button', {
+						type: 'button',
+						className: 'nashenski-picker__change',
+						onClick: function () {
+							setQuery( '' );
+							setEditing( true );
+						},
+					}, t.change )
+				)
+			);
+		}
+
+		return h( 'div', { className: 'nashenski-picker nashenski-picker--town' },
+			h( Combobox, {
+				label: t.town,
+				placeholder: t.townSearch,
+				query: query,
+				options: towns.map( function ( town ) {
+					return { key: town.name + town.state + town.postcode, title: town.name, detail: regionOf( town ) + ', ' + town.postcode, town: town };
+				} ),
+				empty: 'loading' === status ? t.loading : ( 'error' === status ? t.error : ( normalize( query ).length > 1 ? t.noMatch : '' ) ),
+				onQuery: setQuery,
+				onChoose: function ( option ) {
+					choose( option.town );
+				},
+			} )
+		);
+	}
+
 	/**
-	 * The picker for one shipping option. props: courier, type, data, refresh(), onChoice( text ).
+	 * The picker for one shipping option. props: courier, type, data, refresh(), onChoice( text ),
+	 * and onTown( town ) for checkouts that keep the picker's town in their own address.
 	 */
 	function Picker( props ) {
 		var courier = COURIERS[ props.courier ];
+		var _version = useState( 0 ), setVersion = _version[ 1 ];
 
 		if ( ! courier ) {
 			return null;
+		}
+
+		// Every courier needs the town and region; ask for them when the checkout does not.
+		if ( cfg.townPicker && 'apm' !== props.type && ! props.hasTown ) {
+			var address = props.data.address || {};
+			var current = withTown( address );
+
+			return h( 'div', { className: 'nashenski-picker-group' },
+				h( TownPicker, {
+					address: address,
+					onTown: function ( town ) {
+						setVersion( function ( v ) {
+							return v + 1;
+						} );
+
+						if ( props.onTown ) {
+							props.onTown( town );
+						}
+					},
+				} ),
+				current.city && current.state ? h( Picker, Object.assign( {}, props, {
+					hasTown: true,
+					data: Object.assign( {}, props.data, { address: current } ),
+				} ) ) : null
+			);
 		}
 
 		if ( 'address' === props.type ) {

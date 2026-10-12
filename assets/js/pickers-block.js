@@ -1,7 +1,7 @@
 /**
  * Nashenski Commerce: pickers in the WooCommerce block checkout.
  *
- * Shown under the shipping options (ExperimentalOrderShippingPackages slot) for the chosen
+ * Rendered from the ExperimentalOrderShippingPackages slot and shown right under the chosen
  * Nashenski Commerce option. A choice goes into the same cookie as in the classic checkout, then
  * extensionCartUpdate (namespace "nashenski") makes WooCommerce price the cart again.
  *
@@ -55,18 +55,26 @@
 
 	var lastCss = null;
 
+	/* Put the text in place of an element's content, so it takes the room it needs and wraps. */
+	function replaceText( selector, text, sizeFrom ) {
+		var node = document.querySelector( sizeFrom );
+		var size = node && window.getComputedStyle ? window.getComputedStyle( node ).fontSize : '0.875rem';
+
+		return selector + '{font-size:0!important}' + selector + '>*{display:none}' +
+			selector + '::after{content:' + text + ';font-size:' + size + '}';
+	}
+
 	function writePendingCss( state ) {
 		var text = cssString( P.pending );
 		var css = state.pending.map( function ( id ) {
 			var option = '.wc-block-components-radio-control__option:has(input[value="' + id + '"])';
 
-			return option + ' .wc-block-components-radio-control__secondary-label{visibility:hidden;position:relative}' +
-				option + ' .wc-block-components-radio-control__secondary-label::after{content:' + text + ';visibility:visible;position:absolute;inset-inline-end:0;white-space:nowrap}';
+			return replaceText( option + ' .wc-block-components-radio-control__secondary-label', text, '.wc-block-components-radio-control__label' );
 		} ).join( '' );
 
+		// In the order summary the text takes the place of the shipping price.
 		if ( state.chosenPending ) {
-			css += '.wc-block-components-totals-shipping .wc-block-components-totals-item__value{visibility:hidden;position:relative}' +
-				'.wc-block-components-totals-shipping .wc-block-components-totals-item__value::after{content:' + text + ';visibility:visible;position:absolute;inset-inline-end:0;white-space:nowrap}';
+			css += replaceText( '.wc-block-components-totals-shipping .wc-block-components-totals-item__value', text, '.wc-block-components-totals-shipping .wc-block-components-totals-item__label' );
 		}
 
 		if ( css === lastCss ) {
@@ -114,6 +122,7 @@
 					phone: shipping.phone || billing.phone || '',
 					state: shipping.state || '',
 					city: shipping.city || '',
+					postcode: shipping.postcode || '',
 					country: shipping.country || 'BG',
 					address_2: shipping.address_2 || '',
 				},
@@ -126,36 +135,77 @@
 		cartUpdate( { namespace: 'nashenski', data: { changed: Date.now() } } );
 	}
 
+	/* The town from the picker goes into the checkout's address, so the order and WooCommerce have it. */
+	function saveTown( town ) {
+		var cart = wp.data.dispatch( 'wc/store/cart' );
+		var customer = wp.data.select( 'wc/store/cart' ).getCustomerData() || {};
+		var billing = String( ( customer.billingAddress || {} ).city || '' ).toLowerCase();
+		var change = { city: town.name, state: town.state, postcode: town.postcode };
+
+		cart.setShippingAddress( change );
+
+		// A billing address in another town (typed by the customer) stays as it is.
+		if ( ! billing || billing === String( ( customer.shippingAddress || {} ).city || '' ).toLowerCase() ) {
+			cart.setBillingAddress( change );
+		}
+	}
+
+	/*
+	 * The picker sits right under the chosen shipping option, like in the classic checkout. The
+	 * holder is moved there; when the option cannot be found it stays in the plugin's slot.
+	 */
+	var holder = document.createElement( 'div' );
+	var shownRate = '';
+	var slotNode = null;
+
+	holder.className = 'nashenski-block-pickers';
+
+	function place() {
+		var input = shownRate ? document.querySelector( 'input.wc-block-components-radio-control__input[value="' + shownRate.replace( /"/g, '' ) + '"]' ) : null;
+		var option = input ? input.closest( '.wc-block-components-radio-control__option' ) : null;
+
+		if ( option ) {
+			if ( option.nextElementSibling !== holder ) {
+				option.after( holder );
+			}
+		} else if ( slotNode && holder.parentNode !== slotNode ) {
+			slotNode.appendChild( holder );
+		}
+	}
+
 	function Pickers() {
 		var data = useCheckoutData();
+		var rate = data.rate;
+		var courier = rate ? P.courierOf( rate.rate_id ) : '';
 
-		wp.element.useEffect( function () {
+		shownRate = courier ? rate.rate_id : '';
+
+		wp.element.useLayoutEffect( function () {
+			place();
 			writePendingCss( pendingState( data.packages ) );
 			P.decorateRates( pendingState( data.packages ).pending );
 		} );
-
-		if ( ! data.rate ) {
-			return null;
-		}
-
-		var courier = P.courierOf( data.rate.rate_id );
 
 		if ( ! courier ) {
 			return null;
 		}
 
-		var type = 'boxnow' === courier ? 'apm' : ( metaOf( data.rate ).delivery_type || 'office' );
+		var type = 'boxnow' === courier ? 'apm' : ( metaOf( rate ).delivery_type || 'office' );
 
-		return h( 'div', { className: 'nashenski-block-pickers' },
-			h( P.Picker, {
-				key: data.rate.rate_id,
-				courier: courier,
-				type: type,
-				data: { address: data.address, payment: data.payment, company: {} },
-				refresh: refresh,
-				onChoice: function () {},
-			} )
-		);
+		return h( 'div', {
+			className: 'nashenski-block-pickers-slot',
+			ref: function ( node ) {
+				slotNode = node;
+			},
+		}, wp.element.createPortal( h( P.Picker, {
+			key: rate.rate_id,
+			courier: courier,
+			type: type,
+			data: { address: data.address, payment: data.payment, company: {} },
+			refresh: refresh,
+			onTown: saveTown,
+			onChoice: function () {},
+		} ), holder ) );
 	}
 
 	wp.plugins.registerPlugin( 'nashenski-block-pickers', {
@@ -176,6 +226,8 @@
 
 			writePendingCss( state );
 			P.decorateRates( state.pending );
+			// The checkout re-rendered the options: keep the picker under the chosen one.
+			place();
 		}, 30 );
 	} ).observe( document.body, { childList: true, subtree: true } );
 } )();

@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.12.1
+Stable tag: 0.13.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -96,6 +96,11 @@ The plugin only contacts a service after you turn it on and enter your own accou
 * EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/
 
 == Changelog ==
+
+= 0.13.0 =
+* With the town or region field hidden, the courier fields ask for the town (with region and postcode) and save it on the order, in classic, block and page builder checkouts. Needs Econt switched on.
+* Block checkout: office and address fields open under the chosen delivery option, field widths from the layout apply, and the pending price text no longer overlaps.
+* Fixed PHP warnings from the weekly courier cache clean-up.
 
 = 0.12.1 =
 * Checkout: pressing "Place order" right after typing the street number no longer asks to choose a delivery option, and the order always gets the latest office or address. Works with the street field hidden, in classic, block and page builder checkouts.

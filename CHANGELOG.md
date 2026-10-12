@@ -1,5 +1,20 @@
 # Nashenski Commerce changelog
 
+## 0.13.0 (2026-10-12)
+
+### Checkout with the town or region hidden
+- When the store hides the town or the region field, the courier fields ask for the town themselves: the customer starts typing and picks the town or village from a list with its region and postcode, so places with the same name (there are six called Nikolaevo) are told apart. Latin letters work too ("Varna", "Ruse"). Before, office and address delivery waited for a town the customer could not enter, and the order failed with "Choose a delivery option".
+- When only the region is hidden and the customer types the town, the town is matched by itself when only one place has that name, so nothing is typed twice. This fixes Econt's "invalid settlement" error for the receiver.
+- The chosen town, region and postcode are saved on the order in every checkout: classic, block and page builder checkouts. In the block checkout they also go into the customer's address.
+- The town list is Econt's public list of towns, so this needs Econt switched on.
+
+### Block checkout
+- The office, locker or address fields now open right under the chosen delivery option, joined to it, instead of below the whole list.
+- The field widths from the field layout now apply to the address in the block checkout too (for example phone on its own line and first and last name side by side). On phones WooCommerce still shows one field per line.
+- "Complete the fields to calculate" no longer runs over the "Shipping" label in the order summary or over the courier name on narrow screens.
+
+### Fixed
+- PHP warnings "Trying to access array offset on false" from the weekly courier cache clean-up when a courier's cache folder did not exist yet.
 ## 0.12.1 (2026-10-12)
 
 ### Checkout

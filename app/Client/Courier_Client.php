@@ -39,7 +39,8 @@ trait Courier_Client {
 
 		$keep = $skip_cached_files && isset( static::$skip_cached_files ) ? static::$skip_cached_files : array();
 
-		foreach ( (array) $wp_filesystem->dirlist( self::CACHE_FOLDER ) as $file ) {
+		// dirlist() is false when the folder was never made (no data loaded yet).
+		foreach ( $wp_filesystem->dirlist( self::CACHE_FOLDER ) ?: array() as $file ) {
 			if ( ! in_array( $file['name'], $keep ) ) {
 				$wp_filesystem->delete( self::CACHE_FOLDER . DIRECTORY_SEPARATOR . $file['name'] );
 			}

@@ -27,6 +27,66 @@ class Pickers {
 		add_filter( 'bricks/dynamic_data/format_value', array( __CLASS__, 'builder_shipping_total' ), 10, 4 );
 		add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'fill_order_address' ), 5, 3 );
 		add_filter( 'body_class', array( __CLASS__, 'body_class' ) );
+		add_action( 'wp_ajax_nashenski_search_towns', array( __CLASS__, 'search_towns' ) );
+		add_action( 'wp_ajax_nopriv_nashenski_search_towns', array( __CLASS__, 'search_towns' ) );
+	}
+
+	/**
+	 * The pickers ask for the town themselves when the checkout hides the town or the region
+	 * field: every courier needs both. The towns come from Econt's public list, so only with Econt on.
+	 */
+	public static function town_picker() {
+		return 'yes' === nashenski_get_option( 'apis', 'enable_econt' )
+			&& ( 'hidden' === Field_Editor::rule( 'city' ) || 'hidden' === Field_Editor::rule( 'state' ) );
+	}
+
+	/**
+	 * Towns and villages in Bulgaria for the picker's town search: exact names first, then names
+	 * that start with the text, then the rest. Latin text is read as Cyrillic too ("Varna").
+	 */
+	public static function search_towns() {
+		nashenski_check_picker_request();
+
+		$text = mb_strtolower( trim( nashenski_remove_city_prefix( nashenski_picker_request( 'query' ) ) ) );
+		$cyrillic = mb_strtolower( \Nashenski\Transliteration::latin2cyrillic( $text ) );
+		$found = array();
+
+		if ( mb_strlen( $text ) > 1 ) {
+			$cities = nashenski()->container()[ \Nashenski\Container\Client::ECONT_CITIES ];
+			$regions = array_flip( $cities->get_regions( 'BG' ) );
+
+			foreach ( $cities->get_cities( 'BG' )['cities'] ?? array() as $city ) {
+				$state = $regions[ $city['regionName'] ?? '' ] ?? '';
+				$names = array( mb_strtolower( (string) $city['name'] ), mb_strtolower( (string) ( $city['nameEn'] ?? '' ) ) );
+				$rank = 3;
+
+				foreach ( $names as $name ) {
+					foreach ( array( $cyrillic, $text ) as $query ) {
+						$at = mb_strpos( $name, $query );
+
+						if ( false !== $at ) {
+							$rank = min( $rank, $name === $query ? 0 : ( 0 === $at ? 1 : 2 ) );
+						}
+					}
+				}
+
+				if ( $state && $rank < 3 ) {
+					$found[] = array(
+						'rank' => $rank,
+						'name' => $city['name'],
+						'state' => $state,
+						'region' => $city['regionName'],
+						'postcode' => (string) ( $city['postCode'] ?? '' ),
+					);
+				}
+			}
+
+			usort( $found, function ( $a, $b ) {
+				return array( $a['rank'], $a['name'] ) <=> array( $b['rank'], $b['name'] );
+			} );
+		}
+
+		wp_send_json_success( array( 'towns' => array_slice( $found, 0, 30 ) ) );
 	}
 
 	/**
@@ -265,6 +325,7 @@ class Pickers {
 		wp_localize_script( 'nashenski-pickers', 'nashenskiPickers', self::config() );
 
 		if ( self::is_block_checkout() ) {
+			wp_add_inline_style( 'nashenski-checkout', Field_Editor::block_css() );
 			wp_enqueue_script( 'nashenski-pickers-block', $url . 'js/pickers-block.js', array( 'nashenski-pickers', 'wp-data', 'wp-plugins', 'wc-blocks-checkout', 'wc-blocks-data-store' ), $ver( 'js/pickers-block.js' ), true );
 		} else {
 			wp_enqueue_script( 'nashenski-pickers-classic', $url . 'js/pickers-classic.js', array( 'nashenski-pickers', 'jquery' ), $ver( 'js/pickers-classic.js' ), true );
@@ -283,6 +344,7 @@ class Pickers {
 			'nonce' => wp_create_nonce( 'nashenski_pickers' ),
 			'rates' => self::rate_types(),
 			'connected' => $connected,
+			'townPicker' => self::town_picker(),
 			'logos' => 'no' === nashenski_get_option( 'checkout', 'courier_logos' ) ? array() : Courier_Logos::get_logos(),
 			'showType' => 'no' !== nashenski_get_option( Appearance::GROUP, 'show_type' ),
 			'pending' => self::pending_text(),
@@ -322,6 +384,10 @@ class Pickers {
 				'error' => __( 'The list could not be loaded. Please try again.', 'nashenski-commerce' ),
 				'retry' => __( 'Try again', 'nashenski-commerce' ),
 				'choose' => __( 'Choose', 'nashenski-commerce' ),
+				'town' => __( 'Town or village', 'nashenski-commerce' ),
+				'townSearch' => __( 'Start typing your town or village', 'nashenski-commerce' ),
+				/* translators: %s: region name */
+				'region' => __( '%s region', 'nashenski-commerce' ),
 			),
 			'maps' => array(
 				'econt' => 'https://officelocator.econt.com/',
@@ -399,6 +465,18 @@ class Pickers {
 				if ( $hidden ? $text !== $order->{"get_{$kind}_address_1"}() : '' === (string) $order->{"get_{$kind}_address_1"}() ) {
 					$order->{"set_{$kind}_address_1"}( $text );
 					$changed = true;
+				}
+			}
+
+			// The town the picker asked for when the checkout hides the town or region field.
+			foreach ( array( 'city', 'state', 'postcode' ) as $field ) {
+				$value = is_array( $cookie ) ? (string) ( $cookie[ $field ] ?? '' ) : '';
+
+				foreach ( array( 'billing', 'shipping' ) as $kind ) {
+					if ( '' !== $value && $value !== $order->{"get_{$kind}_{$field}"}() && ( 'hidden' === Field_Editor::rule( $field ) || '' === $order->{"get_{$kind}_{$field}"}() ) ) {
+						$order->{"set_{$kind}_{$field}"}( $value );
+						$changed = true;
+					}
 				}
 			}
 

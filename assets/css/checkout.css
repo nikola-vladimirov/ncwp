@@ -421,6 +421,21 @@
 	margin-top: var(--nashenski-gap);
 }
 
+.nashenski-block-pickers:empty {
+	display: none;
+}
+
+/* Under the chosen option of the block checkout, the picker joins its card. */
+.wc-block-components-radio-control__option + .nashenski-block-pickers {
+	margin: 0;
+	padding: 0 16px 4px;
+	box-shadow: inset 2px 0 0 var(--nashenski-accent), inset -2px 0 0 var(--nashenski-accent), inset 0 -2px 0 var(--nashenski-accent);
+}
+
+.nashenski-shipping--cards .wc-block-components-radio-control__option.wc-block-components-radio-control__option-checked:has(+ .nashenski-block-pickers:not(:empty)) {
+	box-shadow: inset 2px 0 0 var(--nashenski-accent), inset -2px 0 0 var(--nashenski-accent), inset 0 2px 0 var(--nashenski-accent);
+}
+
 .nashenski-map__note {
 	flex: 1;
 	color: #b32d2e;

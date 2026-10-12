@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  *   which the block checkout reads too;
  * - email and order notes can only be hidden in the classic checkout;
  * - the width and the place of email and the extra fields apply to the classic checkout; in the
- *   block checkout the extra fields sit under the email.
+ *   block checkout the extra fields sit under the email. Address field widths apply to both.
  */
 class Field_Editor {
 	const GROUP = 'fields';
@@ -106,6 +106,23 @@ class Field_Editor {
 			'postcode' => __( 'Postcode', 'nashenski-commerce' ),
 			'phone' => __( 'Phone', 'nashenski-commerce' ),
 		);
+	}
+
+	/**
+	 * Block checkout: the widths from the layout. WooCommerce lets every field grow to the full
+	 * line when it is alone, so the widths are fixed here (two halves and the 12px gap fill a line).
+	 */
+	public static function block_css() {
+		$css = '';
+
+		foreach ( self::layout() as $row ) {
+			if ( in_array( $row['key'], self::KEYS, true ) ) {
+				$field = '.wc-block-components-address-form__' . $row['key'];
+				$css .= '.wc-block-checkout .wc-block-components-address-form ' . $field . $field . '{flex:0 0 ' . ( 'half' === $row['width'] ? 'calc(50% - 6px)' : '100%' ) . '}';
+			}
+		}
+
+		return $css;
 	}
 
 	/**
@@ -528,7 +545,7 @@ class Field_Editor {
 				'type' => 'title',
 				'id' => 'nashenski_field_layout',
 				'title' => __( 'Checkout fields', 'nashenski-commerce' ),
-				'desc' => __( 'Order, width and visibility of the billing fields, and your own fields. Show, require and hide apply to the billing and the shipping address in every checkout. The order also applies to the address in the block checkout, where the email always comes first and your own fields appear under it. Width and the place of the email apply to the classic checkout and page builder checkouts that show WooCommerce\'s billing fields; builder checkouts made of single field elements follow the order you placed them in.', 'nashenski-commerce' ),
+				'desc' => __( 'Order, width and visibility of the billing fields, and your own fields. Show, require and hide apply to the billing and the shipping address in every checkout. The order and the width also apply to the address in the block checkout, where the email always comes first and your own fields appear under it. The place of the email applies to the classic checkout and page builder checkouts that show WooCommerce\'s billing fields; builder checkouts made of single field elements follow the order you placed them in. When the town or the region is hidden, the courier fields ask for the town (with Econt switched on, from Econt\'s public list of towns).', 'nashenski-commerce' ),
 			),
 			array(
 				'type' => 'nashenski_field_layout',
