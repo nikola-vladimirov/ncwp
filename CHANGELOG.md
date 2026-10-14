@@ -5,6 +5,8 @@
 ### Fixed
 - "View version details" on an update shows the whole changelog, every version, with headings and lists that wrap to the window. Before, it showed only the new version's notes as long lines you had to scroll sideways.
 - The "Changelog" link on the Plugins screen shows the same headings and lists instead of raw text.
+- Update details show the Nashenski Commerce banner, the developer PristaDigital with a link to pristadigital.com, and the WordPress and PHP versions the update needs. The plugin site link goes to pristadigital.com instead of the GitHub release, which a private repository does not show.
+- The developer name on the Plugins screen links to pristadigital.com.
 
 ## 0.14.0 (2026-10-14)
 

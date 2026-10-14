@@ -13,6 +13,7 @@ defined( 'ABSPATH' ) || exit;
 class Updater {
 	const SLUG = 'nashenski-commerce';
 	const API = 'https://api.github.com/repos/nikola-vladimirov/nashenski-commerce';
+	const AUTHOR = 'https://pristadigital.com/';
 
 	public function __construct() {
 		add_filter( 'update_plugins_github.com', array( __CLASS__, 'check' ), 10, 3 );
@@ -69,12 +70,12 @@ class Updater {
 	}
 
 	/**
-	 * CHANGELOG.md of the release, so the details show every version; the release notes when it can't be read.
+	 * A file of the release from the repository, or null.
 	 */
-	private static function changelog( $release ) {
-		$response = self::get( self::API . '/contents/CHANGELOG.md?ref=' . rawurlencode( $release['tag'] ), 'application/vnd.github.raw+json' );
+	private static function file( $release, $path ) {
+		$response = self::get( self::API . '/contents/' . $path . '?ref=' . rawurlencode( $release['tag'] ), 'application/vnd.github.raw+json' );
 
-		return 200 === wp_remote_retrieve_response_code( $response ) ? (string) wp_remote_retrieve_body( $response ) : $release['notes'];
+		return 200 === wp_remote_retrieve_response_code( $response ) ? (string) wp_remote_retrieve_body( $response ) : null;
 	}
 
 	/**
@@ -86,14 +87,28 @@ class Updater {
 			return $result;
 		}
 
+		// "Requires at least", "Tested up to" and "Requires PHP" of the new version.
+		$readme = (string) self::file( $release, 'readme.txt' );
+		$header = function ( $name ) use ( $readme ) {
+			return preg_match( '/^' . $name . ':[ \t]*(\S+)/mi', $readme, $m ) ? $m[1] : '';
+		};
+		$images = nashenski()->plugin_dir_url() . 'assets/images/';
+
 		return (object) array(
 			'name' => 'Nashenski Commerce',
 			'slug' => self::SLUG,
 			'version' => $release['version'],
-			'homepage' => $release['url'],
+			'author' => '<a href="' . esc_url( self::AUTHOR ) . '">PristaDigital</a>',
+			'homepage' => self::AUTHOR,
+			'requires' => $header( 'Requires at least' ),
+			'tested' => $header( 'Tested up to' ),
+			'requires_php' => $header( 'Requires PHP' ),
 			'last_updated' => $release['date'],
 			'download_link' => $release['package'],
-			'sections' => array( 'changelog' => Admin\Changelog::html( self::changelog( $release ) ) ),
+			'banners' => array( 'low' => $images . 'banner-772x250.png' ),
+			'icons' => array( '1x' => $images . 'logo.png' ),
+			// The whole CHANGELOG.md of the release, or its notes when that can't be read.
+			'sections' => array( 'changelog' => Admin\Changelog::html( self::file( $release, 'CHANGELOG.md' ) ?? $release['notes'] ) ),
 		);
 	}
 

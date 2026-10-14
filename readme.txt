@@ -99,6 +99,7 @@ The plugin only contacts a service after you turn it on and enter your own accou
 
 = 0.14.1 =
 * Update details show the whole changelog with headings and lists that wrap, instead of one version scrolling sideways.
+* Update details show the banner, the developer PristaDigital (pristadigital.com) and the WordPress and PHP versions needed.
 
 = 0.14.0 =
 * Settings in boxes that flow in two columns on wide screens, tighter rows, one row for the courier switches and one for the check services.
