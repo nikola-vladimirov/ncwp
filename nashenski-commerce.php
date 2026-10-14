@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name:  Nashenski Commerce
-Plugin URI:   https://wordpress.org/plugins/nashenski-commerce/
+Plugin URI:   https://pristadigital.com/
 Description:  Everything a WooCommerce store needs to sell in Bulgaria: Econt, Speedy, BOX NOW, CVC and Pigeon shipping, invoices, and the light regime of Ordinance N-18.
 Requires Plugins: woocommerce
 Author:       PristaDigital
