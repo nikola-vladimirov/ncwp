@@ -1,5 +1,11 @@
 # Nashenski Commerce changelog
 
+## 0.14.1 (2026-10-14)
+
+### Fixed
+- "View version details" on an update shows the whole changelog, every version, with headings and lists that wrap to the window. Before, it showed only the new version's notes as long lines you had to scroll sideways.
+- The "Changelog" link on the Plugins screen shows the same headings and lists instead of raw text.
+
 ## 0.14.0 (2026-10-14)
 
 ### Settings screens

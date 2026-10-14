@@ -40,6 +40,7 @@ class Updater {
 			if ( '.zip' === substr( $asset['name'], -4 ) && ! empty( $release['tag_name'] ) ) {
 				return array(
 					'version' => ltrim( $release['tag_name'], 'v' ),
+					'tag' => $release['tag_name'],
 					'url' => $release['html_url'],
 					'package' => $asset['url'],
 					'notes' => (string) $release['body'],
@@ -68,7 +69,17 @@ class Updater {
 	}
 
 	/**
-	 * "View version details" on the update row: the release notes.
+	 * CHANGELOG.md of the release, so the details show every version; the release notes when it can't be read.
+	 */
+	private static function changelog( $release ) {
+		$response = self::get( self::API . '/contents/CHANGELOG.md?ref=' . rawurlencode( $release['tag'] ), 'application/vnd.github.raw+json' );
+
+		return 200 === wp_remote_retrieve_response_code( $response ) ? (string) wp_remote_retrieve_body( $response ) : $release['notes'];
+	}
+
+	/**
+	 * "View version details" on the update row: the changelog.
+	 * WordPress strips attributes there (a style on <pre> is dropped), so it gets plain headings and lists.
 	 */
 	public static function details( $result, $action, $args ) {
 		if ( 'plugin_information' !== $action || self::SLUG !== ( $args->slug ?? '' ) || ! ( $release = self::release() ) ) {
@@ -82,7 +93,7 @@ class Updater {
 			'homepage' => $release['url'],
 			'last_updated' => $release['date'],
 			'download_link' => $release['package'],
-			'sections' => array( 'changelog' => '<pre style="white-space:pre-wrap">' . esc_html( $release['notes'] ) . '</pre>' ),
+			'sections' => array( 'changelog' => Admin\Changelog::html( self::changelog( $release ) ) ),
 		);
 	}
 

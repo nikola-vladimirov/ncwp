@@ -57,14 +57,61 @@ class Changelog {
 <title><?php esc_html_e( 'Nashenski Commerce changelog', 'nashenski-commerce' ); ?></title>
 <style>
 body { margin: 0; padding: 24px 32px; color: #1d2327; background: #fff; }
-pre { margin: 0; white-space: pre-wrap; font: 14px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+body { font: 14px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+h3 { margin: 28px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #dcdcde; font-size: 18px; }
+h3:first-child { margin-top: 0; }
+h4 { margin: 16px 0 4px; font-size: 14px; }
+ul { margin: 0 0 8px; padding-left: 20px; }
+li { margin: 0 0 4px; }
+p { margin: 0 0 8px; }
 </style>
 </head>
 <body>
-<pre><?php echo esc_html( $md ); ?></pre>
+<?php echo self::html( $md ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in html(). ?>
 </body>
 </html>
 		<?php
 		exit;
+	}
+
+	/**
+	 * CHANGELOG.md as HTML: version and section headings, lists, paragraphs and **bold**.
+	 * Only tags the WordPress update details popup allows, so it shows there too.
+	 */
+	public static function html( $md ) {
+		$html = '';
+		$list = false;
+
+		foreach ( preg_split( '/\R/', (string) $md ) as $line ) {
+			$line = rtrim( $line );
+			$item = 0 === strpos( $line, '- ' );
+
+			if ( $list && ! $item ) {
+				$html .= "</ul>\n";
+				$list = false;
+			}
+
+			// Skip blank lines and the "# Nashenski Commerce changelog" title.
+			if ( '' === $line || 0 === strpos( $line, '# ' ) ) {
+				continue;
+			}
+
+			if ( preg_match( '/^(#{2,5}) (.*)$/', $line, $m ) ) {
+				// "## 0.14.0 (date)" -> h3, "### Fixed" -> h4.
+				$tag = 'h' . ( strlen( $m[1] ) + 1 );
+				$html .= "<$tag>" . self::inline( $m[2] ) . "</$tag>\n";
+			} elseif ( $item ) {
+				$html .= ( $list ? '' : "<ul>\n" ) . '<li>' . self::inline( substr( $line, 2 ) ) . "</li>\n";
+				$list = true;
+			} else {
+				$html .= '<p>' . self::inline( $line ) . "</p>\n";
+			}
+		}
+
+		return $html . ( $list ? "</ul>\n" : '' );
+	}
+
+	private static function inline( $text ) {
+		return preg_replace( '/\*\*(.+?)\*\*/', '<strong>$1</strong>', esc_html( $text ) );
 	}
 }
