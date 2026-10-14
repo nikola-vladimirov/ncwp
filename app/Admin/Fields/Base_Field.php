@@ -72,4 +72,17 @@ abstract class Base_Field {
 
 		return $this;
 	}
+
+	// Extra keys for the WooCommerce setting, for example checkboxgroup.
+	protected $wc = array();
+
+	public function get_wc() {
+		return $this->wc;
+	}
+
+	public function set_wc( $wc ) {
+		$this->wc = $wc;
+
+		return $this;
+	}
 }

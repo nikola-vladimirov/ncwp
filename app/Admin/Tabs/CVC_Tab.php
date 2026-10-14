@@ -17,7 +17,6 @@ class CVC_Tab extends Base_Tab {
 
 		add_action( 'nashenski/admin/settings/afte_save_fields/'. $this->tab_name, array( $this, 'after_save_fields' ) );
 		add_filter( 'nashenski/admin/settings/cvc/fields', array( $this, 'add_send_from_fields' ), 20 );
-		add_filter( 'nashenski/admin/settings/cvc/groups_titles', array( $this, 'add_send_from_group_title' ) );
 		
 	}
 
@@ -33,54 +32,51 @@ class CVC_Tab extends Base_Tab {
 		$this->set_fields( $fields );
 	}
 
+	/**
+	 * CVC accepted the token. Without it the other options show greyed out (Settings_Page).
+	 */
+	public function connected() {
+		return $this->container[ Client::CVC_PROFILE ]->is_valid_profile( true );
+	}
+
 	public function add_send_from_fields( $fields ) {
-		if ( $this->container[ Client::CVC_PROFILE ]->is_valid_profile( true ) ) {
-			$send_from = ( nashenski_get_option( 'cvc_sender', 'send_from' ) ) ? nashenski_get_option( 'cvc_sender', 'send_from' ) : 'office';
-			
-			$addresses = $this->container[ Client::CVC_PROFILE ]->get_formatted_addresses();
-			$cities = $this->container[ Client::CVC_CITIES ]->get_formatted_cities();
+		$send_from = ( nashenski_get_option( 'cvc_sender', 'send_from' ) ) ? nashenski_get_option( 'cvc_sender', 'send_from' ) : 'office';
+		// Without a working login the lists stay empty and every field shows greyed out.
+		$connected = $this->connected();
+		$addresses = $connected ? $this->container[ Client::CVC_PROFILE ]->get_formatted_addresses() : array();
+		$cities = $connected ? $this->container[ Client::CVC_CITIES ]->get_formatted_cities() : array();
+		$city = nashenski_get_option( 'cvc_sender', 'city' );
+		$offices = $connected && $city ? $this->container[ Client::CVC_HUBS ]->get_formatted_hubs( $city ) : array();
 
-			$fields[ 'cvc_sender' ] = [
-				new Fields\Text_Field( 'name', __( 'Name', 'nashenski-commerce' ), __( 'Enter sender name.', 'nashenski-commerce' ), 'required' ),
-				new Fields\Text_Field( 'phone', __( 'Phone', 'nashenski-commerce' ), __( 'Enter sender phone.', 'nashenski-commerce' ), 'required' ),
-				new Fields\Text_Field( 'email', __( 'E-mail', 'nashenski-commerce' ), __( 'Enter sender email.', 'nashenski-commerce' ), 'required|email' ),
-				new Fields\TrueFalse_Field( 'ppp', __( 'Cash on delivery as PPP.', 'nashenski-commerce' ) ),
-				new Fields\TrueFalse_Field( 'contract_pay', __( 'Pay by contract', 'nashenski-commerce' ) ),
-				new Fields\TrueFalse_Field( 'force_variations_in_desc', __( 'Force variations in label', 'nashenski-commerce' ), null, null, __( 'Add additional variations information. Please use this option only if you want the variation data to be available in the label print and it\'s missing.', 'nashenski-commerce' ) ),
-				new Fields\TrueFalse_Field( 'label_after_checkout', __( 'Generate label after checkout', 'nashenski-commerce' ), null, null, __( 'This option will try to generate your label immediately after user checkout. Also, will add the tracking number in the order email.', 'nashenski-commerce' ) ),
-				new Fields\Select_Field( $cities, 'city', __( 'City', 'nashenski-commerce' ) ),
-				new Fields\Select_Field( 
-					array(
-						'office' => array(
-							'id' => 'office',
-							'label' => __( 'Office', 'nashenski-commerce' ),
-						),
-						'address' => array(
-							'id' => 'address',
-							'label' => __( 'Address', 'nashenski-commerce' ),
-						),
-					), 'send_from', __( 'Send From', 'nashenski-commerce' ), null, null, __( 'Select from where you will send the packages and save to show more options.', 'nashenski-commerce' ) 
-				),
-			];
+		$fields[ 'cvc_sender' ] = [
+			new Fields\Text_Field( 'name', __( 'Name', 'nashenski-commerce' ), __( 'Enter sender name.', 'nashenski-commerce' ), 'required' ),
+			new Fields\Text_Field( 'phone', __( 'Phone', 'nashenski-commerce' ), __( 'Enter sender phone.', 'nashenski-commerce' ), 'required' ),
+			new Fields\Text_Field( 'email', __( 'E-mail', 'nashenski-commerce' ), __( 'Enter sender email.', 'nashenski-commerce' ), 'required|email' ),
+			new Fields\TrueFalse_Field( 'ppp', __( 'Cash on delivery as PPP.', 'nashenski-commerce' ) ),
+			new Fields\TrueFalse_Field( 'contract_pay', __( 'Pay by contract', 'nashenski-commerce' ) ),
+			new Fields\TrueFalse_Field( 'force_variations_in_desc', __( 'Force variations in label', 'nashenski-commerce' ), null, null, __( 'Add additional variations information. Please use this option only if you want the variation data to be available in the label print and it\'s missing.', 'nashenski-commerce' ) ),
+			new Fields\TrueFalse_Field( 'label_after_checkout', __( 'Generate label after checkout', 'nashenski-commerce' ), null, null, __( 'This option will try to generate your label immediately after user checkout. Also, will add the tracking number in the order email.', 'nashenski-commerce' ) ),
+			new Fields\Select_Field( $cities, 'city', __( 'City', 'nashenski-commerce' ) ),
+			new Fields\Select_Field( 
+				array(
+					'office' => array(
+						'id' => 'office',
+						'label' => __( 'Office', 'nashenski-commerce' ),
+					),
+					'address' => array(
+						'id' => 'address',
+						'label' => __( 'Address', 'nashenski-commerce' ),
+					),
+				), 'send_from', __( 'Send From', 'nashenski-commerce' ), null, null, __( 'Select from where you will send the packages and save to show more options.', 'nashenski-commerce' ) 
+			),
+		];
 
-			switch ( $send_from ) {
-				case 'address':
-					if ( !empty( $addresses ) ) {
-						$fields[ 'cvc_sender' ][] = new Fields\Select_Field( $addresses, 'address', __( 'Select Address', 'nashenski-commerce' ) );
-					}
-
-					break;
-				case 'office':
-					if ( $city = nashenski_get_option( 'cvc_sender', 'city' ) ) {
-						$offices = $this->container[ Client::CVC_HUBS ]->get_formatted_hubs( $city );
-
-						if ( !empty( $offices ) ) {
-							$fields[ 'cvc_sender' ][] = new Fields\Select_Field( $offices, 'office', __( 'Office', 'nashenski-commerce' ) );
-						}
-					}
-					
-					break;
+		if ( 'address' === $send_from ) {
+			if ( $addresses || ! $connected ) {
+				$fields[ 'cvc_sender' ][] = new Fields\Select_Field( $addresses, 'address', __( 'Select Address', 'nashenski-commerce' ) );
 			}
+		} elseif ( $offices || ! $connected ) {
+			$fields[ 'cvc_sender' ][] = new Fields\Select_Field( $offices, 'office', __( 'Office', 'nashenski-commerce' ) );
 		}
 
 		return $fields;
@@ -90,19 +86,12 @@ class CVC_Tab extends Base_Tab {
 		$titles = apply_filters( 'nashenski/admin/settings/cvc/groups_titles', array(
 			'cvc' => array(
 				'title' => __( 'CVC account', 'nashenski-commerce' ),
-				'desc' => __( 'The API token CVC gave you. After saving, your sender options appear.', 'nashenski-commerce' ),
+				'desc' => __( 'The API token CVC gave you. The other options unlock once CVC accepts it.', 'nashenski-commerce' ),
+			),
+			'cvc_sender' => array(
+				'title' => __( 'Where you send from', 'nashenski-commerce' ),
 			),
 		) );
-
-		return $titles;
-	}
-
-	public function add_send_from_group_title( $titles ) {
-		if ( $this->container[ Client::CVC_PROFILE ]->is_valid_profile( true ) ) {
-			$titles['cvc_sender'] = array(
-				'title' => __( 'Where you send from', 'nashenski-commerce' ),
-			);
-		}
 
 		return $titles;
 	}

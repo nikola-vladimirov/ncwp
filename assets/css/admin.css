@@ -26,9 +26,89 @@
 	margin: 12px 0;
 }
 
-/* Price table rows. */
+/* Each settings group is a WordPress card; on wide screens the cards flow in two columns. */
+.nashenski-boxes .nashenski-box {
+	max-width: none;
+	margin: 0 0 20px;
+	padding: 0 20px 6px;
+	break-inside: avoid;
+}
+
+@media (min-width: 1280px) {
+	.nashenski-boxes {
+		columns: 2;
+		column-gap: 20px;
+	}
+
+	/* Narrower labels leave room for the fields in half-width boxes. */
+	.nashenski-box .form-table > tbody > tr > th {
+		width: 30%;
+	}
+
+	/* Wide tables get the full width. */
+	.nashenski-boxes .nashenski-box:has(.nashenski-layout, .nashenski-price-list, .nashenski-rows) {
+		column-span: all;
+	}
+
+	.nashenski-boxes .nashenski-box:has(.nashenski-layout, .nashenski-price-list, .nashenski-rows) .form-table > tbody > tr > th {
+		width: 200px;
+	}
+}
+
+.nashenski-box h2 {
+	margin: 16px 0 8px;
+}
+
+.nashenski-box .form-table {
+	margin-top: 0;
+}
+
+/* WooCommerce keeps room on the right of labels for the help tip. */
+.nashenski-box .form-table th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+}
+
+.nashenski-box .form-table td {
+	padding: 8px 10px;
+}
+
+.woocommerce .nashenski-box .forminp > :is(input[type="text"], input[type="email"], input[type="password"], input[type="url"], select, textarea, .select2-container) {
+	width: 100%;
+	max-width: 25em;
+}
+
+/* WooCommerce gives select boxes 400px, wider than half a screen. */
+.woocommerce .nashenski-box table.form-table .select2-container {
+	min-width: 0 !important;
+}
+
+.nashenski-box .form-table td p.description {
+	margin-top: 2px;
+}
+
+/* Rows that wait for the courier login. */
+.nashenski-box tr:has(.forminp :disabled) > th {
+	color: #a7aaad;
+}
+
+/* Price table rows. Fixed layout so the number boxes shrink with the screen instead of overflowing. */
+.nashenski-rows,
+.nashenski-price-list__table {
+	table-layout: fixed;
+}
+
 .nashenski-rows {
 	max-width: 640px;
+}
+
+/* WordPress gives every .form-table th 200px, also the headers of these inner tables. */
+.form-table :is(.nashenski-rows, .nashenski-price-list__table, .nashenski-layout) th {
+	width: auto;
+}
+
+.form-table :is(.nashenski-rows, .nashenski-price-list__table) .nashenski-rows__remove {
+	width: 28px;
 }
 
 .nashenski-rows th,
@@ -56,7 +136,7 @@
 
 /* Checkout field order. */
 .nashenski-layout {
-	max-width: 760px;
+	max-width: 960px;
 }
 
 .nashenski-layout th,
@@ -84,6 +164,11 @@
 
 .nashenski-layout input[type="text"] {
 	width: 12em;
+}
+
+/* WooCommerce makes every settings select 400px wide; here the column decides. */
+.woocommerce table.form-table .nashenski-layout select {
+	width: 100%;
 }
 
 .nashenski-layout__options {
@@ -139,9 +224,11 @@
 	text-decoration: none;
 }
 
+/* Same box for every logo, whatever its shape. */
 .nashenski-courier-nav__item img {
-	height: 18px;
-	width: auto;
+	width: 56px;
+	height: 20px;
+	object-fit: contain;
 }
 
 .nashenski-courier-nav__item:hover,

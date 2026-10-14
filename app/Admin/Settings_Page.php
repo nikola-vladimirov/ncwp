@@ -24,6 +24,7 @@ class Settings_Page extends \WC_Settings_Page {
 
 		parent::__construct();
 
+		add_action( 'woocommerce_admin_field_nashenski_box', array( __CLASS__, 'output_box' ) );
 		add_action( 'woocommerce_admin_field_nashenski_rows', array( __CLASS__, 'output_rows_field' ) );
 		add_filter( 'woocommerce_admin_settings_sanitize_option', array( __CLASS__, 'sanitize_rows_field' ), 10, 3 );
 		add_action( 'woocommerce_admin_field_nashenski_image', array( __CLASS__, 'output_image_field' ) );
@@ -165,6 +166,9 @@ class Settings_Page extends \WC_Settings_Page {
 
 			$tab->load_fields();
 			$titles = method_exists( $tab, 'get_groups_titles' ) ? $tab->get_groups_titles() : array();
+			// Courier options stay visible but greyed out until the login works; only the login itself is editable.
+			$locked = method_exists( $tab, 'connected' ) && ! $tab->connected();
+			$login = array_merge( array( 'env' ), \Nashenski\Front_End\Checkout\Pickers::LOGIN[ $part[0] ] ?? array() );
 
 			foreach ( (array) $tab->get_fields() as $group => $fields ) {
 				if ( empty( $fields ) || ( null !== $part[1] && ! in_array( $group, $part[1], true ) ) ) {
@@ -175,11 +179,12 @@ class Settings_Page extends \WC_Settings_Page {
 					'type' => 'title',
 					'id' => 'nashenski_' . $group,
 					'title' => isset( $titles[ $group ]['title'] ) ? wp_strip_all_tags( $titles[ $group ]['title'] ) : '',
-					'desc' => $titles[ $group ]['desc'] ?? '',
+					'desc' => trim( ( $titles[ $group ]['desc'] ?? '' ) . ( $locked && $group !== $part[0] ? ' ' . __( 'Available once the courier login works.', 'nashenski-commerce' ) : '' ) ),
 				);
 
 				foreach ( $fields as $field ) {
-					$settings[] = self::to_wc_setting( $group, $field );
+					$setting = self::to_wc_setting( $group, $field );
+					$settings[] = $locked && ! ( $group === $part[0] && in_array( $field->get_name(), $login, true ) ) ? self::lock( $setting ) : $setting;
 				}
 
 				$settings[] = array(
@@ -201,7 +206,46 @@ class Settings_Page extends \WC_Settings_Page {
 			$settings = array_merge( $settings, \Nashenski\Front_End\Checkout\Field_Editor::settings(), \Nashenski\Front_End\Checkout\Appearance::settings(), \Nashenski\Front_End\Withdrawal::settings() );
 		}
 
-		return Setting_Help::apply( $settings );
+		return self::boxes( Setting_Help::apply( $settings ) );
+	}
+
+	/**
+	 * Greyed out until the courier login works. WooCommerce skips it on save, so the saved value stays.
+	 */
+	private static function lock( $setting ) {
+		$setting['custom_attributes']['disabled'] = 'disabled';
+		$setting['is_option'] = false;
+
+		if ( 'select' === $setting['type'] && empty( $setting['options'] ) ) {
+			$setting['options'] = array( '' => __( 'Available once the courier login works', 'nashenski-commerce' ) );
+		}
+
+		return $setting;
+	}
+
+	/**
+	 * Each group in its own box; the boxes flow in two columns on wide screens (admin.css).
+	 */
+	private static function boxes( $settings ) {
+		$boxed = array();
+
+		foreach ( $settings as $setting ) {
+			if ( 'title' === ( $setting['type'] ?? '' ) ) {
+				$boxed[] = array( 'type' => 'nashenski_box' );
+			}
+
+			$boxed[] = $setting;
+
+			if ( 'sectionend' === ( $setting['type'] ?? '' ) ) {
+				$boxed[] = array( 'type' => 'nashenski_box', 'end' => true );
+			}
+		}
+
+		return $boxed;
+	}
+
+	public static function output_box( $value ) {
+		echo empty( $value['end'] ) ? '<div class="card nashenski-box">' : '</div>';
 	}
 
 	/**
@@ -236,7 +280,7 @@ class Settings_Page extends \WC_Settings_Page {
 
 				$setting['type'] = 'select';
 				$setting['class'] = 'wc-enhanced-select';
-				$setting['css'] = 'min-width: 350px;';
+				$setting['css'] = 'width: 100%;';
 				$setting['options'] = $options;
 				$setting['default'] = null !== $field->get_default() ? (string) $field->get_default() : (string) array_key_first( $options );
 				break;
@@ -266,11 +310,10 @@ class Settings_Page extends \WC_Settings_Page {
 				if ( null !== $field->get_default() ) {
 					$setting['default'] = $field->get_default();
 				}
-				$setting['css'] = 'min-width: 350px;';
 				break;
 		}
 
-		return $setting;
+		return array_merge( $setting, $field->get_wc() );
 	}
 
 	public function output_sections() {
@@ -326,7 +369,9 @@ class Settings_Page extends \WC_Settings_Page {
 			$this->output_tab_notes( $slug, $tab );
 		}
 
+		echo '<div class="nashenski-boxes">';
 		parent::output();
+		echo '</div>';
 	}
 
 	/**
@@ -613,6 +658,7 @@ class Settings_Page extends \WC_Settings_Page {
 				<label><?php echo esc_html( $value['title'] ); ?></label>
 			</th>
 			<td class="forminp">
+				<fieldset <?php disabled( ! empty( $value['custom_attributes']['disabled'] ) ); ?>>
 				<table class="widefat striped nashenski-rows" data-name="<?php echo esc_attr( $name ); ?>" data-columns="<?php echo esc_attr( implode( ',', $columns ) ); ?>">
 					<thead>
 						<tr>
@@ -634,6 +680,7 @@ class Settings_Page extends \WC_Settings_Page {
 					</tbody>
 				</table>
 				<p><button type="button" class="button nashenski-rows__add"><?php esc_html_e( 'Add row', 'nashenski-commerce' ); ?></button></p>
+				</fieldset>
 				<?php if ( ! empty( $value['desc'] ) ) : ?>
 					<p class="description"><?php echo wp_kses_post( $value['desc'] ); ?></p>
 				<?php endif; ?>

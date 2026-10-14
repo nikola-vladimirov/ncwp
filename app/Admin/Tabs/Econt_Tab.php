@@ -18,7 +18,6 @@ class Econt_Tab extends Base_Tab {
 		add_action( 'nashenski/admin/settings/afte_save_fields/'. $this->tab_name, array( $this, 'after_save_fields' ) );
 		add_filter( 'nashenski/admin/settings/econt/fields', array( $this, 'add_profile_data_fields' ), 10 );
 		add_filter( 'nashenski/admin/settings/econt/fields', array( $this, 'add_send_from_fields' ), 20 );
-		add_filter( 'nashenski/admin/settings/econt/groups_titles', array( $this, 'add_send_from_group_title' ) );
 	}
 
 	public function load_fields() {
@@ -44,101 +43,99 @@ class Econt_Tab extends Base_Tab {
 		$this->set_fields( $fields );
 	}
 
+	/**
+	 * The login works and has profiles. Without it the other options show greyed out (Settings_Page).
+	 */
+	public function connected() {
+		return $this->container[ Client::ECONT_PROFILE ]->is_valid_profile( true ) && $this->container[ Client::ECONT_PROFILE ]->get_profiles_for_settings();
+	}
+
 	public function add_profile_data_fields( $fields ) {
-		if ( $this->container[ Client::ECONT_PROFILE ]->is_valid_profile( true ) ) {
-			$all_profiles = $this->container[ Client::ECONT_PROFILE ]->get_profiles_for_settings();
+		$connected = $this->connected();
+		$all_profiles = $connected ? $this->container[ Client::ECONT_PROFILE ]->get_profiles_for_settings() : array();
 
-			if ( !empty( $all_profiles ) ) {
-				$cd_pay_option = nashenski_get_option( 'econt', 'pay_options' );
+		$cd_pay_option = nashenski_get_option( 'econt', 'pay_options' );
 
-				$fields[ 'econt' ][] = new Fields\Select_Field( $all_profiles, 'profile_key', __( 'Select profile', 'nashenski-commerce' ), null, null, __( 'Select the profile you want to use and save to show or update the other options.', 'nashenski-commerce' )
-				);
-				$fields[ 'econt' ][] = new Fields\Text_Field( 'name', __( 'Name', 'nashenski-commerce' ) );
-				$fields[ 'econt' ][] = new Fields\Text_Field( 'phone', __( 'Phone', 'nashenski-commerce' ) );
-				$fields[ 'econt' ][] = new Fields\TrueFalse_Field( 'force_variations_in_desc', __( 'Force variations in label', 'nashenski-commerce' ), null, null, __( 'Add additional variations information. Please use this option only if you want the variation data to be available in the label print and it\'s missing.', 'nashenski-commerce' ) );
-				$fields[ 'econt' ][] = new Fields\TrueFalse_Field( 'label_after_checkout', __( 'Generate label after checkout', 'nashenski-commerce' ), null, null, __( 'This option will try to generate your label immediately after user checkout. Also, will add the tracking number in the order email.', 'nashenski-commerce' ) );
-				$fields[ 'econt' ][] = new Fields\TrueFalse_Field( 'declared_value', __( 'Declared value', 'nashenski-commerce' ), null, null, __( 'Adds declared value to the label if payment is COD.', 'nashenski-commerce' ) );
-				$fields[ 'econt' ][] = new Fields\TrueFalse_Field( 'auto_size', __( 'Automatically calculate box size', 'nashenski-commerce' ), null, null, __( 'Automatically calculate LxWxH of the box for the parcel.', 'nashenski-commerce' ) );
-				$fields[ 'econt' ][] = new Fields\Select_Field( $this->generate_pay_options(), 'pay_options', __( 'Cash on delivery agreement', 'nashenski-commerce' ), null, null, __( 'Choose cash on delivery agreement', 'nashenski-commerce' ) );
+		$fields[ 'econt' ][] = new Fields\Select_Field( $all_profiles, 'profile_key', __( 'Select profile', 'nashenski-commerce' ), null, null, __( 'Select the profile you want to use and save to show or update the other options.', 'nashenski-commerce' )
+		);
+		$fields[ 'econt' ][] = new Fields\Text_Field( 'name', __( 'Name', 'nashenski-commerce' ) );
+		$fields[ 'econt' ][] = new Fields\Text_Field( 'phone', __( 'Phone', 'nashenski-commerce' ) );
+		$fields[ 'econt' ][] = new Fields\TrueFalse_Field( 'force_variations_in_desc', __( 'Force variations in label', 'nashenski-commerce' ), null, null, __( 'Add additional variations information. Please use this option only if you want the variation data to be available in the label print and it\'s missing.', 'nashenski-commerce' ) );
+		$fields[ 'econt' ][] = new Fields\TrueFalse_Field( 'label_after_checkout', __( 'Generate label after checkout', 'nashenski-commerce' ), null, null, __( 'This option will try to generate your label immediately after user checkout. Also, will add the tracking number in the order email.', 'nashenski-commerce' ) );
+		$fields[ 'econt' ][] = new Fields\TrueFalse_Field( 'declared_value', __( 'Declared value', 'nashenski-commerce' ), null, null, __( 'Adds declared value to the label if payment is COD.', 'nashenski-commerce' ) );
+		$fields[ 'econt' ][] = new Fields\TrueFalse_Field( 'auto_size', __( 'Automatically calculate box size', 'nashenski-commerce' ), null, null, __( 'Automatically calculate LxWxH of the box for the parcel.', 'nashenski-commerce' ) );
+		$fields[ 'econt' ][] = new Fields\Select_Field( $connected ? $this->generate_pay_options() : array(), 'pay_options', __( 'Cash on delivery agreement', 'nashenski-commerce' ), null, null, __( 'Choose cash on delivery agreement', 'nashenski-commerce' ) );
 
-				if ( $cd_pay_option && $cd_pay_option !== 'no' ) {
-					$fields[ 'econt' ][] = new Fields\Select_Field( 
-						array(
-							'' => array(
-								'id' => 'credit',
-								'label' => __( 'Credit', 'nashenski-commerce' ),
-							),
-							'cash' => array(
-								'id' => 'cash',
-								'label' => __( 'Cash', 'nashenski-commerce' ),
-							),
-						), 'sender_payment_type', __( 'Sender payment type', 'nashenski-commerce' ), null, null, __( 'Select how you will pay for the shipments.', 'nashenski-commerce' ) 
-					);
+		if ( $cd_pay_option && $cd_pay_option !== 'no' ) {
+			$fields[ 'econt' ][] = new Fields\Select_Field( 
+				array(
+					'' => array(
+						'id' => 'credit',
+						'label' => __( 'Credit', 'nashenski-commerce' ),
+					),
+					'cash' => array(
+						'id' => 'cash',
+						'label' => __( 'Cash', 'nashenski-commerce' ),
+					),
+				), 'sender_payment_type', __( 'Sender payment type', 'nashenski-commerce' ), null, null, __( 'Select how you will pay for the shipments.', 'nashenski-commerce' ) 
+			);
 
-					$fields[ 'econt' ][] = new Fields\Select_Field( 
-						array(
-							'invoice' => array(
-								'id' => 'invoice',
-								'label' => __( 'Invoice number', 'nashenski-commerce' ),
-							),
-							'packing_list' => array(
-								'id' => 'packing_list',
-								'label' => __( 'Packing list', 'nashenski-commerce' ),
-							),
-						), 'invoice_or_packing_list', __( 'Packing list or invoice number', 'nashenski-commerce' ), null, null, __( 'Select if you want to have packing list or invoice number in the label.', 'nashenski-commerce' ) 
-					);
-				}
-
-				$fields[ 'econt' ][] = new Fields\Select_Field( 
-					array(
-						'office' => array(
-							'id' => 'office',
-							'label' => __( 'Office', 'nashenski-commerce' ),
-						),
-						'address' => array(
-							'id' => 'address',
-							'label' => __( 'Address', 'nashenski-commerce' ),
-						),
-					), 'send_from', __( 'Send From', 'nashenski-commerce' ), null, null, __( 'Select from where you will send the packages and save to show more options.', 'nashenski-commerce' ) 
-				);
-			}
+			$fields[ 'econt' ][] = new Fields\Select_Field( 
+				array(
+					'invoice' => array(
+						'id' => 'invoice',
+						'label' => __( 'Invoice number', 'nashenski-commerce' ),
+					),
+					'packing_list' => array(
+						'id' => 'packing_list',
+						'label' => __( 'Packing list', 'nashenski-commerce' ),
+					),
+				), 'invoice_or_packing_list', __( 'Packing list or invoice number', 'nashenski-commerce' ), null, null, __( 'Select if you want to have packing list or invoice number in the label.', 'nashenski-commerce' ) 
+			);
 		}
+
+		$fields[ 'econt' ][] = new Fields\Select_Field( 
+			array(
+				'office' => array(
+					'id' => 'office',
+					'label' => __( 'Office', 'nashenski-commerce' ),
+				),
+				'address' => array(
+					'id' => 'address',
+					'label' => __( 'Address', 'nashenski-commerce' ),
+				),
+			), 'send_from', __( 'Send From', 'nashenski-commerce' ), null, null, __( 'Select from where you will send the packages and save to show more options.', 'nashenski-commerce' ) 
+		);
 
 		return $fields;
 	}
 
 	public function add_send_from_fields( $fields ) {
-		if ( $this->container[ Client::ECONT_PROFILE ]->is_valid_profile( true ) ) {
-			$all_profiles = $this->container[ Client::ECONT_PROFILE ]->get_profiles_for_settings();
+		// Without a working login the lists stay empty and every field shows greyed out.
+		$connected = $this->connected();
+		$addresses = $connected ? $this->container[ Client::ECONT_PROFILE ]->get_formatted_addresses() : array();
+		$cities = $connected ? $this->container[ Client::ECONT_CITIES ]->get_formatted_cities() : array();
+		$offices = $connected ? $this->container[ Client::ECONT_OFFICES ]->get_formatted_offices( nashenski_get_option( 'econt_send_from', 'office_city' ) ) : array();
+		$offices = array_merge( $offices['shops'] ?? array(), $offices['aps'] ?? array() );
+		$fields[ 'econt_send_from' ] = [];
 
-			if ( !empty( $all_profiles ) ) {
-				$send_from = ( nashenski_get_option( 'econt', 'send_from' ) ) ? nashenski_get_option( 'econt', 'send_from' ) : 'office';
-				$addresses = $this->container[ Client::ECONT_PROFILE ]->get_formatted_addresses();
-				$cities = $this->container[ Client::ECONT_CITIES ]->get_formatted_cities();
-				$offices = $this->container[ Client::ECONT_OFFICES ]->get_formatted_offices( nashenski_get_option( 'econt_send_from', 'office_city' ) );
-				$fields[ 'econt_send_from' ] = [];
+		if ( $addresses || ! $connected ) {
+			$fields[ 'econt_send_from' ][] = new Fields\Select_Field( $addresses, 'address', __( 'Select Address', 'nashenski-commerce' ) );
+		}
 
-				$offices = array_merge( $offices['shops'], $offices['aps'] );
+		if ( $cities || ! $connected ) {
+			$fields[ 'econt_send_from' ][] = new Fields\Select_Field( $cities, 'office_city', __( 'City', 'nashenski-commerce' ) );
+		}
 
-				if ( !empty( $addresses ) ) {
-					$fields[ 'econt_send_from' ][] = new Fields\Select_Field( $addresses, 'address', __( 'Select Address', 'nashenski-commerce' ) );
-				}
-
-				if ( !empty( $cities ) ) {
-					$fields[ 'econt_send_from' ][] = new Fields\Select_Field( $cities, 'office_city', __( 'City', 'nashenski-commerce' ) );
-				}
-
-				if ( !empty( $offices ) ) {
-					$fields[ 'econt_send_from' ][] = new Fields\Select_Field( 
-						$offices, 
-						'office', 
-						__( 'Office', 'nashenski-commerce' ), 
-						null, 
-						null, 
-						__('Choose a city and save in order to show offices.', 'nashenski-commerce' ) 
-					);
-				}
-			}
+		if ( $offices || ! $connected ) {
+			$fields[ 'econt_send_from' ][] = new Fields\Select_Field(
+				$offices,
+				'office',
+				__( 'Office', 'nashenski-commerce' ),
+				null,
+				null,
+				__('Choose a city and save in order to show offices.', 'nashenski-commerce' )
+			);
 		}
 
 		return $fields;
@@ -168,19 +165,13 @@ class Econt_Tab extends Base_Tab {
 		$titles = apply_filters( 'nashenski/admin/settings/econt/groups_titles', array(
 			'econt' => array(
 				'title' => __( 'Econt account', 'nashenski-commerce' ),
-				'desc' => __( 'Use the user and password of an Econt e-shop integration. After saving, your profiles and label options appear.', 'nashenski-commerce' ),
+				'desc' => __( 'Use the user and password of an Econt e-shop integration. The other options unlock once Econt accepts the login.', 'nashenski-commerce' ),
+			),
+			'econt_send_from' => array(
+				'title' => __( 'Where you send from', 'nashenski-commerce' ),
 			),
 		) );
 
-		return $titles;
-	}
-
-	public function add_send_from_group_title( $titles ) {
-		if ( $this->container[ Client::ECONT_PROFILE ]->is_valid_profile( true ) ) {
-			$titles['econt_send_from'] = array(
-				'title' => __( 'Where you send from', 'nashenski-commerce' ),
-			);
-		}
 		return $titles;
 	}
 

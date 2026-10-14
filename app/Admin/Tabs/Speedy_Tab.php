@@ -18,7 +18,6 @@ class Speedy_Tab extends Base_Tab {
 		add_action( 'nashenski/admin/settings/afte_save_fields/'. $this->tab_name, array( $this, 'after_save_fields' ) );
 		add_filter( 'nashenski/admin/settings/speedy/fields', array( $this, 'add_profile_data_fields' ), 10 );
 		add_filter( 'nashenski/admin/settings/speedy/fields', array( $this, 'add_send_from_fields' ), 20 );
-		add_filter( 'nashenski/admin/settings/speedy/groups_titles', array( $this, 'add_send_from_group_title' ) );
 	}
 
 	public function load_fields() {
@@ -34,63 +33,61 @@ class Speedy_Tab extends Base_Tab {
 		$this->set_fields( $fields );
 	}
 
-	public function add_profile_data_fields( $fields ) {
-		if ( $this->container[ Client::SPEEDY_PROFILE ]->is_valid_profile( true ) ) {
-			$all_profiles = $this->container[ Client::SPEEDY_PROFILE ]->get_profiles_for_settings();
+	/**
+	 * The login works and has profiles. Without it the other options show greyed out (Settings_Page).
+	 */
+	public function connected() {
+		return $this->container[ Client::SPEEDY_PROFILE ]->is_valid_profile( true ) && $this->container[ Client::SPEEDY_PROFILE ]->get_profiles_for_settings();
+	}
 
-			if ( !empty( $all_profiles ) ) {
-				$fields[ 'speedy' ][] = new Fields\Select_Field( $all_profiles, 'profile_key', __( 'Select profile', 'nashenski-commerce' ), null, null, __( 'Select the profile you want to use and save to show or update the other options.', 'nashenski-commerce' )
-				);
-				$fields[ 'speedy' ][] = new Fields\Text_Field( 'name', __( 'Name', 'nashenski-commerce' ) );
-				$fields[ 'speedy' ][] = new Fields\Text_Field( 'phone', __( 'Phone', 'nashenski-commerce' ) );
-				$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'ppp', __( 'Cash on delivery as PPP.', 'nashenski-commerce' ) );
-				$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'kb', __( 'Cash on delivery with cash receipt.', 'nashenski-commerce' ) );
-				$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'administrative_fee', __( 'Administrative fee on price calculations', 'nashenski-commerce' ), null, null, __( 'Usage of administrative fee is enabled and configured in client contract. Ignored if not applicable for user.', 'nashenski-commerce' ) );
-				$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'force_variations_in_desc', __( 'Force variations in label', 'nashenski-commerce' ), null, null, __( 'Add additional variations information. Please use this option only if you want the variation data to be available in the label print and it\'s missing.', 'nashenski-commerce' ) );
-				$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'label_after_checkout', __( 'Generate label after checkout', 'nashenski-commerce' ), null, null, __( 'This option will try to generate your label immediately after user checkout. Also, will add the tracking number in the order email.', 'nashenski-commerce' ) );
-				$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'declared_value', __( 'Declared value', 'nashenski-commerce' ), null, null, __( 'Adds declared value to the label if payment is COD.', 'nashenski-commerce' ) );
-				$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'auto_size', __( 'Automatically calculate box size', 'nashenski-commerce' ), null, null, __( 'Automatically calculate LxWxH of the box for the parcel.', 'nashenski-commerce' ) );
-				$fields[ 'speedy' ][] = new Fields\Select_Field( 
-					array(
-						'office' => array(
-							'id' => 'office',
-							'label' => __( 'Office', 'nashenski-commerce' ),
-						),
-						'address' => array(
-							'id' => 'address',
-							'label' => __( 'Address', 'nashenski-commerce' ),
-						),
-					), 'send_from', __( 'Send From', 'nashenski-commerce' ), null, null, __( 'Select from where you will send the packages and save to show more options.', 'nashenski-commerce' ) . " " . __('If you choose "Address" the profile address will be used.', 'nashenski-commerce'),
-				);
-			}
-		}
+	public function add_profile_data_fields( $fields ) {
+		$all_profiles = $this->connected() ? $this->container[ Client::SPEEDY_PROFILE ]->get_profiles_for_settings() : array();
+
+		$fields[ 'speedy' ][] = new Fields\Select_Field( $all_profiles, 'profile_key', __( 'Select profile', 'nashenski-commerce' ), null, null, __( 'Select the profile you want to use and save to show or update the other options.', 'nashenski-commerce' )
+		);
+		$fields[ 'speedy' ][] = new Fields\Text_Field( 'name', __( 'Name', 'nashenski-commerce' ) );
+		$fields[ 'speedy' ][] = new Fields\Text_Field( 'phone', __( 'Phone', 'nashenski-commerce' ) );
+		$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'ppp', __( 'Cash on delivery as PPP.', 'nashenski-commerce' ) );
+		$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'kb', __( 'Cash on delivery with cash receipt.', 'nashenski-commerce' ) );
+		$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'administrative_fee', __( 'Administrative fee on price calculations', 'nashenski-commerce' ), null, null, __( 'Usage of administrative fee is enabled and configured in client contract. Ignored if not applicable for user.', 'nashenski-commerce' ) );
+		$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'force_variations_in_desc', __( 'Force variations in label', 'nashenski-commerce' ), null, null, __( 'Add additional variations information. Please use this option only if you want the variation data to be available in the label print and it\'s missing.', 'nashenski-commerce' ) );
+		$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'label_after_checkout', __( 'Generate label after checkout', 'nashenski-commerce' ), null, null, __( 'This option will try to generate your label immediately after user checkout. Also, will add the tracking number in the order email.', 'nashenski-commerce' ) );
+		$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'declared_value', __( 'Declared value', 'nashenski-commerce' ), null, null, __( 'Adds declared value to the label if payment is COD.', 'nashenski-commerce' ) );
+		$fields[ 'speedy' ][] = new Fields\TrueFalse_Field( 'auto_size', __( 'Automatically calculate box size', 'nashenski-commerce' ), null, null, __( 'Automatically calculate LxWxH of the box for the parcel.', 'nashenski-commerce' ) );
+		$fields[ 'speedy' ][] = new Fields\Select_Field( 
+			array(
+				'office' => array(
+					'id' => 'office',
+					'label' => __( 'Office', 'nashenski-commerce' ),
+				),
+				'address' => array(
+					'id' => 'address',
+					'label' => __( 'Address', 'nashenski-commerce' ),
+				),
+			), 'send_from', __( 'Send From', 'nashenski-commerce' ), null, null, __( 'Select from where you will send the packages and save to show more options.', 'nashenski-commerce' ) . " " . __('If you choose "Address" the profile address will be used.', 'nashenski-commerce'),
+		);
 
 		return $fields;
 	}
 
 	public function add_send_from_fields( $fields ) {
-		if ( $this->container[ Client::SPEEDY_PROFILE ]->is_valid_profile( true ) ) {
-			$all_profiles = $this->container[ Client::SPEEDY_PROFILE ]->get_profiles_for_settings();
+		// Without a working login the lists stay empty and every field shows greyed out.
+		$connected = $this->connected();
+		$cities = $connected ? $this->container[ Client::SPEEDY_CITIES ]->get_formatted_cities() : array();
+		$fields[ 'speedy_send_from' ] = [];
+		$fields[ 'speedy_send_from' ][] = new Fields\Select_Field( $cities, 'city', __( 'City', 'nashenski-commerce' ) );
 
-			if ( !empty( $all_profiles ) ) {
-				$send_from = ( nashenski_get_option( 'speedy', 'send_from' ) ) ? nashenski_get_option( 'speedy', 'send_from' ) : 'office';
-				$cities = $this->container[ Client::SPEEDY_CITIES ]->get_formatted_cities();
-				$fields[ 'speedy_send_from' ] = [];
-				$fields[ 'speedy_send_from' ][] = new Fields\Select_Field( $cities, 'city', __( 'City', 'nashenski-commerce' ) );
-
-				if ( nashenski_get_option( 'speedy_send_from', 'city' ) ) {
-					$offices = $this->container[ Client::SPEEDY_OFFICES ]->get_formatted_offices( nashenski_get_option( 'speedy_send_from', 'city' ) );
-					if ( !empty( $offices['shops'] ) ) {
-						$fields[ 'speedy_send_from' ][] = new Fields\Select_Field( 
-							$offices['shops'], 
-							'office', 
-							__( 'Office', 'nashenski-commerce' ), 
-							null, 
-							null, 
-							__('Choose a city and save in order to show offices.', 'nashenski-commerce' ) 
-						);
-					}
-				}
+		if ( ! $connected || nashenski_get_option( 'speedy_send_from', 'city' ) ) {
+			$offices = $connected ? $this->container[ Client::SPEEDY_OFFICES ]->get_formatted_offices( nashenski_get_option( 'speedy_send_from', 'city' ) ) : array();
+			if ( ! empty( $offices['shops'] ) || ! $connected ) {
+				$fields[ 'speedy_send_from' ][] = new Fields\Select_Field( 
+					$offices['shops'] ?? array(), 
+					'office', 
+					__( 'Office', 'nashenski-commerce' ), 
+					null, 
+					null, 
+					__('Choose a city and save in order to show offices.', 'nashenski-commerce' ) 
+				);
 			}
 		}
 
@@ -101,19 +98,13 @@ class Speedy_Tab extends Base_Tab {
 		$titles = apply_filters( 'nashenski/admin/settings/speedy/groups_titles', array(
 			'speedy' => array(
 				'title' => __( 'Speedy account', 'nashenski-commerce' ),
-				'desc' => __( 'The user and password of your Speedy API account. After saving, your client profiles and label options appear.', 'nashenski-commerce' ),
+				'desc' => __( 'The user and password of your Speedy API account. The other options unlock once Speedy accepts the login.', 'nashenski-commerce' ),
+			),
+			'speedy_send_from' => array(
+				'title' => __( 'Where you send from', 'nashenski-commerce' ),
 			),
 		) );
 
-		return $titles;
-	}
-
-	public function add_send_from_group_title( $titles ) {
-		if ( $this->container[ Client::SPEEDY_PROFILE ]->is_valid_profile( true ) ) {
-			$titles['speedy_send_from'] = array(
-				'title' => __( 'Where you send from', 'nashenski-commerce' ),
-			);
-		}
 		return $titles;
 	}
 

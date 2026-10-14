@@ -448,7 +448,7 @@ class Withdrawal {
 				'id' => 'nashenski_settings_' . self::GROUP . '_placement',
 				'title' => __( 'Link on every page', 'nashenski-commerce' ),
 				'class' => 'wc-enhanced-select',
-				'css' => 'min-width: 350px;',
+				'css' => 'width: 100%;',
 				'default' => 'footer',
 				'options' => array(
 					'footer' => __( 'At the bottom of every page', 'nashenski-commerce' ),

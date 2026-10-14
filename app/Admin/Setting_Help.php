@@ -20,7 +20,6 @@ class Setting_Help {
 
 		return array(
 			// Overview.
-			'/^nashenski_settings_apis_enable_(econt|speedy|boxnow|pigeon|cvc)$/' => array( '', __( 'Turns the courier on: its shipping methods for your zones, its page in Couriers and the waybill box on each order.', 'nashenski-commerce' ) ),
 			'nashenski_settings_apis_enable_documents' => array( '', __( 'Turns on invoices, credit notes, the PDF look and the NRA audit file. The order document is made for every order either way.', 'nashenski-commerce' ) ),
 			'nashenski_settings_automation_order_number' => array( '', __( 'The courier prints it on the waybill, so whoever packs or delivers the parcel knows which order it is.', 'nashenski-commerce' ) ),
 			'nashenski_settings_automation_delivered' => array( __( 'The status an order gets when the courier reports the parcel delivered.', 'nashenski-commerce' ), __( 'Usually Completed. "Do not change" only adds a note to the order.', 'nashenski-commerce' ) ),
@@ -131,7 +130,6 @@ class Setting_Help {
 			'nashenski_settings_pdf_show_received' => array( '', __( 'The space where the customer signs on receipt.', 'nashenski-commerce' ) ),
 
 			// Customer checks.
-			'/^nashenski_settings_reports_enable_/' => array( '', __( 'Asks this service about the customer\'s phone number when you open an order. Needs the service\'s key below.', 'nashenski-commerce' ) ),
 			'nashenski_settings_reports_column' => array( '', __( 'A warning sign in the orders list for customers with reports.', 'nashenski-commerce' ) ),
 			'nashenski_settings_reports_check_on_checkout' => array( '', __( 'Customers with refused parcels then pay online or by bank transfer.', 'nashenski-commerce' ) ),
 			'/^nashenski_settings_(nekorekten|nepostop|connectix)_api_key$/' => array( '', __( 'From your account on the service\'s website.', 'nashenski-commerce' ) ),

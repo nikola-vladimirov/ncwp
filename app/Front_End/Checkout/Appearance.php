@@ -162,7 +162,7 @@ class Appearance {
 				'id' => $id( 'layout' ),
 				'title' => __( 'Layout', 'nashenski-commerce' ),
 				'class' => 'wc-enhanced-select',
-				'css' => 'min-width: 350px;',
+				'css' => 'width: 100%;',
 				'default' => self::layout(),
 				'options' => array(
 					'cards' => __( 'Cards: each option in its own box, the chosen one opens its office or address fields', 'nashenski-commerce' ),

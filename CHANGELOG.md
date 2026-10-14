@@ -1,5 +1,17 @@
 # Nashenski Commerce changelog
 
+## 0.14.0 (2026-10-14)
+
+### Settings screens
+- Every group of settings now sits in its own box, and on wide screens the boxes flow in two columns, so long pages like Documents and Checkout need much less scrolling. Rows are tighter and fields fit their column. On narrower screens the boxes stack in one column.
+- The courier switches on the Overview are one row, and so are the customer check services, instead of one tall row each with the same note repeated.
+- Courier options no longer wait for a working login to appear. The sender details, label options, where you send from and the BOX NOW prices are always shown, greyed out until the courier accepts the login. Greyed-out values are kept when you save.
+- The courier logos above the courier settings all sit in the same size box, so the row looks even.
+- Wide tables (price lists, checkout fields) use the full width, and their columns no longer push the page sideways.
+
+### Fixed
+- The Pigeon Express "Extra services on labels" note with the link to the price page was never shown.
+
 ## 0.13.0 (2026-10-12)
 
 ### Checkout with the town or region hidden

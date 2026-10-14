@@ -18,6 +18,15 @@ defined( 'ABSPATH' ) || exit;
 class Pickers {
 	const PENDING_META = 'nashenski_pending';
 
+	// Login settings of each courier (group = courier slug).
+	const LOGIN = array(
+		'econt' => array( 'user', 'password' ),
+		'speedy' => array( 'user', 'password' ),
+		'boxnow' => array( 'client_id', 'client_secret' ),
+		'pigeon' => array( 'api_key', 'api_secret' ),
+		'cvc' => array( 'token' ),
+	);
+
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ), 20 );
 		add_action( 'woocommerce_after_shipping_rate', array( __CLASS__, 'render_container' ), 5, 2 );
@@ -100,21 +109,13 @@ class Pickers {
 	 * Whether the store entered a login for the courier (not whether it works).
 	 */
 	public static function connected( $courier ) {
-		$keys = array(
-			'econt' => array( 'user', 'password' ),
-			'speedy' => array( 'user', 'password' ),
-			'boxnow' => array( 'client_id', 'client_secret' ),
-			'pigeon' => array( 'api_key', 'api_secret' ),
-			'cvc' => array( 'token' ),
-		);
-
-		foreach ( $keys[ $courier ] ?? array() as $key ) {
+		foreach ( self::LOGIN[ $courier ] ?? array() as $key ) {
 			if ( '' === trim( (string) nashenski_get_option( $courier, $key ) ) ) {
 				return false;
 			}
 		}
 
-		return isset( $keys[ $courier ] );
+		return isset( self::LOGIN[ $courier ] );
 	}
 
 	/**

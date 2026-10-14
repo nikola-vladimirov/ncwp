@@ -18,7 +18,6 @@ class Pigeon_Tab extends Base_Tab {
 		add_action( 'nashenski/admin/settings/afte_save_fields/'. $this->tab_name, array( $this, 'after_save_fields' ) );
 		add_filter( 'nashenski/admin/settings/pigeon/fields', array( $this, 'add_send_from_fields' ), 10 );
 		add_filter( 'nashenski/admin/settings/pigeon/fields', array( $this, 'add_additional_fields' ), 20 );
-		add_filter( 'nashenski/admin/settings/pigeon/groups_titles', array( $this, 'add_send_from_group_title' ) );
 	}
 
 	public function load_fields() {
@@ -44,58 +43,63 @@ class Pigeon_Tab extends Base_Tab {
 		$this->set_fields( $fields );
 	}
 
+	/**
+	 * Pigeon Express accepted the key and secret. Without it the other options show greyed out (Settings_Page).
+	 */
+	public function connected() {
+		return $this->container[ Client::PIGEON ]->is_valid_access( true );
+	}
+
 	public function add_additional_fields( $fields ) {
-		if ( $this->container[ Client::PIGEON ]->is_valid_access( true ) ) {
-			$fields[ 'pigeon' ][] = new Fields\TrueFalse_Field( 'label_after_checkout', __( 'Generate label after checkout', 'nashenski-commerce' ), null, null, __( 'This option will try to generate your label immediately after user checkout. Also, will add the tracking number in the order email.', 'nashenski-commerce' ) );
-			$fields[ 'pigeon' ][] = new Fields\TrueFalse_Field( 'auto_size', __( 'Automatically calculate box size', 'nashenski-commerce' ), null, null, __( 'Automatically calculate LxWxH of the box for the parcel.', 'nashenski-commerce' ) );
-			$fields[ 'pigeon' ][] = new Fields\Select_Field( 
-				array(
-					'office' => array(
-						'id' => 'office',
-						'label' => __( 'Office', 'nashenski-commerce' ),
-					),
-					'address' => array(
-						'id' => 'address',
-						'label' => __( 'Address', 'nashenski-commerce' ),
-					),
-				), 'send_from', __( 'Send From', 'nashenski-commerce' ), null, null, __( 'Select from where you will send the packages and save to show more options.', 'nashenski-commerce' ) 
-			);
-			
-			$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'pay_with_pos', __( 'Pay with POS', 'nashenski-commerce' ), null, null, __( 'POS payment available.', 'nashenski-commerce' ) );
-			$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'declared_value', __( 'Declared value', 'nashenski-commerce' ), null, null, __( 'Adds declared value to the label if payment is COD.', 'nashenski-commerce' ) );
-			$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'paper_return_receipt', __( 'Paper Return Receipt', 'nashenski-commerce' ), null, null, __( 'Request for a paper receipt', 'nashenski-commerce' ) );
-			$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'return_receipt', __( 'Return Receipt', 'nashenski-commerce' ), null, null, __( 'Request for a return receipt in electronic format', 'nashenski-commerce' ) );
-			$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'service_return_documents', __( 'Service Return Documents', 'nashenski-commerce' ), null, null, __( 'Return of original documents from the recipient to the sender after signing.', 'nashenski-commerce' ) );
-			$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'id_verification_and_document_signature', __( 'ID Verification and Document Signature', 'nashenski-commerce' ), null, null, __( 'Verify ID and sign documents electronically.', 'nashenski-commerce' ) );
-			$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'cod_card_fee', __( 'COD Card Fee', 'nashenski-commerce' ), null, null, __( 'Charge a fee for COD card payments.', 'nashenski-commerce' ) );
-			
-			
-		}
+		$fields[ 'pigeon' ][] = new Fields\TrueFalse_Field( 'label_after_checkout', __( 'Generate label after checkout', 'nashenski-commerce' ), null, null, __( 'This option will try to generate your label immediately after user checkout. Also, will add the tracking number in the order email.', 'nashenski-commerce' ) );
+		$fields[ 'pigeon' ][] = new Fields\TrueFalse_Field( 'auto_size', __( 'Automatically calculate box size', 'nashenski-commerce' ), null, null, __( 'Automatically calculate LxWxH of the box for the parcel.', 'nashenski-commerce' ) );
+		$fields[ 'pigeon' ][] = new Fields\Select_Field( 
+			array(
+				'office' => array(
+					'id' => 'office',
+					'label' => __( 'Office', 'nashenski-commerce' ),
+				),
+				'address' => array(
+					'id' => 'address',
+					'label' => __( 'Address', 'nashenski-commerce' ),
+				),
+			), 'send_from', __( 'Send From', 'nashenski-commerce' ), null, null, __( 'Select from where you will send the packages and save to show more options.', 'nashenski-commerce' ) 
+		);
+		
+		$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'pay_with_pos', __( 'Pay with POS', 'nashenski-commerce' ), null, null, __( 'POS payment available.', 'nashenski-commerce' ) );
+		$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'declared_value', __( 'Declared value', 'nashenski-commerce' ), null, null, __( 'Adds declared value to the label if payment is COD.', 'nashenski-commerce' ) );
+		$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'paper_return_receipt', __( 'Paper Return Receipt', 'nashenski-commerce' ), null, null, __( 'Request for a paper receipt', 'nashenski-commerce' ) );
+		$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'return_receipt', __( 'Return Receipt', 'nashenski-commerce' ), null, null, __( 'Request for a return receipt in electronic format', 'nashenski-commerce' ) );
+		$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'service_return_documents', __( 'Service Return Documents', 'nashenski-commerce' ), null, null, __( 'Return of original documents from the recipient to the sender after signing.', 'nashenski-commerce' ) );
+		$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'id_verification_and_document_signature', __( 'ID Verification and Document Signature', 'nashenski-commerce' ), null, null, __( 'Verify ID and sign documents electronically.', 'nashenski-commerce' ) );
+		$fields[ 'pigeon_services' ][] = new Fields\TrueFalse_Field( 'cod_card_fee', __( 'COD Card Fee', 'nashenski-commerce' ), null, null, __( 'Charge a fee for COD card payments.', 'nashenski-commerce' ) );
+		
+		
 
 		return $fields;
 	}
 
 	public function add_send_from_fields( $fields ) {
-		if ( $this->container[ Client::PIGEON ]->is_valid_access( true ) ) {
-			$cities = $this->container[ Client::PIGEON_CITIES ]->get_formatted_cities();
-			$offices = $this->container[ Client::PIGEON_OFFICES ]->get_formatted_offices( nashenski_get_option( 'pigeon_send_from', 'city' ) );
-			$fields[ 'pigeon_send_from' ] = [];
+		// Without a working login the lists stay empty and every field shows greyed out.
+		$connected = $this->connected();
+		$cities = $connected ? $this->container[ Client::PIGEON_CITIES ]->get_formatted_cities() : array();
+		$offices = $connected ? $this->container[ Client::PIGEON_OFFICES ]->get_formatted_offices( nashenski_get_option( 'pigeon_send_from', 'city' ) ) : array();
+		$fields[ 'pigeon_send_from' ] = [];
 
-			if ( !empty( $cities ) ) {
-				$fields[ 'pigeon_send_from' ][] = new Fields\Select_Field( $cities, 'city', __( 'City', 'nashenski-commerce' ) );
-				$fields[ 'pigeon_send_from' ][] = new Fields\Text_Field( 'address', __( 'Address', 'nashenski-commerce' ), __( 'Enter your address.', 'nashenski-commerce' ) );
-			}
+		if ( $cities || ! $connected ) {
+			$fields[ 'pigeon_send_from' ][] = new Fields\Select_Field( $cities, 'city', __( 'City', 'nashenski-commerce' ) );
+			$fields[ 'pigeon_send_from' ][] = new Fields\Text_Field( 'address', __( 'Address', 'nashenski-commerce' ), __( 'Enter your address.', 'nashenski-commerce' ) );
+		}
 
-			if ( !empty( $offices ) ) {
-				$fields[ 'pigeon_send_from' ][] = new Fields\Select_Field( 
-					$offices, 
-					'office', 
-					__( 'Office', 'nashenski-commerce' ), 
-					null, 
-					null, 
-					__('Choose a city and save in order to show offices.', 'nashenski-commerce' ) 
-				);
-			}
+		if ( $offices || ! $connected ) {
+			$fields[ 'pigeon_send_from' ][] = new Fields\Select_Field( 
+				$offices, 
+				'office', 
+				__( 'Office', 'nashenski-commerce' ), 
+				null, 
+				null, 
+				__('Choose a city and save in order to show offices.', 'nashenski-commerce' ) 
+			);
 		}
 
 		return $fields;
@@ -105,25 +109,17 @@ class Pigeon_Tab extends Base_Tab {
 		$titles = apply_filters( 'nashenski/admin/settings/pigeon/groups_titles', array(
 			'pigeon' => array(
 				'title' => __( 'Pigeon Express account', 'nashenski-commerce' ),
-				'desc' => __( 'The API key and secret Pigeon Express gave you. After saving, your sender options appear.', 'nashenski-commerce' ),
+				'desc' => __( 'The API key and secret Pigeon Express gave you. The other options unlock once Pigeon Express accepts them.', 'nashenski-commerce' ),
 			),
-		) );
-
-		return $titles;
-	}
-
-	public function add_send_from_group_title( $titles ) {
-		if ( $this->container[ Client::PIGEON ]->is_valid_access( true ) ) {
-			$titles['pigeon_send_from'] = array(
+			'pigeon_send_from' => array(
 				'title' => __( 'Where you send from', 'nashenski-commerce' ),
-			);
-
-			$titles['pigeon_services'] = array(
+			),
+			'pigeon_services' => array(
 				'title' => __( 'Extra services on labels', 'nashenski-commerce' ),
 				/* translators: %s: Pigeon Express price page address */
-				'description' => sprintf( __( 'You can see the current prices on the <a href="%s" target="_blank">Pigeon Express website</a> or according to your agreed upon terms.', 'nashenski-commerce' ), 'https://pigeonexpress.com/prices-and-taxes/' ),	
-			);
-		}
+				'desc' => sprintf( __( 'You can see the current prices on the <a href="%s" target="_blank">Pigeon Express website</a> or according to your agreed upon terms.', 'nashenski-commerce' ), 'https://pigeonexpress.com/prices-and-taxes/' ),
+			),
+		) );
 
 		return $titles;
 	}

@@ -12,17 +12,18 @@ class Settings_Tab extends Base_Tab {
 	public function load_fields() {
 		$fields = apply_filters( 'nashenski/admin/settings/fields', array(
 			'apis' => array(
-				new Fields\TrueFalse_Field( 'enable_econt', __( 'Econt', 'nashenski-commerce' ), null, null, __( 'Delivery to Econt offices, lockers and addresses', 'nashenski-commerce' ) ),
-				new Fields\TrueFalse_Field( 'enable_speedy', __( 'Speedy', 'nashenski-commerce' ), null, null, __( 'Delivery to Speedy offices, lockers and addresses', 'nashenski-commerce' ) ),
-				new Fields\TrueFalse_Field( 'enable_boxnow', __( 'BOX NOW', 'nashenski-commerce' ), null, null, __( 'Delivery to BOX NOW lockers', 'nashenski-commerce' ) ),
-				new Fields\TrueFalse_Field( 'enable_pigeon', __( 'Pigeon Express', 'nashenski-commerce' ), null, null, __( 'Delivery to Pigeon Express offices, lockers and addresses', 'nashenski-commerce' ) ),
-				new Fields\TrueFalse_Field( 'enable_cvc', __( 'CVC', 'nashenski-commerce' ), null, null, __( 'Delivery to CVC offices and addresses', 'nashenski-commerce' ) ),
+				// One row for all couriers and one for all services (WooCommerce checkbox groups).
+				( new Fields\TrueFalse_Field( 'enable_econt', __( 'Couriers', 'nashenski-commerce' ), null, null, __( 'Delivery to Econt offices, lockers and addresses', 'nashenski-commerce' ) ) )->set_wc( array( 'checkboxgroup' => 'start' ) ),
+				( new Fields\TrueFalse_Field( 'enable_speedy', __( 'Speedy', 'nashenski-commerce' ), null, null, __( 'Delivery to Speedy offices, lockers and addresses', 'nashenski-commerce' ) ) )->set_wc( array( 'checkboxgroup' => '' ) ),
+				( new Fields\TrueFalse_Field( 'enable_boxnow', __( 'BOX NOW', 'nashenski-commerce' ), null, null, __( 'Delivery to BOX NOW lockers', 'nashenski-commerce' ) ) )->set_wc( array( 'checkboxgroup' => '' ) ),
+				( new Fields\TrueFalse_Field( 'enable_pigeon', __( 'Pigeon Express', 'nashenski-commerce' ), null, null, __( 'Delivery to Pigeon Express offices, lockers and addresses', 'nashenski-commerce' ) ) )->set_wc( array( 'checkboxgroup' => '' ) ),
+				( new Fields\TrueFalse_Field( 'enable_cvc', __( 'CVC', 'nashenski-commerce' ), null, null, __( 'Delivery to CVC offices and addresses', 'nashenski-commerce' ) ) )->set_wc( array( 'checkboxgroup' => 'end' ) ),
 				new Fields\TrueFalse_Field( 'enable_documents', __( 'Invoices and N-18', 'nashenski-commerce' ), null, null, __( 'Order documents, invoices, credit notes and the NRA audit file', 'nashenski-commerce' ) ),
 			),
 			'reports' => array(
-				new Fields\TrueFalse_Field( 'enable_nekorekten', __( 'nekorekten.com', 'nashenski-commerce' ), null, null, __( 'Reports about the customer\'s phone number from nekorekten.com', 'nashenski-commerce' ) ),
-				new Fields\TrueFalse_Field( 'enable_connectix', __( 'Connectix', 'nashenski-commerce' ), null, null, __( 'Delivery history of the customer from connectix.bg', 'nashenski-commerce' ) ),
-				new Fields\TrueFalse_Field( 'enable_nepostop', __( 'NepoStop', 'nashenski-commerce' ), null, null, __( 'Share of refused parcels for the customer\'s phone number from nepostop.com', 'nashenski-commerce' ) ),
+				( new Fields\TrueFalse_Field( 'enable_nekorekten', __( 'Services', 'nashenski-commerce' ), null, null, __( 'Reports about the customer\'s phone number from nekorekten.com', 'nashenski-commerce' ) ) )->set_wc( array( 'checkboxgroup' => 'start' ) ),
+				( new Fields\TrueFalse_Field( 'enable_connectix', __( 'Connectix', 'nashenski-commerce' ), null, null, __( 'Delivery history of the customer from connectix.bg', 'nashenski-commerce' ) ) )->set_wc( array( 'checkboxgroup' => '' ) ),
+				( new Fields\TrueFalse_Field( 'enable_nepostop', __( 'NepoStop', 'nashenski-commerce' ), null, null, __( 'Share of refused parcels for the customer\'s phone number from nepostop.com', 'nashenski-commerce' ) ) )->set_wc( array( 'checkboxgroup' => 'end' ) ),
 				new Fields\TrueFalse_Field( 'column', __( 'Orders list', 'nashenski-commerce' ), null, null, __( 'Add a "Reports" column to the orders list', 'nashenski-commerce' ) ),
 				new Fields\TrueFalse_Field( 'check_on_checkout', __( 'Cash on delivery', 'nashenski-commerce' ), null, null, __( 'Check the phone number at checkout and hide cash on delivery when reports are found', 'nashenski-commerce' ) . '<br><small>' . __( 'nekorekten.com answers at most 10 checks a minute; Nashenski Commerce remembers answers for 10 minutes.', 'nashenski-commerce' ) . '</small>' ),
 			)
