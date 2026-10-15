@@ -23,7 +23,7 @@ class Office {
 		$delivery_type = nashenski_picker_request( 'delivery_type', 'office' );
 		$country_id = self::$container[ Client::SPEEDY_COUNTRIES ]->get_country_id( nashenski_picker_request( 'country' ) );
 		$states = self::$container[ Client::SPEEDY_CITIES ]->get_regions( $country_id );
-		$state = $states[ $raw_state ];
+		$state = $states[ $raw_state ] ?? '';
 		$cities_data = self::$container[ Client::SPEEDY_CITIES ]->get_filtered_cities( $raw_city, $raw_state, $country_id );
 		if ( 'automat' === $delivery_type ) {
 			/* translators: %s: town */

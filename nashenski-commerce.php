@@ -6,7 +6,7 @@ Description:  Everything a WooCommerce store needs to sell in Bulgaria: Econt, S
 Requires Plugins: woocommerce
 Author:       PristaDigital
 Author URI:   https://pristadigital.com/
-Version:      0.14.1
+Version:      0.14.2
 Requires at least: 6.5
 Requires PHP: 7.4
 WC requires at least: 9.4.0

@@ -1,5 +1,11 @@
 # Nashenski Commerce changelog
 
+## 0.14.2 (2026-10-15)
+
+### Fixed
+- CVC "to an address": the street and address search at checkout stopped with a server error while CVC was not connected yet (no token saved). It now answers like the other couriers, and the shipping price check no longer trips over it.
+- Speedy offices and lockers at checkout no longer write PHP notices to the log while Speedy is not connected yet.
+
 ## 0.14.1 (2026-10-14)
 
 ### Fixed

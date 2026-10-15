@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.14.1
+Stable tag: 0.14.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -96,6 +96,9 @@ The plugin only contacts a service after you turn it on and enter your own accou
 * EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/
 
 == Changelog ==
+
+= 0.14.2 =
+* Checkout no longer fails for CVC addresses, and Speedy offices show no PHP notices, while a courier is not connected yet.
 
 = 0.14.1 =
 * Update details show the whole changelog with headings and lists that wrap, instead of one version scrolling sideways.

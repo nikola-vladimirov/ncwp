@@ -70,11 +70,16 @@ class Cities {
 
 	//Getters
 	public function get_cities( $country_id = '100' ) {
+		// No country id when CVC did not answer (no login yet).
+		if ( null === $country_id ) {
+			return array();
+		}
+
 		if ( empty( $this->cities[ $country_id ] ) ) {
 			$this->load_cities( $country_id );
 		}
 
-		return $this->cities[ $country_id ];
+		return $this->cities[ $country_id ] ?? array();
 	}
 
 	public function search_for_city( $city, $state, $country_id = '100' ) {
@@ -93,15 +98,15 @@ class Cities {
 	public function get_state_name( $state_code, $country_id = '100' ) {
 		$states = nashenski_return_bg_states();
 
-		return $states[ $state_code ];
+		return $states[ $state_code ] ?? '';
 	}
 
 	public function get_state_id( $state_code, $country_id = '100' ) {
 		$state_name = $this->get_state_name( $state_code );
-		$cities = $this->get_cities( $country_id )[ 'counties' ];
+		$cities = (array) ( $this->get_cities( $country_id )['counties'] ?? array() );
 		$key = array_search( $state_name, array_column( $cities, 'name_bg' ) );
 
-		return $cities[ $key ][ 'id' ];
+		return false === $key ? '' : $cities[ $key ]['id'];
 	}
 
 	public function get_city_zip_by_id( $id, $country_id = '100' ) {

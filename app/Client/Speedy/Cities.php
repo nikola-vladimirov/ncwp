@@ -185,7 +185,8 @@ class Cities {
 			]
 		) );
 		
-		return $regions[ $country_id ] ?? array();
+		// No country id when Speedy did not answer (no login yet).
+		return null === $country_id ? array() : ( $regions[ $country_id ] ?? array() );
 	}
 
 	//Setters
