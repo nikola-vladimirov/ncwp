@@ -24,7 +24,7 @@ Based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3 or later). 
 
 ## Requirements
 
-- WordPress 6.5 or newer (tested up to 7.1.3), PHP 7.4 or newer.
+- WordPress 6.5 or newer (tested up to 7.1), PHP 7.4 or newer.
 - WooCommerce 9.4 or newer (tested up to 11.1). The EU withdrawal function needs WooCommerce 11.1.
 - For live courier prices and labels: an account with each courier you use. Without one, checkout
   prices come from the courier's public price list, which is built in.
@@ -97,7 +97,8 @@ and choose "When to generate documents?".
 
 A "Quick order" button on the product page and in the cart opens a short form. The order waits for
 your confirmation. On the order screen the Delivery box sets the courier, town and office, locker or
-address; "Save delivery" adds the shipping line, and a label can then be made as usual. When the
+address; "Save delivery" adds the shipping line, and a label can then be made as usual (for Econt,
+also from the label button in the orders list). When the
 label sets the delivery price, the customer gets the order details email with the new total.
 
 ### Abandoned carts

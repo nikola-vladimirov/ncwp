@@ -179,7 +179,7 @@ class Delivery_Box {
 			<div class="nashenski-delivery-picker nashenski-additional-fields"></div>
 			<input type="hidden" name="nashenski_delivery_choice" value="">
 			<?php wp_nonce_field( self::NONCE, 'nashenski_delivery_nonce' ); ?>
-			<p><button type="submit" class="button button-primary" name="save" value="<?php esc_attr_e( 'Update', 'woocommerce' ); ?>"><?php esc_html_e( 'Save delivery', 'nashenski-commerce' ); ?></button></p>
+			<p><button type="submit" class="button button-primary" name="save" value="save"><?php esc_html_e( 'Save delivery', 'nashenski-commerce' ); ?></button></p>
 		</div>
 		<?php
 	}

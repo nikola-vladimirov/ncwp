@@ -123,6 +123,7 @@ class Help_Page {
 					esc_html__( 'Choose how the form opens (dialog, inline or side panel) and its fields: a ready-made template or a Custom one. Name, phone and email are always asked, and only Bulgarian phone numbers are accepted.', 'nashenski-commerce' ),
 					esc_html__( 'Each submission becomes an order with the status "Quick order". No stock is reserved and no payment link is sent until you change the status. You get the WooCommerce "New order" email.', 'nashenski-commerce' ),
 					esc_html__( 'To ship it, open the order. In the Delivery box choose the shipping option, the town and the office, locker or address, then press "Save delivery". The courier box for the label appears, and the price comes when the label is made. The customer then gets an email with the delivery price and the new total.', 'nashenski-commerce' ),
+					esc_html__( 'For Econt, once the delivery is saved, the label button in the orders list also makes the label.', 'nashenski-commerce' ),
 				),
 				__( 'Abandoned carts', 'nashenski-commerce' ) => array(
 					esc_html__( 'Turn it on in WooCommerce > Settings > Nashenski Commerce > Abandoned carts. It is off by default.', 'nashenski-commerce' ),

@@ -1,5 +1,18 @@
 # Nashenski Commerce changelog
 
+## 0.16.4 (2026-10-16)
+
+### Admin scripts
+- No compiled code is left: the old `dist/` folder is gone, and every script and style in the plugin is readable. The admin styles moved to `assets/css/`.
+- Speedy: the label box shows again on orders (it could stay empty).
+- Making a label with no office or locker chosen shows the courier's answer instead of a server error (Speedy, CVC, Econt, Pigeon).
+
+### Help
+- Quick order: for Econt, the label button in the orders list also makes the label once the delivery is saved.
+
+### Updates
+- "Tested up to" is 7.1 again, as WordPress.org asks.
+
 ## 0.16.3 (2026-10-16)
 
 ### Admin scripts
