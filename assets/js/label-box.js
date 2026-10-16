@@ -76,7 +76,8 @@ window.nashenskiLabelBox = ( function ( $ ) {
 			}
 		} );
 
-		( children || [] ).forEach( function ( child ) {
+		// One level of nested arrays is allowed, so a view can pass list.map( ... ) as a child.
+		[].concat.apply( [], children || [] ).forEach( function ( child ) {
 			if ( child ) {
 				node.appendChild( 'string' === typeof child ? document.createTextNode( child ) : child );
 			}

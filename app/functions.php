@@ -444,7 +444,10 @@ function nashenski_check_admin_label_actions() {
  * sanitized all the way down. With no key, the whole sanitized request.
  */
 function nashenski_label_request( $key = null, $default = '' ) {
-	return nashenski_verified_request( $key, $default, 'nonce', 'nashenski_admin_label' );
+	$value = nashenski_verified_request( $key, $default, 'nonce', 'nashenski_admin_label' );
+
+	// An empty choice (no office or locker picked) arrives as '': keep the array the caller expects.
+	return is_array( $default ) && ! is_array( $value ) ? $default : $value;
 }
 
 /**

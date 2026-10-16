@@ -11,7 +11,7 @@ class Plugin {
 	 */
 	const COURIERS = array( 'econt', 'speedy', 'boxnow', 'pigeon', 'cvc' );
 	// Couriers whose label box is readable JS (assets/js/label-<courier>.js). See docs/plans/dist-rewrite.md.
-	const READABLE_BOXES = array( 'cvc' );
+	const READABLE_BOXES = array( 'cvc', 'boxnow', 'pigeon', 'speedy' );
 
 	protected static $_instance;
 
