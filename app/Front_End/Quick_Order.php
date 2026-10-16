@@ -415,6 +415,8 @@ document.addEventListener("submit",function(e){
 			<?php endif; ?>
 			<?php if ( isset( $fields['quantity'] ) ) : ?>
 				<p><label><?php echo esc_html( $fields['quantity'] ); ?><br><input type="number" name="quantity" min="1" step="1" value="<?php echo esc_attr( $quantity ); ?>"></label></p>
+			<?php else : ?>
+				<input type="hidden" name="quantity" value="<?php echo esc_attr( $quantity ); ?>">
 			<?php endif; ?>
 			<?php if ( isset( $fields['product_notes'] ) ) : ?>
 				<p><label><?php echo esc_html( $fields['product_notes'] ); ?><br><textarea name="product_notes" rows="2"></textarea></label></p>
@@ -506,7 +508,7 @@ document.addEventListener("submit",function(e){
 		} else {
 			$product = $product_id ? wc_get_product( $product_id ) : false;
 
-			if ( ! $product || ! $product->is_type( 'simple' ) || ! $product->is_purchasable() ) {
+			if ( ! $product || ! $product->is_type( 'simple' ) || ! $product->is_purchasable() || ! $product->is_in_stock() ) {
 				wp_send_json_error( array( 'message' => __( 'This product cannot be ordered now.', 'nashenski-commerce' ) ) );
 			}
 
@@ -519,8 +521,10 @@ document.addEventListener("submit",function(e){
 			wp_send_json_error( array( 'message' => __( 'The order could not be saved. Please try again.', 'nashenski-commerce' ) ) );
 		}
 
+		// The cart became the order: empty it, so it is not ordered twice or tracked again as abandoned.
 		if ( 'cart' === $context ) {
 			Tracker::mark_recovered();
+			WC()->cart->empty_cart();
 		}
 
 		self::notify_owner( $order );

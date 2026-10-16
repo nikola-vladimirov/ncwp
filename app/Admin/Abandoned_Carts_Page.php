@@ -295,7 +295,7 @@ class Abandoned_Carts_Page {
 								<td><?php echo esc_html( isset( $labels[ $cart->status ] ) ? $labels[ $cart->status ] : $cart->status ); ?></td>
 								<td>
 									<a href="<?php echo esc_url( add_query_arg( array( 'page' => self::SLUG, 'status' => $status, 'paged' => $paged, 'edit' => (int) $cart->id ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Edit', 'nashenski-commerce' ); ?></a>
-									<?php if ( is_email( $cart->email ) && 'unsubscribed' !== $cart->status ) : ?>
+									<?php if ( is_email( $cart->email ) && 'open' === $cart->status ) : ?>
 										| <a href="<?php echo esc_url( self::action_url( self::ACTION_REMIND, $cart->id ) ); ?>"><?php esc_html_e( 'Send reminder', 'nashenski-commerce' ); ?></a>
 									<?php endif; ?>
 									| <a href="<?php echo esc_url( self::action_url( self::ACTION_DELETE, $cart->id ) ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Delete this cart?', 'nashenski-commerce' ) ); ?>');"><?php esc_html_e( 'Delete', 'nashenski-commerce' ); ?></a>

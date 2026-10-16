@@ -54,6 +54,8 @@ class Tracker {
 		add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'capture_from_checkout' ) );
 		add_action( 'woocommerce_store_api_cart_update_customer_from_request', array( __CLASS__, 'capture_from_store_api' ), 10, 2 );
 		add_action( 'woocommerce_checkout_order_created', array( __CLASS__, 'mark_recovered' ) );
+		// The block checkout does not fire checkout_order_created.
+		add_action( 'woocommerce_store_api_checkout_order_processed', array( __CLASS__, 'mark_recovered' ) );
 	}
 
 	/**
@@ -234,11 +236,12 @@ class Tracker {
 	/**
 	 * The shopper emptied the cart: it is no longer tracked, so its reminders stop.
 	 * An order placed from the cart is marked recovered first, so this does nothing after it.
+	 * Logging out also empties the cart, but keeps the saved one ($clear_persistent_cart false): that cart is still open.
 	 */
-	public static function mark_emptied() {
+	public static function mark_emptied( $clear_persistent_cart = true ) {
 		$key = self::session_key();
 
-		if ( '' === $key ) {
+		if ( '' === $key || ! $clear_persistent_cart ) {
 			return;
 		}
 
@@ -325,7 +328,8 @@ class Tracker {
 	public static function mark_recovered() {
 		$key = self::session_key();
 
-		if ( '' === $key ) {
+		// Quick order calls this too, and the table only exists once the feature was turned on.
+		if ( '' === $key || ! get_option( self::DB_OPTION ) ) {
 			return;
 		}
 
@@ -384,8 +388,8 @@ class Tracker {
 	public static function send_now( $id ) {
 		$row = self::get_row( $id );
 
-		// A shopper who unsubscribed is never emailed again, not even by hand.
-		if ( ! $row || 'unsubscribed' === $row->status || ! is_email( $row->email ) ) {
+		// Only open carts: a shopper who ordered, emptied the cart or unsubscribed is not reminded, not even by hand.
+		if ( ! $row || 'open' !== $row->status || ! is_email( $row->email ) ) {
 			return false;
 		}
 

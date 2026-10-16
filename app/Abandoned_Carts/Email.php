@@ -22,7 +22,7 @@ class Email extends \WC_Email {
 		$this->id             = 'nashenski_abandoned_cart';
 		$this->customer_email = true;
 		$this->title          = __( 'Abandoned cart reminder', 'nashenski-commerce' );
-		$this->description    = __( 'A reminder with the items left in the cart, a link that refills the cart and a single-use coupon. Sent by the Abandoned carts feature. Turn the feature on under Nashenski Commerce > Checkout.', 'nashenski-commerce' );
+		$this->description    = __( 'A reminder with the items left in the cart, a link that refills the cart and a single-use coupon. Sent by the Abandoned carts feature. Turn the feature on under Nashenski Commerce > Overview; its settings then show in the Checkout section.', 'nashenski-commerce' );
 
 		$this->template_html  = 'emails/nashenski-abandoned-cart.php';
 		$this->template_plain = 'emails/plain/nashenski-abandoned-cart.php';

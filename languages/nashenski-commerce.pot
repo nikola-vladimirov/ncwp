@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.15.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-16 11:54+0000\n"
-"PO-Revision-Date: 2026-10-16 11:54+0000\n"
+"POT-Creation-Date: 2026-10-16 13:33+0000\n"
+"PO-Revision-Date: 2026-10-16 13:33+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,7 +16,7 @@ msgid "Abandoned cart reminder"
 msgstr ""
 
 #: app/Abandoned_Carts/Email.php:25
-msgid "A reminder with the items left in the cart, a link that refills the cart and a single-use coupon. Sent by the Abandoned carts feature. Turn the feature on under Nashenski Commerce > Checkout."
+msgid "A reminder with the items left in the cart, a link that refills the cart and a single-use coupon. Sent by the Abandoned carts feature. Turn the feature on under Nashenski Commerce > Overview; its settings then show in the Checkout section."
 msgstr ""
 
 #. translators: %s: site name (the {site_title} placeholder)
@@ -32,7 +32,7 @@ msgstr ""
 msgid "Hello {name},\n\nYou left these items in your cart:\n\n{items}\n\nTotal: {cart_total}\n\n{coupon_line}\n\n<a href=\"{resume_link}\">Go back to your cart</a>\n\nDo not want these emails? <a href=\"{unsubscribe_link}\">Unsubscribe here</a>"
 msgstr ""
 
-#: app/Abandoned_Carts/Email.php:64 app/Front_End/Quick_Order.php:183 app/Front_End/Quick_Order.php:642
+#: app/Abandoned_Carts/Email.php:64 app/Front_End/Quick_Order.php:183 app/Front_End/Quick_Order.php:646
 msgid "Message"
 msgstr ""
 
@@ -40,77 +40,77 @@ msgstr ""
 msgid "The body of the reminder. Placeholders: {name}, {items}, {cart_total}, {coupon}, {coupon_line} (the whole sentence about the coupon, empty when there is none), {resume_link}, {unsubscribe_link}, {site_title}. Each line becomes a paragraph."
 msgstr ""
 
-#: app/Abandoned_Carts/Tracker.php:107
+#: app/Abandoned_Carts/Tracker.php:109
 msgid "Percentage off"
 msgstr ""
 
-#: app/Abandoned_Carts/Tracker.php:108
+#: app/Abandoned_Carts/Tracker.php:110
 msgid "Fixed amount off the cart"
 msgstr ""
 
-#: app/Abandoned_Carts/Tracker.php:109
+#: app/Abandoned_Carts/Tracker.php:111
 msgid "Fixed amount off each product"
 msgstr ""
 
-#: app/Abandoned_Carts/Tracker.php:435
+#: app/Abandoned_Carts/Tracker.php:439
 msgid "there"
 msgstr ""
 
 #. translators: %s: coupon code
-#: app/Abandoned_Carts/Tracker.php:441
+#: app/Abandoned_Carts/Tracker.php:445
 #, php-format
 msgid "Use the code %s when you order. It works once."
 msgstr ""
 
 #. translators: %s: shopper's first name
-#: app/Abandoned_Carts/Tracker.php:457
+#: app/Abandoned_Carts/Tracker.php:461
 #, php-format
 msgid "Hello %s,"
 msgstr ""
 
-#: app/Abandoned_Carts/Tracker.php:459
+#: app/Abandoned_Carts/Tracker.php:463
 msgid "You left these items in your cart:"
 msgstr ""
 
 #. translators: %s: cart total, with the currency
-#: app/Abandoned_Carts/Tracker.php:463
+#: app/Abandoned_Carts/Tracker.php:467
 #, php-format
 msgid "Total: %s"
 msgstr ""
 
-#: app/Abandoned_Carts/Tracker.php:472
+#: app/Abandoned_Carts/Tracker.php:476
 msgid "Go back to your cart:"
 msgstr ""
 
-#: app/Abandoned_Carts/Tracker.php:475
+#: app/Abandoned_Carts/Tracker.php:479
 msgid "Do not want these emails? Unsubscribe here:"
 msgstr ""
 
 #. translators: %s: site name
-#: app/Abandoned_Carts/Tracker.php:481
+#: app/Abandoned_Carts/Tracker.php:485
 #, php-format
 msgid "You left items in your cart at %s"
 msgstr ""
 
 #. translators: %s: shopper's email
-#: app/Abandoned_Carts/Tracker.php:556
+#: app/Abandoned_Carts/Tracker.php:560
 #, php-format
 msgid "Abandoned cart coupon for %s"
 msgstr ""
 
-#: app/Abandoned_Carts/Tracker.php:630
+#: app/Abandoned_Carts/Tracker.php:634
 msgid "We put the items back in your cart."
 msgstr ""
 
-#: app/Abandoned_Carts/Tracker.php:632
+#: app/Abandoned_Carts/Tracker.php:636
 msgid "The items from the reminder are no longer available."
 msgstr ""
 
-#: app/Abandoned_Carts/Tracker.php:661
+#: app/Abandoned_Carts/Tracker.php:665
 msgid "You will not get more reminders from this shop."
 msgstr ""
 
-#: app/Abandoned_Carts/Tracker.php:662 app/Admin/Abandoned_Carts_Page.php:56
+#: app/Abandoned_Carts/Tracker.php:666 app/Admin/Abandoned_Carts_Page.php:56
 msgid "Unsubscribed"
 msgstr ""
 
@@ -280,7 +280,7 @@ msgstr[1] ""
 msgid "Cart updated."
 msgstr ""
 
-#: app/Admin/Abandoned_Carts_Page.php:401 app/Front_End/Quick_Order.php:485
+#: app/Admin/Abandoned_Carts_Page.php:401 app/Front_End/Quick_Order.php:487
 msgid "Enter a valid email address."
 msgstr ""
 
@@ -4732,11 +4732,11 @@ msgstr ""
 msgid "Town"
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:181 app/Front_End/Quick_Order.php:642
+#: app/Front_End/Quick_Order.php:181 app/Front_End/Quick_Order.php:646
 msgid "Product notes"
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:182 app/Front_End/Quick_Order.php:642
+#: app/Front_End/Quick_Order.php:182 app/Front_End/Quick_Order.php:646
 msgid "Preferred delivery time"
 msgstr ""
 
@@ -4772,81 +4772,81 @@ msgid "Phone number, for example %s."
 msgstr ""
 
 #. translators: %s: link to the privacy policy
-#: app/Front_End/Quick_Order.php:432
+#: app/Front_End/Quick_Order.php:434
 #, php-format
 msgid "I agree that the store may contact me about this order. I have read the %s."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:441
+#: app/Front_End/Quick_Order.php:443
 msgid "Send"
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:452
+#: app/Front_End/Quick_Order.php:454
 msgid "Quick orders are turned off."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:458
+#: app/Front_End/Quick_Order.php:460
 msgid "The form has expired. Reload the page and try again."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:467
+#: app/Front_End/Quick_Order.php:469
 msgid "Too many requests. Try again in a few minutes."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:477
+#: app/Front_End/Quick_Order.php:479
 msgid "Enter your name."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:489
+#: app/Front_End/Quick_Order.php:491
 msgid "Tick the box to agree to be contacted."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:500
+#: app/Front_End/Quick_Order.php:502
 msgid "Your cart is empty."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:510
+#: app/Front_End/Quick_Order.php:512
 msgid "This product cannot be ordered now."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:519
+#: app/Front_End/Quick_Order.php:521
 msgid "The order could not be saved. Please try again."
 msgstr ""
 
 #. translators: %s: example phone number
-#: app/Front_End/Quick_Order.php:599
+#: app/Front_End/Quick_Order.php:603
 #, php-format
 msgid "Enter a valid phone number, for example %s."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:605
+#: app/Front_End/Quick_Order.php:609
 msgid "Thank you. We have your details and will contact you to confirm the order."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:653
+#: app/Front_End/Quick_Order.php:657
 msgid "Quick order from the shop. No stock is reserved and no payment link is sent until the status is changed to Pending payment."
 msgstr ""
 
 #. translators: %s: order number
-#: app/Front_End/Quick_Order.php:666
+#: app/Front_End/Quick_Order.php:670
 #, php-format
 msgid "New quick order #%s"
 msgstr ""
 
 #. translators: 1: shopper name, 2: phone, 3: email, 4: link to the order
-#: app/Front_End/Quick_Order.php:669
+#: app/Front_End/Quick_Order.php:673
 #, php-format
 msgid "A shopper asked for a quick order.\n\nName: %1$s\nPhone: %2$s\nEmail: %3$s\n\nOpen the order: %4$s"
 msgstr ""
 
 #. translators: 1: site name, 2: order number
-#: app/Front_End/Quick_Order.php:682
+#: app/Front_End/Quick_Order.php:686
 #, php-format
 msgid "%1$s: we received your quick order #%2$s"
 msgstr ""
 
 #. translators: %s: shopper name
-#: app/Front_End/Quick_Order.php:685
+#: app/Front_End/Quick_Order.php:689
 #, php-format
 msgid "Hello %s,\n\nThank you. We have your quick order and will contact you to confirm it.\n\nNo payment is needed now."
 msgstr ""
