@@ -1,5 +1,12 @@
 # Nashenski Commerce changelog
 
+## 0.16.3 (2026-10-16)
+
+### Admin scripts
+- The CVC, BOX NOW, Pigeon, Speedy and Econt label boxes now run on readable scripts instead of the old compiled files.
+- Econt: the order list label button builds a label from the order when there is no checkout draft, and shows the courier message when no label was made.
+- Courier settings no longer lock or show fields twice after saving.
+
 ## 0.16.2 (2026-10-16)
 
 ### Help
