@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.16.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-16 19:59+0000\n"
-"PO-Revision-Date: 2026-10-16 19:59+0000\n"
+"POT-Creation-Date: 2026-10-16 20:02+0000\n"
+"PO-Revision-Date: 2026-10-16 20:02+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -135,7 +135,7 @@ msgstr "Поръчана"
 msgid "Emptied"
 msgstr "Изпразнена"
 
-#: app/Admin/Abandoned_Carts_Page.php:129 app/Admin/BoxNow.php:516 app/Admin/Import_Sources.php:204 app/Admin/Migration.php:87 app/Admin/Pigeon.php:558 app/Admin/Recommended_Settings.php:134
+#: app/Admin/Abandoned_Carts_Page.php:129 app/Admin/BoxNow.php:523 app/Admin/Import_Sources.php:204 app/Admin/Migration.php:87 app/Admin/Pigeon.php:558 app/Admin/Recommended_Settings.php:134
 msgid "You do not have permission to perform this action."
 msgstr "Нямате права за това действие."
 
@@ -415,19 +415,19 @@ msgstr "Цена"
 msgid "Name"
 msgstr "Име"
 
-#: app/Admin/BoxNow.php:402
+#: app/Admin/BoxNow.php:409
 msgid "Cash on delivery orders cannot be split into multiple packets."
 msgstr "Поръчки с наложен платеж не могат да се разделят на няколко пакета."
 
-#: app/Admin/BoxNow.php:464
+#: app/Admin/BoxNow.php:471
 msgid "BOX NOW did not answer. Check the connection settings and try again."
 msgstr "BOX NOW не отговори. Проверете настройките за връзка и опитайте отново."
 
-#: app/Admin/BoxNow.php:521 app/Admin/Pigeon.php:563 app/Admin/Speedy.php:905
+#: app/Admin/BoxNow.php:528 app/Admin/Pigeon.php:563 app/Admin/Speedy.php:905
 msgid "This link has expired. Reload the order page and try again."
 msgstr "Връзката е изтекла. Презаредете страницата на поръчката и опитайте отново."
 
-#: app/Admin/BoxNow.php:528 app/Admin/Speedy.php:320 app/Admin/Speedy.php:927
+#: app/Admin/BoxNow.php:535 app/Admin/Speedy.php:320 app/Admin/Speedy.php:927
 msgid "Invalid parcel number."
 msgstr "Невалиден номер на пратка."
 
@@ -4224,6 +4224,74 @@ msgstr "Потребителското име и паролата са греш�
 #: app/Admin/Tabs/Speedy_Tab.php:147
 msgid "No profiles was found. Please contact with Speedy."
 msgstr "Не са открити профили. Свържете се със Спиди."
+
+#: app/Client/BoxNow.php:85
+msgid "Some label data is not valid."
+msgstr "Някои данни за товарителницата не са валидни."
+
+#: app/Client/BoxNow.php:86
+msgid "The sending warehouse or locker is not valid. Choose one from the list."
+msgstr "Складът или автоматът за изпращане не е валиден. Изберете от списъка."
+
+#: app/Client/BoxNow.php:87
+msgid "The destination locker is not valid. Choose one from the list."
+msgstr "Автоматът за доставка не е валиден. Изберете от списъка."
+
+#: app/Client/BoxNow.php:88
+msgid "Your BOX NOW account cannot send from any locker (AnyAPM). Contact BOX NOW."
+msgstr "Профилът ви в BOX NOW не може да изпраща от всеки автомат (AnyAPM). Свържете се с BOX NOW."
+
+#: app/Client/BoxNow.php:89
+msgid "The phone number is not valid. Use the full international format, for example +359 88 123 4567."
+msgstr "Телефонният номер не е валиден. Използвайте пълния международен формат, например +359 88 123 4567."
+
+#: app/Client/BoxNow.php:90
+msgid "Choose a box size: small, medium or large."
+msgstr "Изберете размер на кутията: малка, средна или голяма."
+
+#: app/Client/BoxNow.php:91
+msgid "The country code is not valid."
+msgstr "Кодът на държавата не е валиден."
+
+#: app/Client/BoxNow.php:92
+msgid "The cash on delivery amount must be more than 0 and less than 5000."
+msgstr "Сумата на наложения платеж трябва да е повече от 0 и по-малко от 5000."
+
+#: app/Client/BoxNow.php:93
+msgid "BOX NOW already has a label for this order number."
+msgstr "BOX NOW вече има товарителница за този номер на поръчка."
+
+#: app/Client/BoxNow.php:94
+msgid "Your BOX NOW account cannot use cash on delivery. Contact BOX NOW."
+msgstr "Профилът ви в BOX NOW не може да използва наложен платеж. Свържете се с BOX NOW."
+
+#: app/Client/BoxNow.php:95
+msgid "The return warehouse is not valid."
+msgstr "Складът за връщане не е валиден."
+
+#: app/Client/BoxNow.php:96
+msgid "Your BOX NOW account cannot deliver to an address. Contact BOX NOW."
+msgstr "Профилът ви в BOX NOW не може да доставя до адрес. Свържете се с BOX NOW."
+
+#: app/Client/BoxNow.php:97
+msgid "Your BOX NOW account cannot use cash on delivery to an address. Contact BOX NOW."
+msgstr "Профилът ви в BOX NOW не може да използва наложен платеж при доставка до адрес. Свържете се с BOX NOW."
+
+#: app/Client/BoxNow.php:98
+msgid "This parcel can no longer be cancelled."
+msgstr "Тази пратка вече не може да бъде отказана."
+
+#: app/Client/BoxNow.php:99
+msgid "The parcel weight is not valid."
+msgstr "Теглото на пратката не е валидно."
+
+#: app/Client/BoxNow.php:100
+msgid "BOX NOW does not accept new labels because your account has an overdue payment."
+msgstr "BOX NOW не приема нови товарителници, защото профилът ви има просрочено плащане."
+
+#: app/Client/BoxNow.php:101
+msgid "BOX NOW could not reach the locker. Try again later."
+msgstr "BOX NOW не успя да се свърже с автомата. Опитайте отново по-късно."
 
 #: app/Client/Connectix.php:108
 msgid "No Info"

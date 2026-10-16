@@ -59,9 +59,13 @@ class BoxNow {
 
 		$response = json_decode( wp_remote_retrieve_body( $request ), 1 );
 
-		// An error answer carries BOX NOW's code and its own text, for example "P402" and "Invalid destination location".
+		// An error answer carries BOX NOW's code and sometimes its own (English) text.
 		if ( isset( $response['code'] ) ) {
-			$response['message'] = rtrim( 'BOX NOW ' . $response['code'] . ': ' . ( is_scalar( $response['message'] ?? '' ) ? ( $response['message'] ?? '' ) : '' ), ' :' );
+			$text = self::error_text( $response['code'] );
+			if ( '' === $text && is_scalar( $response['message'] ?? null ) ) {
+				$text = (string) $response['message'];
+			}
+			$response['message'] = rtrim( 'BOX NOW ' . $response['code'] . ': ' . $text, ' :' );
 
 			if ( ! empty( $response['jsonSchemaErrors'] ) && is_array( $response['jsonSchemaErrors'] ) ) {
 				$response['message'] .= ' ' . implode( '. ', array_map( function ( $error ) {
@@ -71,6 +75,33 @@ class BoxNow {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Error codes from the BOX NOW API integration manual (v1.69, boxnow.bg) that making or cancelling a label can return.
+	 */
+	public static function error_text( $code ) {
+		$texts = array(
+			'P400' => __( 'Some label data is not valid.', 'nashenski-commerce' ),
+			'P401' => __( 'The sending warehouse or locker is not valid. Choose one from the list.', 'nashenski-commerce' ),
+			'P402' => __( 'The destination locker is not valid. Choose one from the list.', 'nashenski-commerce' ),
+			'P403' => __( 'Your BOX NOW account cannot send from any locker (AnyAPM). Contact BOX NOW.', 'nashenski-commerce' ),
+			'P405' => __( 'The phone number is not valid. Use the full international format, for example +359 88 123 4567.', 'nashenski-commerce' ),
+			'P406' => __( 'Choose a box size: small, medium or large.', 'nashenski-commerce' ),
+			'P407' => __( 'The country code is not valid.', 'nashenski-commerce' ),
+			'P408' => __( 'The cash on delivery amount must be more than 0 and less than 5000.', 'nashenski-commerce' ),
+			'P410' => __( 'BOX NOW already has a label for this order number.', 'nashenski-commerce' ),
+			'P411' => __( 'Your BOX NOW account cannot use cash on delivery. Contact BOX NOW.', 'nashenski-commerce' ),
+			'P413' => __( 'The return warehouse is not valid.', 'nashenski-commerce' ),
+			'P415' => __( 'Your BOX NOW account cannot deliver to an address. Contact BOX NOW.', 'nashenski-commerce' ),
+			'P416' => __( 'Your BOX NOW account cannot use cash on delivery to an address. Contact BOX NOW.', 'nashenski-commerce' ),
+			'P420' => __( 'This parcel can no longer be cancelled.', 'nashenski-commerce' ),
+			'P421' => __( 'The parcel weight is not valid.', 'nashenski-commerce' ),
+			'P466' => __( 'BOX NOW does not accept new labels because your account has an overdue payment.', 'nashenski-commerce' ),
+			'P600' => __( 'BOX NOW could not reach the locker. Try again later.', 'nashenski-commerce' ),
+		);
+
+		return $texts[ $code ] ?? '';
 	}
 
 	public function load_access_token( $forced = false ) {
