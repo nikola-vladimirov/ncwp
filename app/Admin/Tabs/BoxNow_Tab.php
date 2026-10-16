@@ -15,7 +15,6 @@ class BoxNow_Tab extends Base_Tab {
 		$this->set_name( __( 'BOX NOW', 'nashenski-commerce' ) );
 		$this->set_tab_slug( "boxnow" );
 
-		add_action( 'nashenski/admin/settings/afte_save_fields/'. $this->tab_name, array( $this, 'after_save_fields' ) );
 		add_filter( 'nashenski/admin/settings/boxnow/fields', array( $this, 'add_send_from_fields' ), 20 );
 	}
 
@@ -182,10 +181,6 @@ class BoxNow_Tab extends Base_Tab {
 		) );
 
 		return $titles;
-	}
-
-	public function after_save_fields() {
-		$this->container[ Client::BOXNOW ]->load_access_token( true );
 	}
 
 	public function auth_test() {

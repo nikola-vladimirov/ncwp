@@ -103,19 +103,19 @@ class Admin_Menus {
 	 */
 	public static function get_tabs() {
 		$tabs = array(
-			new Tabs\Settings_Tab(),
+			self::tab( Tabs\Settings_Tab::class ),
 		);
 
 		if ( nashenski_get_option( 'apis', 'enable_documents' ) === 'yes' ) {
-			$tabs[] = new Tabs\Nra_Tab();
-			$tabs[] = new Tabs\Export_Tab();
+			$tabs[] = self::tab( Tabs\Nra_Tab::class );
+			$tabs[] = self::tab( Tabs\Export_Tab::class );
 		}
 
 		if ( nashenski_is_shipping_enabled() ) {
-			$tabs[] = new Tabs\Shipping_Tab();
+			$tabs[] = self::tab( Tabs\Shipping_Tab::class );
 		}
 
-		$tabs[] = new Tabs\Fields_Tab();
+		$tabs[] = self::tab( Tabs\Fields_Tab::class );
 
 		// Courier and customer check settings, each while it is turned on.
 		$optional = array(
@@ -133,11 +133,21 @@ class Admin_Menus {
 
 		foreach ( $optional as list( $group, $name, $class ) ) {
 			if ( 'yes' === nashenski_get_option( $group, $name ) ) {
-				$tabs[] = new $class();
+				$tabs[] = self::tab( $class );
 			}
 		}
 
 		return apply_filters( 'nashenski/admin/get_tabs_items', $tabs );
+	}
+
+	/**
+	 * One object per tab and request: a tab adds its hooks when built, so a second one (the list is
+	 * built again after saving) would show its added fields twice.
+	 */
+	private static function tab( $class ) {
+		static $made = array();
+
+		return $made[ $class ] ?? ( $made[ $class ] = new $class() );
 	}
 
 	public static function render_fragment( $fragment, $atts = array() ) {

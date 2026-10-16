@@ -480,6 +480,14 @@ class Settings_Page extends \WC_Settings_Page {
 		// A feature switch may have changed: rebuild the tab list so its settings show on this same page load.
 		$this->tabs = null;
 
+		// WooCommerce read the settings before saving them, which built the courier clients from the old
+		// login and environment. Rebuild them so the login check below and the page use the saved ones.
+		$container = nashenski()->container();
+		foreach ( array_keys( \Nashenski\Container\Client::SERVICES ) as $service ) {
+			unset( $container[ $service ] );
+		}
+		$container->register( new \Nashenski\Container\Client() );
+
 		// Courier and customer check parts check the login and fill profile data after saving.
 		foreach ( $this->section_tabs( $id ) as $tab ) {
 			do_action( 'nashenski/admin/settings/afte_save_fields/' . get_class( $tab ) );
