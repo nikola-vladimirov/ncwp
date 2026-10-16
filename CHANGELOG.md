@@ -1,5 +1,12 @@
 # Nashenski Commerce changelog
 
+## 0.15.2 (2026-10-16)
+
+### Quick order
+- A "Delivery" box on the order screen of a quick order without courier shipping. Choose the shipping option (for example Econt: To an office), then the town and the office, locker or address, with the same pickers as the checkout. Saving the order adds the courier shipping line with the choice, puts the town into the shipping address and leaves a note; the courier box for the label then appears. The shipping price comes when the label is made.
+- The store owner gets the WooCommerce "New order" email for a quick order, the same as for any order (its recipients and on/off setting apply). It is not sent again when the quick order is confirmed.
+- Quick orders count in the number next to WooCommerce > Orders in the menu, together with the orders that are processing.
+
 ## 0.15.1 (2026-10-16)
 
 ### Changed

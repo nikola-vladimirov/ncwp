@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.15.1
+Stable tag: 0.15.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -104,6 +104,10 @@ The plugin only contacts a service after you turn it on and enter your own accou
 * EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/
 
 == Changelog ==
+
+= 0.15.2 =
+* Quick order: a Delivery box on the order screen to choose the courier, the town and the office, locker or address with the checkout pickers; saving adds the courier shipping line, so the label can be made.
+* Quick order: the owner gets the WooCommerce "New order" email, and quick orders count in the Orders menu bubble.
 
 = 0.15.1 =
 * Quick order and Abandoned carts have their own sections in the Nashenski Commerce settings menu, each with its on/off switch, so their settings are easy to find.

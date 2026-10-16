@@ -3,10 +3,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.15.1\n"
+"Project-Id-Version: Nashenski Commerce 0.15.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-16 13:46+0000\n"
-"PO-Revision-Date: 2026-10-16 13:46+0000\n"
+"POT-Creation-Date: 2026-10-16 14:04+0000\n"
+"PO-Revision-Date: 2026-10-16 14:04+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -37,7 +37,7 @@ msgstr "Оставихте нещо в количката си"
 msgid "Hello {name},\n\nYou left these items in your cart:\n\n{items}\n\nTotal: {cart_total}\n\n{coupon_line}\n\n<a href=\"{resume_link}\">Go back to your cart</a>\n\nDo not want these emails? <a href=\"{unsubscribe_link}\">Unsubscribe here</a>"
 msgstr "Здравейте {name},\n\nОставихте тези артикули в количката си:\n\n{items}\n\nОбщо: {cart_total}\n\n{coupon_line}\n\n<a href=\"{resume_link}\">Върнете се към количката</a>\n\nНе искате тези имейли? <a href=\"{unsubscribe_link}\">Отпишете се тук</a>"
 
-#: app/Abandoned_Carts/Email.php:64 app/Front_End/Quick_Order.php:183 app/Front_End/Quick_Order.php:646
+#: app/Abandoned_Carts/Email.php:64 app/Front_End/Quick_Order.php:185 app/Front_End/Quick_Order.php:652
 msgid "Message"
 msgstr "Съобщение"
 
@@ -213,7 +213,7 @@ msgstr "Няма намерени колички."
 msgid "Checkout"
 msgstr "Плащане"
 
-#: app/Admin/Abandoned_Carts_Page.php:293 app/Front_End/Quick_Order.php:64
+#: app/Admin/Abandoned_Carts_Page.php:293 app/Front_End/Quick_Order.php:66
 msgid "Cart"
 msgstr "Количка"
 
@@ -237,7 +237,7 @@ msgstr "%d колички"
 msgid "Edit cart #%d"
 msgstr "Редакция на количка #%d"
 
-#: app/Admin/Abandoned_Carts_Page.php:368 app/Export/Builder/Fields.php:50 app/Front_End/Checkout/Field_Editor.php:587 app/Front_End/Quick_Order.php:407
+#: app/Admin/Abandoned_Carts_Page.php:368 app/Export/Builder/Fields.php:50 app/Front_End/Checkout/Field_Editor.php:587 app/Front_End/Quick_Order.php:413
 msgid "Email"
 msgstr "Имейл"
 
@@ -285,7 +285,7 @@ msgstr[1] "%d изтрити колички."
 msgid "Cart updated."
 msgstr "Количката е обновена."
 
-#: app/Admin/Abandoned_Carts_Page.php:401 app/Front_End/Quick_Order.php:487
+#: app/Admin/Abandoned_Carts_Page.php:401 app/Front_End/Quick_Order.php:493
 msgid "Enter a valid email address."
 msgstr "Въведете валиден имейл адрес."
 
@@ -359,7 +359,7 @@ msgstr "Товарителница"
 msgid "Selected"
 msgstr "Избрано"
 
-#: app/Admin/BoxNow.php:93 app/Admin/CVC.php:88 app/Admin/Econt.php:92 app/Admin/Pigeon.php:180 app/Admin/Speedy.php:140 app/Front_End/Checkout/Pickers.php:387
+#: app/Admin/BoxNow.php:93 app/Admin/CVC.php:88 app/Admin/Econt.php:92 app/Admin/Order/Delivery_Box.php:126 app/Admin/Pigeon.php:180 app/Admin/Speedy.php:140
 msgid "Choose"
 msgstr "Избери"
 
@@ -411,7 +411,7 @@ msgstr "Тегло"
 msgid "Price"
 msgstr "Цена"
 
-#: app/Admin/BoxNow.php:106 app/Admin/Tabs/BoxNow_Tab.php:53 app/Admin/Tabs/CVC_Tab.php:52 app/Admin/Tabs/Econt_Tab.php:61 app/Admin/Tabs/Speedy_Tab.php:48 app/Front_End/Quick_Order.php:399
+#: app/Admin/BoxNow.php:106 app/Admin/Tabs/BoxNow_Tab.php:53 app/Admin/Tabs/CVC_Tab.php:52 app/Admin/Tabs/Econt_Tab.php:61 app/Admin/Tabs/Speedy_Tab.php:48 app/Front_End/Quick_Order.php:405
 msgid "Name"
 msgstr "Име"
 
@@ -737,7 +737,7 @@ msgstr "Първите %1$d от %2$d реда. Файл: %3$s"
 msgid "Nothing matches these filters."
 msgstr "Няма записи по тези филтри."
 
-#: app/Admin/Export_Builder.php:152 app/Front_End/Quick_Order.php:281 app/Plugin.php:257
+#: app/Admin/Export_Builder.php:152 app/Front_End/Quick_Order.php:287 app/Plugin.php:257
 msgid "Something went wrong. Please try again."
 msgstr "Нещо се обърка. Опитайте отново."
 
@@ -1739,6 +1739,32 @@ msgstr "Номер %s вече е използван от друга поръч�
 msgid "EN"
 msgstr "EN"
 
+#: app/Admin/Order/Delivery_Box.php:85 app/Export/Builder/Fields.php:72
+msgid "Delivery"
+msgstr "Доставка"
+
+#: app/Admin/Order/Delivery_Box.php:93
+msgid "No courier shipping option is set up. Add one under WooCommerce > Settings > Shipping."
+msgstr "Няма настроена куриерска доставка. Добавете от WooCommerce > Настройки > Доставка."
+
+#: app/Admin/Order/Delivery_Box.php:122
+msgid "Choose how the order is delivered, then the town and the office, locker or address. Save the order to add the shipping line; the courier box for the label appears after saving."
+msgstr "Изберете начина на доставка, после населеното място и офиса, автомата или адреса. Запазете поръчката, за да се добави доставката; полето на куриера за товарителницата се появява след запазване."
+
+#: app/Admin/Order/Delivery_Box.php:124
+msgid "Shipping option"
+msgstr "Начин на доставка"
+
+#: app/Admin/Order/Delivery_Box.php:166
+msgid "Delivery was not saved: choose the town and the office, locker or address first."
+msgstr "Доставката не е запазена: първо изберете населеното място и офиса, автомата или адреса."
+
+#. translators: 1: shipping option, 2: office, locker or address
+#: app/Admin/Order/Delivery_Box.php:203
+#, php-format
+msgid "Delivery set on the order screen: %1$s, %2$s. The price comes with the label."
+msgstr "Доставката е зададена от страницата на поръчката: %1$s, %2$s. Цената идва с товарителницата."
+
 #: app/Admin/Order/Documents.php:125 app/Export/Builder/Fields.php:34 app/Reports/Reports.php:114
 msgid "Order"
 msgstr "Поръчка"
@@ -1959,7 +1985,7 @@ msgstr "Не"
 msgid "(not set)"
 msgstr "(не е зададено)"
 
-#: app/Admin/Settings_Page.php:95 app/Admin/Tabs/Quick_Order_Tab.php:14 app/Admin/Tabs/Quick_Order_Tab.php:96 app/Admin/Tabs/Settings_Tab.php:22 app/Front_End/Quick_Order.php:255 app/Front_End/Quick_Order.php:393
+#: app/Admin/Settings_Page.php:95 app/Admin/Tabs/Quick_Order_Tab.php:14 app/Admin/Tabs/Quick_Order_Tab.php:96 app/Admin/Tabs/Settings_Tab.php:22 app/Front_End/Quick_Order.php:261 app/Front_End/Quick_Order.php:399
 msgid "Quick order"
 msgstr "Бърза поръчка"
 
@@ -4159,10 +4185,6 @@ msgstr "Адрес на фирмата"
 msgid "Buyer (company or person)"
 msgstr "Купувач (фирма или лице)"
 
-#: app/Export/Builder/Fields.php:72
-msgid "Delivery"
-msgstr "Доставка"
-
 #: app/Export/Builder/Fields.php:73
 msgid "Recipient"
 msgstr "Получател"
@@ -4279,7 +4301,7 @@ msgstr "ID на продукта"
 msgid "Variation ID"
 msgstr "ID на вариацията"
 
-#: app/Export/Builder/Fields.php:123 app/Front_End/Quick_Order.php:180
+#: app/Export/Builder/Fields.php:123 app/Front_End/Quick_Order.php:182
 msgid "Quantity"
 msgstr "Количество"
 
@@ -4595,7 +4617,7 @@ msgstr "Избор на картата"
 msgid "Choose an office on the map"
 msgstr "Изберете офис на картата"
 
-#: app/Front_End/Checkout/Pickers.php:368 app/Front_End/Quick_Order.php:282
+#: app/Front_End/Checkout/Pickers.php:368 app/Front_End/Quick_Order.php:288
 msgid "Close"
 msgstr "Затваряне"
 
@@ -4685,173 +4707,173 @@ msgstr "Транслитерация на адресите (кирилица в 
 msgid "Addresses transliterated."
 msgstr "Адресите са транслитерирани."
 
-#: app/Front_End/Quick_Order.php:63
+#: app/Front_End/Quick_Order.php:65
 msgid "Product page"
 msgstr "Страница на продукта"
 
-#: app/Front_End/Quick_Order.php:65
+#: app/Front_End/Quick_Order.php:67
 msgid "Product page and cart"
 msgstr "Страница на продукта и количката"
 
-#: app/Front_End/Quick_Order.php:74
+#: app/Front_End/Quick_Order.php:76
 msgid "Dialog window (a pop-up in the middle)"
 msgstr "Диалогов прозорец (изскачащ в средата)"
 
-#: app/Front_End/Quick_Order.php:75
+#: app/Front_End/Quick_Order.php:77
 msgid "Inline, under the button"
 msgstr "Вградено, под бутона"
 
-#: app/Front_End/Quick_Order.php:76
+#: app/Front_End/Quick_Order.php:78
 msgid "Sliding panel from the right"
 msgstr "Плъзгащ се панел от дясната страна"
 
-#: app/Front_End/Quick_Order.php:88
+#: app/Front_End/Quick_Order.php:90
 msgid "Minimal (name, phone, email)"
 msgstr "Минимална (име, телефон, имейл)"
 
-#: app/Front_End/Quick_Order.php:92
+#: app/Front_End/Quick_Order.php:94
 msgid "Callback request"
 msgstr "Заявка за обратно обаждане"
 
-#: app/Front_End/Quick_Order.php:96 app/functions.php:157
+#: app/Front_End/Quick_Order.php:98 app/functions.php:157
 msgid "Standard"
 msgstr "Стандартна"
 
-#: app/Front_End/Quick_Order.php:100
+#: app/Front_End/Quick_Order.php:102
 msgid "Full order (every field)"
 msgstr "Пълна поръчка (всички полета)"
 
-#: app/Front_End/Quick_Order.php:104
+#: app/Front_End/Quick_Order.php:106
 msgid "Custom (choose the fields below)"
 msgstr "Собствена (изберете полетата по-долу)"
 
-#: app/Front_End/Quick_Order.php:115
+#: app/Front_End/Quick_Order.php:117
 msgid "National (0888 123 456)"
 msgstr "Национален (0888 123 456)"
 
-#: app/Front_End/Quick_Order.php:116
+#: app/Front_End/Quick_Order.php:118
 msgid "International (+359 88 123 4567)"
 msgstr "Международен (+359 88 123 4567)"
 
-#: app/Front_End/Quick_Order.php:179
+#: app/Front_End/Quick_Order.php:181
 msgid "Town"
 msgstr "Населено място"
 
-#: app/Front_End/Quick_Order.php:181 app/Front_End/Quick_Order.php:646
+#: app/Front_End/Quick_Order.php:183 app/Front_End/Quick_Order.php:652
 msgid "Product notes"
 msgstr "Бележки към продукта"
 
-#: app/Front_End/Quick_Order.php:182 app/Front_End/Quick_Order.php:646
+#: app/Front_End/Quick_Order.php:184 app/Front_End/Quick_Order.php:652
 msgid "Preferred delivery time"
 msgstr "Предпочитано време за доставка"
 
-#: app/Front_End/Quick_Order.php:215 app/Front_End/Quick_Order.php:226
+#: app/Front_End/Quick_Order.php:217 app/Front_End/Quick_Order.php:228
 msgctxt "Order status"
 msgid "Quick order"
 msgstr "Бърза поръчка"
 
 #. translators: %s: number of quick orders
-#: app/Front_End/Quick_Order.php:221
+#: app/Front_End/Quick_Order.php:223
 #, php-format
 msgid "Quick order <span class=\"count\">(%s)</span>"
 msgid_plural "Quick orders <span class=\"count\">(%s)</span>"
 msgstr[0] "Бърза поръчка <span class=\"count\">(%s)</span>"
 msgstr[1] "Бързи поръчки <span class=\"count\">(%s)</span>"
 
-#: app/Front_End/Quick_Order.php:388 app/Front_End/Quick_Order.php:388
+#: app/Front_End/Quick_Order.php:394 app/Front_End/Quick_Order.php:394
 msgid "privacy policy"
 msgstr "политиката за поверителност"
 
-#: app/Front_End/Quick_Order.php:394
+#: app/Front_End/Quick_Order.php:400
 msgid "Leave your details and we will contact you to confirm the order."
 msgstr "Оставете данните си и ще се свържем с вас, за да потвърдим поръчката."
 
-#: app/Front_End/Quick_Order.php:397 app/Plugin.php:263
+#: app/Front_End/Quick_Order.php:403 app/Plugin.php:263
 msgid "Website"
 msgstr "Сайт"
 
 #. translators: %s: example phone number
-#: app/Front_End/Quick_Order.php:405
+#: app/Front_End/Quick_Order.php:411
 #, php-format
 msgid "Phone number, for example %s."
 msgstr "Телефонен номер, например %s."
 
 #. translators: %s: link to the privacy policy
-#: app/Front_End/Quick_Order.php:434
+#: app/Front_End/Quick_Order.php:440
 #, php-format
 msgid "I agree that the store may contact me about this order. I have read the %s."
 msgstr "Съгласявам се магазинът да се свърже с мен във връзка с тази поръчка. Прочетох %s."
 
-#: app/Front_End/Quick_Order.php:443
+#: app/Front_End/Quick_Order.php:449
 msgid "Send"
 msgstr "Изпрати"
 
-#: app/Front_End/Quick_Order.php:454
+#: app/Front_End/Quick_Order.php:460
 msgid "Quick orders are turned off."
 msgstr "Бързите поръчки са изключени."
 
-#: app/Front_End/Quick_Order.php:460
+#: app/Front_End/Quick_Order.php:466
 msgid "The form has expired. Reload the page and try again."
 msgstr "Формата е изтекла. Презаредете страницата и опитайте отново."
 
-#: app/Front_End/Quick_Order.php:469
+#: app/Front_End/Quick_Order.php:475
 msgid "Too many requests. Try again in a few minutes."
 msgstr "Твърде много заявки. Опитайте отново след няколко минути."
 
-#: app/Front_End/Quick_Order.php:479
+#: app/Front_End/Quick_Order.php:485
 msgid "Enter your name."
 msgstr "Въведете името си."
 
-#: app/Front_End/Quick_Order.php:491
+#: app/Front_End/Quick_Order.php:497
 msgid "Tick the box to agree to be contacted."
 msgstr "Отбележете квадратчето, за да се съгласите да се свържем с вас."
 
-#: app/Front_End/Quick_Order.php:502
+#: app/Front_End/Quick_Order.php:508
 msgid "Your cart is empty."
 msgstr "Количката ви е празна."
 
-#: app/Front_End/Quick_Order.php:512
+#: app/Front_End/Quick_Order.php:518
 msgid "This product cannot be ordered now."
 msgstr "Този продукт не може да се поръча в момента."
 
-#: app/Front_End/Quick_Order.php:521
+#: app/Front_End/Quick_Order.php:527
 msgid "The order could not be saved. Please try again."
 msgstr "Поръчката не можа да се запази. Опитайте отново."
 
 #. translators: %s: example phone number
-#: app/Front_End/Quick_Order.php:603
+#: app/Front_End/Quick_Order.php:609
 #, php-format
 msgid "Enter a valid phone number, for example %s."
 msgstr "Въведете валиден телефонен номер, например %s."
 
-#: app/Front_End/Quick_Order.php:609
+#: app/Front_End/Quick_Order.php:615
 msgid "Thank you. We have your details and will contact you to confirm the order."
 msgstr "Благодарим! Получихме данните ви и ще се свържем с вас, за да потвърдим поръчката."
 
-#: app/Front_End/Quick_Order.php:657
+#: app/Front_End/Quick_Order.php:663
 msgid "Quick order from the shop. No stock is reserved and no payment link is sent until the status is changed to Pending payment."
 msgstr "Бърза поръчка от магазина. Наличността не се резервира и не се изпраща линк за плащане, докато статусът не се смени на „Очаква плащане“."
 
 #. translators: %s: order number
-#: app/Front_End/Quick_Order.php:670
+#: app/Front_End/Quick_Order.php:688
 #, php-format
 msgid "New quick order #%s"
 msgstr "Нова бърза поръчка #%s"
 
 #. translators: 1: shopper name, 2: phone, 3: email, 4: link to the order
-#: app/Front_End/Quick_Order.php:673
+#: app/Front_End/Quick_Order.php:691
 #, php-format
 msgid "A shopper asked for a quick order.\n\nName: %1$s\nPhone: %2$s\nEmail: %3$s\n\nOpen the order: %4$s"
 msgstr "Купувач поиска бърза поръчка.\n\nИме: %1$s\nТелефон: %2$s\nИмейл: %3$s\n\nОтворете поръчката: %4$s"
 
 #. translators: 1: site name, 2: order number
-#: app/Front_End/Quick_Order.php:686
+#: app/Front_End/Quick_Order.php:704
 #, php-format
 msgid "%1$s: we received your quick order #%2$s"
 msgstr "%1$s: получихме вашата бърза поръчка #%2$s"
 
 #. translators: %s: shopper name
-#: app/Front_End/Quick_Order.php:689
+#: app/Front_End/Quick_Order.php:707
 #, php-format
 msgid "Hello %s,\n\nThank you. We have your quick order and will contact you to confirm it.\n\nNo payment is needed now."
 msgstr "Здравейте, %s,\n\nБлагодарим! Получихме вашата бърза поръчка и ще се свържем с вас, за да я потвърдим.\n\nЗа момента не е нужно плащане."

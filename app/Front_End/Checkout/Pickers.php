@@ -333,7 +333,7 @@ class Pickers {
 		}
 	}
 
-	private static function config() {
+	public static function config() {
 		$connected = array();
 
 		foreach ( \Nashenski\Plugin::COURIERS as $courier ) {

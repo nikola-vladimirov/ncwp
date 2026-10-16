@@ -33,6 +33,8 @@ class Quick_Order {
 	public function __construct() {
 		add_action( 'init', array( __CLASS__, 'register_status' ) );
 		add_filter( 'wc_order_statuses', array( __CLASS__, 'add_status' ) );
+		// Quick orders wait for the owner, so they count in the Orders menu bubble with the processing ones.
+		add_filter( 'woocommerce_menu_order_count', array( __CLASS__, 'menu_count' ) );
 
 		if ( ! self::enabled() ) {
 			return;
@@ -226,6 +228,10 @@ class Quick_Order {
 		$statuses[ 'wc-' . self::STATUS ] = _x( 'Quick order', 'Order status', 'nashenski-commerce' );
 
 		return $statuses;
+	}
+
+	public static function menu_count( $count ) {
+		return (int) $count + wc_orders_count( self::STATUS );
 	}
 
 	/**
@@ -660,7 +666,19 @@ document.addEventListener("submit",function(e){
 		return $order;
 	}
 
+	/**
+	 * The owner gets WooCommerce's own "New order" email, like for any order (its recipients and on/off
+	 * setting apply). It is marked sent, so confirming the quick order later does not send it again.
+	 */
 	private static function notify_owner( $order ) {
+		$emails = WC()->mailer() ? WC()->mailer()->get_emails() : array();
+
+		if ( isset( $emails['WC_Email_New_Order'] ) ) {
+			$emails['WC_Email_New_Order']->trigger( $order->get_id(), $order );
+
+			return;
+		}
+
 		$settings = get_option( 'woocommerce_new_order_settings', array() );
 		$to       = ! empty( $settings['recipient'] ) ? $settings['recipient'] : get_option( 'admin_email' );
 
