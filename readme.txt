@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.15.0
+Stable tag: 0.15.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -104,6 +104,10 @@ The plugin only contacts a service after you turn it on and enter your own accou
 * EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/
 
 == Changelog ==
+
+= 0.15.1 =
+* Quick order and Abandoned carts have their own sections in the Nashenski Commerce settings menu, each with its on/off switch, so their settings are easy to find.
+* Review fixes: a cart stays tracked after logout, block checkout orders count as ordered, reminders by hand only for open carts, a quick order from the cart empties the cart, a product quick order keeps the chosen quantity and skips products out of stock.
 
 = 0.15.0 =
 * Quick order: a short form on the product page and the cart for shoppers who do not want to check out, with ready-made templates, Bulgarian phone masking and a spam check.

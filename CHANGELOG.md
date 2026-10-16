@@ -1,5 +1,18 @@
 # Nashenski Commerce changelog
 
+## 0.15.1 (2026-10-16)
+
+### Changed
+- Quick order and Abandoned carts have their own sections in the Nashenski Commerce settings menu (WooCommerce > Settings > Nashenski Commerce). Each shows its on/off switch, and its settings appear as soon as it is on. Before, they were inside Checkout and only showed after turning them on in Overview.
+
+### Fixed
+- Abandoned carts: logging out no longer stops the reminders for a saved cart.
+- Abandoned carts: orders from the block checkout count as ordered.
+- Abandoned carts: "Send reminder" by hand works only for open carts, so a shopper who ordered gets no reminder or coupon.
+- Quick order from the cart empties the cart, so it is not ordered twice or reminded as abandoned.
+- Quick order on a product page keeps the quantity the shopper chose and refuses products out of stock.
+- Quick order no longer writes a database error when abandoned carts were never turned on.
+
 ## 0.15.0 (2026-10-16)
 
 ### Quick order

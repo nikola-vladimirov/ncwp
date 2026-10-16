@@ -74,7 +74,7 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 
 	/**
-	 * The sections and what each one shows. A part is array( tab slug, groups or null for all groups ).
+	 * The sections and what each one shows. A part is array( tab slug, groups or null for all groups, optional field names ).
 	 */
 	private function layout() {
 		$layout = array(
@@ -88,7 +88,16 @@ class Settings_Page extends \WC_Settings_Page {
 			),
 			'checkout' => array(
 				'label' => __( 'Checkout', 'nashenski-commerce' ),
-				'parts' => array( array( 'shipping', null ), array( 'fields', null ), array( 'quick_order', null ), array( 'abandoned_carts', null ) ),
+				'parts' => array( array( 'shipping', null ), array( 'fields', null ) ),
+			),
+			// Always in the menu: the on/off switch first, the settings once it is on.
+			'quick_order' => array(
+				'label' => __( 'Quick order', 'nashenski-commerce' ),
+				'parts' => array( array( 'settings', array( 'apis' ), array( 'enable_quick_order' ) ), array( 'quick_order', null ) ),
+			),
+			'abandoned_carts' => array(
+				'label' => __( 'Abandoned carts', 'nashenski-commerce' ),
+				'parts' => array( array( 'settings', array( 'apis' ), array( 'enable_abandoned_carts' ) ), array( 'abandoned_carts', null ) ),
 			),
 			'documents' => array(
 				'label' => __( 'Documents', 'nashenski-commerce' ),
@@ -178,11 +187,16 @@ class Settings_Page extends \WC_Settings_Page {
 				$settings[] = array(
 					'type' => 'title',
 					'id' => 'nashenski_' . $group,
-					'title' => isset( $titles[ $group ]['title'] ) ? wp_strip_all_tags( $titles[ $group ]['title'] ) : '',
-					'desc' => trim( ( $titles[ $group ]['desc'] ?? '' ) . ( $locked && $group !== $part[0] ? ' ' . __( 'Available once the courier login works.', 'nashenski-commerce' ) : '' ) ),
+					// A part that picks single fields (a feature switch) shows them without the group heading.
+					'title' => isset( $titles[ $group ]['title'] ) && ! isset( $part[2] ) ? wp_strip_all_tags( $titles[ $group ]['title'] ) : '',
+					'desc' => trim( ( isset( $part[2] ) ? '' : ( $titles[ $group ]['desc'] ?? '' ) ) . ( $locked && $group !== $part[0] ? ' ' . __( 'Available once the courier login works.', 'nashenski-commerce' ) : '' ) ),
 				);
 
 				foreach ( $fields as $field ) {
+					if ( isset( $part[2] ) && ! in_array( $field->get_name(), $part[2], true ) ) {
+						continue;
+					}
+
 					$setting = self::to_wc_setting( $group, $field );
 					$settings[] = $locked && ! ( $group === $part[0] && in_array( $field->get_name(), $login, true ) ) ? self::lock( $setting ) : $setting;
 				}
@@ -462,6 +476,9 @@ class Settings_Page extends \WC_Settings_Page {
 		}
 
 		parent::save();
+
+		// A feature switch may have changed: rebuild the tab list so its settings show on this same page load.
+		$this->tabs = null;
 
 		// Courier and customer check parts check the login and fill profile data after saving.
 		foreach ( $this->section_tabs( $id ) as $tab ) {

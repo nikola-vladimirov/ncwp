@@ -2,10 +2,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.15.0\n"
+"Project-Id-Version: Nashenski Commerce 0.15.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-16 13:33+0000\n"
-"PO-Revision-Date: 2026-10-16 13:33+0000\n"
+"POT-Creation-Date: 2026-10-16 13:46+0000\n"
+"PO-Revision-Date: 2026-10-16 13:46+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,7 +16,7 @@ msgid "Abandoned cart reminder"
 msgstr ""
 
 #: app/Abandoned_Carts/Email.php:25
-msgid "A reminder with the items left in the cart, a link that refills the cart and a single-use coupon. Sent by the Abandoned carts feature. Turn the feature on under Nashenski Commerce > Overview; its settings then show in the Checkout section."
+msgid "A reminder with the items left in the cart, a link that refills the cart and a single-use coupon. Sent by the Abandoned carts feature. Turn the feature on and set it up under Nashenski Commerce > Abandoned carts."
 msgstr ""
 
 #. translators: %s: site name (the {site_title} placeholder)
@@ -114,7 +114,7 @@ msgstr ""
 msgid "Unsubscribed"
 msgstr ""
 
-#: app/Admin/Abandoned_Carts_Page.php:43 app/Admin/Abandoned_Carts_Page.php:44 app/Admin/Abandoned_Carts_Page.php:197 app/Admin/Tabs/Abandoned_Carts_Tab.php:14 app/Admin/Tabs/Abandoned_Carts_Tab.php:83 app/Admin/Tabs/Settings_Tab.php:23
+#: app/Admin/Abandoned_Carts_Page.php:43 app/Admin/Abandoned_Carts_Page.php:44 app/Admin/Abandoned_Carts_Page.php:197 app/Admin/Settings_Page.php:99 app/Admin/Tabs/Abandoned_Carts_Tab.php:14 app/Admin/Tabs/Abandoned_Carts_Tab.php:83
 msgid "Abandoned carts"
 msgstr ""
 
@@ -298,7 +298,7 @@ msgstr ""
 msgid "If you like %1$s please leave us a %2$s rating. A huge thanks in advance!"
 msgstr ""
 
-#: app/Admin/Admin_Menus.php:79 app/Admin/Settings_Page.php:23 app/Admin/Settings_Page.php:323
+#: app/Admin/Admin_Menus.php:79 app/Admin/Settings_Page.php:23 app/Admin/Settings_Page.php:337
 msgid "Nashenski Commerce"
 msgstr ""
 
@@ -690,7 +690,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: app/Admin/Export_Builder.php:141 app/Admin/Settings_Page.php:573 app/Admin/Settings_Page.php:668 app/Admin/Settings_Page.php:733 app/Front_End/Checkout/Field_Editor.php:614 app/Front_End/Checkout/Field_Editor.php:634
+#: app/Admin/Export_Builder.php:141 app/Admin/Settings_Page.php:590 app/Admin/Settings_Page.php:685 app/Admin/Settings_Page.php:750 app/Front_End/Checkout/Field_Editor.php:614 app/Front_End/Checkout/Field_Editor.php:634
 msgid "Remove"
 msgstr ""
 
@@ -784,7 +784,7 @@ msgstr ""
 msgid "One row per product line"
 msgstr ""
 
-#: app/Admin/Export_Builder.php:199 app/Admin/Help_Page.php:70 app/Admin/Help_Page.php:83 app/Admin/Order/Columns.php:24 app/Admin/Settings_Page.php:94 app/Admin/Tabs/Export_Tab.php:28
+#: app/Admin/Export_Builder.php:199 app/Admin/Help_Page.php:70 app/Admin/Help_Page.php:83 app/Admin/Order/Columns.php:24 app/Admin/Settings_Page.php:103 app/Admin/Tabs/Export_Tab.php:28
 msgid "Documents"
 msgstr ""
 
@@ -796,11 +796,11 @@ msgstr ""
 msgid "Which records"
 msgstr ""
 
-#: app/Admin/Export_Builder.php:206 app/Admin/Settings_Page.php:652 app/Admin/Settings_Page.php:652 app/Admin/Settings_Page.php:653
+#: app/Admin/Export_Builder.php:206 app/Admin/Settings_Page.php:669 app/Admin/Settings_Page.php:669 app/Admin/Settings_Page.php:670
 msgid "From"
 msgstr ""
 
-#: app/Admin/Export_Builder.php:207 app/Admin/Settings_Page.php:652 app/Admin/Settings_Page.php:652 app/Admin/Settings_Page.php:653
+#: app/Admin/Export_Builder.php:207 app/Admin/Settings_Page.php:669 app/Admin/Settings_Page.php:669 app/Admin/Settings_Page.php:670
 msgid "To"
 msgstr ""
 
@@ -1002,7 +1002,7 @@ msgstr ""
 msgid "In %s, enter the login or API keys the courier gave you for online shops."
 msgstr ""
 
-#: app/Admin/Help_Page.php:64 app/Admin/Help_Page.php:81 app/Admin/Settings_Page.php:86 app/Admin/Settings_Page.php:389 app/Admin/Tabs/Settings_Tab.php:16
+#: app/Admin/Help_Page.php:64 app/Admin/Help_Page.php:81 app/Admin/Settings_Page.php:86 app/Admin/Settings_Page.php:403 app/Admin/Tabs/Settings_Tab.php:16
 msgid "Couriers"
 msgstr ""
 
@@ -1030,7 +1030,7 @@ msgstr ""
 msgid "Every month, create the NRA audit file in %s and submit it by the 15th, or have it emailed to your accountant."
 msgstr ""
 
-#: app/Admin/Help_Page.php:72 app/Admin/Help_Page.php:84 app/Admin/Settings_Page.php:102
+#: app/Admin/Help_Page.php:72 app/Admin/Help_Page.php:84 app/Admin/Settings_Page.php:111
 msgid "Exports"
 msgstr ""
 
@@ -1184,7 +1184,7 @@ msgstr ""
 msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
 msgstr ""
 
-#: app/Admin/Help_Page.php:136 app/Admin/Settings_Page.php:98 app/Admin/Tabs/Settings_Tab.php:44 app/Reports/Reports.php:127
+#: app/Admin/Help_Page.php:136 app/Admin/Settings_Page.php:107 app/Admin/Tabs/Settings_Tab.php:44 app/Reports/Reports.php:127
 msgid "Customer checks"
 msgstr ""
 
@@ -1354,7 +1354,7 @@ msgstr ""
 msgid "Review and import"
 msgstr ""
 
-#: app/Admin/Import_Sources.php:164 app/Admin/Settings_Page.php:500
+#: app/Admin/Import_Sources.php:164 app/Admin/Settings_Page.php:517
 msgid "Dismiss"
 msgstr ""
 
@@ -1432,7 +1432,7 @@ msgstr ""
 msgid "Cancelled order document"
 msgstr ""
 
-#: app/Admin/Import_Sources.php:697 app/Admin/Settings_Page.php:555 app/Front_End/Checkout/Pickers.php:353
+#: app/Admin/Import_Sources.php:697 app/Admin/Settings_Page.php:572 app/Front_End/Checkout/Pickers.php:353
 msgid "To an office"
 msgstr ""
 
@@ -1440,7 +1440,7 @@ msgstr ""
 msgid "To a parcel locker"
 msgstr ""
 
-#: app/Admin/Import_Sources.php:699 app/Admin/Settings_Page.php:557
+#: app/Admin/Import_Sources.php:699 app/Admin/Settings_Page.php:574
 msgid "To an address"
 msgstr ""
 
@@ -1954,189 +1954,193 @@ msgstr ""
 msgid "(not set)"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:106
+#: app/Admin/Settings_Page.php:95 app/Admin/Tabs/Quick_Order_Tab.php:14 app/Admin/Tabs/Quick_Order_Tab.php:96 app/Admin/Tabs/Settings_Tab.php:22 app/Front_End/Quick_Order.php:255 app/Front_End/Quick_Order.php:393
+msgid "Quick order"
+msgstr ""
+
+#: app/Admin/Settings_Page.php:115
 msgid "Help"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:182
+#: app/Admin/Settings_Page.php:192
 msgid "Available once the courier login works."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:220
+#: app/Admin/Settings_Page.php:234
 msgid "Available once the courier login works"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:269
+#: app/Admin/Settings_Page.php:283
 msgid "Enable"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:352
+#: app/Admin/Settings_Page.php:366
 msgid "Turn on documents in the Overview to also get the NRA audit file, the invoice archive and the Microinvest Delta file here."
 msgstr ""
 
 #. translators: %s: courier name
-#: app/Admin/Settings_Page.php:419
+#: app/Admin/Settings_Page.php:433
 #, php-format
 msgid "Connected to %s. Prices and labels use your account."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:430
+#: app/Admin/Settings_Page.php:444
 msgid "Reload offices and cities"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:431
+#: app/Admin/Settings_Page.php:445
 msgid "Downloads the latest cities, offices and lockers (and your profile) from the courier. They also update by themselves once a week."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:451
+#: app/Admin/Settings_Page.php:465
 msgid "Offices and cities will be downloaded again the next time they are needed."
 msgstr ""
 
 #. translators: %s: courier names with links
-#: app/Admin/Settings_Page.php:498
+#: app/Admin/Settings_Page.php:515
 #, php-format
 msgid "New published prices were found for %s. Open the courier, press \"Check the courier website\" and decide whether to use them."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:518
+#: app/Admin/Settings_Page.php:535
 msgid "Public prices"
 msgstr ""
 
 #. translators: 1: link to the courier price list, 2: date
-#: app/Admin/Settings_Page.php:521
+#: app/Admin/Settings_Page.php:538
 #, php-format
 msgid "Used to price orders when this courier is not connected or does not answer, so customers can always order. The built-in prices come from the %1$s (valid from %2$s). Edit them, or let Nashenski Commerce check the courier website for newer prices."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:522
+#: app/Admin/Settings_Page.php:539
 msgid "courier's published price list"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:523
+#: app/Admin/Settings_Page.php:540
 msgid "unknown"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:529
+#: app/Admin/Settings_Page.php:546
 msgid "Use public prices"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:530
+#: app/Admin/Settings_Page.php:547
 msgid "Price orders with this list when there is no working courier login"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:536
+#: app/Admin/Settings_Page.php:553
 msgid "Price list"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:556
+#: app/Admin/Settings_Page.php:573
 msgid "To a locker"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:569
+#: app/Admin/Settings_Page.php:586
 msgid "Up to (kg)"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:583 app/Admin/Settings_Page.php:677 app/Plugin.php:258
+#: app/Admin/Settings_Page.php:600 app/Admin/Settings_Page.php:694 app/Plugin.php:258
 msgid "Remove row"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:589
+#: app/Admin/Settings_Page.php:606
 msgid "Heavier: base"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:596
+#: app/Admin/Settings_Page.php:613
 msgid "+ per kg above the last row"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:604 app/Admin/Settings_Page.php:682
+#: app/Admin/Settings_Page.php:621 app/Admin/Settings_Page.php:699
 msgid "Add row"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:607
+#: app/Admin/Settings_Page.php:624
 msgid "Prices include VAT"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:608
+#: app/Admin/Settings_Page.php:625
 msgid "Extra surcharge (fuel, toll) %"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:609
+#: app/Admin/Settings_Page.php:626
 msgid "Cash on delivery fee %"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:610
+#: app/Admin/Settings_Page.php:627
 msgid "at least"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:611 app/Pricing/Updater.php:428
+#: app/Admin/Settings_Page.php:628 app/Pricing/Updater.php:428
 msgid "Valid from"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:616
+#: app/Admin/Settings_Page.php:633
 msgid "Check the courier website"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:617
+#: app/Admin/Settings_Page.php:634
 msgid "Restore the built-in prices"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:621
+#: app/Admin/Settings_Page.php:638
 msgid "Prices are for parcels you hand in at a courier office. Changes take effect after you save."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:732
+#: app/Admin/Settings_Page.php:749
 msgid "Choose image"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:761
+#: app/Admin/Settings_Page.php:778
 msgid "Standardised audit file (Annex 38)"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:762
+#: app/Admin/Settings_Page.php:779
 msgid "The monthly XML file for the NRA under Ordinance N-18. There is no limit on the number of orders."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:763
+#: app/Admin/Settings_Page.php:780
 msgid "Create XML file"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:770
+#: app/Admin/Settings_Page.php:787
 msgid "Invoice archive"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:771
+#: app/Admin/Settings_Page.php:788
 msgid "A ZIP file with all invoices and credit notes of the month."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:772
+#: app/Admin/Settings_Page.php:789
 msgid "Download archive"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:777
+#: app/Admin/Settings_Page.php:794
 msgid "Microinvest Delta"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:778
+#: app/Admin/Settings_Page.php:795
 msgid "The documents of the month in the import format of Microinvest Delta."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:779
+#: app/Admin/Settings_Page.php:796
 msgid "Create file"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:783
+#: app/Admin/Settings_Page.php:800
 msgid "Ready-made files"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:795
+#: app/Admin/Settings_Page.php:812
 msgid "Month"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:800
+#: app/Admin/Settings_Page.php:817
 msgid "Older orders"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:802
+#: app/Admin/Settings_Page.php:819
 msgid "Create missing documents for orders placed before the plugin was installed"
 msgstr ""
 
@@ -3810,10 +3814,6 @@ msgstr ""
 msgid "API Key and API Secret are incorrect."
 msgstr ""
 
-#: app/Admin/Tabs/Quick_Order_Tab.php:14 app/Admin/Tabs/Quick_Order_Tab.php:96 app/Admin/Tabs/Settings_Tab.php:22 app/Front_End/Quick_Order.php:255 app/Front_End/Quick_Order.php:393
-msgid "Quick order"
-msgstr ""
-
 #: app/Admin/Tabs/Quick_Order_Tab.php:23
 msgid "Where the button shows"
 msgstr ""
@@ -3951,7 +3951,7 @@ msgid "What Nashenski Commerce does in this store"
 msgstr ""
 
 #: app/Admin/Tabs/Settings_Tab.php:41
-msgid "Turn on the couriers you work with and the documents you need. Each one adds its own settings: couriers in the Couriers section, documents in the Documents section. Quick order and abandoned carts are in the Checkout section."
+msgid "Turn on the couriers you work with and the documents you need. Each one adds its own settings: couriers in the Couriers section, documents in the Documents section. Quick order and abandoned carts each have their own section, with the on/off switch."
 msgstr ""
 
 #: app/Admin/Tabs/Settings_Tab.php:45

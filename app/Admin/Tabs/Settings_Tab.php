@@ -38,7 +38,7 @@ class Settings_Tab extends Base_Tab {
 		$titles = apply_filters( 'nashenski/admin/settings/groups_titles', array(
 			'apis' => array(
 				'title' => __( 'What Nashenski Commerce does in this store', 'nashenski-commerce' ),
-				'desc' => __( 'Turn on the couriers you work with and the documents you need. Each one adds its own settings: couriers in the Couriers section, documents in the Documents section. Quick order and abandoned carts are in the Checkout section.', 'nashenski-commerce' ),
+				'desc' => __( 'Turn on the couriers you work with and the documents you need. Each one adds its own settings: couriers in the Couriers section, documents in the Documents section. Quick order and abandoned carts each have their own section, with the on/off switch.', 'nashenski-commerce' ),
 			),
 			'reports' => array(
 				'title' => __( 'Customer checks', 'nashenski-commerce' ),
