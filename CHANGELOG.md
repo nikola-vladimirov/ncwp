@@ -1,5 +1,17 @@
 # Nashenski Commerce changelog
 
+## 0.16.2 (2026-10-16)
+
+### Help
+- The Help screen covers every part of the plugin, old and new, with short how-to steps: couriers and prices, checkout, waybills and statuses, quick order, abandoned carts, invoices and documents, the NRA file and exports, the EU VAT check, the withdrawal function, customer checks, impossible prices, moving from another plugin and updates.
+
+### Admin scripts
+- The order list "Generate label" button, the BOX NOW and Pigeon notices and the impossible VAT price check now run on a new readable script instead of the old compiled one. The notices check a security token when dismissed. The price check texts are translated.
+- Unused compiled files were removed (about 350 KB smaller).
+
+### Updates
+- "Tested up to" is WordPress 7.1.3, so the update details no longer warn on 7.1.x sites.
+
 ## 0.16.1 (2026-10-16)
 
 ### Security

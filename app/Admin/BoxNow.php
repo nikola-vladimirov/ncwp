@@ -542,10 +542,11 @@ class BoxNow {
 	}
 
 	public static function message_dismiss_callback() {
-		// The built admin JS (dist/) sends no nonce, so only the capability is checked.
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( -1, 403 );
 		}
+
+		check_ajax_referer( 'nashenski_dismiss_notice', 'nonce' );
 
 		update_option( 'nashenski_boxnow_message_dismiss', true );
 	}

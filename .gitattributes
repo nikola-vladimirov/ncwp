@@ -6,3 +6,4 @@ beta export-ignore
 vendor/**/Tests export-ignore
 vendor/**/tests export-ignore
 composer.lock export-ignore
+README.md export-ignore

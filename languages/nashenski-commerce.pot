@@ -2,10 +2,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.16.0\n"
+"Project-Id-Version: Nashenski Commerce 0.16.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-16 16:43+0000\n"
-"PO-Revision-Date: 2026-10-16 16:43+0000\n"
+"POT-Creation-Date: 2026-10-16 16:55+0000\n"
+"PO-Revision-Date: 2026-10-16 16:55+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -114,7 +114,7 @@ msgstr ""
 msgid "Unsubscribed"
 msgstr ""
 
-#: app/Admin/Abandoned_Carts_Page.php:43 app/Admin/Abandoned_Carts_Page.php:44 app/Admin/Abandoned_Carts_Page.php:197 app/Admin/Settings_Page.php:99 app/Admin/Tabs/Abandoned_Carts_Tab.php:14 app/Admin/Tabs/Abandoned_Carts_Tab.php:83
+#: app/Admin/Abandoned_Carts_Page.php:43 app/Admin/Abandoned_Carts_Page.php:44 app/Admin/Abandoned_Carts_Page.php:197 app/Admin/Help_Page.php:127 app/Admin/Settings_Page.php:99 app/Admin/Tabs/Abandoned_Carts_Tab.php:14
 msgid "Abandoned carts"
 msgstr ""
 
@@ -130,7 +130,7 @@ msgstr ""
 msgid "Emptied"
 msgstr ""
 
-#: app/Admin/Abandoned_Carts_Page.php:129 app/Admin/BoxNow.php:516 app/Admin/Import_Sources.php:204 app/Admin/Migration.php:87 app/Admin/Pigeon.php:557 app/Admin/Recommended_Settings.php:134
+#: app/Admin/Abandoned_Carts_Page.php:129 app/Admin/BoxNow.php:516 app/Admin/Import_Sources.php:204 app/Admin/Migration.php:87 app/Admin/Pigeon.php:558 app/Admin/Recommended_Settings.php:134
 msgid "You do not have permission to perform this action."
 msgstr ""
 
@@ -160,7 +160,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: app/Admin/Abandoned_Carts_Page.php:250 app/Admin/Help_Page.php:227
+#: app/Admin/Abandoned_Carts_Page.php:250 app/Admin/Help_Page.php:259
 msgid "Apply"
 msgstr ""
 
@@ -204,7 +204,7 @@ msgstr ""
 msgid "No carts found."
 msgstr ""
 
-#: app/Admin/Abandoned_Carts_Page.php:293 app/Admin/Help_Page.php:68 app/Admin/Help_Page.php:82 app/Admin/Help_Page.php:101 app/Admin/Settings_Page.php:90
+#: app/Admin/Abandoned_Carts_Page.php:293 app/Admin/Help_Page.php:68 app/Admin/Help_Page.php:82 app/Admin/Help_Page.php:103 app/Admin/Settings_Page.php:90
 msgid "Checkout"
 msgstr ""
 
@@ -418,7 +418,7 @@ msgstr ""
 msgid "BOX NOW did not answer. Check the connection settings and try again."
 msgstr ""
 
-#: app/Admin/BoxNow.php:521 app/Admin/Pigeon.php:562 app/Admin/Speedy.php:905
+#: app/Admin/BoxNow.php:521 app/Admin/Pigeon.php:563 app/Admin/Speedy.php:905
 msgid "This link has expired. Reload the order page and try again."
 msgstr ""
 
@@ -1059,246 +1059,352 @@ msgid "Enter the login in %s. Demo logins only reach the courier's test system, 
 msgstr ""
 
 #: app/Admin/Help_Page.php:93
-msgid "Without a login, customers can still choose: Econt offices and lockers from Econt's list, Speedy offices on Speedy's map, Pigeon Express offices and lockers and BOX NOW lockers from the lists they publish. CVC offices need a login. Waybills always need one."
+msgid "On the courier page, fill in \"Where you send from\" and the sender details. They stay greyed out until the courier accepts the login."
 msgstr ""
 
 #: app/Admin/Help_Page.php:94
+msgid "Without a login, customers can still choose: Econt offices and lockers from Econt's list, Speedy offices on Speedy's map, Pigeon Express offices and lockers and BOX NOW lockers from the lists they publish. CVC offices need a login. Waybills always need one."
+msgstr ""
+
+#: app/Admin/Help_Page.php:95
 msgid "Cities, offices and lockers are kept on your site and refreshed once a week. \"Reload offices and cities\" on a courier page refreshes them at once."
 msgstr ""
 
-#: app/Admin/Help_Page.php:96
+#: app/Admin/Help_Page.php:97
 msgid "Shipping prices"
 msgstr ""
 
-#: app/Admin/Help_Page.php:97
+#: app/Admin/Help_Page.php:98
 msgid "With a login, the courier calculates each price with your contract. Without one, or when the courier does not answer, the courier's public price list is used. You can edit it on the courier page and compare it with the courier website."
 msgstr ""
 
-#: app/Admin/Help_Page.php:98
+#: app/Admin/Help_Page.php:99
+msgid "To compare, open the courier page and press \"Check the courier website\" in \"Public prices\". You see what changed, and new prices are filled in only when you choose. It also checks once a week by itself."
+msgstr ""
+
+#: app/Admin/Help_Page.php:100
 msgid "Each shipping method in a zone can have a free shipping amount and a fixed price."
 msgstr ""
 
-#: app/Admin/Help_Page.php:99
+#: app/Admin/Help_Page.php:101
 msgid "When a courier publishes new prices, a notice says so. Save that courier's prices or press Dismiss."
 msgstr ""
 
-#: app/Admin/Help_Page.php:102
+#: app/Admin/Help_Page.php:104
 msgid "Works with the classic checkout, the block checkout and checkout pages made with a page builder, including step-by-step checkouts."
 msgstr ""
 
-#: app/Admin/Help_Page.php:103
+#: app/Admin/Help_Page.php:105
 msgid "When the customer picks a courier, they choose an office, a locker or an address right under it, from a list or on the courier's map. Until then the option says \"Complete the fields to calculate\"."
 msgstr ""
 
 #. translators: %s: link to the Checkout section
-#: app/Admin/Help_Page.php:105
+#: app/Admin/Help_Page.php:107
 #, php-format
 msgid "In %s > Checkout fields you set the order, Required, Optional or Hidden and the width of every field, and add your own fields."
 msgstr ""
 
-#: app/Admin/Help_Page.php:106
+#: app/Admin/Help_Page.php:108
 msgid "\"Company invoice fields\" adds \"I want an invoice for a company\" with company name, EIK, VAT number, MOL, town and address."
 msgstr ""
 
-#: app/Admin/Help_Page.php:107
+#: app/Admin/Help_Page.php:109
 msgid "\"Shipping options look\" sets cards or the plain look of your theme, colours, borders, corners and spacing. Empty settings follow your design tokens or theme."
 msgstr ""
 
-#: app/Admin/Help_Page.php:109
+#: app/Admin/Help_Page.php:111
 msgid "Waybills, couriers and order statuses"
 msgstr ""
 
-#: app/Admin/Help_Page.php:110
+#: app/Admin/Help_Page.php:112
 msgid "Open an order to create, update, print or cancel its waybill in the courier box."
 msgstr ""
 
-#: app/Admin/Help_Page.php:111
+#: app/Admin/Help_Page.php:113
 msgid "In the \"Order actions\" box of an order, and in the bulk actions of the orders list: \"Create waybill\" makes the waybill from the customer's choices, \"Request a courier\" books a pickup with Econt or Speedy for all the chosen waybills, \"Check the shipment now\" reads the status from the courier."
 msgstr ""
 
-#: app/Admin/Help_Page.php:112
+#: app/Admin/Help_Page.php:114
+msgid "Print the label from the order or from the orders list. Where a courier offers several print sizes, such as A4 or A6 for Speedy, choose one first."
+msgstr ""
+
+#: app/Admin/Help_Page.php:115
 msgid "Econt courier requests skip weekends and holidays by themselves. Speedy picks the next possible day."
 msgstr ""
 
-#: app/Admin/Help_Page.php:113
+#: app/Admin/Help_Page.php:116
 msgid "\"Generate label after checkout\" on a courier page makes the waybill as soon as an order is placed."
 msgstr ""
 
 #. translators: %s: link to the Overview section
-#: app/Admin/Help_Page.php:115
+#: app/Admin/Help_Page.php:118
 #, php-format
 msgid "In %s > Waybills and order statuses: put the order number on the waybill, and choose the status orders get when the parcel is delivered or goes back to you. Open orders are checked every hour."
 msgstr ""
 
-#: app/Admin/Help_Page.php:116
+#: app/Admin/Help_Page.php:119
 msgid "Customers see \"Track your parcel\" with the waybill number on their order page, and get it in the order emails."
 msgstr ""
 
-#: app/Admin/Help_Page.php:118 app/Admin/Tabs/Nra_Tab.php:191
+#: app/Admin/Help_Page.php:121 app/Admin/Settings_Page.php:95 app/Admin/Tabs/Quick_Order_Tab.php:14 app/Admin/Tabs/Quick_Order_Tab.php:96 app/Admin/Tabs/Settings_Tab.php:22 app/Front_End/Quick_Order.php:261
+msgid "Quick order"
+msgstr ""
+
+#: app/Admin/Help_Page.php:122
+msgid "Turn it on in WooCommerce > Settings > Nashenski Commerce > Quick order. A \"Quick order\" button then shows on the product page and/or the cart, for shoppers who do not want to go through checkout."
+msgstr ""
+
+#: app/Admin/Help_Page.php:123
+msgid "Choose how the form opens (dialog, inline or side panel) and its fields: a ready-made template or a Custom one. Name, phone and email are always asked, and only Bulgarian phone numbers are accepted."
+msgstr ""
+
+#: app/Admin/Help_Page.php:124
+msgid "Each submission becomes an order with the status \"Quick order\". No stock is reserved and no payment link is sent until you change the status. You get the WooCommerce \"New order\" email."
+msgstr ""
+
+#: app/Admin/Help_Page.php:125
+msgid "To ship it, open the order. In the Delivery box choose the shipping option, the town and the office, locker or address, then press \"Save delivery\". The courier box for the label appears, and the price comes when the label is made. The customer then gets an email with the delivery price and the new total."
+msgstr ""
+
+#: app/Admin/Help_Page.php:128
+msgid "Turn it on in WooCommerce > Settings > Nashenski Commerce > Abandoned carts. It is off by default."
+msgstr ""
+
+#: app/Admin/Help_Page.php:129
+msgid "It keeps the carts that were not ordered and records the email as soon as the shopper types it, even at checkout without an account. Mention this in your privacy policy."
+msgstr ""
+
+#: app/Admin/Help_Page.php:130
+msgid "Set when the reminders go out (by default 1, 24 and 72 hours after the last change, at most three, only between 08:00 and 22:00) and whether each cart gets a single-use coupon. Edit the \"Abandoned cart reminder\" email in WooCommerce > Settings > Emails."
+msgstr ""
+
+#: app/Admin/Help_Page.php:131
+msgid "The link in the email refills the cart. Every email has an unsubscribe link, and a shopper who unsubscribes gets no more reminders."
+msgstr ""
+
+#: app/Admin/Help_Page.php:132
+msgid "See the carts in WooCommerce > Abandoned carts. Filter them by status, send a reminder by hand or delete carts. Old carts are deleted once the retention period ends."
+msgstr ""
+
+#: app/Admin/Help_Page.php:134 app/Admin/Tabs/Nra_Tab.php:191
 msgid "Invoices and documents"
 msgstr ""
 
-#: app/Admin/Help_Page.php:119
+#: app/Admin/Help_Page.php:135
 msgid "The order document is made for every order. Invoices are made as set in \"When to generate invoices?\", and credit notes for refunds."
 msgstr ""
 
-#: app/Admin/Help_Page.php:120
+#: app/Admin/Help_Page.php:136
 msgid "To make an invoice by hand, open the order and use \"Make invoice\" in the PDF Files box. You can change the number; the next automatic number continues after it."
 msgstr ""
 
 #. translators: %s: link to the Documents section
-#: app/Admin/Help_Page.php:122
+#: app/Admin/Help_Page.php:138
 #, php-format
 msgid "The look of the PDF files (logo, colours, font, spacing) is in %s > PDF appearance. Every document is made in Bulgarian and in English."
 msgstr ""
 
-#: app/Admin/Help_Page.php:123
+#. translators: %s: link to the Documents section
+#: app/Admin/Help_Page.php:140
+#, php-format
+msgid "Your company details, the numbering and when documents are made are in %s > Company details and Invoices and documents."
+msgstr ""
+
+#: app/Admin/Help_Page.php:141
+msgid "To save disk space, set \"Delete order documents after (days)\" in Documents > Invoices and documents. Only the order document PDFs of older orders are deleted; invoices, credit notes and refund documents stay. \"Delete all order documents now\" does it at once, after a confirmation."
+msgstr ""
+
+#: app/Admin/Help_Page.php:142
 msgid "Copies can go to your accountant by email, and the monthly NRA audit file too."
 msgstr ""
 
-#: app/Admin/Help_Page.php:125
+#: app/Admin/Help_Page.php:144
 msgid "NRA audit file and exports"
 msgstr ""
 
 #. translators: %s: link to the Exports section
-#: app/Admin/Help_Page.php:127
+#: app/Admin/Help_Page.php:146
 #, php-format
 msgid "%s has the NRA audit file (Ordinance N-18), the invoice archive and the Microinvest Delta file for a chosen month. The audit file is checked against the NRA schema and has no order limit."
 msgstr ""
 
-#: app/Admin/Help_Page.php:128
+#: app/Admin/Help_Page.php:147
+msgid "Choose the month and press \"Create XML file\" for the NRA, \"Download archive\" for the invoices or \"Create file\" for Delta."
+msgstr ""
+
+#: app/Admin/Help_Page.php:148
 msgid "The custom export takes orders, products sold or documents, with your filters, columns and order, as CSV, Excel, JSON or XML. Save an export to run it again next month."
 msgstr ""
 
-#: app/Admin/Help_Page.php:130 app/Front_End/Withdrawal.php:435 app/Front_End/Withdrawal.php:449
+#: app/Admin/Help_Page.php:150
+msgid "EU VAT number check"
+msgstr ""
+
+#: app/Admin/Help_Page.php:151
+msgid "Turn on \"Enable VIES validation\" in Documents > Invoices and documents. A company customer's VAT number is then checked with the European VIES system when the order is placed."
+msgstr ""
+
+#: app/Admin/Help_Page.php:152
+msgid "An error shows only when the number is not valid or when the check itself fails. The option needs the PHP SOAP extension on your server."
+msgstr ""
+
+#: app/Admin/Help_Page.php:154 app/Front_End/Withdrawal.php:435 app/Front_End/Withdrawal.php:449
 msgid "EU withdrawal function"
 msgstr ""
 
 #. translators: %s: link to the Checkout section
-#: app/Admin/Help_Page.php:132
+#: app/Admin/Help_Page.php:156
 #, php-format
 msgid "Turn it on in %s > EU withdrawal function. A \"Withdraw from contract here\" link appears at the bottom of every page, on each order in My Account and in the order emails."
 msgstr ""
 
-#: app/Admin/Help_Page.php:133
+#: app/Admin/Help_Page.php:157
 msgid "Place the link yourself with the shortcode [nashenski_withdrawal_link] (button=\"yes\" makes it a button)."
 msgstr ""
 
-#: app/Admin/Help_Page.php:134
+#: app/Admin/Help_Page.php:158
 msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
 msgstr ""
 
-#: app/Admin/Help_Page.php:136 app/Admin/Settings_Page.php:107 app/Admin/Tabs/Settings_Tab.php:44 app/Reports/Reports.php:128
+#: app/Admin/Help_Page.php:160 app/Admin/Settings_Page.php:107 app/Admin/Tabs/Settings_Tab.php:44 app/Reports/Reports.php:128
 msgid "Customer checks"
 msgstr ""
 
-#: app/Admin/Help_Page.php:137
+#: app/Admin/Help_Page.php:161
 msgid "nekorekten.com, Connectix and NepoStop tell you whether a phone number has a history of refused parcels. Nashenski Commerce can show a warning on the order and hide cash on delivery for such customers."
 msgstr ""
 
-#: app/Admin/Help_Page.php:139 app/Admin/Help_Page.php:174
+#: app/Admin/Help_Page.php:162
+msgid "Turn a service on in Overview, save, then enter its API key or token in Customer checks. A service without a key is not asked."
+msgstr ""
+
+#: app/Admin/Help_Page.php:163
+msgid "On the order, the Reports box shows the answers. Press \"Refresh data\" to ask again."
+msgstr ""
+
+#: app/Admin/Help_Page.php:164
+msgid "For nekorekten.com you can report a customer yourself: write what happened and press \"Send report\". The report carries the name, phone and email of the order. Change the text and press \"Save report\", or press \"Delete report\" to remove it from nekorekten.com."
+msgstr ""
+
+#: app/Admin/Help_Page.php:165
+msgid "Connectix and NepoStop can also get tracking information or labels from your orders. Both are optional."
+msgstr ""
+
+#: app/Admin/Help_Page.php:167 app/Admin/ImpossibleVatPrice.php:26 app/Admin/ImpossibleVatPrice.php:27 app/Admin/ImpossibleVatPrice.php:102
+msgid "Mathematically impossible prices"
+msgstr ""
+
+#: app/Admin/Help_Page.php:168
+msgid "Open Products > Mathematically impossible prices and press \"Scan products\". It lists the prices that cannot be split into a price without VAT and the VAT without rounding."
+msgstr ""
+
+#: app/Admin/Help_Page.php:169
+msgid "Press \"Fix all\" to correct them. The check matters most when your prices are entered including tax."
+msgstr ""
+
+#: app/Admin/Help_Page.php:171 app/Admin/Help_Page.php:206
 msgid "Moving from another plugin"
 msgstr ""
 
-#: app/Admin/Help_Page.php:140
+#: app/Admin/Help_Page.php:172
 msgid "Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping."
 msgstr ""
 
-#: app/Admin/Help_Page.php:141
+#: app/Admin/Help_Page.php:173
 msgid "It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods and, from the N-18 plugin, the company details and document numbers. Then the old plugin is switched off. Its own data stays in the database."
 msgstr ""
 
-#: app/Admin/Help_Page.php:142
+#: app/Admin/Help_Page.php:174
 msgid "Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import."
 msgstr ""
 
-#: app/Admin/Help_Page.php:144
+#: app/Admin/Help_Page.php:176
 msgid "Updates"
 msgstr ""
 
-#: app/Admin/Help_Page.php:145
+#: app/Admin/Help_Page.php:177
 msgid "New versions show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too."
 msgstr ""
 
-#: app/Admin/Help_Page.php:147
+#: app/Admin/Help_Page.php:179
 msgid "When something does not work"
 msgstr ""
 
-#: app/Admin/Help_Page.php:148
+#: app/Admin/Help_Page.php:180
 msgid "\"Nothing found\" under a courier: check the login on the courier page. In BOX NOW demo mode there are only two test lockers, both in Sofia."
 msgstr ""
 
-#: app/Admin/Help_Page.php:149
+#: app/Admin/Help_Page.php:181
 msgid "No courier options at checkout: add the methods to the shipping zone of the customer's address and give your products a weight."
 msgstr ""
 
-#: app/Admin/Help_Page.php:150
+#: app/Admin/Help_Page.php:182
 msgid "\"Complete the fields to calculate\" does not go away: the customer has not chosen an office, a locker or an address yet."
 msgstr ""
 
-#: app/Admin/Help_Page.php:151
+#: app/Admin/Help_Page.php:183
 msgid "No documents: turn on \"Invoices and N-18\" in Overview and check \"When to generate documents?\" in Documents."
 msgstr ""
 
-#: app/Admin/Help_Page.php:163 app/Admin/Import_Sources.php:177
+#: app/Admin/Help_Page.php:195 app/Admin/Import_Sources.php:177
 msgid "Bulgarisation for WooCommerce"
 msgstr ""
 
-#: app/Admin/Help_Page.php:175
+#: app/Admin/Help_Page.php:207
 msgid "These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use and switches the plugin off."
 msgstr ""
 
 #. translators: %s: date
-#: app/Admin/Help_Page.php:185
+#: app/Admin/Help_Page.php:217
 #, php-format
 msgid "Imported on %s"
 msgstr ""
 
-#: app/Admin/Help_Page.php:188
+#: app/Admin/Help_Page.php:220
 msgid "Import and switch off"
 msgstr ""
 
 #. translators: %d: number of settings
-#: app/Admin/Help_Page.php:209
+#: app/Admin/Help_Page.php:241
 #, php-format
 msgid "%d setting changed."
 msgid_plural "%d settings changed."
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Admin/Help_Page.php:222
+#: app/Admin/Help_Page.php:254
 msgid "Recommended settings"
 msgstr ""
 
-#: app/Admin/Help_Page.php:223
+#: app/Admin/Help_Page.php:255
 msgid "Settings that suit most Bulgarian stores. Tick the ones you want and apply them; nothing else changes."
 msgstr ""
 
-#: app/Admin/Help_Page.php:228
+#: app/Admin/Help_Page.php:260
 msgid "Setting"
 msgstr ""
 
-#: app/Admin/Help_Page.php:229 app/Plugin.php:264
+#: app/Admin/Help_Page.php:261 app/Plugin.php:264
 msgid "Now"
 msgstr ""
 
-#: app/Admin/Help_Page.php:230
+#: app/Admin/Help_Page.php:262
 msgid "Recommended"
 msgstr ""
 
-#: app/Admin/Help_Page.php:231
+#: app/Admin/Help_Page.php:263
 msgid "Why"
 msgstr ""
 
-#: app/Admin/Help_Page.php:244
+#: app/Admin/Help_Page.php:276
 msgid "Already set"
 msgstr ""
 
-#: app/Admin/Help_Page.php:261
+#: app/Admin/Help_Page.php:293
 msgid "Apply recommended settings"
 msgstr ""
 
-#: app/Admin/Help_Page.php:263
+#: app/Admin/Help_Page.php:295
 msgid "All recommended settings are in place."
 msgstr ""
 
@@ -1444,8 +1550,20 @@ msgstr ""
 msgid "To an address"
 msgstr ""
 
-#: app/Admin/ImpossibleVatPrice.php:26 app/Admin/ImpossibleVatPrice.php:27 app/Admin/ImpossibleVatPrice.php:102
-msgid "Mathematically impossible prices"
+#: app/Admin/ImpossibleVatPrice.php:56
+msgid "This price is mathematically impossible with the current VAT."
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:57
+msgid "Nearest possible price:"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:58
+msgid "Correct"
+msgstr ""
+
+#: app/Admin/ImpossibleVatPrice.php:59
+msgid "The price was corrected. Save the product."
 msgstr ""
 
 #: app/Admin/ImpossibleVatPrice.php:60
@@ -1988,10 +2106,6 @@ msgstr ""
 
 #: app/Admin/Recommended_Settings.php:129
 msgid "(not set)"
-msgstr ""
-
-#: app/Admin/Settings_Page.php:95 app/Admin/Tabs/Quick_Order_Tab.php:14 app/Admin/Tabs/Quick_Order_Tab.php:96 app/Admin/Tabs/Settings_Tab.php:22 app/Front_End/Quick_Order.php:261 app/Front_End/Quick_Order.php:399
-msgid "Quick order"
 msgstr ""
 
 #: app/Admin/Settings_Page.php:115

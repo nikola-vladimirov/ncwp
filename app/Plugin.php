@@ -4,7 +4,7 @@ namespace Nashenski;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin {
-	const VERSION = '0.16.1';
+	const VERSION = '0.16.2';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
@@ -286,14 +286,10 @@ class Plugin {
 
 		wp_enqueue_style( 'nashenski-orders', nashenski()->plugin_dir_url() . 'assets/css/orders.css', array(), self::VERSION );
 
-		// Older screens (order labels and documents) still use the compiled bundle until it is rewritten.
-		wp_enqueue_script(
-			'nashenski-js-admin',
-			nashenski()->plugin_dir_url() . nashenski_assets_bundle( 'admin.js' ),
-			array( 'jquery' ), // deps
-			\Nashenski\Plugin::VERSION,
-			true // in footer
-		);
+		// The order list label button, notice dismiss and impossible price notice. The compiled courier
+		// label boxes below print their data (nashenski_<courier>) on this handle.
+		wp_enqueue_script( 'nashenski-js-admin', nashenski()->plugin_dir_url() . 'assets/js/admin.js', array( 'jquery' ), self::VERSION, true );
+		wp_localize_script( 'nashenski-js-admin', 'nashenskiAdmin', array( 'dismissNonce' => wp_create_nonce( 'nashenski_dismiss_notice' ) ) );
 		// "Make invoice" in the PDF Files box saves the order with the invoice request.
 		wp_add_inline_script( 'nashenski-js-admin', 'document.addEventListener("click",function(e){var b=e.target.closest(".nashenski-make-invoice__button");if(b){b.form.elements.nashenski_make_invoice.value="1";b.form.requestSubmit();}});' );
 

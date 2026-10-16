@@ -1,0 +1,170 @@
+# Nashenski Commerce
+
+Everything a WooCommerce store needs to sell in Bulgaria, in one free plugin: Econt, Speedy, BOX NOW,
+CVC and Pigeon Express shipping, invoices and Ordinance N-18 documents, the NRA audit file, quick
+orders, abandoned carts, the EU withdrawal function and customer checks. English and Bulgarian.
+
+Everything runs on the store's own site. Data goes only to the services the store owner turns on
+(listed under "External services" in [readme.txt](readme.txt)).
+
+Based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3 or later). Made by
+[PristaDigital](https://pristadigital.com/). Licence: GPLv3 or later ([license.txt](license.txt)).
+
+## Contents
+
+- [Requirements](#requirements)
+- [Install](#install)
+- [Updates](#updates)
+- [Getting started](#getting-started)
+- [Features and how to use them](#features-and-how-to-use-them)
+- [Moving from another plugin](#moving-from-another-plugin)
+- [Documentation](#documentation)
+- [Troubleshooting](#troubleshooting)
+- [For developers](#for-developers)
+
+## Requirements
+
+- WordPress 6.5 or newer (tested up to 7.1.3), PHP 7.4 or newer.
+- WooCommerce 9.4 or newer (tested up to 11.1). The EU withdrawal function needs WooCommerce 11.1.
+- For live courier prices and labels: an account with each courier you use. Without one, checkout
+  prices come from the courier's public price list, which is built in.
+
+## Install
+
+1. Open the [latest release](https://github.com/nikola-vladimirov/nashenski-commerce/releases/latest)
+   and download `nashenski-commerce-<version>.zip` from its Assets.
+2. In WordPress go to Plugins > Add New Plugin > Upload Plugin, choose the zip and activate it.
+
+Use the release zip, not GitHub's green "Code > Download ZIP" button. That one unpacks into a folder
+called `nashenski-commerce-main` with the repository files, so WordPress sees it as a different
+plugin and updates do not reach it. If you installed it that way, delete that plugin (settings stay
+in the database) and upload the release zip.
+
+## Updates
+
+Updates come through Dashboard > Updates like any other plugin, once the plugin is on
+WordPress.org. Turn on automatic updates on the Plugins screen if you want them.
+
+
+**Updates never show up?** WordPress checks for updates in the background with WP-Cron. If
+`wp-config.php` has `define( 'DISABLE_WP_CRON', true );`, the server must run `wp-cron.php` on a
+schedule (a system cron job), or WordPress only checks when someone opens Dashboard > Updates. The
+plugin's own scheduled jobs (documents, abandoned cart reminders, shipment status) need WP-Cron too.
+
+## Getting started
+
+1. Install and activate WooCommerce, then this plugin.
+2. Go to WooCommerce > Settings > Nashenski Commerce. The Overview turns each part on or off:
+   couriers, invoices and N-18, quick order, abandoned carts, customer checks.
+3. For each courier you use, open its section, enter your courier login and save. The other courier
+   settings unlock once the courier accepts the login. Then set "Send from" (your office or address).
+4. Add the courier shipping methods to your zones in WooCommerce > Settings > Shipping.
+5. Open WooCommerce > Settings > Nashenski Commerce > Help: it has the recommended settings (one
+   click to apply), the import from other plugins and how to use every part.
+
+## Features and how to use them
+
+### Shipping: Econt, Speedy, BOX NOW, CVC, Pigeon Express
+
+- Delivery to an office, a locker or an address, with search pickers at checkout and the courier's
+  map for Econt and Speedy. Works with the classic checkout, the block checkout and page builder
+  checkouts, including multi-step ones.
+- Live prices from your courier account, or from the built-in public price lists (editable, and
+  checked weekly against the courier website).
+- Labels from the order screen or the order list, label printing in two sizes, shipment status,
+  courier requests for Econt and Speedy, the order number on the waybill and a tracking link for the
+  customer. Order statuses can follow the shipment (delivered or returned).
+
+How to use: set up the courier (see Getting started), add its methods to a shipping zone, then on an
+order open the courier box, check the details and press "Generate label".
+
+### Invoices and Ordinance N-18
+
+- Order documents, invoices and credit notes as PDF, in Bulgarian and English, attached to the order
+  emails. The order document is made for every order.
+- Invoices automatically or by hand from the order screen, with your own number if needed.
+- The NRA audit XML file (Annex 38) for any period, checked against the NRA schema, and optionally
+  emailed to your accountant on the 1st of every month.
+- Invoice archive and Microinvest Delta exports, and an export builder for orders, products sold or
+  documents (CSV, Excel, JSON, XML).
+- Company invoice fields at checkout and the EU VAT number check (VIES).
+- Optional clean-up of order documents (not invoices) of older orders.
+
+How to use: turn on "Invoices and N-18" in the Overview, fill in your company details in Documents
+and choose "When to generate documents?".
+
+### Quick order
+
+A "Quick order" button on the product page and in the cart opens a short form. The order waits for
+your confirmation. On the order screen the Delivery box sets the courier, town and office, locker or
+address; "Save delivery" adds the shipping line, and a label can then be made as usual. When the
+label sets the delivery price, the customer gets the order details email with the new total.
+
+### Abandoned carts
+
+Off by default. Keeps carts that were not ordered, records the email as the shopper types it, and
+sends reminders through an editable WooCommerce email, with an optional single-use coupon and a link
+that refills the cart. The list is under WooCommerce > Abandoned carts. Check the consent rules that
+apply to your store before you turn reminders on.
+
+### EU withdrawal function
+
+The "withdraw from contract here" function of Directive 2011/83/EU, Article 11a (applies from
+19 June 2026), on WooCommerce's own withdrawal form: a link on every page, in My Account, on the
+order page and in the order emails during the withdrawal period, and a shortcode for any theme.
+
+### Customer checks
+
+nekorekten.com, Connectix and NepoStop look up a phone number's history of refused parcels. The
+order shows a warning, and cash on delivery can be hidden for such customers. From an order you can
+send a report to nekorekten.com, then edit or delete it.
+
+### Prices with VAT
+
+A scan finds prices that cannot come from a whole net price plus VAT and offers the corrected price.
+
+## Moving from another plugin
+
+The plugin imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW
+Delivery, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy
+Shipping: courier logins, sender details, waybill numbers, shipping zone methods and, from the N-18
+plugin, company details and document numbers. Go to WooCommerce > Settings > Nashenski Commerce >
+Help and press "Import now". The old plugin is switched off; its data stays in the database.
+
+## Documentation
+
+- **In the plugin:** WooCommerce > Settings > Nashenski Commerce > Help, and a tooltip on every
+  setting.
+- **What changed:** [CHANGELOG.md](CHANGELOG.md), also shown on the Plugins screen ("Changelog") and
+  in "View version details".
+- **WordPress.org page:** [readme.txt](readme.txt), with the list of external services.
+- **Plans and legal sources:** [docs/plans](docs/plans) and [docs/legal](docs/legal) (repository
+  only, not in the zip).
+
+## Troubleshooting
+
+- **"Nothing found" under a courier:** check the courier login in its section. In BOX NOW demo mode
+  there are only two test lockers, both in Sofia.
+- **No courier options at checkout:** add the courier methods to the shipping zone of the customer's
+  address, and give your products a weight.
+- **"Complete the fields to calculate" stays:** the customer has not chosen an office, a locker or an
+  address yet.
+- **No documents:** turn on "Invoices and N-18" in the Overview and check "When to generate
+  documents?" in Documents.
+- **No updates:** see [Updates](#updates), above all the part about WP-Cron.
+
+## For developers
+
+- PHP 7.4+, namespace `Nashenski\` in `app/`, front-end templates in `templates/`, readable JS and CSS
+  in `assets/`, bundled PHP libraries in `vendor/` (do not edit). `dist/` holds old compiled bundles
+  that are being rewritten as readable JS ([plan](docs/plans/dist-rewrite.md)).
+- Options are `nashenski_settings_{group}_{name}`, read and written with `nashenski_get_option()` and
+  `nashenski_set_option()`.
+- Texts are in English; the Bulgarian translation is in `languages/` (PO, MO and the PHP translation
+  file). Every new text needs its translation.
+- **Releases:** bump `Version:` in `nashenski-commerce.php` and `Plugin::VERSION`, add a `CHANGELOG.md`
+  entry and a `readme.txt` changelog line, update the Help page, and push to `main`. The
+  [Release workflow](.github/workflows/release.yml) publishes `vX.Y.Z` with both zips. A version with
+  a dash is published as a pre-release.
+- The release zip is `git archive` of the tag: everything marked `export-ignore` in
+  [.gitattributes](.gitattributes) (docs, this README, repository files) stays out.
