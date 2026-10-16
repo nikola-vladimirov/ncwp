@@ -1,5 +1,23 @@
 # Nashenski Commerce changelog
 
+## 0.16.1 (2026-10-16)
+
+### Security
+- The courier choice saved in a cookie is checked value by value.
+- Only shop managers can hide the BOX NOW and Pigeon notices.
+- The quick order limit counts the visitor's real address, not one a visitor can make up.
+- Parcel numbers are checked before they go to BOX NOW or Speedy, and export errors are shown as plain text.
+- The import from older plugins no longer turns stored data into PHP objects.
+
+### Speed
+- The courier cache jobs and the weekly price check are checked from the admin, not on every page of the store.
+- When the BOX NOW or Pigeon office list cannot be fetched, the checkout waits 5 minutes before trying again instead of trying on every search.
+- The withdrawal link style loads only where the link shows.
+- Order, label and price notice scripts load only on the order and product screens.
+
+### Removing the plugin
+- Deactivating stops the plugin's scheduled jobs. Deleting it also removes the abandoned carts table and its temporary data. Settings, orders and documents stay.
+
 ## 0.16.0 (2026-10-16)
 
 ### Updates

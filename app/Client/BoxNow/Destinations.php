@@ -29,7 +29,10 @@ class Destinations {
 		$destinations_file = $box::CACHE_FOLDER . 'destinations-' . ( 'live' === $box->get_env() ? 'live' : 'demo' ) . '-' . $size . '.json';
 		$destinations = File::get_file( $destinations_file );
 
-		if ( !$destinations ) {
+		$failed_key = 'nashenski_boxnow_dest_failed_' . md5( $destinations_file );
+
+		// A recent failed fetch is not retried on every request.
+		if ( !$destinations && !get_transient( $failed_key ) ) {
 			$list = array();
 
 			// Only BOX NOW's API filters by compartment size; the public list has no sizes.
@@ -49,6 +52,8 @@ class Destinations {
 			if ( $list ) {
 				$destinations = wp_json_encode( $list );
 				File::put_to_file( $destinations_file, $destinations );
+			} else {
+				set_transient( $failed_key, 1, 5 * MINUTE_IN_SECONDS );
 			}
 		}
 

@@ -316,6 +316,10 @@ class Speedy {
 		$shipment_status = nashenski_label_request( 'shipmentStatus', array() );
 		$data = array();
 
+		if ( ! preg_match( '/^[A-Za-z0-9_-]+$/', (string) ( $shipment_status['id'] ?? '' ) ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid parcel number.', 'nashenski-commerce' ) ), 400 );
+		}
+
 		$response = $container[ Client::SPEEDY ]->api_call( $container[ Client::SPEEDY ]::TRACK_ENDPOINT, array(
 			'parcels' => [ [ 'id' => $shipment_status['id'] ] ]
 		) );
@@ -908,11 +912,19 @@ class Speedy {
 		$awbsc = ( null !== nashenski_label_request( 'awbsc', null ) ) ? nashenski_label_request( 'awbsc' ) : '';
 
 		foreach ( $labels as $label ) {
+			if ( ! preg_match( '/^[A-Za-z0-9_-]+$/', $label ) ) {
+				continue;
+			}
+
 			$parcels[] = array(
 				'parcel' => array(
 					'id' => $label,
 				),
 			);
+		}
+
+		if ( ! $parcels ) {
+			wp_die( esc_html__( 'Invalid parcel number.', 'nashenski-commerce' ), '', array( 'response' => 400 ) );
 		}
 
 		$request_body = array(
@@ -928,7 +940,7 @@ class Speedy {
 
 		header('Content-Type: application/pdf');
 		header('Content-Length: '.strlen( $pdf_escaped ));
-		header('Content-disposition: inline; filename="' . $labels[0] . '.pdf"');
+		header('Content-disposition: inline; filename="' . $parcels[0]['parcel']['id'] . '.pdf"');
 
 		echo $pdf_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PDF file from the courier, sent as application/pdf.
 

@@ -137,7 +137,7 @@ class Nekorekten extends Provider_Base {
 	}
 
 	private static function clean_text( $text ) {
-		return mb_substr( trim( sanitize_textarea_field( wp_unslash( (string) $text ) ) ), 0, 1000 );
+		return mb_substr( trim( sanitize_textarea_field( (string) $text ) ), 0, 1000 );
 	}
 
 	/**
@@ -173,7 +173,7 @@ class Nekorekten extends Provider_Base {
 
 		if ( ! empty( $_POST['nashenski_nk_edit'] ) ) {
 			$id = sanitize_text_field( wp_unslash( $_POST['nashenski_nk_edit'] ) );
-			$text = isset( $_POST['nashenski_nk_edit_text'][ $id ] ) ? self::clean_text( $_POST['nashenski_nk_edit_text'][ $id ] ) : '';
+			$text = isset( $_POST['nashenski_nk_edit_text'][ $id ] ) ? self::clean_text( wp_unslash( $_POST['nashenski_nk_edit_text'][ $id ] ) ) : '';
 
 			if ( isset( $sent[ $id ] ) ) {
 				self::edit( $order, $id, $text, $sent );
@@ -182,7 +182,7 @@ class Nekorekten extends Provider_Base {
 			return;
 		}
 
-		$text = isset( $_POST['nashenski_nk_text'] ) ? self::clean_text( $_POST['nashenski_nk_text'] ) : '';
+		$text = isset( $_POST['nashenski_nk_text'] ) ? self::clean_text( wp_unslash( $_POST['nashenski_nk_text'] ) ) : '';
 		// phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		self::send( $order, $text, $sent );
 	}

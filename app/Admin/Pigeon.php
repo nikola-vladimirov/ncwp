@@ -224,6 +224,11 @@ class Pigeon {
 	}
 
 	public static function message_dismiss_callback() {
+		// The built admin JS (dist/) sends no nonce, so only the capability is checked.
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( -1, 403 );
+		}
+
 		update_option( 'nashenski_pigeon_express_message_dismiss', true );
 	}
 

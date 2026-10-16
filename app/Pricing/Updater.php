@@ -20,7 +20,11 @@ class Updater {
 	public function __construct() {
 		add_action( 'wp_ajax_nashenski_check_prices', array( __CLASS__, 'ajax_check' ) );
 		add_action( self::CRON, array( __CLASS__, 'weekly_check' ) );
+		add_action( 'admin_init', array( __CLASS__, 'cron_schedule' ) );
+	}
 
+	/** Self-healing schedule check, admin only so the front end skips it. */
+	public static function cron_schedule() {
 		if ( ! wp_next_scheduled( self::CRON ) ) {
 			wp_schedule_event( time() + DAY_IN_SECONDS, 'weekly', self::CRON );
 		}

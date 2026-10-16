@@ -427,7 +427,7 @@ class Import_Sources {
 			$rows = (array) $wpdb->get_results( $wpdb->prepare( 'SELECT %i AS id, meta_key, meta_value FROM %i WHERE meta_key LIKE %s', $hpos ? 'order_id' : 'post_id', $meta_table, $wpdb->esc_like( $prefix ) . '%' ), ARRAY_A );
 
 			foreach ( $rows as $row ) {
-				$data[ $row['id'] ][ $row['meta_key'] ] = maybe_unserialize( $row['meta_value'] );
+				$data[ $row['id'] ][ $row['meta_key'] ] = self::safe_unserialize( $row['meta_value'] );
 			}
 		}
 
@@ -448,7 +448,7 @@ class Import_Sources {
 				} elseif ( 'notasupto_documents' === $table ) {
 					$row['pdf'] = self::n18_files( $row );
 				} elseif ( 'econt_order' === $table ) {
-					$row['data'] = maybe_unserialize( $row['data'] );
+					$row['data'] = self::safe_unserialize( $row['data'] );
 				}
 
 				$data[ $row['order_id'] ][ $table ][] = $row;
@@ -589,6 +589,13 @@ class Import_Sources {
 			nashenski_set_option( $courier, $key, $value );
 			$count['settings']++;
 		}
+	}
+
+	/**
+	 * Like maybe_unserialize(), but never builds objects from legacy rows.
+	 */
+	private static function safe_unserialize( $value ) {
+		return is_serialized( $value ) ? @unserialize( trim( $value ), array( 'allowed_classes' => false ) ) : $value; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- legacy rows, classes are not allowed.
 	}
 
 	/**

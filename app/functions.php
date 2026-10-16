@@ -627,7 +627,14 @@ function nashenski_couriers() {
  * The office, locker or address the checkout picker saved in a courier cookie, or ''.
  */
 function nashenski_courier_cookie( $name ) {
-	return isset( $_COOKIE[ $name ] ) ? json_decode( urldecode( sanitize_text_field( wp_unslash( $_COOKIE[ $name ] ) ) ), true ) : '';
+	if ( ! isset( $_COOKIE[ $name ] ) ) {
+		return '';
+	}
+
+	// Decode first, then sanitize every value: sanitizing the raw JSON would corrupt it.
+	$data = json_decode( urldecode( wp_unslash( $_COOKIE[ $name ] ) ), true );
+
+	return is_array( $data ) ? map_deep( $data, 'sanitize_text_field' ) : '';
 }
 
 /**

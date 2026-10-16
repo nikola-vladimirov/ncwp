@@ -76,7 +76,8 @@ class Office {
 		$file = $folder . 'public-locations.json';
 		$list = json_decode( (string) \Nashenski\File::get_file( $file ), true );
 
-		if ( ! $list ) {
+		// A recent failed fetch is not retried on every request.
+		if ( ! $list && ! get_transient( 'nashenski_pigeon_public_failed' ) ) {
 			$response = wp_remote_get( self::PUBLIC_URL, array( 'timeout' => 20, 'headers' => array( 'Accept' => 'application/json' ) ) );
 			$body = json_decode( wp_remote_retrieve_body( $response ), true );
 			$list = is_array( $body ) && ! empty( $body['locations'] ) ? $body['locations'] : array();
@@ -84,6 +85,8 @@ class Office {
 			if ( $list ) {
 				wp_mkdir_p( $folder );
 				\Nashenski\File::put_to_file( $file, wp_json_encode( $list ) );
+			} else {
+				set_transient( 'nashenski_pigeon_public_failed', 1, 5 * MINUTE_IN_SECONDS );
 			}
 		}
 

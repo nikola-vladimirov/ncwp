@@ -3,10 +3,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.15.4\n"
+"Project-Id-Version: Nashenski Commerce 0.16.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-16 16:33+0000\n"
-"PO-Revision-Date: 2026-10-16 16:33+0000\n"
+"POT-Creation-Date: 2026-10-16 16:43+0000\n"
+"PO-Revision-Date: 2026-10-16 16:43+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -135,7 +135,7 @@ msgstr "Поръчана"
 msgid "Emptied"
 msgstr "Изпразнена"
 
-#: app/Admin/Abandoned_Carts_Page.php:129 app/Admin/BoxNow.php:508 app/Admin/Import_Sources.php:204 app/Admin/Migration.php:87 app/Admin/Pigeon.php:552 app/Admin/Recommended_Settings.php:134
+#: app/Admin/Abandoned_Carts_Page.php:129 app/Admin/BoxNow.php:516 app/Admin/Import_Sources.php:204 app/Admin/Migration.php:87 app/Admin/Pigeon.php:557 app/Admin/Recommended_Settings.php:134
 msgid "You do not have permission to perform this action."
 msgstr "Нямате права за това действие."
 
@@ -423,9 +423,13 @@ msgstr "Поръчки с наложен платеж не могат да се 
 msgid "BOX NOW did not answer. Check the connection settings and try again."
 msgstr "BOX NOW не отговори. Проверете настройките за връзка и опитайте отново."
 
-#: app/Admin/BoxNow.php:513 app/Admin/Pigeon.php:557 app/Admin/Speedy.php:901
+#: app/Admin/BoxNow.php:521 app/Admin/Pigeon.php:562 app/Admin/Speedy.php:905
 msgid "This link has expired. Reload the order page and try again."
 msgstr "Връзката е изтекла. Презаредете страницата на поръчката и опитайте отново."
+
+#: app/Admin/BoxNow.php:528 app/Admin/Speedy.php:320 app/Admin/Speedy.php:927
+msgid "Invalid parcel number."
+msgstr "Невалиден номер на пратка."
 
 #: app/Admin/Changelog.php:36 app/Admin/Changelog.php:57
 msgid "Nashenski Commerce changelog"
@@ -1171,7 +1175,7 @@ msgstr "%s съдържа одиторския файл за НАП (Наред�
 msgid "The custom export takes orders, products sold or documents, with your filters, columns and order, as CSV, Excel, JSON or XML. Save an export to run it again next month."
 msgstr "Собственият експорт взема поръчки, продадени продукти или документи, с Вашите филтри, колони и подредба, като CSV, Excel, JSON или XML. Запазете експорта, за да го пуснете отново следващия месец."
 
-#: app/Admin/Help_Page.php:130 app/Front_End/Withdrawal.php:422 app/Front_End/Withdrawal.php:436
+#: app/Admin/Help_Page.php:130 app/Front_End/Withdrawal.php:435 app/Front_End/Withdrawal.php:449
 msgid "EU withdrawal function"
 msgstr "Функция за отказ (ЕС)"
 
@@ -1433,15 +1437,15 @@ msgstr "Кредитно известие"
 msgid "Cancelled order document"
 msgstr "Документ за отказана поръчка"
 
-#: app/Admin/Import_Sources.php:697 app/Admin/Settings_Page.php:572 app/Front_End/Checkout/Pickers.php:353
+#: app/Admin/Import_Sources.php:704 app/Admin/Settings_Page.php:572 app/Front_End/Checkout/Pickers.php:353
 msgid "To an office"
 msgstr "До офис"
 
-#: app/Admin/Import_Sources.php:698 app/Front_End/Checkout/Pickers.php:354 app/Front_End/Checkout/Pickers.php:355 app/Front_End/Checkout/Pickers.php:356
+#: app/Admin/Import_Sources.php:705 app/Front_End/Checkout/Pickers.php:354 app/Front_End/Checkout/Pickers.php:355 app/Front_End/Checkout/Pickers.php:356
 msgid "To a parcel locker"
 msgstr "До автомат за пратки"
 
-#: app/Admin/Import_Sources.php:699 app/Admin/Settings_Page.php:574
+#: app/Admin/Import_Sources.php:706 app/Admin/Settings_Page.php:574
 msgid "To an address"
 msgstr "До адрес"
 
@@ -2109,7 +2113,7 @@ msgstr "Такса за наложен платеж %"
 msgid "at least"
 msgstr "най-малко"
 
-#: app/Admin/Settings_Page.php:628 app/Pricing/Updater.php:428
+#: app/Admin/Settings_Page.php:628 app/Pricing/Updater.php:432
 msgid "Valid from"
 msgstr "В сила от"
 
@@ -4141,7 +4145,7 @@ msgstr "Пратки"
 msgid "Order ID"
 msgstr "ID на поръчката"
 
-#: app/Export/Builder/Fields.php:36 app/Front_End/Withdrawal.php:374
+#: app/Export/Builder/Fields.php:36 app/Front_End/Withdrawal.php:387
 msgid "Order number"
 msgstr "Номер на поръчката"
 
@@ -4577,7 +4581,7 @@ msgstr "Ред, ширина и видимост на полетата за фа
 msgid "Fields"
 msgstr "Полета"
 
-#: app/Front_End/Checkout/Field_Editor.php:574 app/Front_End/Withdrawal.php:373
+#: app/Front_End/Checkout/Field_Editor.php:574 app/Front_End/Withdrawal.php:386
 msgid "Email address"
 msgstr "Имейл адрес"
 
@@ -4926,99 +4930,99 @@ msgstr "Здравейте, %s,\n\nБлагодарим! Получихме ва
 msgid "Withdraw from contract here"
 msgstr "Откажете се от договора тук"
 
-#: app/Front_End/Withdrawal.php:147
+#: app/Front_End/Withdrawal.php:149
 msgid "Ordered without an account?"
 msgstr "Поръчали сте без регистрация?"
 
-#: app/Front_End/Withdrawal.php:278
+#: app/Front_End/Withdrawal.php:291
 msgid "The full order"
 msgstr "Цялата поръчка"
 
-#: app/Front_End/Withdrawal.php:279
+#: app/Front_End/Withdrawal.php:292
 msgid "Specific items only"
 msgstr "Само някои продукти"
 
-#: app/Front_End/Withdrawal.php:290
+#: app/Front_End/Withdrawal.php:303
 msgid "Withdrawal requested"
 msgstr "Подаден отказ"
 
-#: app/Front_End/Withdrawal.php:303
+#: app/Front_End/Withdrawal.php:316
 msgid "Withdrawal"
 msgstr "Отказ"
 
 #. translators: %s: date and time
-#: app/Front_End/Withdrawal.php:345
+#: app/Front_End/Withdrawal.php:358
 #, php-format
 msgid "The customer withdrew from the contract on %s. See the \"Withdrawal from contract\" box."
 msgstr "Клиентът се отказа от договора на %s. Вижте полето „Отказ от договора“."
 
-#: app/Front_End/Withdrawal.php:361
+#: app/Front_End/Withdrawal.php:374
 msgid "Withdrawal from contract"
 msgstr "Отказ от договора"
 
-#: app/Front_End/Withdrawal.php:371
+#: app/Front_End/Withdrawal.php:384
 msgid "Submitted"
 msgstr "Подаден на"
 
-#: app/Front_End/Withdrawal.php:375
+#: app/Front_End/Withdrawal.php:388
 msgid "Withdrawing"
 msgstr "Отказ от"
 
-#: app/Front_End/Withdrawal.php:376
+#: app/Front_End/Withdrawal.php:389
 msgid "Additional details"
 msgstr "Допълнителна информация"
 
-#: app/Front_End/Withdrawal.php:376
+#: app/Front_End/Withdrawal.php:389
 msgid "None provided"
 msgstr "Няма"
 
-#: app/Front_End/Withdrawal.php:388
+#: app/Front_End/Withdrawal.php:401
 msgid "The customer received an acknowledgement by email with these details and the date and time of submission."
 msgstr "Клиентът получи по имейл потвърждение с тези данни и датата и часа на подаване."
 
-#: app/Front_End/Withdrawal.php:389
+#: app/Front_End/Withdrawal.php:402
 msgid "This withdrawal was sent before Nashenski Commerce kept the submitted details. The date and the choice come from the order note; the full details are in the emails WooCommerce sent to you and to the customer."
 msgstr "Този отказ е подаден, преди Нашенски Комерс да пази подадените данни. Датата и изборът са взети от бележката към поръчката; пълните данни са в имейлите, които WooCommerce изпрати на Вас и на клиента."
 
-#: app/Front_End/Withdrawal.php:415
+#: app/Front_End/Withdrawal.php:428
 msgid "Customers can withdraw from an order online, as Directive 2011/83/EU (Article 11a) asks from 19 June 2026: WooCommerce's withdrawal form with a \"confirm withdrawal\" step, a dated acknowledgement email to the customer and an email to you. Its look follows your site; the emails follow WooCommerce > Settings > Emails. Mention the withdrawal function in your terms."
 msgstr "Клиентите могат да се откажат от поръчка онлайн, както изисква Директива 2011/83/ЕС (член 11а) от 19 юни 2026 г.: формулярът за отказ на WooCommerce със стъпка „потвърждавам отказа“, потвърждение с дата и час до клиента и имейл до Вас. Видът му следва сайта Ви, а имейлите следват WooCommerce > Настройки > Имейли. Споменете функцията за отказ в общите си условия."
 
-#: app/Front_End/Withdrawal.php:423
+#: app/Front_End/Withdrawal.php:436
 msgid "Needs WooCommerce 11.1 or newer."
 msgstr "Изисква WooCommerce 11.1 или по-нова версия."
 
-#: app/Front_End/Withdrawal.php:442
+#: app/Front_End/Withdrawal.php:455
 msgid "Withdrawal function"
 msgstr "Функция за отказ"
 
-#: app/Front_End/Withdrawal.php:443
+#: app/Front_End/Withdrawal.php:456
 msgid "Turn on the withdrawal form and the \"Withdraw from contract here\" links"
 msgstr "Включване на формуляра за отказ и връзките „Откажете се от договора тук“"
 
-#: app/Front_End/Withdrawal.php:449
+#: app/Front_End/Withdrawal.php:462
 msgid "Link on every page"
 msgstr "Връзка на всяка страница"
 
-#: app/Front_End/Withdrawal.php:454
+#: app/Front_End/Withdrawal.php:467
 msgid "At the bottom of every page"
 msgstr "Най-долу на всяка страница"
 
-#: app/Front_End/Withdrawal.php:455
+#: app/Front_End/Withdrawal.php:468
 msgid "I place it myself (menu, footer template or shortcode)"
 msgstr "Поставям я сам (меню, шаблон на футъра или кратък код)"
 
 #. translators: 1: shortcode, 2: address of the withdrawal form
-#: app/Front_End/Withdrawal.php:459
+#: app/Front_End/Withdrawal.php:472
 #, php-format
 msgid "Shortcode for any page or builder: %1$s (add button=\"yes\" for a button). Address for menus: %2$s"
 msgstr "Кратък код за всяка страница или конструктор: %1$s (добавете button=\"yes\" за бутон). Адрес за менюта: %2$s"
 
-#: app/Front_End/Withdrawal.php:467
+#: app/Front_End/Withdrawal.php:480
 msgid "Withdrawal period (days)"
 msgstr "Срок за отказ (дни)"
 
-#: app/Front_End/Withdrawal.php:468
+#: app/Front_End/Withdrawal.php:481
 msgid "The link shows on an order (My Account, order page, order emails) until this many days after the order is completed. The form itself is always open."
 msgstr "Връзката се показва при поръчката (Моят профил, страницата на поръчката, имейлите) до толкова дни след завършването ѝ. Самият формуляр е винаги достъпен."
 
@@ -5062,20 +5066,20 @@ msgstr "Страницата е изтекла. Презаредете я и о�
 msgid "You cannot create labels."
 msgstr "Не можете да създавате товарителници."
 
-#: app/functions.php:688
+#: app/functions.php:695
 msgid "Label created."
 msgstr "Товарителницата е създадена."
 
-#: app/functions.php:689
+#: app/functions.php:696
 msgid "Label updated."
 msgstr "Товарителницата е обновена."
 
-#: app/functions.php:690
+#: app/functions.php:697
 msgid "Label deleted."
 msgstr "Товарителницата е изтрита."
 
 #. translators: %s: waybill number
-#: app/functions.php:707
+#: app/functions.php:714
 #, php-format
 msgid "Label number: %s."
 msgstr "Номер на товарителница: %s."
@@ -5242,39 +5246,39 @@ msgstr "Използване на тези цени"
 msgid "New prices filled in. Check them and save."
 msgstr "Новите цени са попълнени. Проверете ги и запазете."
 
-#: app/Pricing/Updater.php:36
+#: app/Pricing/Updater.php:40
 msgid "There is no public price list for this courier."
 msgstr "За този куриер няма публичен ценоразпис."
 
 #. translators: %s: courier website address
-#: app/Pricing/Updater.php:58
+#: app/Pricing/Updater.php:62
 #, php-format
 msgid "The courier website did not let Nashenski Commerce read the price list (%s). Open it, compare and edit the prices by hand."
 msgstr "Сайтът на куриера не позволи на Нашенски Комерс да прочете ценоразписа (%s). Отворете го, сравнете и редактирайте цените ръчно."
 
-#: app/Pricing/Updater.php:84
+#: app/Pricing/Updater.php:88
 msgid "The price list on the courier website has changed and could not be read safely. Your prices were not changed."
 msgstr "Ценоразписът на сайта на куриера е променен и не може да се прочете надеждно. Цените ви не са променени."
 
-#: app/Pricing/Updater.php:429
+#: app/Pricing/Updater.php:433
 msgid "Extra surcharge %"
 msgstr "Допълнителна такса %"
 
-#: app/Pricing/Updater.php:430
+#: app/Pricing/Updater.php:434
 msgid "Cash on delivery %"
 msgstr "Наложен платеж %"
 
-#: app/Pricing/Updater.php:431
+#: app/Pricing/Updater.php:435
 msgid "Cash on delivery minimum"
 msgstr "Минимум за наложен платеж"
 
 #. translators: 1: weight in kg, 2: office, locker or address
-#: app/Pricing/Updater.php:442
+#: app/Pricing/Updater.php:446
 #, php-format
 msgid "Up to %1$s kg, %2$s"
 msgstr "До %1$s кг, %2$s"
 
-#: app/Pricing/Updater.php:457
+#: app/Pricing/Updater.php:461
 msgid "Unknown courier."
 msgstr "Непознат куриер."
 
@@ -5834,20 +5838,20 @@ msgid "Speedy - %s"
 msgstr "Спиди - %s"
 
 #. translators: %1$s is minimum php version and %2$s is minimum WP version
-#: nashenski-commerce.php:65
+#: nashenski-commerce.php:79
 #, php-format
 msgid "Nashenski Commerce requires PHP version %1$s+ and WP version %2$s+, plugin is currently NOT RUNNING."
 msgstr "Нашенски Комерс изисква PHP версия %1$s+ и WP версия %2$s+; разширението в момента НЕ РАБОТИ."
 
-#: nashenski-commerce.php:75
+#: nashenski-commerce.php:89
 msgid "Nashenski Commerce is paused: please deactivate Bulgarisation for WooCommerce first. Your settings and orders can be imported afterwards."
 msgstr "Нашенски Комерс е на пауза: първо деактивирайте Bulgarisation for WooCommerce. След това можете да импортирате настройките и поръчките си."
 
-#: nashenski-commerce.php:84
+#: nashenski-commerce.php:98
 msgid "Nashenski Commerce - Please enable WooCommerce first."
 msgstr "Нашенски Комерс: първо включете WooCommerce."
 
-#: nashenski-commerce.php:95
+#: nashenski-commerce.php:109
 msgid "Please run `composer install` in the plugin folder `nashenski-commerce`"
 msgstr "Изпълнете `composer install` в папката на разширението `nashenski-commerce`"
 
@@ -5889,8 +5893,8 @@ msgstr "Въведете друг адрес"
 
 #. Plugin header
 #: nashenski-commerce.php
-msgid "Everything a WooCommerce store needs to sell in Bulgaria: Econt, Speedy, BOX NOW, CVC and Pigeon shipping, invoices, and the light regime of Ordinance N-18."
-msgstr "Всичко, от което магазинът с WooCommerce има нужда, за да продава в България: доставка с Еконт, Спиди, BOX NOW, CVC и Pigeon, фактури и облекченият режим по Наредба Н-18."
+msgid "WooCommerce for Bulgaria: Econt, Speedy, BOX NOW, CVC and Pigeon shipping, invoices and Ordinance N-18 documents."
+msgstr "WooCommerce за България: доставка с Еконт, Спиди, BOX NOW, CVC и Pigeon, фактури и документи по Наредба Н-18."
 
 #. Plugin header
 #: nashenski-commerce.php

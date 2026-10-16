@@ -478,6 +478,10 @@ class BoxNow {
 		$parcel_numbers = wp_list_pluck( $shipment_status['parcels'] ?? array(), 'id' );
 		
 		foreach ( $shipment_status['parcels'] as $parcel ) {
+			if ( ! preg_match( '/^[A-Za-z0-9_-]+$/', (string) $parcel['id'] ) ) {
+				continue;
+			}
+
 			$response = $container[ Client::BOXNOW ]->api_call( '/api/v1/parcels/' . $parcel['id'] . ":cancel", [] );
 		}
 
@@ -489,6 +493,10 @@ class BoxNow {
 			foreach ( $other_labels as $other_label ) {
 				$parcel_numbers = array_merge( $parcel_numbers, wp_list_pluck( $other_label['shipmentStatus']['parcels'] ?? array(), 'id' ) );
 				foreach ( $other_label['shipmentStatus']['parcels'] as $parcel ) {
+					if ( ! preg_match( '/^[A-Za-z0-9_-]+$/', (string) $parcel['id'] ) ) {
+						continue;
+					}
+
 					$response = $container[ Client::BOXNOW ]->api_call( '/api/v1/parcels/' . $parcel['id'] . ":cancel", [] );
 				}
 			}
@@ -516,6 +524,10 @@ class BoxNow {
 		$container = nashenski()->container();
 		$parcel = nashenski_label_request( 'parcel' );
 
+		if ( ! preg_match( '/^[A-Za-z0-9_-]+$/', (string) $parcel ) ) {
+			wp_die( esc_html__( 'Invalid parcel number.', 'nashenski-commerce' ), '', array( 'response' => 400 ) );
+		}
+
 		$url = "/api/v1/parcels/" . $parcel . "/label.pdf";
 
 		$pdf_escaped = $container[ Client::BOXNOW ]->api_call( $url, [], 'GET', true );
@@ -530,6 +542,11 @@ class BoxNow {
 	}
 
 	public static function message_dismiss_callback() {
+		// The built admin JS (dist/) sends no nonce, so only the capability is checked.
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( -1, 403 );
+		}
+
 		update_option( 'nashenski_boxnow_message_dismiss', true );
 	}
 }

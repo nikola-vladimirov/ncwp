@@ -97,6 +97,8 @@ class Withdrawal {
 	}
 
 	public static function link( $url, $button = false ) {
+		self::style();
+
 		return sprintf(
 			'<a class="nashenski-withdrawal-link%1$s" href="%2$s">%3$s</a>',
 			$button ? ' nashenski-withdrawal-link--button' : '',
@@ -173,16 +175,27 @@ class Withdrawal {
 	}
 
 	/**
-	 * The site's look on every page (the footer link) and the form page; the form page also gets
+	 * The stylesheet, added once and only when a link or the form is output (link() calls it).
+	 */
+	private static function style() {
+		if ( wp_style_is( 'nashenski-withdrawal', 'enqueued' ) ) {
+			return;
+		}
+
+		wp_enqueue_style( 'nashenski-withdrawal', nashenski()->plugin_dir_url() . 'assets/css/withdrawal.css', array(), \Nashenski\Plugin::VERSION );
+		wp_add_inline_style( 'nashenski-withdrawal', Checkout\Appearance::css() );
+	}
+
+	/**
+	 * The form page: the site's look (other pages get it when a link is output); the form page also gets
 	 * the order number from the link and, for signed-in customers, their name and email.
 	 */
 	public static function enqueue() {
-		wp_enqueue_style( 'nashenski-withdrawal', nashenski()->plugin_dir_url() . 'assets/css/withdrawal.css', array(), \Nashenski\Plugin::VERSION );
-		wp_add_inline_style( 'nashenski-withdrawal', Checkout\Appearance::css() );
-
 		if ( ! is_wc_endpoint_url( 'order-withdrawal' ) ) {
 			return;
 		}
+
+		self::style();
 
 		$customer = is_user_logged_in() && WC()->customer ? WC()->customer : null;
 		$fill = array_filter( array(

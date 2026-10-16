@@ -5,11 +5,11 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.16.0
+Stable tag: 0.16.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Everything a WooCommerce store needs to sell in Bulgaria: Econt, Speedy, BOX NOW, CVC and Pigeon Express shipping, invoices, Ordinance N-18, quick order and abandoned cart reminders.
+WooCommerce for Bulgaria: Econt, Speedy, BOX NOW, CVC and Pigeon shipping, invoices and Ordinance N-18 documents.
 
 == Description ==
 
@@ -95,15 +95,22 @@ The plugin only contacts a service after you turn it on and enter your own accou
 * Econt office map: shown at checkout only when the customer presses "Choose on the map". The map page loads from officelocator.econt.com with the customer's town and the store address. Terms: https://www.econt.com/econt-express/terms-of-use
 * Speedy office map: shown at checkout only when the customer presses "Choose on the map". The map page loads from services.speedy.bg (it uses Google Maps). Only the Speedy town number is sent. Website: https://www.speedy.bg/
 * Speedy (shipping): same purpose and data. Hosts: api.speedy.bg, services.speedy.bg. Terms: https://api.speedy.bg/api/docs/#href-terms
-* BOX NOW (locker shipping): lockers, labels and status. Hosts: api-production.boxnow.bg, api-stage.boxnow.bg, locationapi-production.boxnow.bg, locationapi-stage.boxnow.bg (public locker list), map.boxnow.bg. Website: https://boxnow.bg/
-* Pigeon Express (shipping): offices, lockers, prices, labels and status. Hosts: api.pigeonexpress.com, api-demo.pigeonexpress.com. Without a Pigeon login, the checkout loads the public list of offices and lockers from pigeonexpress.com/api/locations (a normal page request, nothing about the customer is sent). Website: https://pigeonexpress.com/
-* CVC (shipping): offices, prices, labels and status. Host: lox.e-cvc.bg. Website: https://cvc.bg/
+* BOX NOW (locker shipping): lockers, labels and status. Hosts: api-production.boxnow.bg, api-stage.boxnow.bg, locationapi-production.boxnow.bg, locationapi-stage.boxnow.bg (public locker list), map.boxnow.bg. Website: https://boxnow.bg/ Terms: https://boxnow.bg/terms-of-use-for-shipping-services Privacy policy: https://boxnow.bg/personal-data-processing-notice
+* Pigeon Express (shipping): offices, lockers, prices, labels and status. Hosts: api.pigeonexpress.com, api-demo.pigeonexpress.com. Without a Pigeon login, the checkout loads the public list of offices and lockers from pigeonexpress.com/api/locations (a normal page request, nothing about the customer is sent). Website: https://pigeonexpress.com/ Terms: https://pigeonexpress.com/terms Privacy policy: https://pigeonexpress.com/privacy
+* CVC (shipping): offices, prices, labels and status. Host: lox.e-cvc.bg. Website: https://cvc.bg/ Terms: https://cvc.bg/obshti-usloviq/ Privacy policy: https://cvc.bg/politika-za-lichni-danni/
 * nekorekten.com (customer check): sends the customer phone number to look up reports about it, and, only when the store owner clicks "Send report" on an order, the report text with the name, phone number and email of that order (and edits or deletes a report sent from an order when the owner asks). Host: api.nekorekten.com. Terms: https://nekorekten.com/terms
-* Connectix (customer check): sends the customer's phone number to check their delivery record, and shipment data when tracking is on. Hosts: api.connectix.bg, api-sandbox.connectix.bg. Website: https://connectix.bg/
-* NepoStop (customer check): sends the customer's phone number, and labels when that option is on. Host: nepostop.com. Website: https://nepostop.com/
-* EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/
+* Connectix (customer check): sends the customer's phone number to check their delivery record, and shipment data when tracking is on. Hosts: api.connectix.bg, api-sandbox.connectix.bg. Website: https://connectix.bg/ Terms: https://connectix.bg/bg/terms Privacy policy: https://connectix.bg/bg/privacy
+* NepoStop (customer check): sends the customer's phone number, and labels when that option is on. Host: nepostop.com. Website: https://nepostop.com/ Terms: https://nepostop.com/terms Privacy policy: https://nepostop.com/gdpr
+* EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/ Legal notice: https://commission.europa.eu/legal-notice_en
+
+== Third-party libraries ==
+
+The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf php-font-lib (LGPL-2.1 or later) and php-svg-lib (LGPL-3.0 or later), which make the PDF documents; and Pimple, Masterminds HTML5, sabberworm PHP-CSS-Parser, setasign FPDI, chillerlan php-qrcode and php-settings-container, clegginabox PDF merger, ddeboer VATIN and PSR container (all MIT). Their licences are in each library's folder.
 
 == Changelog ==
+
+= 0.16.1 =
+* Security and speed fixes from a review; clean uninstall and deactivation.
 
 = 0.16.0 =
 * Updates: new versions come through Dashboard > Updates like any other plugin; the plugin no longer checks GitHub itself.

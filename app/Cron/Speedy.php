@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 class Speedy {
 	function __construct() {
-		add_action( 'wp', array( __CLASS__, 'cron_schedule' )  );
+		add_action( 'admin_init', array( __CLASS__, 'cron_schedule' ) );
 		add_action( 'nashenski/speedy/clear_cache_folder', array( __CLASS__, 'clear_cache_folder' ) );
 	}
 

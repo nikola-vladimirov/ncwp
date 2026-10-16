@@ -43,7 +43,7 @@ class Export_Tab extends Base_Tab {
 			) );
 		} else if ( empty( $generated_file['file'] ) ) {
 			wp_send_json_success( array(
-				"message" => $generated_file['errors'],
+				"message" => implode( '<br>', array_map( 'esc_html', (array) $generated_file['errors'] ) ),
 			) );
 		}
 
@@ -67,7 +67,7 @@ class Export_Tab extends Base_Tab {
 			<h2><?php esc_html_e( 'Found errors in file:', 'nashenski-commerce' ) ?></h2>
 			<ul>
 				<?php foreach ( $generated_file['errors'] as $error ): ?>
-					<li><?php echo wp_kses_post( $error ) ?></li>
+					<li><?php echo esc_html( $error ) ?></li>
 				<?php endforeach ?>
 			</ul>
 			<?php

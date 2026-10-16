@@ -4,7 +4,7 @@ namespace Nashenski;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin {
-	const VERSION = '0.16.0';
+	const VERSION = '0.16.1';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
@@ -276,6 +276,14 @@ class Plugin {
 			return;
 		}
 
+		// The order screens, the product screens (impossible price notice) and its scan page only.
+		$screen = get_current_screen();
+		$id = $screen ? $screen->id : '';
+
+		if ( ! in_array( $id, array( 'shop_order', 'edit-shop_order', 'shop_subscription', 'edit-shop_subscription', 'product', 'edit-product', 'product_page_' . Admin\ImpossibleVatPrice::PAGE_SLUG ), true ) && 0 !== strpos( $id, 'woocommerce_page_wc-orders' ) ) {
+			return;
+		}
+
 		wp_enqueue_style( 'nashenski-orders', nashenski()->plugin_dir_url() . 'assets/css/orders.css', array(), self::VERSION );
 
 		// Older screens (order labels and documents) still use the compiled bundle until it is rewritten.
@@ -306,6 +314,10 @@ class Plugin {
 	}
 
 	public static function set_webpack_path() {
+		if ( ! wp_script_is( 'nashenski-js-admin', 'enqueued' ) ) {
+			return;
+		}
+
 		$dir = nashenski()->plugin_dir_url() . 'dist/';
 		?>
 		<script type="text/javascript">

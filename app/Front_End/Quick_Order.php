@@ -711,7 +711,8 @@ document.addEventListener("submit",function(e){
 	}
 
 	private static function client_ip() {
-		return class_exists( '\WC_Geolocation' ) ? \WC_Geolocation::get_ip_address() : ( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '' );
+		// Not WC_Geolocation: it trusts X-Forwarded-For, which a bot can spoof to dodge the limit.
+		return sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
 	}
 
 	private static function too_many_requests() {
