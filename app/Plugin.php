@@ -4,7 +4,7 @@ namespace Nashenski;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin {
-	const VERSION = '0.15.2';
+	const VERSION = '0.15.3';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
@@ -156,6 +156,10 @@ class Plugin {
 		new Front_End\Checkout\Pickers();
 		new Front_End\Withdrawal();
 		new Front_End\Quick_Order();
+
+		if ( is_admin() ) {
+			new Admin\Order\Delivery_Box();
+		}
 		new Abandoned_Carts\Tracker();
 		new Pricing\Updater();
 

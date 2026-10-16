@@ -16,6 +16,10 @@ class Document_Storage {
 	const MIGRATE_HOOK = 'nashenski/documents/migrate';
 	const MIGRATE_BATCH = 50;
 	const MIGRATE_OPTION = 'nashenski_documents_migration';
+	const CLEANUP_HOOK = 'nashenski_delete_receipts';
+	const CLEANUP_OPTION = 'nashenski_settings_invoice_delete_receipts_days';
+	const CLEANUP_BATCH = 100;
+	const RECEIPT_DELETED_META = '_nashenski_order_document_deleted';
 
 	/**
 	 * The folder documents were public in before 0.11.1.
@@ -27,6 +31,106 @@ class Document_Storage {
 		add_action( 'admin_post_nopriv_' . self::ACTION, array( __CLASS__, 'download' ) );
 		add_action( self::MIGRATE_HOOK, array( __CLASS__, 'migrate_batch' ) );
 		add_action( 'init', array( __CLASS__, 'schedule_migration' ), 20 );
+		add_action( self::CLEANUP_HOOK, array( __CLASS__, 'delete_receipts' ) );
+		add_action( 'admin_post_' . self::CLEANUP_HOOK, array( __CLASS__, 'delete_receipts_now' ) );
+		add_action( 'admin_notices', array( __CLASS__, 'receipts_deleted_notice' ) );
+		add_action( 'add_option_' . self::CLEANUP_OPTION, array( __CLASS__, 'schedule_receipt_cleanup' ) );
+		add_action( 'update_option_' . self::CLEANUP_OPTION, array( __CLASS__, 'schedule_receipt_cleanup' ) );
+	}
+
+	/**
+	 * Daily cleanup while "Delete order documents after" is above 0, set when the setting is saved.
+	 */
+	public static function schedule_receipt_cleanup() {
+		if ( ! function_exists( 'as_schedule_recurring_action' ) ) {
+			return;
+		}
+
+		as_unschedule_all_actions( self::CLEANUP_HOOK, array(), 'nashenski' );
+
+		if ( (int) get_option( self::CLEANUP_OPTION ) > 0 ) {
+			as_schedule_recurring_action( time() + HOUR_IN_SECONDS, DAY_IN_SECONDS, self::CLEANUP_HOOK, array(), 'nashenski' );
+		}
+	}
+
+	/**
+	 * Delete the order document PDFs (Bulgarian and English; invoices, credit notes and refund
+	 * documents stay) of orders older than the setting, or of all orders with $all. Works in
+	 * batches and queues the next one while any are left. The number stays on the order, so the
+	 * document can be made again and still shows in exports.
+	 */
+	public static function delete_receipts( $all = false ) {
+		$days = (int) get_option( self::CLEANUP_OPTION );
+
+		if ( ! $all && $days < 1 ) {
+			return 0;
+		}
+
+		$args = array(
+			'limit' => self::CLEANUP_BATCH,
+			'return' => 'ids',
+			'type' => 'shop_order',
+			'meta_query' => array( 'relation' => 'OR', array( 'key' => 'nashenski_order_document', 'compare' => 'EXISTS' ), array( 'key' => 'nashenski_order_document_en', 'compare' => 'EXISTS' ) ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- batched background job.
+		);
+
+		if ( ! $all ) {
+			$args['date_created'] = '<' . ( time() - $days * DAY_IN_SECONDS );
+		}
+
+		$ids = wc_get_orders( $args );
+
+		foreach ( $ids as $id ) {
+			$order = wc_get_order( $id );
+
+			foreach ( array( 'nashenski_order_document', 'nashenski_order_document_en' ) as $meta ) {
+				$attach_id = (int) $order->get_meta( $meta );
+
+				if ( $attach_id && 'attachment' === get_post_type( $attach_id ) ) {
+					wp_delete_attachment( $attach_id, true );
+				}
+
+				$order->delete_meta_data( $meta );
+			}
+
+			$order->update_meta_data( self::RECEIPT_DELETED_META, time() );
+			$order->save();
+		}
+
+		if ( count( $ids ) === self::CLEANUP_BATCH && function_exists( 'as_enqueue_async_action' ) ) {
+			as_enqueue_async_action( self::CLEANUP_HOOK, array( (bool) $all ), 'nashenski' );
+		}
+
+		return count( $ids );
+	}
+
+	/**
+	 * The "Delete all now" button of the documents settings.
+	 */
+	public static function delete_receipts_now() {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You cannot do this.', 'nashenski-commerce' ), 403 );
+		}
+
+		check_admin_referer( self::CLEANUP_HOOK );
+
+		// Batches run in the background, so a large store does not time out the click.
+		if ( function_exists( 'as_enqueue_async_action' ) ) {
+			as_enqueue_async_action( self::CLEANUP_HOOK, array( true ), 'nashenski' );
+		} else {
+			self::delete_receipts( true );
+		}
+
+		wp_safe_redirect( add_query_arg( 'nashenski-receipts-deleted', 1, wp_get_referer() ? wp_get_referer() : admin_url() ) );
+		exit;
+	}
+
+	public static function receipts_deleted_notice() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only shows a notice.
+		if ( empty( $_GET['nashenski-receipts-deleted'] ) || ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
+
+		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Order documents are being deleted in the background.', 'nashenski-commerce' ) . '</p></div>';
 	}
 
 	/**

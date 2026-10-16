@@ -217,7 +217,8 @@ class Fields {
 			return $docs;
 		}
 
-		if ( $object->get_meta( 'nashenski_order_document' ) ) {
+		// An order document whose PDF the cleanup deleted keeps its number.
+		if ( $object->get_meta( 'nashenski_order_document' ) || $object->get_meta( \Nashenski\Document_Storage::RECEIPT_DELETED_META ) ) {
 			$docs[] = array( 'order_document', self::document_number( $object, 'order_document' ), $created );
 		}
 

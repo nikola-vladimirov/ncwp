@@ -1,5 +1,22 @@
 # Nashenski Commerce changelog
 
+## 0.15.3 (2026-10-16)
+
+### Quick order
+- Fixed: the Delivery box did not show on the order screen in 0.15.2.
+- Fixed: the Econt label box stayed empty on a quick order, because only orders from the checkout had its starting data. It now starts from the order: receiver, office, weight, one parcel and the cash on delivery amount.
+- Fixed: a quick order paid on delivery now gets the "Cash on delivery" payment method when the delivery is saved, so the label collects the amount and the shipping price comes onto the order.
+- After a label is made, the order totals on the screen update without reloading the page (all couriers).
+- The customer gets the WooCommerce "Order details" email with the delivery price and the new total once a label sets the price, and again only if the price changes. A note on the order says so.
+- The Delivery box has its own "Save delivery" button, and the town and street lists open above the boxes below it.
+
+### Customer checks
+- "Send report" on the order screen: write what happened and send it to nekorekten.com with the phone number and the name of the order. A note on the order keeps the text. Before, the box could only refresh the data.
+
+### Documents
+- New setting "Delete order documents after (days)" under Documents > Invoices and documents: the order document PDFs (Bulgarian and English) of older orders are deleted once a day to save disk space. Invoices, credit notes and refund documents stay. The document number stays on the order and in exports, so the document can be made again. 0 keeps them all (default).
+- "Delete all order documents now" under the same setting, with a confirmation.
+
 ## 0.15.2 (2026-10-16)
 
 ### Quick order

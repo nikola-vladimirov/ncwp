@@ -18,6 +18,47 @@ class Delivery_Box {
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_box' ), 20 );
 		add_action( 'woocommerce_process_shop_order_meta', array( __CLASS__, 'save' ), 60 );
+
+		foreach ( \Nashenski\Plugin::COURIERS as $courier ) {
+			add_action( "nashenski/{$courier}/after_send_label", array( __CLASS__, 'email_delivery_price' ), 10, 2 );
+		}
+	}
+
+	/**
+	 * The quick order shopper saw no delivery price: once a label sets it, send the order details
+	 * email (WooCommerce "Order details"), with the delivery price and the new total. Again only
+	 * when the price changes.
+	 */
+	public static function email_delivery_price( $data, $order ) {
+		$order = $order ? wc_get_order( $order->get_id() ) : false;
+
+		if ( ! $order || ! $order->get_meta( Quick_Order::META_CONSENT ) || ! $order->get_billing_email() ) {
+			return;
+		}
+
+		$price = wc_format_decimal( $order->get_shipping_total() + $order->get_shipping_tax(), wc_get_price_decimals() );
+
+		if ( $price <= 0 || $order->get_meta( '_nashenski_delivery_price_emailed' ) === $price ) {
+			return;
+		}
+
+		$emails = WC()->mailer()->get_emails();
+
+		if ( empty( $emails['WC_Email_Customer_Invoice'] ) ) {
+			return;
+		}
+
+		// Marked first, so a second label request at the same time does not email again.
+		$order->update_meta_data( '_nashenski_delivery_price_emailed', $price );
+		$order->save();
+		$emails['WC_Email_Customer_Invoice']->trigger( $order->get_id(), $order );
+		$order->add_order_note( sprintf(
+			/* translators: 1: delivery price, 2: order total */
+			__( 'Delivery price %1$s and the new total %2$s emailed to the customer.', 'nashenski-commerce' ),
+			html_entity_decode( wp_strip_all_tags( wc_price( $price, array( 'currency' => $order->get_currency() ) ) ) ),
+			html_entity_decode( wp_strip_all_tags( wc_price( $order->get_total(), array( 'currency' => $order->get_currency() ) ) ) )
+		) );
+		$order->save();
 	}
 
 	private static function order() {
@@ -103,6 +144,8 @@ class Delivery_Box {
 		$dir = nashenski()->plugin_dir_path() . 'assets/';
 
 		wp_enqueue_style( 'nashenski-checkout', $url . 'css/checkout.css', array(), \Nashenski\Plugin::VERSION . '-' . filemtime( $dir . 'css/checkout.css' ) );
+		// The picker lists open below the box: keep them above the boxes that follow.
+		wp_add_inline_style( 'nashenski-checkout', '#nashenski_delivery, #nashenski_delivery .inside { overflow: visible; } #nashenski_delivery { position: relative; z-index: 20; }' );
 		wp_enqueue_script( 'nashenski-pickers', $url . 'js/pickers.js', array( 'wp-element' ), \Nashenski\Plugin::VERSION . '-' . filemtime( $dir . 'js/pickers.js' ), true );
 		// On the order screen the town is always asked: the quick order form may not have it.
 		wp_localize_script( 'nashenski-pickers', 'nashenskiPickers', array_merge( Pickers::config(), array( 'townPicker' => true ) ) );
@@ -136,6 +179,7 @@ class Delivery_Box {
 			<div class="nashenski-delivery-picker nashenski-additional-fields"></div>
 			<input type="hidden" name="nashenski_delivery_choice" value="">
 			<?php wp_nonce_field( self::NONCE, 'nashenski_delivery_nonce' ); ?>
+			<p><button type="submit" class="button button-primary" name="save" value="<?php esc_attr_e( 'Update', 'woocommerce' ); ?>"><?php esc_html_e( 'Save delivery', 'nashenski-commerce' ); ?></button></p>
 		</div>
 		<?php
 	}
@@ -201,6 +245,13 @@ class Delivery_Box {
 		$order->set_shipping_first_name( $order->get_billing_first_name() );
 		$order->set_shipping_last_name( $order->get_billing_last_name() );
 		$order->set_shipping_phone( $order->get_billing_phone() );
+
+		// The label boxes offer cash on delivery and fill the shipping price only on a cod order, as from checkout.
+		if ( ! $order->get_payment_method() && 'cod' === ( $choice['payment'] ?? '' ) ) {
+			$gateways = WC()->payment_gateways()->payment_gateways();
+			$order->set_payment_method( isset( $gateways['cod'] ) ? $gateways['cod'] : 'cod' );
+		}
+
 		$order->calculate_totals();
 		$order->add_order_note( sprintf(
 			/* translators: 1: shipping option, 2: office, locker or address */

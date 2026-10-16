@@ -89,6 +89,42 @@ class Nekorekten {
 		return $result;
 	}
 
+	/**
+	 * Sends a report (POST reports: text plus phone, names optional).
+	 *
+	 * @return true|string True when sent, else the reason to show.
+	 */
+	public function send_report( $fields ) {
+		if ( '' === $this->api_key ) {
+			return __( 'Add the nekorekten.com API key in the settings first.', 'nashenski-commerce' );
+		}
+
+		$response = wp_remote_post( self::BASE_URL . self::REPORTS_ENDPOINT, array(
+			'timeout' => 15,
+			'headers' => array(
+				'Accept' => 'application/json',
+				'Content-Type' => 'application/json',
+				'Api-Key' => $this->api_key,
+			),
+			'body' => wp_json_encode( $fields ),
+		) );
+
+		if ( is_wp_error( $response ) ) {
+			return $response->get_error_message();
+		}
+
+		$code = (int) wp_remote_retrieve_response_code( $response );
+
+		if ( $code >= 200 && $code < 300 ) {
+			return true;
+		}
+
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		/* translators: %d: HTTP status code */
+		return is_array( $data ) && ! empty( $data['message'] ) ? wp_strip_all_tags( (string) $data['message'] ) : sprintf( __( 'nekorekten.com answered with error %d.', 'nashenski-commerce' ), $code );
+	}
+
 	public function validate_access() {
 		return null !== $this->get( self::USAGE_ENDPOINT );
 	}

@@ -66,6 +66,21 @@ class Nra_Tab extends Base_Tab {
 				new Fields\TrueFalse_Field( 'separate_copy_documents', __( 'Generate separate copy documents', 'nashenski-commerce' ), null, null, __( 'When enabled, invoice and credit notice copies will be generated as separate documents instead of being merged with the original. The copies can be sent to an accountant email.', 'nashenski-commerce' ) ),
 				new Fields\Text_Field( 'accountant_email', __( 'Accountant email', 'nashenski-commerce' ), __( 'Separate several addresses with commas. Gets the invoice and credit notice copies when separate copy documents are on, and the monthly audit file when that is on.', 'nashenski-commerce' ), null ),
 				new Fields\TrueFalse_Field( 'monthly_nra_email', __( 'Email the audit file every month', 'nashenski-commerce' ), null, null, __( 'On the 1st of each month, the NRA audit file (XML, Ordinance N-18) of the month before goes to the accountant email.', 'nashenski-commerce' ) ),
+				( new Fields\Text_Field(
+					'delete_receipts_days',
+					__( 'Delete order documents after (days)', 'nashenski-commerce' ),
+					__( 'Saves disk space: the order document PDFs (Bulgarian and English) of older orders are deleted once a day. Invoices, credit notes and refund documents are kept. The document number stays on the order, so the document can be made again. Leave 0 to keep them all.', 'nashenski-commerce' ),
+					null,
+					// Two clicks, no script: setting descriptions go through wp_kses_post.
+					sprintf(
+						'<details><summary>%1$s</summary>%2$s <a class="button button-link-delete" href="%3$s">%4$s</a></details>',
+						esc_html__( 'Delete all order documents now', 'nashenski-commerce' ),
+						esc_html__( 'The order document PDFs of all orders are deleted. Invoices stay.', 'nashenski-commerce' ),
+						esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=' . \Nashenski\Document_Storage::CLEANUP_HOOK ), \Nashenski\Document_Storage::CLEANUP_HOOK ) ),
+						esc_html__( 'Yes, delete them', 'nashenski-commerce' )
+					),
+					'number'
+				) )->set_default( '0' ),
 			),
 			'shop' => array(
 				new Fields\Select_Field( array(

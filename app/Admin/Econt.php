@@ -57,6 +57,11 @@ class Econt {
 						}	
 					}
 					
+					// An order made outside checkout (quick order, admin order) has no label draft from the cart.
+					if ( empty( $label_data['label'] ) ) {
+						$label_data = array( 'label' => self::draft_label( $theorder, is_array( $cookie_data ) ? $cookie_data : array() ) );
+					}
+
 					wp_localize_script( 'nashenski-js-admin', 'nashenski_econt', array(
 						'useInvoiceNumber' => self::use_invoice_number(),
 						'invoiceNumber' => self::get_invoice_number( $theorder->get_id() ),
@@ -132,6 +137,56 @@ class Econt {
 			'addPack' => __('Add Pack', 'nashenski-commerce'),
 			'removePack' => __('Remove Pack', 'nashenski-commerce'),
 		);
+	}
+
+	/**
+	 * A label draft from the order, as checkout builds one from the cart. Generate label fills
+	 * the sender, address, payment and test options from the box.
+	 */
+	protected static function draft_label( $order, $cookie_data ) {
+		$names  = array();
+		$weight = 0;
+
+		foreach ( $order->get_items() as $item ) {
+			$product = $item->get_product();
+
+			if ( $product && $product->get_weight() ) {
+				$weight += wc_get_weight( $product->get_weight(), 'kg' ) * $item->get_quantity();
+			}
+
+			$names[] = $item->get_name();
+		}
+
+		$weight   = $weight ? max( 0.1, $weight ) : 1;
+		$receiver = array(
+			'name'   => $cookie_data['receiver'] ?? $order->get_formatted_shipping_full_name(),
+			'phones' => array( $cookie_data['phone'] ?? $order->get_billing_phone() ),
+		);
+		$label    = array(
+			'receiverClient'        => $receiver,
+			'receiverAgent'         => $receiver,
+			'packCount'             => 1,
+			'shipmentType'          => 'PACK',
+			'weight'                => $weight,
+			'shipmentDescription'   => nashenski_normalize_text_for_label( implode( ', ', $names ), 500 ),
+			'packs'                 => array( array( 'width' => 17, 'height' => 17, 'length' => 17, 'weight' => $weight ) ),
+			'services'              => array(),
+			'paymentReceiverMethod' => 'cash',
+		);
+
+		if ( ! empty( $cookie_data['selectedOffice'] ) ) {
+			$label['receiverOfficeCode'] = $cookie_data['selectedOffice'];
+		}
+
+		if ( 'cod' === $order->get_payment_method() ) {
+			$label['services'] = array(
+				'cdType'     => 'get',
+				'cdAmount'   => wc_format_decimal( $order->get_total() - $order->get_shipping_total() - $order->get_shipping_tax(), wc_get_price_decimals() ),
+				'cdCurrency' => $order->get_currency(),
+			);
+		}
+
+		return $label;
 	}
 
 	protected static function get_shipment_types() {

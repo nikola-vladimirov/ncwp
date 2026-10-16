@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.15.2
+Stable tag: 0.15.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -98,12 +98,17 @@ The plugin only contacts a service after you turn it on and enter your own accou
 * BOX NOW (locker shipping): lockers, labels and status. Hosts: api-production.boxnow.bg, api-stage.boxnow.bg, locationapi-production.boxnow.bg, locationapi-stage.boxnow.bg (public locker list), map.boxnow.bg. Website: https://boxnow.bg/
 * Pigeon Express (shipping): offices, lockers, prices, labels and status. Hosts: api.pigeonexpress.com, api-demo.pigeonexpress.com. Without a Pigeon login, the checkout loads the public list of offices and lockers from pigeonexpress.com/api/locations (a normal page request, nothing about the customer is sent). Website: https://pigeonexpress.com/
 * CVC (shipping): offices, prices, labels and status. Host: lox.e-cvc.bg. Website: https://cvc.bg/
-* nekorekten.com (customer check): sends the customer phone number to look up reports about it. Host: api.nekorekten.com. Terms: https://nekorekten.com/terms
+* nekorekten.com (customer check): sends the customer phone number to look up reports about it, and, only when the store owner clicks "Send report" on an order, the report text with the phone number and name of that order. Host: api.nekorekten.com. Terms: https://nekorekten.com/terms
 * Connectix (customer check): sends the customer's phone number to check their delivery record, and shipment data when tracking is on. Hosts: api.connectix.bg, api-sandbox.connectix.bg. Website: https://connectix.bg/
 * NepoStop (customer check): sends the customer's phone number, and labels when that option is on. Host: nepostop.com. Website: https://nepostop.com/
 * EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/
 
 == Changelog ==
+
+= 0.15.3 =
+* Quick order: the Econt label works from the Delivery box (the Delivery box now shows, the label box gets its starting data and cash on delivery), the totals update after a label, and the customer gets an email with the delivery price and the new total.
+* Customer checks: send a report to nekorekten.com from the order screen.
+* Documents: delete order document PDFs older than a set number of days, or all at once, to save disk space. Invoices stay.
 
 = 0.15.2 =
 * Quick order: a Delivery box on the order screen to choose the courier, the town and the office, locker or address with the checkout pickers; saving adds the courier shipping line, so the label can be made.

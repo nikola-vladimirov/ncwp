@@ -86,8 +86,68 @@ class Nekorekten extends Provider_Base {
 					<?php endforeach; ?>
 				</ul>
 			<?php endif; ?>
+			<p>
+				<label for="nashenski-nk-text"><?php esc_html_e( 'Send a report about this customer to nekorekten.com', 'nashenski-commerce' ); ?></label><br>
+				<textarea id="nashenski-nk-text" name="nashenski_nk_text" rows="3" class="large-text" placeholder="<?php esc_attr_e( 'What happened, for example: refused the parcel paid on delivery.', 'nashenski-commerce' ); ?>"></textarea>
+			</p>
+			<p class="description"><?php esc_html_e( 'The report is public on nekorekten.com with the phone number and the name of the order.', 'nashenski-commerce' ); ?></p>
+			<?php wp_nonce_field( 'nashenski_nk_report', 'nashenski_nk_nonce' ); ?>
+			<p><button type="submit" class="button" name="nashenski_nk_send" value="1"><?php esc_html_e( 'Send report', 'nashenski-commerce' ); ?></button></p>
 		</div>
 		<?php
+	}
+
+	/**
+	 * The Send report button of the order screen: sends the text with the order's phone and name.
+	 */
+	public static function send_report( $order_id ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- checked right below.
+		if ( empty( $_POST['nashenski_nk_send'] ) || empty( $_POST['nashenski_nk_nonce'] ) ) {
+			return;
+		}
+
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_nk_nonce'] ) ), 'nashenski_nk_report' ) || ! current_user_can( 'edit_shop_orders' ) ) {
+			return;
+		}
+
+		$text = isset( $_POST['nashenski_nk_text'] ) ? mb_substr( trim( sanitize_textarea_field( wp_unslash( $_POST['nashenski_nk_text'] ) ) ), 0, 1000 ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			return;
+		}
+
+		if ( '' === $text ) {
+			\WC_Admin_Meta_Boxes::add_error( __( 'Report not sent: write what happened first.', 'nashenski-commerce' ) );
+
+			return;
+		}
+
+		// A double click or a resubmitted form must not publish the same report twice.
+		if ( md5( $text ) === $order->get_meta( '_nashenski_nk_reported' ) ) {
+			return;
+		}
+
+		$result = ( new Client() )->send_report( array_filter( array(
+			'text' => $text,
+			'phone' => self::phone( $order ),
+			'firstName' => $order->get_billing_first_name(),
+			'lastName' => $order->get_billing_last_name(),
+		) ) );
+
+		if ( true !== $result ) {
+			/* translators: %s: reason from nekorekten.com */
+			\WC_Admin_Meta_Boxes::add_error( sprintf( __( 'nekorekten.com did not take the report: %s', 'nashenski-commerce' ), $result ) );
+
+			return;
+		}
+
+		$order->update_meta_data( '_nashenski_nk_reported', md5( $text ) );
+		$order->save();
+		/* translators: %s: report text */
+		$order->add_order_note( sprintf( __( 'Report sent to nekorekten.com: %s', 'nashenski-commerce' ), $text ) );
+		self::get_all_reports( $order, true );
 	}
 
 	public static function check_for_reports_on_checkout( $phone ) {
