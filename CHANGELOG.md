@@ -1,5 +1,14 @@
 # Nashenski Commerce changelog
 
+## 0.16.5 (2026-10-16)
+
+### BOX NOW
+- When BOX NOW refuses a label (for example a wrong locker), the label box shows BOX NOW's code and reason instead of "The request failed". Before, the server stopped with an error.
+- The label box sends parcel weight and box size as numbers, as BOX NOW requires (it refused "weight must be number").
+
+### WordPress.org review
+- Plugin Check shows no errors and no warnings.
+
 ## 0.16.4 (2026-10-16)
 
 ### Admin scripts

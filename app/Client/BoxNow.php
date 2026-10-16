@@ -59,11 +59,14 @@ class BoxNow {
 
 		$response = json_decode( wp_remote_retrieve_body( $request ), 1 );
 
+		// An error answer carries BOX NOW's code and its own text, for example "P402" and "Invalid destination location".
 		if ( isset( $response['code'] ) ) {
-			$response['message'] = self::get_message( $response['code'] );
+			$response['message'] = rtrim( 'BOX NOW ' . $response['code'] . ': ' . ( is_scalar( $response['message'] ?? '' ) ? ( $response['message'] ?? '' ) : '' ), ' :' );
 
-			if ( !empty( $response['jsonSchemaErrors'] ) ) {
-				$response['message'] .= " " . implode('. ', $response['jsonSchemaErrors'] );
+			if ( ! empty( $response['jsonSchemaErrors'] ) && is_array( $response['jsonSchemaErrors'] ) ) {
+				$response['message'] .= ' ' . implode( '. ', array_map( function ( $error ) {
+					return is_scalar( $error ) ? $error : wp_json_encode( $error );
+				}, $response['jsonSchemaErrors'] ) );
 			}
 		}
 

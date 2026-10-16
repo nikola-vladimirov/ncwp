@@ -14,8 +14,8 @@ foreach ( array(
 	'nashenski/pigeon/clear_cache_folder',
 	'nashenski/speedy/clear_cache_folder',
 	'nashenski/prices/check',
-) as $hook ) {
-	wp_clear_scheduled_hook( $hook );
+) as $nashenski_hook ) {
+	wp_clear_scheduled_hook( $nashenski_hook );
 }
 
 // Every Action Scheduler action of the plugin (carts, documents, NRA export, automation) is in this group.

@@ -14,13 +14,13 @@ echo esc_html( wp_strip_all_tags( $email_heading ) );
 echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 
 // Turn <a href="url">text</a> into "text (url)" so the plain email keeps the links readable.
-$message_plain = preg_replace(
+$nashenski_message_plain = preg_replace(
 	'/<a\b[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/is',
 	'$2 ($1)',
 	(string) $message
 );
 
-echo esc_html( wp_strip_all_tags( $message_plain ) );
+echo esc_html( wp_strip_all_tags( $nashenski_message_plain ) );
 
 echo "\n\n----------------------------------------\n\n";
 
@@ -32,4 +32,4 @@ if ( $additional_content ) {
 	echo "\n\n----------------------------------------\n\n";
 }
 
-echo esc_html( wp_strip_all_tags( wptexturize( apply_filters( 'woocommerce_email_footer_text', get_option( 'woocommerce_email_footer_text' ) ) ) ) );
+echo esc_html( wp_strip_all_tags( wptexturize( apply_filters( 'woocommerce_email_footer_text', get_option( 'woocommerce_email_footer_text' ) ) ) ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own email hook.

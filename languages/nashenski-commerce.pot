@@ -2,10 +2,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.16.3\n"
+"Project-Id-Version: Nashenski Commerce 0.16.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-16 19:45+0000\n"
-"PO-Revision-Date: 2026-10-16 19:45+0000\n"
+"POT-Creation-Date: 2026-10-16 19:59+0000\n"
+"PO-Revision-Date: 2026-10-16 19:59+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -5183,20 +5183,20 @@ msgstr ""
 msgid "You cannot create labels."
 msgstr ""
 
-#: app/functions.php:678
+#: app/functions.php:679
 msgid "Label created."
 msgstr ""
 
-#: app/functions.php:679
+#: app/functions.php:680
 msgid "Label updated."
 msgstr ""
 
-#: app/functions.php:680
+#: app/functions.php:681
 msgid "Label deleted."
 msgstr ""
 
 #. translators: %s: waybill number
-#: app/functions.php:697
+#: app/functions.php:698
 #, php-format
 msgid "Label number: %s."
 msgstr ""

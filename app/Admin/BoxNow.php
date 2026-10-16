@@ -339,7 +339,14 @@ class BoxNow {
 		}
 
 		if ( $use_request_data && ( null !== nashenski_label_request( 'items', null ) ) ) {
-			$label_data['items'] = nashenski_label_request( 'items', array() );
+			// Form fields arrive as text; BOX NOW checks that these two are numbers.
+			$label_data['items'] = array_values( array_map( function ( $item ) {
+				$item = (array) $item;
+				$item['weight'] = (float) ( $item['weight'] ?? 0 );
+				$item['compartmentSize'] = (int) ( $item['compartmentSize'] ?? 0 );
+
+				return $item;
+			}, nashenski_label_request( 'items', array() ) ) );
 			$order->update_meta_data( 'nashenski--box-now-items', $label_data['items'] );
 		}
 

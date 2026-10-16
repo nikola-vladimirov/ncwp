@@ -776,6 +776,7 @@ class Tracker {
 		$table = self::table();
 		$in    = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $in holds only %d placeholders, filled by prepare().
 		return (int) $wpdb->query( $wpdb->prepare( "DELETE FROM %i WHERE id IN ($in)", array_merge( array( $table ), $ids ) ) );
 	}
 }
