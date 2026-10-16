@@ -18,31 +18,39 @@ class Labels {
 		$method = nashenski_label_request( 'method' );
 		$order = wc_get_order( $order_id );
 
+		$result = null;
+
 		switch ( $method ) {
 			case 'nashenski_speedy':
-				Speedy::generate_label_after_order_generated( $order_id );
+				$result = Speedy::generate_label_after_order_generated( $order_id );
 
 				break;
 			case 'nashenski_econt':
-				Econt::generate_label_after_order_generated( $order_id );
+				$result = Econt::generate_label_after_order_generated( $order_id );
 
 				break;
 			case 'nashenski_cvc':
-				CVC::generate_label_after_order_generated( $order_id );
+				$result = CVC::generate_label_after_order_generated( $order_id );
 
 				break;
 			case 'nashenski_boxnow':
-				BoxNow::generate_label_after_order_generated( $order_id );
+				$result = BoxNow::generate_label_after_order_generated( $order_id );
 
 				break;
 			case 'nashenski_pigeon':
-				Pigeon::generate_label_after_order_generated( $order_id );
+				$result = Pigeon::generate_label_after_order_generated( $order_id );
 
 				break;
 		}
 
 		$data = nashenski_get_order_label( $order_id );
 		$html = '';
+
+		if ( empty( $data['number'] ) && empty( $data['items'] ) ) {
+			wp_send_json_error( array(
+				'message' => ! empty( $result['message'] ) ? wp_strip_all_tags( $result['message'] ) : __( 'No label was made. Open the order and make the label in the courier box.', 'nashenski-commerce' ),
+			) );
+		}
 
 		if ( !empty( $data ) ) {
 			ob_start();
@@ -54,6 +62,5 @@ class Labels {
 		}
 
 		wp_send_json( [ 'html' => $html ] );
-		wp_die;
 	}
 }

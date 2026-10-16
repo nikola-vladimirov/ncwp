@@ -368,17 +368,42 @@ class Econt {
 		$order = wc_get_order( $order_id );
 		$label = $order->get_meta( 'nashenski_econt_label' );
 
-		if ( !$label ) {
-			return;
+		if ( !empty( $label['label'] ) ) {
+			$label = $label['label'];
+		} else {
+			// A quick or admin order has no checkout draft: build it from the order and its delivery choice.
+			$cookie_data = self::cookie_data( $order );
+
+			if ( empty( $cookie_data['type'] ) ) {
+				return;
+			}
+
+			list( $label ) = self::receiver_from_cookie( self::draft_label( $order, $cookie_data ), $cookie_data, $order );
 		}
 
-		$label = $label['label'];
 		$label = self::update_sender( $label );
 		$label = self::update_weight( $label );
 		$label = self::update_label_pay_options( $label, $order_id );
 		$label = self::update_phone_and_names( $label, $order_id );
 
-		self::send_label_to_econt( $label, $order_id );
+		return self::send_label_to_econt( $label, $order_id );
+	}
+
+	/**
+	 * The saved delivery choice of the order, or of its Econt shipping line.
+	 */
+	protected static function cookie_data( $order ) {
+		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
+
+		if ( !$cookie_data ) {
+			foreach ( $order->get_items( 'shipping' ) as $shipping ) {
+				if ( 'nashenski_econt' === $shipping->get_method_id() ) {
+					$cookie_data = $shipping->get_meta( 'cookie_data' );
+				}
+			}
+		}
+
+		return is_array( $cookie_data ) ? $cookie_data : array();
 	}
 
 	public static function send_label_to_econt( $label, $order_id ) {
@@ -513,31 +538,48 @@ class Econt {
 	}
 
 	protected static function update_receiver_address( $label ) {
-		$container = nashenski()->container();
-		$order_id = nashenski_label_request( 'orderId' );
-		$order = wc_get_order( $order_id );
+		$order = wc_get_order( nashenski_label_request( 'orderId' ) );
 		$type = nashenski_label_request( 'type', array() );
 		$cookie_data = nashenski_label_request( 'cookie_data', array() );
 		$cookie_data['type'] = $type['id'];
-		$country = ( $order->get_shipping_country() ) ? $order->get_shipping_country() : $order->get_billing_country();
-
-		unset( $label[ 'receiverOfficeCode' ] );
-		unset( $label[ 'receiverAddress' ] );
 
 		if ( in_array( $type['id'], [ 'office', 'automat' ], true ) ) {
-			$label[ 'receiverDeliveryType' ] = 'office';
 			$office = nashenski_label_request( 'office', array() );
-			$label['receiverOfficeCode'] = $office['code'];
 			$cookie_data['selectedOffice'] = $office['code'];
 			$cookie_data['selectedOfficeIsAPS'] = $office['isAPS'];
 		} else {
-			$label[ 'receiverDeliveryType' ] = 'door';
 			$cookie_data['selectedAddress'] = nashenski_label_request( 'street', array() );
 			$cookie_data['streetNumber'] = nashenski_label_request( 'streetNumber' );
 			foreach ( array( 'blockNumber', 'entranceNumber', 'floorNumber', 'apartmentNumber' ) as $field ) {
 				$cookie_data[ $field ] = nashenski_label_request( $field );
 			}
 			$cookie_data['other'] = nashenski_label_request( 'other' );
+		}
+
+		list( $label, $cookie_data ) = self::receiver_from_cookie( $label, $cookie_data, $order );
+
+		$order->update_meta_data( 'nashenski_econt_cookie_data', $cookie_data );
+		$order->save();
+
+		return $label;
+	}
+
+	/**
+	 * The receiver office or address of the label from the saved delivery choice (cookie data).
+	 * Returns the label and the cookie data with the formatted "other" line.
+	 */
+	protected static function receiver_from_cookie( $label, $cookie_data, $order ) {
+		$container = nashenski()->container();
+		$country = ( $order->get_shipping_country() ) ? $order->get_shipping_country() : $order->get_billing_country();
+
+		unset( $label[ 'receiverOfficeCode' ] );
+		unset( $label[ 'receiverAddress' ] );
+
+		if ( in_array( $cookie_data['type'] ?? '', [ 'office', 'automat' ], true ) ) {
+			$label[ 'receiverDeliveryType' ] = 'office';
+			$label['receiverOfficeCode'] = $cookie_data['selectedOffice'] ?? '';
+		} else {
+			$label[ 'receiverDeliveryType' ] = 'door';
 
 			$states = $container[ Client::ECONT_CITIES ]->get_regions( $country );
 			$state = $states[ $cookie_data['state'] ];
@@ -583,10 +625,7 @@ class Econt {
 			$label['receiverAddress'] = $receiver_address;
 		}
 
-		$order->update_meta_data( 'nashenski_econt_cookie_data', $cookie_data );
-		$order->save();
-
-		return $label;
+		return array( $label, $cookie_data );
 	}
 
 	protected static function update_label_pay_options( $label, $order_id ) {
