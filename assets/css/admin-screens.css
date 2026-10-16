@@ -1,0 +1,331 @@
+/**
+ * Order screens, product screens and the impossible price scan page:
+ * the courier label boxes, the loading spinner and the small boxes around them.
+ */
+
+/* Loading spinner (label boxes and the scan buttons). */
+.ajax-container {
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+.ajax-container[data-loading="true"] {
+	position: relative;
+}
+
+.ajax-container[data-loading="true"]:before {
+	position: absolute;
+	content: "";
+	background-size: contain;
+	background-image: url(../images/spinner.svg);
+	width: 150px;
+	height: 150px;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 99;
+}
+
+.ajax-container[data-loading="true"]:after {
+	position: absolute;
+	content: "";
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	z-index: 90;
+	background-color: rgba(255, 255, 255, 0.6);
+}
+
+.js-ajax-loading {
+	position: relative;
+	pointer-events: none;
+}
+
+.js-ajax-loading:after {
+	position: absolute;
+	content: "";
+	background-size: contain;
+	background-image: url(../images/spinner.svg);
+	width: 20px;
+	height: 20px;
+	left: -20px;
+	top: 10px;
+	z-index: 99;
+}
+
+/* EU VAT box. */
+#nashenski_eu_vat p {
+	margin: 12px !important;
+}
+
+.wc-eu-vat-table {
+	width: 100%;
+	margin: 5px 0;
+}
+
+.wc-eu-vat-table td,
+.wc-eu-vat-table th {
+	text-align: left;
+	padding: 7px 12px;
+}
+
+/* Customer reports box, PDF action buttons. */
+#order_data .nashenski--report-provider {
+	border: 1px solid;
+	border-radius: 10px;
+	padding: 10px;
+	margin-top: 10px;
+}
+
+#order_data .nashenski--report-provider h3 {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+#tiptip_content img {
+	max-width: 150px !important;
+}
+
+.wpo_wcpdf-actions li,
+.wpo_wcpdf-actions a.button {
+	display: inline-flex;
+	align-items: center;
+}
+
+.wpo_wcpdf-actions div.wp-menu-image:before {
+	color: #2271b1;
+}
+
+/* Impossible VAT price scan page and notice. */
+#nashenski-progress-wrap {
+	max-width: 700px;
+	height: 22px;
+	background: #e5e5e5;
+	border-radius: 4px;
+	overflow: hidden;
+	margin: 12px 0 8px;
+}
+
+#nashenski-progress-bar {
+	width: 0;
+	height: 100%;
+	background: #2271b1;
+	transition: width 0.2s ease;
+}
+
+#nashenski-progress-text {
+	font-weight: 600;
+}
+
+#nashenski-results-wrap {
+	margin-top: 20px;
+	display: none;
+}
+
+#nashenski-results .nashenski-row-fixed {
+	opacity: 0.7;
+}
+
+#nashenski-results td {
+	vertical-align: middle;
+}
+
+#nashenski-results .nashenski-row-status {
+	max-width: 260px;
+}
+
+p.form-field.nashenski-impossible-price-anchor {
+	display: block;
+	clear: both;
+	margin: 8px 0 0 !important;
+	padding: 0 !important;
+}
+
+p.form-field.nashenski-impossible-price-anchor:before,
+p.form-field.nashenski-impossible-price-anchor:after {
+	content: "";
+	display: table;
+}
+
+p.form-field.nashenski-impossible-price-anchor:after {
+	clear: both;
+}
+
+.nashenski-impossible-price-notice,
+.nashenski-impossible-price-success {
+	display: block;
+	clear: both;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.nashenski-impossible-price-notice {
+	padding: 10px 12px;
+	border-left: 4px solid #dba617;
+	background: #fff8e5;
+	border-radius: 4px;
+}
+
+.nashenski-impossible-price-notice__text {
+	display: block;
+	margin-bottom: 8px;
+	font-size: 13px;
+	line-height: 1.45;
+	color: #1d2327;
+}
+
+.nashenski-impossible-price-notice__actions {
+	display: block;
+}
+
+.nashenski-impossible-price-notice__actions .button.button-primary.nashenski-apply-corrected-price {
+	background: #46b450;
+	border-color: #46b450;
+	box-shadow: none;
+	text-shadow: none;
+}
+
+.nashenski-impossible-price-notice__actions .button.button-primary.nashenski-apply-corrected-price:hover,
+.nashenski-impossible-price-notice__actions .button.button-primary.nashenski-apply-corrected-price:focus {
+	background: #389e41;
+	border-color: #389e41;
+}
+
+.nashenski-impossible-price-success {
+	padding: 10px 12px;
+	border-left: 4px solid #46b450;
+	background: #edfaef;
+	border-radius: 4px;
+	font-size: 13px;
+	line-height: 1.45;
+	color: #1d2327;
+}
+
+/* The order data columns the label boxes sit in. */
+#order_data .order_data_column.order_data_column--half {
+	width: 49%;
+}
+
+#order_data .order_data_column.order_data_column--full {
+	width: 100%;
+}
+
+#order_data .order_data_column .form-field._billing_to_company_field {
+	width: 100%;
+}
+
+#order_data .order_data_column .form-field._billing_company_field {
+	width: 48%;
+	clear: none;
+}
+
+#order_data .order_data_column .form-field--checkbox {
+	float: none !important;
+}
+
+#order_data .order_data_column .form-field--checkbox label {
+	display: inline-block !important;
+	margin: 15px 0;
+}
+
+#order_data .order_data_column .form-field--checkbox input {
+	width: auto !important;
+}
+
+#order_data .order_data_column .form-field.form-field--1-of-3 {
+	width: 32%;
+	margin: 9px 6px 0 0;
+}
+
+#order_data .order_data_column .form-field.form-field--1-of-2 {
+	width: 48.7%;
+	margin: 9px 6px 0 0;
+}
+
+#order_data .order_data_column .form-field.form-field--highlight input {
+	background: #eefaf2;
+	border-color: #46a36b;
+	color: #1f6f43;
+	font-weight: 600;
+}
+
+/* Courier label boxes (assets/js/label-<courier>.js). */
+#nashenski_boxnow #order_data,
+#nashenski_cvc #order_data,
+#nashenski_econt #order_data,
+#nashenski_pigeon #order_data,
+#nashenski_speedy #order_data {
+	padding: 0;
+}
+
+.panel-wrap.woocommerce iframe[id$="-label-print"] {
+	min-height: 600px;
+	width: 100%;
+	margin-top: 20px;
+}
+
+.panel-wrap.woocommerce .nashenski--radio input {
+	margin: 3px 0 0;
+}
+
+.panel-wrap.woocommerce .woocommerce_order_status table {
+	width: 440px;
+	text-align: left;
+}
+
+.panel-wrap.woocommerce fieldset {
+	border: 1px solid;
+	border-radius: 6px;
+	padding: 5px;
+}
+
+/* Street number, block, entrance, floor and apartment in a row (Econt, Speedy). */
+.panel-wrap.woocommerce .nashenski-econt-address-details,
+.panel-wrap.woocommerce .nashenski-speedy-address-details {
+	display: grid;
+	clear: both;
+	box-sizing: border-box;
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+	gap: 6px;
+	width: 100%;
+	max-width: 100%;
+	padding: 10px 0;
+}
+
+.panel-wrap.woocommerce .nashenski-econt-address-details--quarter {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+#order_data .order_data_column .nashenski-econt-address-details > .form-field,
+#order_data .order_data_column .nashenski-speedy-address-details > .form-field {
+	display: grid;
+	float: none;
+	clear: none;
+	box-sizing: border-box;
+	grid-row: span 2;
+	grid-template-rows: subgrid;
+	width: auto;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+}
+
+#order_data .order_data_column .nashenski-econt-address-details > .form-field input,
+#order_data .order_data_column .nashenski-econt-address-details > .form-field label,
+#order_data .order_data_column .nashenski-speedy-address-details > .form-field input,
+#order_data .order_data_column .nashenski-speedy-address-details > .form-field label {
+	float: none;
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	max-width: 100%;
+}
+
+@media (max-width: 782px) {
+	.panel-wrap.woocommerce .nashenski-econt-address-details,
+	.panel-wrap.woocommerce .nashenski-speedy-address-details {
+		grid-template-columns: 1fr;
+	}
+}

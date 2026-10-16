@@ -1,25 +1,5 @@
 <?php
-use Nashenski\File;
-
 defined( 'ABSPATH' ) || exit;
-
-function nashenski_assets_bundle( $path ) {
-	static $manifest = null;
-
-	if ( is_null( $manifest ) ) {
-		$manifest_path = nashenski()->plugin_dir_path() . 'dist/manifest.json';
-
-		if ( file_exists( $manifest_path ) ) {
-			$manifest = json_decode( File::get_file( $manifest_path ), true );
-		} else {
-			$manifest = array();
-		}
-	}
-
-	$path = isset( $manifest[ $path ] ) ? $manifest[ $path ] : $path;
-
-	return 'dist/' . $path;
-}
 
 function nashenski_get_option( $group, $name ) {
 	return get_option( 'nashenski_settings_' . $group . '_' . $name );

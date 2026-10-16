@@ -10,8 +10,6 @@ class Plugin {
 	 * Courier slugs, in display order (names: nashenski_couriers()).
 	 */
 	const COURIERS = array( 'econt', 'speedy', 'boxnow', 'pigeon', 'cvc' );
-	// Couriers whose label box is readable JS (assets/js/label-<courier>.js). See docs/plans/dist-rewrite.md.
-	const READABLE_BOXES = array( 'cvc', 'boxnow', 'pigeon', 'speedy', 'econt' );
 
 	protected static $_instance;
 
@@ -34,7 +32,6 @@ class Plugin {
 
 		add_filter( 'plugin_action_links_' . plugin_basename( nashenski()->plugin_dir_path() . 'nashenski-commerce.php' ), array( __CLASS__, 'plugin_action_links' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
-		add_action( 'admin_footer', array( __CLASS__, 'set_webpack_path' ), 0);
 		add_filter( 'robots_txt', array( __CLASS__, 'robots_txt' ), 99, 2 );
 		add_filter( 'rest_attachment_query', array( __CLASS__, 'exclude_pdf_from_rest' ), 10, 2);
 	}
@@ -288,49 +285,24 @@ class Plugin {
 
 		wp_enqueue_style( 'nashenski-orders', nashenski()->plugin_dir_url() . 'assets/css/orders.css', array(), self::VERSION );
 
-		// The order list label button, notice dismiss and impossible price notice. The compiled courier
+		// The order list label button, notice dismiss and impossible price notice. The courier
 		// label boxes below print their data (nashenski_<courier>) on this handle.
 		wp_enqueue_script( 'nashenski-js-admin', nashenski()->plugin_dir_url() . 'assets/js/admin.js', array( 'jquery' ), self::VERSION, true );
 		wp_localize_script( 'nashenski-js-admin', 'nashenskiAdmin', array( 'dismissNonce' => wp_create_nonce( 'nashenski_dismiss_notice' ) ) );
 		// "Make invoice" in the PDF Files box saves the order with the invoice request.
 		wp_add_inline_script( 'nashenski-js-admin', 'document.addEventListener("click",function(e){var b=e.target.closest(".nashenski-make-invoice__button");if(b){b.form.elements.nashenski_make_invoice.value="1";b.form.requestSubmit();}});' );
 
-		wp_enqueue_style(
-			'nashenski-css-bundle',
-			nashenski()->plugin_dir_url() . nashenski_assets_bundle( 'admin.css' ),
-			array(),
-			\Nashenski\Plugin::VERSION
-		);
+		wp_enqueue_style( 'nashenski-admin-screens', nashenski()->plugin_dir_url() . 'assets/css/admin-screens.css', array(), self::VERSION );
 
-		// The label boxes of the couriers that are turned on. Couriers in READABLE_BOXES use assets/js/label-<courier>.js
-		// on the shared label-box.js; the rest still use the compiled bundle until they are rewritten.
+		// The label boxes of the couriers that are turned on: assets/js/label-<courier>.js on the shared label-box.js.
 		wp_register_script( 'nashenski-label-box', nashenski()->plugin_dir_url() . 'assets/js/label-box.js', array( 'jquery', 'nashenski-js-admin' ), self::VERSION, true );
 		wp_localize_script( 'nashenski-label-box', 'nashenskiLabelBoxText', array( 'error' => __( 'The request failed. Reload the page and try again.', 'nashenski-commerce' ) ) );
 
 		foreach ( self::COURIERS as $courier ) {
 			if ( 'yes' === nashenski_get_option( 'apis', 'enable_' . $courier ) ) {
-				if ( in_array( $courier, self::READABLE_BOXES, true ) ) {
-					wp_enqueue_script( 'nashenski-js-' . $courier, nashenski()->plugin_dir_url() . 'assets/js/label-' . $courier . '.js', array( 'nashenski-label-box' ), self::VERSION, true );
-				} else {
-					wp_enqueue_script( 'nashenski-js-' . $courier, nashenski()->plugin_dir_url() . nashenski_assets_bundle( $courier . '-admin.js' ), array( 'jquery' ), self::VERSION, true );
-				}
-
-				wp_enqueue_style( 'nashenski-css-' . $courier, nashenski()->plugin_dir_url() . nashenski_assets_bundle( $courier . '-admin.css' ), array(), self::VERSION );
+				wp_enqueue_script( 'nashenski-js-' . $courier, nashenski()->plugin_dir_url() . 'assets/js/label-' . $courier . '.js', array( 'nashenski-label-box' ), self::VERSION, true );
 			}
 		}
-	}
-
-	public static function set_webpack_path() {
-		if ( ! wp_script_is( 'nashenski-js-admin', 'enqueued' ) ) {
-			return;
-		}
-
-		$dir = nashenski()->plugin_dir_url() . 'dist/';
-		?>
-		<script type="text/javascript">
-			window.__webpack_public_path__ = '<?php echo esc_url( $dir ) ?>';
-		</script>
-		<?php
 	}
 
 	public static function robots_txt( $output, $public ) {

@@ -156,8 +156,7 @@ Help and press "Import now". The old plugin is switched off; its data stays in t
 ## For developers
 
 - PHP 7.4+, namespace `Nashenski\` in `app/`, front-end templates in `templates/`, readable JS and CSS
-  in `assets/`, bundled PHP libraries in `vendor/` (do not edit). `dist/` holds old compiled bundles
-  that are being rewritten as readable JS ([plan](docs/plans/dist-rewrite.md)).
+  in `assets/`, bundled PHP libraries in `vendor/` (do not edit). There is no compiled code: the old `dist/` bundles were rewritten as readable JS ([plan](docs/plans/dist-rewrite.md)).
 - Options are `nashenski_settings_{group}_{name}`, read and written with `nashenski_get_option()` and
   `nashenski_set_option()`.
 - Texts are in English; the Bulgarian translation is in `languages/` (PO, MO and the PHP translation
