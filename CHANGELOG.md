@@ -1,5 +1,11 @@
 # Nashenski Commerce changelog
 
+## 0.15.4 (2026-10-16)
+
+### Customer checks
+- A report sent to nekorekten.com carries the first name, last name, phone and email of the order, as the service asks for. The box lists what goes with the report. An order with neither a phone nor an email cannot be reported.
+- A report sent from an order shows in the box: change its text and press "Save report", or press "Delete report" (with a confirmation) to remove it from nekorekten.com. Each change leaves a note on the order.
+
 ## 0.15.3 (2026-10-16)
 
 ### Quick order

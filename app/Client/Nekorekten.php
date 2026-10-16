@@ -90,39 +90,73 @@ class Nekorekten {
 	}
 
 	/**
-	 * Sends a report (POST reports: text plus phone, names optional).
+	 * POST, PATCH or DELETE on reports.
 	 *
-	 * @return true|string True when sent, else the reason to show.
+	 * @return array|string The decoded answer on a 2xx, else the reason to show.
 	 */
-	public function send_report( $fields ) {
+	private function write( $method, $endpoint, $fields = null ) {
 		if ( '' === $this->api_key ) {
 			return __( 'Add the nekorekten.com API key in the settings first.', 'nashenski-commerce' );
 		}
 
-		$response = wp_remote_post( self::BASE_URL . self::REPORTS_ENDPOINT, array(
+		$args = array(
+			'method' => $method,
 			'timeout' => 15,
 			'headers' => array(
 				'Accept' => 'application/json',
 				'Content-Type' => 'application/json',
 				'Api-Key' => $this->api_key,
 			),
-			'body' => wp_json_encode( $fields ),
-		) );
+		);
+
+		if ( null !== $fields ) {
+			$args['body'] = wp_json_encode( $fields );
+		}
+
+		$response = wp_remote_request( self::BASE_URL . $endpoint, $args );
 
 		if ( is_wp_error( $response ) ) {
 			return $response->get_error_message();
 		}
 
 		$code = (int) wp_remote_retrieve_response_code( $response );
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( $code >= 200 && $code < 300 ) {
-			return true;
+			return is_array( $data ) ? $data : array();
 		}
-
-		$data = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		/* translators: %d: HTTP status code */
 		return is_array( $data ) && ! empty( $data['message'] ) ? wp_strip_all_tags( (string) $data['message'] ) : sprintf( __( 'nekorekten.com answered with error %d.', 'nashenski-commerce' ), $code );
+	}
+
+	/**
+	 * Sends a report: text plus a phone or email, names optional.
+	 *
+	 * @return array|string array( 'id' => report id, '' when the answer had none ), else the reason.
+	 */
+	public function send_report( $fields ) {
+		$data = $this->write( 'POST', self::REPORTS_ENDPOINT, $fields );
+
+		return is_array( $data ) ? array( 'id' => isset( $data['details']['id'] ) ? (string) $data['details']['id'] : '' ) : $data;
+	}
+
+	/**
+	 * @return true|string
+	 */
+	public function edit_report( $id, $fields ) {
+		$data = $this->write( 'PATCH', self::REPORTS_ENDPOINT . '/' . rawurlencode( $id ), $fields );
+
+		return is_array( $data ) ? true : $data;
+	}
+
+	/**
+	 * @return true|string
+	 */
+	public function delete_report( $id ) {
+		$data = $this->write( 'DELETE', self::REPORTS_ENDPOINT . '/' . rawurlencode( $id ) );
+
+		return is_array( $data ) ? true : $data;
 	}
 
 	public function validate_access() {

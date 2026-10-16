@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.15.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-16 16:05+0000\n"
-"PO-Revision-Date: 2026-10-16 16:05+0000\n"
+"POT-Creation-Date: 2026-10-16 16:19+0000\n"
+"PO-Revision-Date: 2026-10-16 16:19+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3270,7 +3270,7 @@ msgstr ""
 msgid "Works in the classic checkout, the block checkout and page builder checkouts. In a builder checkout made of single field elements, the fields appear after the billing fields unless you placed them yourself."
 msgstr ""
 
-#: app/Admin/Tabs/Nekorekten_Tab.php:14 app/Admin/Tabs/Nekorekten_Tab.php:50 app/Reports/Providers/Nekorekten.php:15
+#: app/Admin/Tabs/Nekorekten_Tab.php:14 app/Admin/Tabs/Nekorekten_Tab.php:50 app/Reports/Providers/Nekorekten.php:16
 msgid "nekorekten.com"
 msgstr ""
 
@@ -4107,7 +4107,7 @@ msgid "Add the nekorekten.com API key in the settings first."
 msgstr ""
 
 #. translators: %d: HTTP status code
-#: app/Client/Nekorekten.php:125
+#: app/Client/Nekorekten.php:130
 #, php-format
 msgid "nekorekten.com answered with error %d."
 msgstr ""
@@ -5294,59 +5294,109 @@ msgid "Error: %s"
 msgstr ""
 
 #. translators: %d: number of reports
-#: app/Reports/Providers/Nekorekten.php:34
+#: app/Reports/Providers/Nekorekten.php:47
 #, php-format
 msgid "nekorekten.com has %d report about this phone number."
 msgid_plural "nekorekten.com has %d reports about this phone number."
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Reports/Providers/Nekorekten.php:68
+#: app/Reports/Providers/Nekorekten.php:81
 msgid "nekorekten.com did not answer. Check the API key in the settings."
 msgstr ""
 
-#: app/Reports/Providers/Nekorekten.php:70
+#: app/Reports/Providers/Nekorekten.php:83
 msgid "No reports were found for this phone number."
 msgstr ""
 
 #. translators: %d: number of reports
-#: app/Reports/Providers/Nekorekten.php:75
+#: app/Reports/Providers/Nekorekten.php:88
 #, php-format
 msgid "%d report was found for this phone number."
 msgid_plural "%d reports were found for this phone number."
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Reports/Providers/Nekorekten.php:90
+#: app/Reports/Providers/Nekorekten.php:105
+msgid "Report sent from this order"
+msgstr ""
+
+#: app/Reports/Providers/Nekorekten.php:109
+msgid "Save report"
+msgstr ""
+
+#: app/Reports/Providers/Nekorekten.php:110
+msgid "Delete this report from nekorekten.com?"
+msgstr ""
+
+#: app/Reports/Providers/Nekorekten.php:110
+msgid "Delete report"
+msgstr ""
+
+#: app/Reports/Providers/Nekorekten.php:115
 msgid "Send a report about this customer to nekorekten.com"
 msgstr ""
 
-#: app/Reports/Providers/Nekorekten.php:91
+#: app/Reports/Providers/Nekorekten.php:116
 msgid "What happened, for example: refused the parcel paid on delivery."
 msgstr ""
 
-#: app/Reports/Providers/Nekorekten.php:93
-msgid "The report is public on nekorekten.com with the phone number and the name of the order."
+#. translators: %s: name, phone and email of the order
+#: app/Reports/Providers/Nekorekten.php:121
+#, php-format
+msgid "Sent with the report, which is public on nekorekten.com: %s"
 msgstr ""
 
-#: app/Reports/Providers/Nekorekten.php:95
+#: app/Reports/Providers/Nekorekten.php:125
 msgid "Send report"
 msgstr ""
 
-#: app/Reports/Providers/Nekorekten.php:122
+#: app/Reports/Providers/Nekorekten.php:192
 msgid "Report not sent: write what happened first."
 msgstr ""
 
+#: app/Reports/Providers/Nekorekten.php:206
+msgid "Report not sent: the order has no phone or email."
+msgstr ""
+
 #. translators: %s: reason from nekorekten.com
-#: app/Reports/Providers/Nekorekten.php:141
+#: app/Reports/Providers/Nekorekten.php:215
 #, php-format
 msgid "nekorekten.com did not take the report: %s"
 msgstr ""
 
 #. translators: %s: report text
-#: app/Reports/Providers/Nekorekten.php:149
+#: app/Reports/Providers/Nekorekten.php:229
 #, php-format
 msgid "Report sent to nekorekten.com: %s"
+msgstr ""
+
+#: app/Reports/Providers/Nekorekten.php:235
+msgid "Report not saved: the text is empty. Use Delete report to remove it."
+msgstr ""
+
+#. translators: %s: reason from nekorekten.com
+#: app/Reports/Providers/Nekorekten.php:248
+#, php-format
+msgid "nekorekten.com did not save the report: %s"
+msgstr ""
+
+#. translators: %s: new report text
+#: app/Reports/Providers/Nekorekten.php:258
+#, php-format
+msgid "Report on nekorekten.com changed to: %s"
+msgstr ""
+
+#. translators: %s: reason from nekorekten.com
+#: app/Reports/Providers/Nekorekten.php:266
+#, php-format
+msgid "nekorekten.com did not delete the report: %s"
+msgstr ""
+
+#. translators: %s: deleted report text
+#: app/Reports/Providers/Nekorekten.php:278
+#, php-format
+msgid "Report deleted from nekorekten.com: %s"
 msgstr ""
 
 #. translators: %s: percentage

@@ -10,6 +10,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Nekorekten extends Provider_Base {
 	const META_PREFIX = 'nashenski_reports-nekorekten_phone_';
+	const SENT_META = '_nashenski_nk_sent';
 
 	public function __construct() {
 		$this->set_name( __( 'nekorekten.com', 'nashenski-commerce' ) );
@@ -17,6 +18,18 @@ class Nekorekten extends Provider_Base {
 
 	private static function phone( $order ) {
 		return $order->get_shipping_phone() ? $order->get_shipping_phone() : $order->get_billing_phone();
+	}
+
+	/**
+	 * The customer fields a report carries, as nekorekten.com names them.
+	 */
+	private static function person( $order ) {
+		return array(
+			'firstName' => trim( $order->get_billing_first_name() ),
+			'lastName' => trim( $order->get_billing_last_name() ),
+			'phone' => trim( self::phone( $order ) ),
+			'email' => trim( $order->get_billing_email() ),
+		);
 	}
 
 	private static function threshold() {
@@ -86,11 +99,28 @@ class Nekorekten extends Provider_Base {
 					<?php endforeach; ?>
 				</ul>
 			<?php endif; ?>
+			<?php foreach ( self::sent( $order ) as $id => $sent_text ) : ?>
+				<div class="nashenski-nk-sent">
+					<p>
+						<label for="nashenski-nk-edit-<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Report sent from this order', 'nashenski-commerce' ); ?></label><br>
+						<textarea id="nashenski-nk-edit-<?php echo esc_attr( $id ); ?>" name="nashenski_nk_edit_text[<?php echo esc_attr( $id ); ?>]" rows="3" class="large-text"><?php echo esc_textarea( $sent_text ); ?></textarea>
+					</p>
+					<p>
+						<button type="submit" class="button" name="nashenski_nk_edit" value="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Save report', 'nashenski-commerce' ); ?></button>
+						<button type="submit" class="button button-link-delete" name="nashenski_nk_delete" value="<?php echo esc_attr( $id ); ?>" onclick="return confirm( <?php echo esc_attr( wp_json_encode( __( 'Delete this report from nekorekten.com?', 'nashenski-commerce' ) ) ); ?> );"><?php esc_html_e( 'Delete report', 'nashenski-commerce' ); ?></button>
+					</p>
+				</div>
+			<?php endforeach; ?>
 			<p>
 				<label for="nashenski-nk-text"><?php esc_html_e( 'Send a report about this customer to nekorekten.com', 'nashenski-commerce' ); ?></label><br>
 				<textarea id="nashenski-nk-text" name="nashenski_nk_text" rows="3" class="large-text" placeholder="<?php esc_attr_e( 'What happened, for example: refused the parcel paid on delivery.', 'nashenski-commerce' ); ?>"></textarea>
 			</p>
-			<p class="description"><?php esc_html_e( 'The report is public on nekorekten.com with the phone number and the name of the order.', 'nashenski-commerce' ); ?></p>
+			<p class="description">
+				<?php
+				/* translators: %s: name, phone and email of the order */
+				echo esc_html( sprintf( __( 'Sent with the report, which is public on nekorekten.com: %s', 'nashenski-commerce' ), implode( ', ', array_filter( self::person( $order ) ) ) ) );
+				?>
+			</p>
 			<?php wp_nonce_field( 'nashenski_nk_report', 'nashenski_nk_nonce' ); ?>
 			<p><button type="submit" class="button" name="nashenski_nk_send" value="1"><?php esc_html_e( 'Send report', 'nashenski-commerce' ); ?></button></p>
 		</div>
@@ -98,11 +128,24 @@ class Nekorekten extends Provider_Base {
 	}
 
 	/**
-	 * The Send report button of the order screen: sends the text with the order's phone and name.
+	 * Reports sent from this order: nekorekten.com id => text.
 	 */
-	public static function send_report( $order_id ) {
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- checked right below.
-		if ( empty( $_POST['nashenski_nk_send'] ) || empty( $_POST['nashenski_nk_nonce'] ) ) {
+	private static function sent( $order ) {
+		$sent = $order->get_meta( self::SENT_META );
+
+		return is_array( $sent ) ? $sent : array();
+	}
+
+	private static function clean_text( $text ) {
+		return mb_substr( trim( sanitize_textarea_field( wp_unslash( (string) $text ) ) ), 0, 1000 );
+	}
+
+	/**
+	 * The Send, Save and Delete report buttons of the order screen.
+	 */
+	public static function handle_form( $order_id ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked right below; clean_text and sanitize_text_field sanitize.
+		if ( empty( $_POST['nashenski_nk_nonce'] ) || ( empty( $_POST['nashenski_nk_send'] ) && empty( $_POST['nashenski_nk_edit'] ) && empty( $_POST['nashenski_nk_delete'] ) ) ) {
 			return;
 		}
 
@@ -110,14 +153,41 @@ class Nekorekten extends Provider_Base {
 			return;
 		}
 
-		$text = isset( $_POST['nashenski_nk_text'] ) ? mb_substr( trim( sanitize_textarea_field( wp_unslash( $_POST['nashenski_nk_text'] ) ) ), 0, 1000 ) : '';
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		$order = wc_get_order( $order_id );
 
 		if ( ! $order ) {
 			return;
 		}
 
+		$sent = self::sent( $order );
+
+		if ( ! empty( $_POST['nashenski_nk_delete'] ) ) {
+			$id = sanitize_text_field( wp_unslash( $_POST['nashenski_nk_delete'] ) );
+
+			if ( isset( $sent[ $id ] ) ) {
+				self::delete( $order, $id, $sent );
+			}
+
+			return;
+		}
+
+		if ( ! empty( $_POST['nashenski_nk_edit'] ) ) {
+			$id = sanitize_text_field( wp_unslash( $_POST['nashenski_nk_edit'] ) );
+			$text = isset( $_POST['nashenski_nk_edit_text'][ $id ] ) ? self::clean_text( $_POST['nashenski_nk_edit_text'][ $id ] ) : '';
+
+			if ( isset( $sent[ $id ] ) ) {
+				self::edit( $order, $id, $text, $sent );
+			}
+
+			return;
+		}
+
+		$text = isset( $_POST['nashenski_nk_text'] ) ? self::clean_text( $_POST['nashenski_nk_text'] ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		self::send( $order, $text, $sent );
+	}
+
+	private static function send( $order, $text, $sent ) {
 		if ( '' === $text ) {
 			\WC_Admin_Meta_Boxes::add_error( __( 'Report not sent: write what happened first.', 'nashenski-commerce' ) );
 
@@ -125,28 +195,87 @@ class Nekorekten extends Provider_Base {
 		}
 
 		// A double click or a resubmitted form must not publish the same report twice.
-		if ( md5( $text ) === $order->get_meta( '_nashenski_nk_reported' ) ) {
+		if ( in_array( $text, $sent, true ) || md5( $text ) === $order->get_meta( '_nashenski_nk_reported' ) ) {
 			return;
 		}
 
-		$result = ( new Client() )->send_report( array_filter( array(
-			'text' => $text,
-			'phone' => self::phone( $order ),
-			'firstName' => $order->get_billing_first_name(),
-			'lastName' => $order->get_billing_last_name(),
-		) ) );
+		$person = self::person( $order );
 
-		if ( true !== $result ) {
+		// nekorekten.com needs a phone or an email next to the text.
+		if ( '' === $person['phone'] && '' === $person['email'] ) {
+			\WC_Admin_Meta_Boxes::add_error( __( 'Report not sent: the order has no phone or email.', 'nashenski-commerce' ) );
+
+			return;
+		}
+
+		$result = ( new Client() )->send_report( array_filter( array( 'text' => $text ) + $person ) );
+
+		if ( ! is_array( $result ) ) {
 			/* translators: %s: reason from nekorekten.com */
 			\WC_Admin_Meta_Boxes::add_error( sprintf( __( 'nekorekten.com did not take the report: %s', 'nashenski-commerce' ), $result ) );
 
 			return;
 		}
 
+		// Without an id in the answer the report cannot be edited or deleted from here.
+		if ( '' !== $result['id'] ) {
+			$sent[ $result['id'] ] = $text;
+			$order->update_meta_data( self::SENT_META, $sent );
+		}
+
 		$order->update_meta_data( '_nashenski_nk_reported', md5( $text ) );
 		$order->save();
 		/* translators: %s: report text */
 		$order->add_order_note( sprintf( __( 'Report sent to nekorekten.com: %s', 'nashenski-commerce' ), $text ) );
+		self::get_all_reports( $order, true );
+	}
+
+	private static function edit( $order, $id, $text, $sent ) {
+		if ( '' === $text ) {
+			\WC_Admin_Meta_Boxes::add_error( __( 'Report not saved: the text is empty. Use Delete report to remove it.', 'nashenski-commerce' ) );
+
+			return;
+		}
+
+		if ( $text === $sent[ $id ] ) {
+			return;
+		}
+
+		$result = ( new Client() )->edit_report( $id, array( 'text' => $text ) );
+
+		if ( true !== $result ) {
+			/* translators: %s: reason from nekorekten.com */
+			\WC_Admin_Meta_Boxes::add_error( sprintf( __( 'nekorekten.com did not save the report: %s', 'nashenski-commerce' ), $result ) );
+
+			return;
+		}
+
+		$sent[ $id ] = $text;
+		$order->update_meta_data( self::SENT_META, $sent );
+		$order->update_meta_data( '_nashenski_nk_reported', md5( $text ) );
+		$order->save();
+		/* translators: %s: new report text */
+		$order->add_order_note( sprintf( __( 'Report on nekorekten.com changed to: %s', 'nashenski-commerce' ), $text ) );
+	}
+
+	private static function delete( $order, $id, $sent ) {
+		$result = ( new Client() )->delete_report( $id );
+
+		if ( true !== $result ) {
+			/* translators: %s: reason from nekorekten.com */
+			\WC_Admin_Meta_Boxes::add_error( sprintf( __( 'nekorekten.com did not delete the report: %s', 'nashenski-commerce' ), $result ) );
+
+			return;
+		}
+
+		$text = $sent[ $id ];
+		unset( $sent[ $id ] );
+		$order->update_meta_data( self::SENT_META, $sent );
+		// The same text may be sent again after a delete.
+		$order->delete_meta_data( '_nashenski_nk_reported' );
+		$order->save();
+		/* translators: %s: deleted report text */
+		$order->add_order_note( sprintf( __( 'Report deleted from nekorekten.com: %s', 'nashenski-commerce' ), $text ) );
 		self::get_all_reports( $order, true );
 	}
 

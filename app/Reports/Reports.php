@@ -22,7 +22,7 @@ class Reports {
 		}
 
         add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_boxes' ) );
-		add_action( 'woocommerce_process_shop_order_meta', array( Providers\Nekorekten::class, 'send_report' ), 70 );
+		add_action( 'woocommerce_process_shop_order_meta', array( Providers\Nekorekten::class, 'handle_form' ), 70 );
         add_action( 'woocommerce_admin_order_data_after_order_details', array( __CLASS__, 'customer_status_info' ) );
 
         if ( nashenski_get_option( 'reports', 'column' ) === 'yes' ) {
