@@ -127,6 +127,8 @@ class Admin_Menus {
 			array( 'reports', 'enable_connectix', Tabs\Connectix_Tab::class ),
 			array( 'reports', 'enable_nepostop', Tabs\NepoStop_Tab::class ),
 			array( 'reports', 'enable_nekorekten', Tabs\Nekorekten_Tab::class ),
+			array( 'apis', 'enable_quick_order', Tabs\Quick_Order_Tab::class ),
+			array( 'apis', 'enable_abandoned_carts', Tabs\Abandoned_Carts_Tab::class ),
 		);
 
 		foreach ( $optional as list( $group, $name, $class ) ) {

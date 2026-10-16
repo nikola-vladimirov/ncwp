@@ -111,6 +111,7 @@ class Plugin {
 			new Admin\Import_Sources();
 			new Admin\Setting_Help();
 			new Admin\Changelog();
+			new Admin\Abandoned_Carts_Page();
 			new Admin\Recommended_Settings();
 			new Admin\Export_Builder();
 		}
@@ -154,6 +155,8 @@ class Plugin {
 		new Front_End\Checkout\Block_Checkout();
 		new Front_End\Checkout\Pickers();
 		new Front_End\Withdrawal();
+		new Front_End\Quick_Order();
+		new Abandoned_Carts\Tracker();
 		new Pricing\Updater();
 
 		new Reports\Reports();

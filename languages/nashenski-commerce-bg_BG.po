@@ -3,10 +3,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.13.0\n"
+"Project-Id-Version: Nashenski Commerce 0.14.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-14 11:29+0000\n"
-"PO-Revision-Date: 2026-10-14 11:29+0000\n"
+"POT-Creation-Date: 2026-10-16 08:07+0000\n"
+"PO-Revision-Date: 2026-10-16 08:07+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -15,6 +15,122 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Last-Translator: PristaDigital\n"
 "Language-Team: Bulgarian\n"
+
+#. translators: %s: shopper's first name
+#: app/Abandoned_Carts/Tracker.php:342
+#, php-format
+msgid "Hello %s,"
+msgstr "Здравейте, %s,"
+
+#: app/Abandoned_Carts/Tracker.php:343
+msgid "Hello,"
+msgstr "Здравейте,"
+
+#: app/Abandoned_Carts/Tracker.php:345
+msgid "You left these items in your cart:"
+msgstr "В количката ви останаха тези артикули:"
+
+#. translators: %s: cart total, with the currency
+#: app/Abandoned_Carts/Tracker.php:351
+#, php-format
+msgid "Total: %s"
+msgstr "Общо: %s"
+
+#. translators: %s: coupon code
+#: app/Abandoned_Carts/Tracker.php:357
+#, php-format
+msgid "Use the code %s when you order."
+msgstr "Използвайте кода %s при поръчка."
+
+#: app/Abandoned_Carts/Tracker.php:362
+msgid "Go back to your cart:"
+msgstr "Върнете се към количката си:"
+
+#: app/Abandoned_Carts/Tracker.php:365
+msgid "Do not want these emails? Unsubscribe here:"
+msgstr "Не искате тези имейли? Отпишете се тук:"
+
+#. translators: %s: site name
+#: app/Abandoned_Carts/Tracker.php:373
+#, php-format
+msgid "You left items in your cart at %s"
+msgstr "Оставихте артикули в количката си в %s"
+
+#: app/Abandoned_Carts/Tracker.php:400
+msgid "You will not get more reminders from this shop."
+msgstr "Няма да получавате повече напомняния от този магазин."
+
+#: app/Abandoned_Carts/Tracker.php:401 app/Admin/Abandoned_Carts_Page.php:63
+msgid "Unsubscribed"
+msgstr "Отписан"
+
+#: app/Admin/Abandoned_Carts_Page.php:30 app/Admin/Abandoned_Carts_Page.php:31 app/Admin/Abandoned_Carts_Page.php:70 app/Admin/Tabs/Abandoned_Carts_Tab.php:13 app/Admin/Tabs/Abandoned_Carts_Tab.php:51 app/Admin/Tabs/Settings_Tab.php:23
+msgid "Abandoned carts"
+msgstr "Изоставени колички"
+
+#: app/Admin/Abandoned_Carts_Page.php:60
+msgid "Open"
+msgstr "Отворена"
+
+#: app/Admin/Abandoned_Carts_Page.php:61
+msgid "Ordered"
+msgstr "Поръчана"
+
+#: app/Admin/Abandoned_Carts_Page.php:62
+msgid "Emptied"
+msgstr "Изпразнена"
+
+#. translators: 1: number of open carts, 2: value of open carts, 3: number of carts ordered, 4: value of carts ordered, 5: share of carts ordered in percent
+#: app/Admin/Abandoned_Carts_Page.php:76
+#, php-format
+msgid "Open carts: %1$d (%2$s). Ordered: %3$d (%4$s). Share ordered: %5$d%%."
+msgstr "Отворени колички: %1$d (%2$s). Поръчани: %3$d (%4$s). Дял на поръчаните: %5$d%%."
+
+#. translators: %d: number of rows
+#: app/Admin/Abandoned_Carts_Page.php:90
+#, php-format
+msgid "Newest %d carts. Carts are kept for the number of days set in the Abandoned carts settings."
+msgstr "Последните %d колички. Количките се пазят за броя дни, зададен в настройките за изоставени колички."
+
+#: app/Admin/Abandoned_Carts_Page.php:99
+msgid "Last change"
+msgstr "Последна промяна"
+
+#: app/Admin/Abandoned_Carts_Page.php:100
+msgid "Shopper"
+msgstr "Купувач"
+
+#: app/Admin/Abandoned_Carts_Page.php:101
+msgid "Items"
+msgstr "Артикули"
+
+#: app/Admin/Abandoned_Carts_Page.php:102 app/Export/Builder/Fields.php:95 app/Invoice/Order/Order.php:197 app/Invoice/Order/Order.php:202
+msgid "Total"
+msgstr "Общо"
+
+#: app/Admin/Abandoned_Carts_Page.php:103
+msgid "Last step"
+msgstr "Последна стъпка"
+
+#: app/Admin/Abandoned_Carts_Page.php:104
+msgid "Reminders"
+msgstr "Напомняния"
+
+#: app/Admin/Abandoned_Carts_Page.php:105 app/Admin/ImpossibleVatPrice.php:148 app/Export/Builder/Fields.php:37
+msgid "Status"
+msgstr "Статус"
+
+#: app/Admin/Abandoned_Carts_Page.php:110
+msgid "No carts yet."
+msgstr "Още няма колички."
+
+#: app/Admin/Abandoned_Carts_Page.php:130 app/Admin/Help_Page.php:68 app/Admin/Help_Page.php:82 app/Admin/Help_Page.php:101 app/Admin/Settings_Page.php:90
+msgid "Checkout"
+msgstr "Плащане"
+
+#: app/Admin/Abandoned_Carts_Page.php:130 app/Front_End/Quick_Order.php:59
+msgid "Cart"
+msgstr "Количка"
 
 #. translators: 1: Nashenski Commerce, 2: five stars.
 #: app/Admin/Admin_Menus.php:78
@@ -130,7 +246,7 @@ msgstr "Тегло"
 msgid "Price"
 msgstr "Цена"
 
-#: app/Admin/BoxNow.php:106 app/Admin/Tabs/BoxNow_Tab.php:53 app/Admin/Tabs/CVC_Tab.php:52 app/Admin/Tabs/Econt_Tab.php:61 app/Admin/Tabs/Speedy_Tab.php:48 app/Front_End/Withdrawal.php:372
+#: app/Admin/BoxNow.php:106 app/Admin/Tabs/BoxNow_Tab.php:53 app/Admin/Tabs/CVC_Tab.php:52 app/Admin/Tabs/Econt_Tab.php:61 app/Admin/Tabs/Speedy_Tab.php:48 app/Front_End/Quick_Order.php:220
 msgid "Name"
 msgstr "Име"
 
@@ -178,7 +294,7 @@ msgstr "По подразбиране"
 msgid "Delivery is payed by"
 msgstr "Доставката се плаща от"
 
-#: app/Admin/CVC.php:90 app/Admin/Econt.php:94 app/Admin/Pigeon.php:182 app/Admin/Speedy.php:142 app/Admin/Tabs/Settings_Tab.php:28
+#: app/Admin/CVC.php:90 app/Admin/Econt.php:94 app/Admin/Pigeon.php:182 app/Admin/Speedy.php:142 app/Admin/Tabs/Settings_Tab.php:30
 msgid "Cash on delivery"
 msgstr "Наложен платеж"
 
@@ -460,7 +576,7 @@ msgstr "Първите %1$d от %2$d реда. Файл: %3$s"
 msgid "Nothing matches these filters."
 msgstr "Няма записи по тези филтри."
 
-#: app/Admin/Export_Builder.php:152 app/Plugin.php:219
+#: app/Admin/Export_Builder.php:152 app/Front_End/Quick_Order.php:132 app/Plugin.php:222
 msgid "Something went wrong. Please try again."
 msgstr "Нещо се обърка. Опитайте отново."
 
@@ -746,10 +862,6 @@ msgstr "В %s добавете методите за доставка на ку�
 msgid "In %s, choose the countries, the checkout fields and the look of the shipping options."
 msgstr "В %s изберете държавите, полетата при плащане и вида на опциите за доставка."
 
-#: app/Admin/Help_Page.php:68 app/Admin/Help_Page.php:82 app/Admin/Help_Page.php:101 app/Admin/Settings_Page.php:90
-msgid "Checkout"
-msgstr "Плащане"
-
 #. translators: %s: link to the Documents section
 #: app/Admin/Help_Page.php:70
 #, php-format
@@ -916,7 +1028,7 @@ msgstr "Поставете връзката сами с краткия код [n
 msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
 msgstr "Заявките се виждат в списъка с поръчки (колона „Отказ“) и в поръчката, с всичко, което клиентът е подал."
 
-#: app/Admin/Help_Page.php:136 app/Admin/Settings_Page.php:98 app/Admin/Tabs/Settings_Tab.php:42 app/Reports/Reports.php:127
+#: app/Admin/Help_Page.php:136 app/Admin/Settings_Page.php:98 app/Admin/Tabs/Settings_Tab.php:44 app/Reports/Reports.php:127
 msgid "Customer checks"
 msgstr "Проверки на клиенти"
 
@@ -1014,7 +1126,7 @@ msgstr "Прилагане"
 msgid "Setting"
 msgstr "Настройка"
 
-#: app/Admin/Help_Page.php:230 app/Plugin.php:224
+#: app/Admin/Help_Page.php:230 app/Plugin.php:227
 msgid "Now"
 msgstr "Сега"
 
@@ -1353,10 +1465,6 @@ msgstr "Надолу"
 #: app/Admin/ImpossibleVatPrice.php:147
 msgid "Up"
 msgstr "Нагоре"
-
-#: app/Admin/ImpossibleVatPrice.php:148 app/Export/Builder/Fields.php:37
-msgid "Status"
-msgstr "Статус"
 
 #: app/Admin/ImpossibleVatPrice.php:149
 msgid "Actions"
@@ -1784,7 +1892,7 @@ msgstr "До автомат"
 msgid "Up to (kg)"
 msgstr "До (кг)"
 
-#: app/Admin/Settings_Page.php:583 app/Admin/Settings_Page.php:677 app/Plugin.php:220
+#: app/Admin/Settings_Page.php:583 app/Admin/Settings_Page.php:677 app/Plugin.php:223
 msgid "Remove row"
 msgstr "Премахване на реда"
 
@@ -2496,6 +2604,38 @@ msgstr "A4 с копие на същата страница"
 msgid "A4 with copy on single page"
 msgstr "A4 с копие на отделна страница"
 
+#: app/Admin/Tabs/Abandoned_Carts_Tab.php:22
+msgid "Reminder times"
+msgstr "Време на напомнянията"
+
+#: app/Admin/Tabs/Abandoned_Carts_Tab.php:23
+msgid "Hours after the last change to the cart. Up to three, separated by commas."
+msgstr "Часове след последната промяна в количката. До три, разделени със запетая."
+
+#: app/Admin/Tabs/Abandoned_Carts_Tab.php:25
+msgid "Example: 1, 24, 72. The first reminder goes one hour after the last change, the next a day later, the last three days later."
+msgstr "Пример: 1, 24, 72. Първото напомняне е един час след последната промяна, второто един ден по-късно, третото три дни по-късно."
+
+#: app/Admin/Tabs/Abandoned_Carts_Tab.php:29
+msgid "Coupon code"
+msgstr "Код на купон"
+
+#: app/Admin/Tabs/Abandoned_Carts_Tab.php:30
+msgid "Optional. The reminder names this code. Create the coupon in WooCommerce; the plugin only sends the code."
+msgstr "По избор. Напомнянето посочва този код. Купонът се създава в WooCommerce; приставката само изпраща кода."
+
+#: app/Admin/Tabs/Abandoned_Carts_Tab.php:36
+msgid "Keep carts for (days)"
+msgstr "Пазене на количките (дни)"
+
+#: app/Admin/Tabs/Abandoned_Carts_Tab.php:37
+msgid "Carts older than this are deleted. Shoppers can ask the shop to delete their cart."
+msgstr "Количките по-стари от този срок се изтриват. Купувачите могат да поискат магазинът да изтрие тяхната количка."
+
+#: app/Admin/Tabs/Abandoned_Carts_Tab.php:52
+msgid "Keeps the carts that were not ordered and sends reminders to shoppers who typed an email. Reminders go out between 08:00 and 22:00 site time. Nothing is sent outside the site. The list is under WooCommerce > Abandoned carts."
+msgstr "Запазва количките, които не са поръчани, и изпраща напомняния на купувачи, въвели имейл. Напомнянията се изпращат между 08:00 и 22:00 часа по местното време на сайта. Нищо не се изпраща извън сайта. Списъкът е в WooCommerce > Изоставени колички."
+
 #: app/Admin/Tabs/BoxNow_Tab.php:15 app/Admin/Tabs/Settings_Tab.php:18 app/functions.php:620 app/Shipping/BoxNow/Method.php:131
 msgid "BOX NOW"
 msgstr "BOX NOW"
@@ -2632,7 +2772,7 @@ msgstr "Как Нашенски Комерс изчислява цената н�
 msgid "Incorrect Client ID or Client Secret."
 msgstr "Грешен Client ID или Client Secret."
 
-#: app/Admin/Tabs/Connectix_Tab.php:14 app/Admin/Tabs/Connectix_Tab.php:60 app/Admin/Tabs/Settings_Tab.php:25 app/Reports/Providers/Connectix.php:10
+#: app/Admin/Tabs/Connectix_Tab.php:14 app/Admin/Tabs/Connectix_Tab.php:60 app/Admin/Tabs/Settings_Tab.php:27 app/Reports/Providers/Connectix.php:10
 msgid "Connectix"
 msgstr "Connectix"
 
@@ -2952,7 +3092,7 @@ msgstr "Въведете API ключа си за nekorekten.com."
 msgid "nekorekten.com did not accept the API key. Check the key and the allowed IP addresses in your nekorekten.com profile."
 msgstr "nekorekten.com не прие API ключа. Проверете ключа и разрешените IP адреси в профила си в nekorekten.com."
 
-#: app/Admin/Tabs/NepoStop_Tab.php:14 app/Admin/Tabs/NepoStop_Tab.php:33 app/Admin/Tabs/Settings_Tab.php:26 app/Reports/Providers/NepoStop.php:10
+#: app/Admin/Tabs/NepoStop_Tab.php:14 app/Admin/Tabs/NepoStop_Tab.php:33 app/Admin/Tabs/Settings_Tab.php:28 app/Reports/Providers/NepoStop.php:10
 msgid "NepoStop"
 msgstr "NepoStop"
 
@@ -3498,7 +3638,35 @@ msgstr "Текущите цени можете да видите на <a href=\"
 msgid "API Key and API Secret are incorrect."
 msgstr "API ключът и API Secret са грешни."
 
-#: app/Admin/Tabs/Settings_Tab.php:8 app/Plugin.php:78 app/Plugin.php:203
+#: app/Admin/Tabs/Quick_Order_Tab.php:14 app/Admin/Tabs/Quick_Order_Tab.php:46 app/Admin/Tabs/Settings_Tab.php:22 app/Front_End/Quick_Order.php:113 app/Front_End/Quick_Order.php:214
+msgid "Quick order"
+msgstr "Бърза поръчка"
+
+#: app/Admin/Tabs/Quick_Order_Tab.php:23
+msgid "Where the button shows"
+msgstr "Къде се показва бутонът"
+
+#: app/Admin/Tabs/Quick_Order_Tab.php:26
+msgid "The button opens the form next to the add-to-cart button or the cart totals."
+msgstr "Бутонът отваря формата до бутона за добавяне в количката или до общата сума на количката."
+
+#: app/Admin/Tabs/Quick_Order_Tab.php:28
+msgid "Confirmation email"
+msgstr "Имейл за потвърждение"
+
+#: app/Admin/Tabs/Quick_Order_Tab.php:28
+msgid "Send the shopper an email that the quick order was received"
+msgstr "Изпрати на купувача имейл, че бързата поръчка е получена"
+
+#: app/Admin/Tabs/Quick_Order_Tab.php:33
+msgid "Show in the form"
+msgstr "Показване във формата"
+
+#: app/Admin/Tabs/Quick_Order_Tab.php:47
+msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
+msgstr "Кратка форма за купувачи, които не искат да минават през количката. Купувачът изпраща име, телефон и имейл, а поръчката чака вашето потвърждение. Наличността не се резервира, докато не потвърдите. Сменете статуса на поръчката на „Очаква плащане“, за да изпратите линк за плащане."
+
+#: app/Admin/Tabs/Settings_Tab.php:8 app/Plugin.php:78 app/Plugin.php:206
 msgid "Settings"
 msgstr "Настройки"
 
@@ -3534,47 +3702,55 @@ msgstr "Фактури и Н-18"
 msgid "Order documents, invoices, credit notes and the NRA audit file"
 msgstr "Документи за продажба, фактури, кредитни известия и одиторски файл за НАП"
 
-#: app/Admin/Tabs/Settings_Tab.php:24
+#: app/Admin/Tabs/Settings_Tab.php:22
+msgid "A \"Quick order\" button on the product page and cart. The shopper sends a short form, and the order waits for your confirmation"
+msgstr "Бутон „Бърза поръчка“ на страницата на продукта и в количката. Купувачът изпраща кратка форма, а поръчката чака вашето потвърждение"
+
+#: app/Admin/Tabs/Settings_Tab.php:23
+msgid "Keep the carts that were not ordered and send reminders to shoppers who typed an email"
+msgstr "Запазване на количките, които не са поръчани, и изпращане на напомняния до купувачи, въвели имейл"
+
+#: app/Admin/Tabs/Settings_Tab.php:26
 msgid "Services"
 msgstr "Услуги"
 
-#: app/Admin/Tabs/Settings_Tab.php:24
+#: app/Admin/Tabs/Settings_Tab.php:26
 msgid "Reports about the customer's phone number from nekorekten.com"
 msgstr "Сигнали за телефонния номер на клиента от nekorekten.com"
 
-#: app/Admin/Tabs/Settings_Tab.php:25
+#: app/Admin/Tabs/Settings_Tab.php:27
 msgid "Delivery history of the customer from connectix.bg"
 msgstr "История на доставките на клиента от connectix.bg"
 
-#: app/Admin/Tabs/Settings_Tab.php:26
+#: app/Admin/Tabs/Settings_Tab.php:28
 msgid "Share of refused parcels for the customer's phone number from nepostop.com"
 msgstr "Дял на отказаните пратки за телефонния номер на клиента от nepostop.com"
 
-#: app/Admin/Tabs/Settings_Tab.php:27
+#: app/Admin/Tabs/Settings_Tab.php:29
 msgid "Orders list"
 msgstr "Списък с поръчки"
 
-#: app/Admin/Tabs/Settings_Tab.php:27
+#: app/Admin/Tabs/Settings_Tab.php:29
 msgid "Add a \"Reports\" column to the orders list"
 msgstr "Добавя колона „Сигнали“ в списъка с поръчки"
 
-#: app/Admin/Tabs/Settings_Tab.php:28
+#: app/Admin/Tabs/Settings_Tab.php:30
 msgid "Check the phone number at checkout and hide cash on delivery when reports are found"
 msgstr "Проверка на телефонния номер при плащане и скриване на наложения платеж при открити сигнали"
 
-#: app/Admin/Tabs/Settings_Tab.php:28
+#: app/Admin/Tabs/Settings_Tab.php:30
 msgid "nekorekten.com answers at most 10 checks a minute; Nashenski Commerce remembers answers for 10 minutes."
 msgstr "nekorekten.com отговаря на най-много 10 проверки в минута; Нашенски Комерс помни отговорите 10 минути."
 
-#: app/Admin/Tabs/Settings_Tab.php:38
+#: app/Admin/Tabs/Settings_Tab.php:40
 msgid "What Nashenski Commerce does in this store"
 msgstr "Какво прави Нашенски Комерс в този магазин"
 
-#: app/Admin/Tabs/Settings_Tab.php:39
-msgid "Turn on the couriers you work with and the documents you need. Each one adds its own settings: couriers in the Couriers section, documents in the Documents section."
-msgstr "Включете куриерите, с които работите, и документите, които ви трябват. Всеки добавя свои настройки: куриерите в раздел Куриери, документите в раздел Документи."
+#: app/Admin/Tabs/Settings_Tab.php:41
+msgid "Turn on the couriers you work with and the documents you need. Each one adds its own settings: couriers in the Couriers section, documents in the Documents section. Quick order and abandoned carts are in the Checkout section."
+msgstr "Включете куриерите, с които работите, и документите, които ви трябват. Всеки добавя свои настройки: куриерите в раздел Куриери, документите в раздел Документи. Бърза поръчка и изоставени колички са в раздел Плащане и поръчка."
 
-#: app/Admin/Tabs/Settings_Tab.php:43
+#: app/Admin/Tabs/Settings_Tab.php:45
 msgid "Find out before shipping whether a customer tends to refuse parcels. Turn on a service, save, and enter its API key below."
 msgstr "Разберете преди изпращане дали клиентът често отказва пратки. Включете услуга, запазете и въведете API ключа ѝ по-долу."
 
@@ -3730,7 +3906,7 @@ msgstr "Име"
 msgid "Last name"
 msgstr "Фамилия"
 
-#: app/Export/Builder/Fields.php:50 app/Front_End/Checkout/Field_Editor.php:587
+#: app/Export/Builder/Fields.php:50 app/Front_End/Checkout/Field_Editor.php:587 app/Front_End/Quick_Order.php:224
 msgid "Email"
 msgstr "Имейл"
 
@@ -3846,10 +4022,6 @@ msgstr "Платена (да/не)"
 msgid "Amounts"
 msgstr "Суми"
 
-#: app/Export/Builder/Fields.php:95 app/Invoice/Order/Order.php:197 app/Invoice/Order/Order.php:202
-msgid "Total"
-msgstr "Общо"
-
 #: app/Export/Builder/Fields.php:96
 msgid "Total without VAT"
 msgstr "Общо без ДДС"
@@ -3906,7 +4078,7 @@ msgstr "ID на продукта"
 msgid "Variation ID"
 msgstr "ID на вариацията"
 
-#: app/Export/Builder/Fields.php:123
+#: app/Export/Builder/Fields.php:123 app/Front_End/Quick_Order.php:71
 msgid "Quantity"
 msgstr "Количество"
 
@@ -4222,7 +4394,7 @@ msgstr "Избор на картата"
 msgid "Choose an office on the map"
 msgstr "Изберете офис на картата"
 
-#: app/Front_End/Checkout/Pickers.php:368
+#: app/Front_End/Checkout/Pickers.php:368 app/Front_End/Quick_Order.php:133
 msgid "Close"
 msgstr "Затваряне"
 
@@ -4311,6 +4483,129 @@ msgstr "Транслитерация на адресите (кирилица в 
 #: app/Front_End/Checkout/Transliterate_Address.php:98
 msgid "Addresses transliterated."
 msgstr "Адресите са транслитерирани."
+
+#: app/Front_End/Quick_Order.php:58
+msgid "Product page"
+msgstr "Страница на продукта"
+
+#: app/Front_End/Quick_Order.php:60
+msgid "Product page and cart"
+msgstr "Страница на продукта и количката"
+
+#: app/Front_End/Quick_Order.php:70
+msgid "Town"
+msgstr "Населено място"
+
+#: app/Front_End/Quick_Order.php:72 app/Front_End/Quick_Order.php:381
+msgid "Product notes"
+msgstr "Бележки към продукта"
+
+#: app/Front_End/Quick_Order.php:73 app/Front_End/Quick_Order.php:381
+msgid "Preferred delivery time"
+msgstr "Предпочитано време за доставка"
+
+#: app/Front_End/Quick_Order.php:74 app/Front_End/Quick_Order.php:381
+msgid "Message"
+msgstr "Съобщение"
+
+#: app/Front_End/Quick_Order.php:80 app/Front_End/Quick_Order.php:91
+msgctxt "Order status"
+msgid "Quick order"
+msgstr "Бърза поръчка"
+
+#. translators: %s: number of quick orders
+#: app/Front_End/Quick_Order.php:86
+#, php-format
+msgid "Quick order <span class=\"count\">(%s)</span>"
+msgid_plural "Quick orders <span class=\"count\">(%s)</span>"
+msgstr[0] "Бърза поръчка <span class=\"count\">(%s)</span>"
+msgstr[1] "Бързи поръчки <span class=\"count\">(%s)</span>"
+
+#: app/Front_End/Quick_Order.php:209 app/Front_End/Quick_Order.php:209
+msgid "privacy policy"
+msgstr "политиката за поверителност"
+
+#: app/Front_End/Quick_Order.php:215
+msgid "Leave your details and we will contact you to confirm the order."
+msgstr "Оставете данните си и ще се свържем с вас, за да потвърдим поръчката."
+
+#: app/Front_End/Quick_Order.php:218 app/Plugin.php:228
+msgid "Website"
+msgstr "Сайт"
+
+#. translators: %s: link to the privacy policy
+#: app/Front_End/Quick_Order.php:249
+#, php-format
+msgid "I agree that the store may contact me about this order. I have read the %s."
+msgstr "Съгласявам се магазинът да се свърже с мен във връзка с тази поръчка. Прочетох %s."
+
+#: app/Front_End/Quick_Order.php:258
+msgid "Send"
+msgstr "Изпрати"
+
+#: app/Front_End/Quick_Order.php:269
+msgid "Quick orders are turned off."
+msgstr "Бързите поръчки са изключени."
+
+#: app/Front_End/Quick_Order.php:275
+msgid "The form has expired. Reload the page and try again."
+msgstr "Формата е изтекла. Презаредете страницата и опитайте отново."
+
+#: app/Front_End/Quick_Order.php:284
+msgid "Too many requests. Try again in a few minutes."
+msgstr "Твърде много заявки. Опитайте отново след няколко минути."
+
+#: app/Front_End/Quick_Order.php:294
+msgid "Enter your name, phone and a valid email."
+msgstr "Въведете име, телефон и валиден имейл."
+
+#: app/Front_End/Quick_Order.php:298
+msgid "Tick the box to agree to be contacted."
+msgstr "Отбележете квадратчето, за да се съгласите да се свържем с вас."
+
+#: app/Front_End/Quick_Order.php:309
+msgid "Your cart is empty."
+msgstr "Количката ви е празна."
+
+#: app/Front_End/Quick_Order.php:319
+msgid "This product cannot be ordered now."
+msgstr "Този продукт не може да се поръча в момента."
+
+#: app/Front_End/Quick_Order.php:328
+msgid "The order could not be saved. Please try again."
+msgstr "Поръчката не можа да се запази. Опитайте отново."
+
+#: app/Front_End/Quick_Order.php:345
+msgid "Thank you. We have your details and will contact you to confirm the order."
+msgstr "Благодарим! Получихме данните ви и ще се свържем с вас, за да потвърдим поръчката."
+
+#: app/Front_End/Quick_Order.php:392
+msgid "Quick order from the shop. No stock is reserved and no payment link is sent until the status is changed to Pending payment."
+msgstr "Бърза поръчка от магазина. Наличността не се резервира и не се изпраща линк за плащане, докато статусът не се смени на „Очаква плащане“."
+
+#. translators: %s: order number
+#: app/Front_End/Quick_Order.php:405
+#, php-format
+msgid "New quick order #%s"
+msgstr "Нова бърза поръчка #%s"
+
+#. translators: 1: shopper name, 2: phone, 3: email, 4: link to the order
+#: app/Front_End/Quick_Order.php:408
+#, php-format
+msgid "A shopper asked for a quick order.\n\nName: %1$s\nPhone: %2$s\nEmail: %3$s\n\nOpen the order: %4$s"
+msgstr "Купувач поиска бърза поръчка.\n\nИме: %1$s\nТелефон: %2$s\nИмейл: %3$s\n\nОтворете поръчката: %4$s"
+
+#. translators: 1: site name, 2: order number
+#: app/Front_End/Quick_Order.php:421
+#, php-format
+msgid "%1$s: we received your quick order #%2$s"
+msgstr "%1$s: получихме вашата бърза поръчка #%2$s"
+
+#. translators: %s: shopper name
+#: app/Front_End/Quick_Order.php:424
+#, php-format
+msgid "Hello %s,\n\nThank you. We have your quick order and will contact you to confirm it.\n\nNo payment is needed now."
+msgstr "Здравейте, %s,\n\nБлагодарим! Получихме вашата бърза поръчка и ще се свържем с вас, за да я потвърдим.\n\nЗа момента не е нужно плащане."
 
 #: app/Front_End/Withdrawal.php:81
 msgid "Withdraw from contract here"
@@ -4612,31 +4907,27 @@ msgstr "Фактурата е издадена на основание чл. 113
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr "Нашенски Комерс: прегледайте настройките и ги запазете отново от „%s“."
 
-#: app/Plugin.php:218
+#: app/Plugin.php:221
 msgid "The file was downloaded."
 msgstr "Файлът е изтеглен."
 
-#: app/Plugin.php:221
+#: app/Plugin.php:224
 msgid "Built-in prices restored. Save to keep them."
 msgstr "Вградените цени са възстановени. Запазете, за да ги задържите."
 
-#: app/Plugin.php:222
+#: app/Plugin.php:225
 msgid "Your prices match the courier website."
 msgstr "Цените ви съвпадат със сайта на куриера."
 
-#: app/Plugin.php:223
+#: app/Plugin.php:226
 msgid "The courier website has different prices:"
 msgstr "Сайтът на куриера има различни цени:"
 
-#: app/Plugin.php:225
-msgid "Website"
-msgstr "Сайт"
-
-#: app/Plugin.php:226
+#: app/Plugin.php:229
 msgid "Use these prices"
 msgstr "Използване на тези цени"
 
-#: app/Plugin.php:227
+#: app/Plugin.php:230
 msgid "New prices filled in. Check them and save."
 msgstr "Новите цени са попълнени. Проверете ги и запазете."
 
@@ -5149,25 +5440,25 @@ msgstr "Включва доставка със Спиди и автоматич�
 msgid "Speedy - %s"
 msgstr "Спиди - %s"
 
-#: app/Updater.php:100
+#: app/Updater.php:126
 msgid "The update could not be downloaded from GitHub. For a private repository, add NASHENSKI_UPDATE_TOKEN to wp-config.php."
 msgstr "Обновлението не можа да бъде изтеглено от GitHub. За частно хранилище добавете NASHENSKI_UPDATE_TOKEN в wp-config.php."
 
 #. translators: %1$s is minimum php version and %2$s is minimum WP version
-#: nashenski-commerce.php:65
+#: nashenski-commerce.php:66
 #, php-format
 msgid "Nashenski Commerce requires PHP version %1$s+ and WP version %2$s+, plugin is currently NOT RUNNING."
 msgstr "Нашенски Комерс изисква PHP версия %1$s+ и WP версия %2$s+; разширението в момента НЕ РАБОТИ."
 
-#: nashenski-commerce.php:75
+#: nashenski-commerce.php:76
 msgid "Nashenski Commerce is paused: please deactivate Bulgarisation for WooCommerce first. Your settings and orders can be imported afterwards."
 msgstr "Нашенски Комерс е на пауза: първо деактивирайте Bulgarisation for WooCommerce. След това можете да импортирате настройките и поръчките си."
 
-#: nashenski-commerce.php:84
+#: nashenski-commerce.php:85
 msgid "Nashenski Commerce - Please enable WooCommerce first."
 msgstr "Нашенски Комерс: първо включете WooCommerce."
 
-#: nashenski-commerce.php:95
+#: nashenski-commerce.php:96
 msgid "Please run `composer install` in the plugin folder `nashenski-commerce`"
 msgstr "Изпълнете `composer install` в папката на разширението `nashenski-commerce`"
 

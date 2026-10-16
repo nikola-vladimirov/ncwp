@@ -88,7 +88,7 @@ class Settings_Page extends \WC_Settings_Page {
 			),
 			'checkout' => array(
 				'label' => __( 'Checkout', 'nashenski-commerce' ),
-				'parts' => array( array( 'shipping', null ), array( 'fields', null ) ),
+				'parts' => array( array( 'shipping', null ), array( 'fields', null ), array( 'quick_order', null ), array( 'abandoned_carts', null ) ),
 			),
 			'documents' => array(
 				'label' => __( 'Documents', 'nashenski-commerce' ),
