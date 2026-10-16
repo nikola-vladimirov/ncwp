@@ -1,5 +1,23 @@
 # Nashenski Commerce changelog
 
+## 0.15.0 (2026-10-16)
+
+### Quick order
+- A "Quick order" button on the product page and/or the cart, for shoppers who do not want to go through checkout. It opens a short form as a dialog window, inline under the button, or a sliding panel from the right.
+- Ready-made form templates (Minimal, Callback request, Standard, Full order) or a Custom one where you tick the fields one by one. Name, phone and email are always asked.
+- Bulgarian phone numbers only, with a local (0888 123 456) or international (+359 88 123 4567) mask and a check on the page and again on the server.
+- The submission becomes an order with the status "Quick order". No stock is reserved and no payment link is sent until you change the status. You get an email, and the shopper can get a confirmation (off by default).
+- Spam protection with a nonce, a hidden honeypot field and a rate limit per IP address. The consent checkbox links to the privacy policy.
+
+### Abandoned carts
+- Off by default. Keeps the carts that were not ordered and records the email as soon as the shopper types it, even for a logged-out shopper at checkout.
+- Reminders at the times you set (default 1, 24 and 72 hours after the last change), at most three, only between 08:00 and 22:00 site time, sent through WooCommerce.
+- The reminder is a WooCommerce email, "Abandoned cart reminder", with an editable subject and body and placeholders, under WooCommerce > Settings > Emails.
+- An optional single-use coupon for each cart, created when the first reminder goes out; the link in the email refills the cart and applies the coupon. Or a manual coupon code you create yourself in WooCommerce.
+- A one-click unsubscribe link. A shopper who unsubscribes gets no more reminders.
+- WooCommerce > Abandoned carts: totals, the newest carts, a status filter, paging, edit and send per cart, and bulk send and delete.
+- Carts older than the retention period (default 90 days) are deleted daily.
+
 ## 0.14.2 (2026-10-15)
 
 ### Fixed

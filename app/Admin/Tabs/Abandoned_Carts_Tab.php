@@ -2,6 +2,7 @@
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
+use Nashenski\Abandoned_Carts\Tracker;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,10 +25,41 @@ class Abandoned_Carts_Tab extends Base_Tab {
 					null,
 					__( 'Example: 1, 24, 72. The first reminder goes one hour after the last change, the next a day later, the last three days later.', 'nashenski-commerce' )
 				) )->set_default( '1, 24, 72' ),
+				( new Fields\TrueFalse_Field(
+					'auto_coupon',
+					__( 'Automatic coupon', 'nashenski-commerce' ),
+					null,
+					null,
+					__( 'Give each cart its own single-use coupon when the first reminder goes out. The reminder names the code and the resume link applies it.', 'nashenski-commerce' )
+				) )->set_default( 'no' ),
+				new Fields\Select_Field(
+					Tracker::coupon_types(),
+					'coupon_type',
+					__( 'Coupon discount', 'nashenski-commerce' ),
+					null,
+					null,
+					__( 'How the automatic coupon takes money off. Used only with the automatic coupon.', 'nashenski-commerce' )
+				),
+				( new Fields\Text_Field(
+					'coupon_amount',
+					__( 'Coupon value', 'nashenski-commerce' ),
+					__( 'A number. Percent for a percentage discount, an amount for a fixed discount. The automatic coupon needs a value above zero.', 'nashenski-commerce' ),
+					null,
+					'',
+					'number'
+				) )->set_default( '5' ),
+				( new Fields\Text_Field(
+					'coupon_days',
+					__( 'Coupon expires after (days)', 'nashenski-commerce' ),
+					__( 'The automatic coupon stops working after this many days. Leave 0 for no expiry.', 'nashenski-commerce' ),
+					null,
+					'',
+					'number'
+				) )->set_default( '7' ),
 				new Fields\Text_Field(
 					'coupon',
-					__( 'Coupon code', 'nashenski-commerce' ),
-					__( 'Optional. The reminder names this code. Create the coupon in WooCommerce; the plugin only sends the code.', 'nashenski-commerce' ),
+					__( 'Manual coupon code', 'nashenski-commerce' ),
+					__( 'Optional. Used only when the automatic coupon is off. The reminder names this code; create the coupon in WooCommerce yourself.', 'nashenski-commerce' ),
 					null,
 					''
 				),
@@ -49,7 +81,7 @@ class Abandoned_Carts_Tab extends Base_Tab {
 		return array(
 			'abandoned_carts' => array(
 				'title' => __( 'Abandoned carts', 'nashenski-commerce' ),
-				'desc'  => __( 'Keeps the carts that were not ordered and sends reminders to shoppers who typed an email. Reminders go out between 08:00 and 22:00 site time. Nothing is sent outside the site. The list is under WooCommerce > Abandoned carts.', 'nashenski-commerce' ),
+				'desc'  => __( 'Keeps the carts that were not ordered and sends reminders to shoppers who typed an email, even a logged-out shopper at checkout. Reminders go out between 08:00 and 22:00 site time. The subject and the body are edited under WooCommerce > Settings > Emails > Abandoned cart reminder. The list is under WooCommerce > Abandoned carts.', 'nashenski-commerce' ),
 			),
 		);
 	}

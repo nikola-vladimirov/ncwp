@@ -11,6 +11,11 @@ defined( 'ABSPATH' ) || exit;
  * WooCommerce order with the "Quick order" status. That status reserves no stock and sends no payment
  * link; the owner confirms it by changing the status to "Pending payment" and sending the customer
  * invoice, which carries the payment link.
+ *
+ * The owner picks a ready-made field template (or builds a custom one), how the form appears
+ * (dialog, inline under the button, side panel) and the phone format the form expects. The phone is
+ * validated on the server and shaped by a small mask in the browser: Bulgarian numbers only, local
+ * or international.
  */
 class Quick_Order {
 	/** Order status key without the "wc-" prefix (WooCommerce adds it). */
@@ -62,6 +67,110 @@ class Quick_Order {
 	}
 
 	/**
+	 * How the form appears when the button is pressed.
+	 */
+	public static function appearances() {
+		return array(
+			'modal'  => __( 'Dialog window (a pop-up in the middle)', 'nashenski-commerce' ),
+			'inline' => __( 'Inline, under the button', 'nashenski-commerce' ),
+			'side'   => __( 'Sliding panel from the right', 'nashenski-commerce' ),
+		);
+	}
+
+	/**
+	 * Ready-made field templates. "Custom" leaves the field list to the per-field toggles.
+	 */
+	public static function templates() {
+		$all = array_keys( self::optional_fields() );
+
+		return array(
+			'minimal'  => array(
+				'label'  => __( 'Minimal (name, phone, email)', 'nashenski-commerce' ),
+				'fields' => array(),
+			),
+			'callback' => array(
+				'label'  => __( 'Callback request', 'nashenski-commerce' ),
+				'fields' => array( 'preferred_time', 'message' ),
+			),
+			'standard' => array(
+				'label'  => __( 'Standard', 'nashenski-commerce' ),
+				'fields' => array( 'town', 'address', 'quantity' ),
+			),
+			'full'     => array(
+				'label'  => __( 'Full order (every field)', 'nashenski-commerce' ),
+				'fields' => $all,
+			),
+			'custom'   => array(
+				'label'  => __( 'Custom (choose the fields below)', 'nashenski-commerce' ),
+				'fields' => null,
+			),
+		);
+	}
+
+	/**
+	 * The phone formats the form can ask for. Both end in the same canonical value.
+	 */
+	public static function phone_formats() {
+		return array(
+			'local'         => __( 'National (0888 123 456)', 'nashenski-commerce' ),
+			'international' => __( 'International (+359 88 123 4567)', 'nashenski-commerce' ),
+		);
+	}
+
+	public static function phone_format() {
+		return nashenski_get_choice( 'quick_order', 'phone_format', self::phone_formats() );
+	}
+
+	/**
+	 * Dial codes for the countries the form can be set to. A country not in the table is still
+	 * accepted, it is only checked by length.
+	 */
+	public static function dial_codes() {
+		return array(
+			'AL' => '355', 'AT' => '43', 'AU' => '61', 'BE' => '32', 'BG' => '359',
+			'BR' => '55', 'CA' => '1', 'CH' => '41', 'CY' => '357', 'CZ' => '420',
+			'DE' => '49', 'DK' => '45', 'EE' => '372', 'ES' => '34', 'FI' => '358',
+			'FR' => '33', 'GB' => '44', 'GR' => '30', 'HR' => '385', 'HU' => '36',
+			'IE' => '353', 'IL' => '972', 'IN' => '91', 'IS' => '354', 'IT' => '39',
+			'JP' => '81', 'LT' => '370', 'LU' => '352', 'LV' => '371', 'MT' => '356',
+			'MX' => '52', 'NL' => '31', 'NO' => '47', 'NZ' => '64', 'PL' => '48',
+			'PT' => '351', 'RO' => '40', 'RS' => '381', 'SE' => '46', 'SI' => '386',
+			'SK' => '421', 'TR' => '90', 'US' => '1', 'ZA' => '27',
+		);
+	}
+
+	/**
+	 * The country the phone numbers are in: the saved setting, else the shop country, else Bulgaria.
+	 */
+	public static function phone_country() {
+		$saved = nashenski_get_option( 'quick_order', 'phone_country' );
+		$codes = self::dial_codes();
+
+		if ( $saved && isset( $codes[ $saved ] ) ) {
+			return $saved;
+		}
+
+		if ( function_exists( 'wc_get_base_location' ) ) {
+			$base = (string) wc_get_base_location()['country'];
+			if ( $base && isset( $codes[ $base ] ) ) {
+				return $base;
+			}
+		}
+
+		return 'BG';
+	}
+
+	/**
+	 * The dial code of the chosen country, without the plus, or '' when it is not known.
+	 */
+	public static function phone_dial() {
+		$codes = self::dial_codes();
+		$iso   = self::phone_country();
+
+		return isset( $codes[ $iso ] ) ? $codes[ $iso ] : '';
+	}
+
+	/**
 	 * Optional form fields the owner can turn on. Name and phone and email are always there.
 	 */
 	public static function optional_fields() {
@@ -73,6 +182,32 @@ class Quick_Order {
 			'preferred_time' => __( 'Preferred delivery time', 'nashenski-commerce' ),
 			'message'        => __( 'Message', 'nashenski-commerce' ),
 		);
+	}
+
+	/**
+	 * The optional fields the current template asks for, keyed like optional_fields().
+	 */
+	public static function active_fields() {
+		$templates = self::templates();
+		$template  = nashenski_get_choice( 'quick_order', 'template', $templates );
+		$all       = self::optional_fields();
+		$keys      = $templates[ $template ]['fields'];
+
+		if ( null === $keys ) {
+			$keys = array_keys( array_filter( $all, function ( $key ) {
+				return 'yes' === nashenski_get_option( 'quick_order', 'field_' . $key );
+			}, ARRAY_FILTER_USE_KEY ) );
+		}
+
+		$fields = array();
+
+		foreach ( $keys as $key ) {
+			if ( isset( $all[ $key ] ) ) {
+				$fields[ $key ] = $all[ $key ];
+			}
+		}
+
+		return $fields;
 	}
 
 	public static function register_status() {
@@ -106,6 +241,13 @@ class Quick_Order {
 			return;
 		}
 
+		// Space it away from the add-to-cart button and quantity above it, so it does not look stuck.
+		static $styled = false;
+		if ( ! $styled ) {
+			$styled = true;
+			echo '<style>.nashenski-quick-order-open{display:inline-block;margin-top:12px}</style>';
+		}
+
 		printf(
 			'<button type="button" class="button nashenski-quick-order-open" data-context="%1$s" data-product-id="%2$d">%3$s</button>',
 			esc_attr( $context ),
@@ -126,56 +268,94 @@ class Quick_Order {
 		wp_add_inline_script( 'nashenski-quick-order', self::script() );
 	}
 
+	/**
+	 * Plain script, no build step: a form fetched on each click, shown as chosen, with a light
+	 * phone mask that follows the configured Bulgarian format.
+	 */
 	private static function script() {
 		$config = wp_json_encode( array(
-			'ajax'      => admin_url( 'admin-ajax.php' ),
-			'errorText' => __( 'Something went wrong. Please try again.', 'nashenski-commerce' ),
-			'closeText' => __( 'Close', 'nashenski-commerce' ),
+			'ajax'        => admin_url( 'admin-ajax.php' ),
+			'appearance'  => nashenski_get_choice( 'quick_order', 'appearance', self::appearances() ),
+			'phoneFormat' => self::phone_format(),
+			'phoneDial'   => self::phone_dial(),
+			'errorText'   => __( 'Something went wrong. Please try again.', 'nashenski-commerce' ),
+			'closeText'   => __( 'Close', 'nashenski-commerce' ),
 		) );
 
-		// Plain script, no build step: a dialog with the form fetched on each click.
 		return '(function(){var cfg=' . $config . ';
-var dialog=null;
-function ensure(){
-  if(dialog){return dialog;}
-  var css=document.createElement("style");
-  css.textContent=".nashenski-quick-order{border:0;border-radius:8px;padding:24px;width:min(440px,92vw);max-height:90vh;box-shadow:0 10px 40px rgba(0,0,0,.25)}.nashenski-quick-order::backdrop{background:rgba(0,0,0,.45)}.nashenski-quick-order label{display:block}.nashenski-quick-order input:not([type=checkbox]),.nashenski-quick-order textarea{width:100%;box-sizing:border-box;margin-top:4px}.nashenski-quick-order h2{margin:0 0 8px}";
-  document.head.appendChild(css);
-  dialog=document.createElement("dialog");
-  dialog.className="nashenski-quick-order";
-  dialog.addEventListener("click",function(e){ if(e.target===dialog){dialog.close();} });
-  document.body.appendChild(dialog);
-  return dialog;
+var open=null,box=null;
+function css(){
+  if(document.getElementById("nashenski-quick-order-css")){return;}
+  var s=document.createElement("style");
+  s.id="nashenski-quick-order-css";
+  s.textContent=".nashenski-quick-order{border:0;border-radius:8px;padding:24px;width:min(440px,92vw);max-height:90vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.25);background:#fff}.nashenski-quick-order::backdrop{background:rgba(0,0,0,.45)}.nashenski-quick-order label{display:block}.nashenski-quick-order input:not([type=checkbox]),.nashenski-quick-order textarea{width:100%;box-sizing:border-box;margin-top:4px}.nashenski-quick-order h2{margin:0 0 8px}.nashenski-quick-order-actions{display:flex;gap:12px;align-items:center;justify-content:flex-start;margin-top:12px}.nashenski-quick-order--inline{position:static;box-shadow:none;border:1px solid rgba(0,0,0,.12);width:auto;margin:8px 0}.nashenski-quick-order--side{position:fixed;top:0;right:0;height:100%;width:min(440px,92vw);max-height:none;border-radius:0;z-index:100000;overflow:auto}.nashenski-quick-order__backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99999}";
+  document.head.appendChild(s);
 }
-function show(html){
-  var d=ensure();
-  d.innerHTML=html+"<p><button type=\'button\' class=\'button nashenski-quick-order-close\'>"+cfg.closeText+"</button></p>";
-  d.showModal();
+function close(){
+  if(!box){return;}
+  if(typeof box.close==="function"&&box.tagName==="DIALOG"){box.close();}
+  if(box._backdrop){box._backdrop.remove();}
+  box.remove();box=null;
+}
+function show(html,trigger){
+  close();css();
+  var a=cfg.appearance;
+  if(a==="modal"){
+    box=document.createElement("dialog");box.className="nashenski-quick-order";
+    box.addEventListener("click",function(e){if(e.target===box){close();}});
+    document.body.appendChild(box);box.innerHTML=html;box.showModal();
+  } else if(a==="side"){
+    box=document.createElement("div");box.className="nashenski-quick-order nashenski-quick-order--side";
+    box._backdrop=document.createElement("div");box._backdrop.className="nashenski-quick-order__backdrop";
+    box._backdrop.addEventListener("click",close);
+    document.body.appendChild(box._backdrop);document.body.appendChild(box);box.innerHTML=html;
+  } else {
+    box=document.createElement("div");box.className="nashenski-quick-order nashenski-quick-order--inline";
+    box.innerHTML=html;
+    if(trigger&&trigger.parentNode){trigger.parentNode.insertBefore(box,trigger.nextSibling);}
+    else{document.body.appendChild(box);}
+  }
+  var actions=box.querySelector(".nashenski-quick-order-actions");
+  if(actions){actions.insertAdjacentHTML("beforeend","<button type=\'button\' class=\'button nashenski-quick-order-close\'>"+cfg.closeText+"</button>");}
+  else{box.insertAdjacentHTML("beforeend","<p class=\'nashenski-quick-order-actions\'><button type=\'button\' class=\'button nashenski-quick-order-close\'>"+cfg.closeText+"</button></p>");}
+  var phone=box.querySelector("[data-nashenski-phone]");
+  if(phone){mask(phone);phone.addEventListener("input",function(){mask(phone);});}
+}
+function mask(input){
+  var d=input.value.replace(/[^0-9]/g,""),out="",dial=cfg.phoneDial||"";
+  if(cfg.phoneFormat==="international"){
+    if(dial&&d.indexOf(dial)!==0){d=(d.charAt(0)==="0")?dial+d.slice(1):dial+d;}
+    var nat=d.slice(dial.length,20),parts=nat.match(/\d{1,4}/g)||[];
+    out="+"+dial+(parts.length?" "+parts.join(" "):"");
+  } else {
+    if(d.charAt(0)!=="0"){d="0"+d;}
+    var p=d.slice(0,14).match(/\d{1,4}/g)||[];
+    out=p.join(" ");
+  }
+  if(input.value!==out){input.value=out;}
 }
 document.addEventListener("click",function(e){
-  var open=e.target.closest(".nashenski-quick-order-open");
-  if(open){
-    e.preventDefault();
+  var btn=e.target.closest(".nashenski-quick-order-open");
+  if(btn){
+    e.preventDefault();open=btn;
     var qty=document.querySelector("form.cart input.qty");
-    var body=new URLSearchParams({action:"nashenski_quick_order_form",context:open.getAttribute("data-context")||"product",product_id:open.getAttribute("data-product-id")||"0",quantity:qty?qty.value:"1"});
-    fetch(cfg.ajax,{method:"POST",credentials:"same-origin",body:body}).then(function(r){return r.text();}).then(function(html){
-      show(html);
-    }).catch(function(){ show("<p>"+cfg.errorText+"</p>"); });
+    var body=new URLSearchParams({action:"nashenski_quick_order_form",context:btn.getAttribute("data-context")||"product",product_id:btn.getAttribute("data-product-id")||"0",quantity:qty?qty.value:"1"});
+    fetch(cfg.ajax,{method:"POST",credentials:"same-origin",body:body}).then(function(r){return r.text();}).then(function(html){show(html,btn);}).catch(function(){show("<p>"+cfg.errorText+"</p>",btn);});
     return;
   }
-  if(e.target.closest(".nashenski-quick-order-close")){ ensure().close(); }
+  if(e.target.closest(".nashenski-quick-order-close")){close();}
 });
 document.addEventListener("submit",function(e){
   var form=e.target;
-  if(!form.closest||!form.closest("dialog.nashenski-quick-order")){return;}
+  if(!form.closest||!form.closest(".nashenski-quick-order")){return;}
   e.preventDefault();
   var button=form.querySelector("button[type=submit]");
   if(button){button.disabled=true;}
   fetch(cfg.ajax,{method:"POST",credentials:"same-origin",body:new URLSearchParams(new FormData(form))}).then(function(r){return r.json();}).then(function(res){
     var msg=res&&res.data&&res.data.message?res.data.message:cfg.errorText;
-    if(res&&res.success){ ensure().innerHTML="<p>"+msg+"</p><p><button type=\'button\' class=\'button nashenski-quick-order-close\'>"+cfg.closeText+"</button></p>"; }
-    else { if(button){button.disabled=false;} var note=form.querySelector(".nashenski-quick-order-error"); if(note){note.textContent=msg;} }
-  }).catch(function(){ if(button){button.disabled=false;} });
+    if(res&&res.success){if(box){box.innerHTML="<p>"+msg+"</p><p><button type=\'button\' class=\'button nashenski-quick-order-close\'>"+cfg.closeText+"</button></p>";}}
+    else{if(button){button.disabled=false;}var note=form.querySelector(".nashenski-quick-order-error");if(note){note.textContent=msg;}}
+  }).catch(function(){if(button){button.disabled=false;}});
 });
 })();';
 	}
@@ -201,9 +381,8 @@ document.addEventListener("submit",function(e){
 
 	private static function form_html( $context, $product_id, $quantity ) {
 		$user   = wp_get_current_user();
-		$fields = array_filter( self::optional_fields(), function ( $key ) {
-			return 'yes' === nashenski_get_option( 'quick_order', 'field_' . $key );
-		}, ARRAY_FILTER_USE_KEY );
+		$fields = self::active_fields();
+		$format = self::phone_format();
 
 		$privacy = get_privacy_policy_url();
 		$privacy_link = $privacy ? sprintf( '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>', esc_url( $privacy ), esc_html__( 'privacy policy', 'nashenski-commerce' ) ) : esc_html__( 'privacy policy', 'nashenski-commerce' );
@@ -220,7 +399,11 @@ document.addEventListener("submit",function(e){
 			<p><label><?php esc_html_e( 'Name', 'nashenski-commerce' ); ?> <span aria-hidden="true">*</span><br>
 				<input type="text" name="name" required autocomplete="name" value="<?php echo esc_attr( trim( $user->first_name . ' ' . $user->last_name ) ); ?>"></label></p>
 			<p><label><?php esc_html_e( 'Phone', 'nashenski-commerce' ); ?> <span aria-hidden="true">*</span><br>
-				<input type="tel" name="phone" required autocomplete="tel"></label></p>
+				<input type="tel" name="phone" required autocomplete="tel" inputmode="tel" data-nashenski-phone placeholder="<?php echo esc_attr( self::phone_example() ); ?>"></label>
+				<span class="description"><?php
+					/* translators: %s: example phone number */
+					echo esc_html( sprintf( __( 'Phone number, for example %s.', 'nashenski-commerce' ), self::phone_example() ) );
+				?></span></p>
 			<p><label><?php esc_html_e( 'Email', 'nashenski-commerce' ); ?> <span aria-hidden="true">*</span><br>
 				<input type="email" name="email" required autocomplete="email" value="<?php echo esc_attr( $user->user_email ); ?>"></label></p>
 
@@ -255,7 +438,7 @@ document.addEventListener("submit",function(e){
 			<input type="hidden" name="product_id" value="<?php echo esc_attr( $product_id ); ?>">
 			<?php wp_nonce_field( self::NONCE, '_nonce' ); ?>
 			<p class="nashenski-quick-order-error" role="alert"></p>
-			<p><button type="submit" class="button alt"><?php esc_html_e( 'Send', 'nashenski-commerce' ); ?></button></p>
+			<p class="nashenski-quick-order-actions"><button type="submit" class="button alt"><?php esc_html_e( 'Send', 'nashenski-commerce' ); ?></button></p>
 		</form>
 		<?php
 		return ob_get_clean();
@@ -287,11 +470,19 @@ document.addEventListener("submit",function(e){
 		self::count_request();
 
 		$name  = sanitize_text_field( isset( $post['name'] ) ? $post['name'] : '' );
-		$phone = sanitize_text_field( isset( $post['phone'] ) ? $post['phone'] : '' );
 		$email = sanitize_email( isset( $post['email'] ) ? $post['email'] : '' );
+		$phone = self::normalize_phone( isset( $post['phone'] ) ? $post['phone'] : '' );
 
-		if ( '' === $name || '' === $phone || ! is_email( $email ) ) {
-			wp_send_json_error( array( 'message' => __( 'Enter your name, phone and a valid email.', 'nashenski-commerce' ) ) );
+		if ( '' === $name ) {
+			wp_send_json_error( array( 'message' => __( 'Enter your name.', 'nashenski-commerce' ) ) );
+		}
+
+		if ( '' === $phone ) {
+			wp_send_json_error( array( 'message' => self::phone_error() ) );
+		}
+
+		if ( ! is_email( $email ) ) {
+			wp_send_json_error( array( 'message' => __( 'Enter a valid email address.', 'nashenski-commerce' ) ) );
 		}
 
 		if ( ! isset( $post['consent'] ) || 'yes' !== $post['consent'] ) {
@@ -341,6 +532,75 @@ document.addEventListener("submit",function(e){
 		wp_send_json_success( array( 'message' => self::thanks_text() ) );
 	}
 
+	/**
+	 * A phone number, however it was typed, as +<dial><national>. The country comes from the setting,
+	 * and a number typed with an explicit +<dial> is taken as it was typed. Returns '' when invalid.
+	 */
+	public static function normalize_phone( $raw ) {
+		$raw    = trim( (string) $raw );
+		$digits = preg_replace( '/[^0-9]/', '', $raw );
+
+		if ( '' === $digits ) {
+			return '';
+		}
+
+		// An explicit +<dial> is trusted as written, whichever country it belongs to.
+		if ( 0 === strpos( $raw, '+' ) ) {
+			if ( strlen( $digits ) < 7 || strlen( $digits ) > 15 ) {
+				return '';
+			}
+
+			return '+' . $digits;
+		}
+
+		// "00" is the international prefix people often type instead of the plus.
+		if ( 0 === strpos( $digits, '00' ) ) {
+			$digits = substr( $digits, 2 );
+		}
+
+		$dial = self::phone_dial();
+
+		if ( '' !== $dial && 0 === strpos( $digits, $dial ) ) {
+			$national = substr( $digits, strlen( $dial ) );
+		} elseif ( '0' === $digits[0] ) {
+			$national = substr( $digits, 1 );
+		} else {
+			$national = $digits;
+		}
+
+		// The national significant number: 5 to 12 digits covers every country in the table.
+		if ( ! preg_match( '/^[1-9][0-9]{4,11}$/', $national ) ) {
+			return '';
+		}
+
+		if ( '' === $dial ) {
+			return '+' . $national;
+		}
+
+		return '+' . $dial . $national;
+	}
+
+	/**
+	 * The phone example shown as placeholder and named in the error message, for the chosen country.
+	 */
+	public static function phone_example() {
+		$dial = self::phone_dial();
+
+		if ( 'international' === self::phone_format() ) {
+			return $dial ? '+' . $dial . ' 88 123 4567' : '+CC 88 123 4567';
+		}
+
+		return '0888 123 456';
+	}
+
+	private static function phone_error() {
+		return sprintf(
+			/* translators: %s: example phone number */
+			__( 'Enter a valid phone number, for example %s.', 'nashenski-commerce' ),
+			self::phone_example()
+		);
+	}
+
 	private static function thanks_text() {
 		return esc_html__( 'Thank you. We have your details and will contact you to confirm the order.', 'nashenski-commerce' );
 	}
@@ -376,10 +636,11 @@ document.addEventListener("submit",function(e){
 		$order->calculate_totals();
 
 		// Owner-chosen extras go to the order as the customer note, one line each.
-		$notes = array();
+		$fields = self::active_fields();
+		$notes  = array();
 
 		foreach ( array( 'product_notes' => __( 'Product notes', 'nashenski-commerce' ), 'preferred_time' => __( 'Preferred delivery time', 'nashenski-commerce' ), 'message' => __( 'Message', 'nashenski-commerce' ) ) as $key => $label ) {
-			if ( ! empty( $post[ $key ] ) && 'yes' === nashenski_get_option( 'quick_order', 'field_' . $key ) ) {
+			if ( isset( $fields[ $key ] ) && ! empty( $post[ $key ] ) ) {
 				$notes[] = $label . ': ' . sanitize_textarea_field( $post[ $key ] );
 			}
 		}

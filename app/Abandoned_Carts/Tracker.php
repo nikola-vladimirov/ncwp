@@ -7,8 +7,12 @@ defined( 'ABSPATH' ) || exit;
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- the cart table is read and written on every change, so caching would show stale rows.
 /**
  * Abandoned carts: keeps the carts that were not ordered in a table of the site's own, and sends up to
- * three reminders to a shopper who typed an email. Nothing leaves the site. Reminders are plain text
- * through wp_mail(), not the WooCommerce mailer.
+ * three reminders to a shopper who typed an email. The email is recorded at checkout even for a
+ * logged-out shopper, so a cart is never tracked without a way to reach the owner of it.
+ *
+ * Reminders go out through the WooCommerce email "Abandoned cart reminder", so the owner edits the
+ * subject and body in WooCommerce > Settings > Emails. Each reminder carries a link that refills the
+ * cart and a single-use coupon made for that cart. Nothing leaves the site.
  *
  * Cart row states: open (counts and can get reminders), recovered (an order was placed from it),
  * emptied (the shopper emptied the cart), unsubscribed (the shopper clicked the link in a reminder).
@@ -17,11 +21,13 @@ defined( 'ABSPATH' ) || exit;
 class Tracker {
 	const TABLE           = 'nashenski_carts';
 	const DB_OPTION       = 'nashenski_carts_db_version';
-	const DB_VERSION      = '1';
+	const DB_VERSION      = '2';
 	const SEND_HOOK       = 'nashenski/abandoned_carts/send';
 	const CLEAN_HOOK      = 'nashenski/abandoned_carts/clean';
 	const GROUP           = 'nashenski';
 	const UNSUBSCRIBE_VAR = 'nashenski_unsubscribe';
+	const RESUME_VAR      = 'nashenski_resume';
+	const EMAIL_ID        = 'nashenski_abandoned_cart';
 
 	/** Reminders are not sent between these hours (site time). */
 	const QUIET_FROM = 22;
@@ -32,8 +38,10 @@ class Tracker {
 
 	public function __construct() {
 		add_action( 'init', array( __CLASS__, 'unsubscribe' ) );
+		add_action( 'template_redirect', array( __CLASS__, 'resume' ) );
 		add_action( self::SEND_HOOK, array( __CLASS__, 'send_due' ) );
 		add_action( self::CLEAN_HOOK, array( __CLASS__, 'clean_old' ) );
+		add_filter( 'woocommerce_email_classes', array( __CLASS__, 'register_email' ) );
 
 		if ( ! self::enabled() ) {
 			return;
@@ -46,6 +54,15 @@ class Tracker {
 		add_action( 'woocommerce_checkout_update_order_review', array( __CLASS__, 'capture_from_checkout' ) );
 		add_action( 'woocommerce_store_api_cart_update_customer_from_request', array( __CLASS__, 'capture_from_store_api' ), 10, 2 );
 		add_action( 'woocommerce_checkout_order_created', array( __CLASS__, 'mark_recovered' ) );
+	}
+
+	/**
+	 * Registers the reminder as a WooCommerce email, so it is edited and sent the WooCommerce way.
+	 */
+	public static function register_email( $emails ) {
+		$emails[ self::EMAIL_ID ] = new Email();
+
+		return $emails;
 	}
 
 	public static function enabled() {
@@ -83,6 +100,17 @@ class Tracker {
 	}
 
 	/**
+	 * The discount types the auto coupon can use, as WooCommerce names them.
+	 */
+	public static function coupon_types() {
+		return array(
+			'percent'       => __( 'Percentage off', 'nashenski-commerce' ),
+			'fixed_cart'    => __( 'Fixed amount off the cart', 'nashenski-commerce' ),
+			'fixed_product' => __( 'Fixed amount off each product', 'nashenski-commerce' ),
+		);
+	}
+
+	/**
 	 * Creates the table, once per DB version, and schedules the send and clean-up jobs.
 	 */
 	public static function install() {
@@ -108,6 +136,8 @@ class Tracker {
 			currency varchar(10) NOT NULL DEFAULT '',
 			status varchar(20) NOT NULL DEFAULT 'open',
 			token varchar(64) NOT NULL DEFAULT '',
+			coupon_code varchar(120) NOT NULL DEFAULT '',
+			coupon_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			emails_sent tinyint(3) unsigned NOT NULL DEFAULT 0,
 			created_at datetime NOT NULL,
 			last_activity datetime NOT NULL,
@@ -115,6 +145,7 @@ class Tracker {
 			PRIMARY KEY  (id),
 			UNIQUE KEY session_key (session_key),
 			KEY status_activity (status,last_activity),
+			KEY token (token),
 			KEY email (email)
 		) {$charset};" );
 
@@ -136,6 +167,36 @@ class Tracker {
 	}
 
 	/**
+	 * The cart contents and totals as a row, ready to insert or merge into an update. Each item keeps
+	 * its product and variation ids, so a reminder link can put the very same items back in the cart.
+	 */
+	private static function cart_data() {
+		$items = array();
+
+		if ( WC()->cart && ! WC()->cart->is_empty() ) {
+			foreach ( WC()->cart->get_cart() as $item ) {
+				$product = $item['data'];
+				$items[] = array(
+					'name'         => $product->get_name(),
+					'quantity'     => (int) $item['quantity'],
+					'total'        => (float) $item['line_total'],
+					'url'          => $product->get_permalink(),
+					'product_id'   => (int) $item['product_id'],
+					'variation_id' => (int) $item['variation_id'],
+					'variation'    => isset( $item['variation'] ) && is_array( $item['variation'] ) ? $item['variation'] : array(),
+				);
+			}
+		}
+
+		return array(
+			'cart'          => wp_json_encode( $items ),
+			'cart_total'    => ( WC()->cart && ! WC()->cart->is_empty() ) ? (float) WC()->cart->get_total( 'edit' ) : 0,
+			'currency'      => get_woocommerce_currency(),
+			'last_activity' => current_time( 'mysql', true ),
+		);
+	}
+
+	/**
 	 * Saves the cart on every change. An emptied cart stops being tracked.
 	 */
 	public static function record_cart() {
@@ -145,49 +206,28 @@ class Tracker {
 			return;
 		}
 
-		global $wpdb;
-		$table = self::table();
-
 		if ( WC()->cart->is_empty() ) {
 			self::mark_emptied();
 
 			return;
 		}
 
-		$items = array();
-
-		foreach ( WC()->cart->get_cart() as $item ) {
-			$product = $item['data'];
-			$items[] = array(
-				'name'     => $product->get_name(),
-				'quantity' => (int) $item['quantity'],
-				'total'    => (float) $item['line_total'],
-				'url'      => $product->get_permalink(),
-			);
-		}
-
-		$now  = current_time( 'mysql', true );
-		$data = array(
-			'cart'          => wp_json_encode( $items ),
-			'cart_total'    => (float) WC()->cart->get_total( 'edit' ),
-			'currency'      => get_woocommerce_currency(),
-			'last_activity' => $now,
-		);
-
-		$id = $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM %i WHERE session_key = %s', $table, $key ) );
+		global $wpdb;
+		$table = self::table();
+		$id    = $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM %i WHERE session_key = %s', $table, $key ) );
 
 		if ( $id ) {
-			$wpdb->update( $table, $data, array( 'id' => (int) $id ) );
+			$wpdb->update( $table, self::cart_data(), array( 'id' => (int) $id ) );
 
 			return;
 		}
 
-		$wpdb->insert( $table, $data + array(
+		$wpdb->insert( $table, self::cart_data() + array(
 			'session_key' => $key,
 			'status'      => 'open',
 			'step'        => 'cart',
 			'token'       => wp_generate_password( 32, false ),
-			'created_at'  => $now,
+			'created_at'  => current_time( 'mysql', true ),
 		) );
 	}
 
@@ -240,7 +280,9 @@ class Tracker {
 	}
 
 	/**
-	 * The email is kept only once the shopper has typed one. Only open carts get it.
+	 * Keeps the email the shopper typed at checkout. A logged-out shopper has no account, so if no row
+	 * was recorded yet the cart is stored right here; the email is never dropped just because the cart
+	 * did not change before checkout.
 	 */
 	private static function save_contact( $email, $name, $phone, $step ) {
 		$key   = self::session_key();
@@ -251,16 +293,29 @@ class Tracker {
 		}
 
 		global $wpdb;
+		$table = self::table();
 
-		$wpdb->query( $wpdb->prepare(
-			'UPDATE %i SET email = %s, first_name = %s, phone = %s, step = %s WHERE session_key = %s AND status = %s',
-			self::table(),
-			$email,
-			sanitize_text_field( (string) $name ),
-			sanitize_text_field( (string) $phone ),
-			sanitize_key( $step ),
-			$key,
-			'open'
+		$id = $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM %i WHERE session_key = %s AND status = %s', $table, $key, 'open' ) );
+
+		$contact = array(
+			'email'      => $email,
+			'first_name' => sanitize_text_field( (string) $name ),
+			'phone'      => sanitize_text_field( (string) $phone ),
+			'step'       => sanitize_key( $step ),
+		);
+
+		if ( $id ) {
+			$wpdb->update( $table, $contact, array( 'id' => (int) $id ) );
+
+			return;
+		}
+
+		// No open row for this session: make one from the current cart so the email is kept.
+		$wpdb->insert( $table, self::cart_data() + $contact + array(
+			'session_key' => $key,
+			'status'      => 'open',
+			'token'       => wp_generate_password( 32, false ),
+			'created_at'  => current_time( 'mysql', true ),
 		) );
 	}
 
@@ -323,49 +378,102 @@ class Tracker {
 		}
 	}
 
-	private static function send( $row ) {
-		$items = json_decode( (string) $row->cart, true );
-		$lines = array();
+	/**
+	 * Sends one reminder now, whatever the schedule says. Used by the "Send reminder" button.
+	 */
+	public static function send_now( $id ) {
+		$row = self::get_row( $id );
 
-		foreach ( (array) $items as $item ) {
-			$lines[] = sprintf( '- %s x %d', $item['name'], $item['quantity'] );
+		// A shopper who unsubscribed is never emailed again, not even by hand.
+		if ( ! $row || 'unsubscribed' === $row->status || ! is_email( $row->email ) ) {
+			return false;
 		}
 
-		$coupon = sanitize_text_field( (string) nashenski_get_option( 'abandoned_carts', 'coupon' ) );
-		$link   = add_query_arg( self::UNSUBSCRIBE_VAR, $row->token, home_url( '/' ) );
-		$total  = html_entity_decode( wp_strip_all_tags( wc_price( $row->cart_total, array( 'currency' => $row->currency ) ) ), ENT_QUOTES, 'UTF-8' );
+		if ( ! self::send( $row ) ) {
+			return false;
+		}
 
-		$body = array_merge(
-			array(
-				'' !== $row->first_name
-					/* translators: %s: shopper's first name */
-					? sprintf( __( 'Hello %s,', 'nashenski-commerce' ), $row->first_name )
-					: __( 'Hello,', 'nashenski-commerce' ),
-				'',
-				__( 'You left these items in your cart:', 'nashenski-commerce' ),
-			),
-			$lines,
-			array(
-				'',
-				/* translators: %s: cart total, with the currency */
-				sprintf( __( 'Total: %s', 'nashenski-commerce' ), $total ),
-			),
-			'' !== $coupon
-				? array(
-					'',
-					/* translators: %s: coupon code */
-					sprintf( __( 'Use the code %s when you order.', 'nashenski-commerce' ), $coupon ),
-				)
-				: array(),
-			array(
-				'',
-				__( 'Go back to your cart:', 'nashenski-commerce' ),
-				wc_get_cart_url(),
-				'',
-				__( 'Do not want these emails? Unsubscribe here:', 'nashenski-commerce' ),
-				$link,
-			)
+		global $wpdb;
+
+		$wpdb->query( $wpdb->prepare( 'UPDATE %i SET emails_sent = emails_sent + 1, last_email = %s WHERE id = %d', self::table(), current_time( 'mysql', true ), (int) $row->id ) );
+
+		return true;
+	}
+
+	/**
+	 * Sends one reminder: through the WooCommerce email when it is registered, through wp_mail() when
+	 * it is not (for example a very old WooCommerce). Returns true when the mailer took it.
+	 */
+	private static function send( $row ) {
+		$coupon = self::coupon_for( $row );
+		$data   = self::email_data( $row, $coupon );
+
+		$mailer = function_exists( 'WC' ) && WC()->mailer() ? WC()->mailer() : null;
+
+		if ( $mailer && isset( $mailer->emails[ self::EMAIL_ID ] ) && $mailer->emails[ self::EMAIL_ID ] instanceof Email ) {
+			return (bool) $mailer->emails[ self::EMAIL_ID ]->trigger( $row, $data );
+		}
+
+		return self::send_plain( $row, $data );
+	}
+
+	/**
+	 * The values the placeholders take in a reminder.
+	 */
+	public static function email_data( $row, $coupon = null ) {
+		$coupon = null === $coupon ? self::coupon_for( $row ) : $coupon;
+		$items  = json_decode( (string) $row->cart, true );
+		$lines  = array();
+
+		foreach ( (array) $items as $item ) {
+			$lines[] = sprintf( '- %s x %d', isset( $item['name'] ) ? $item['name'] : '', isset( $item['quantity'] ) ? (int) $item['quantity'] : 1 );
+		}
+
+		$total = html_entity_decode( wp_strip_all_tags( wc_price( $row->cart_total, array( 'currency' => $row->currency ) ) ), ENT_QUOTES, 'UTF-8' );
+
+		return array(
+			'name'             => '' !== $row->first_name ? $row->first_name : __( 'there', 'nashenski-commerce' ),
+			'items'            => implode( "\n", $lines ),
+			'cart_total'       => $total,
+			'coupon'           => $coupon,
+			'coupon_line'      => '' !== $coupon
+				/* translators: %s: coupon code */
+				? sprintf( __( 'Use the code %s when you order. It works once.', 'nashenski-commerce' ), $coupon )
+				: '',
+			'resume_link'      => add_query_arg( self::RESUME_VAR, $row->token, home_url( '/' ) ),
+			'unsubscribe_link' => add_query_arg( self::UNSUBSCRIBE_VAR, $row->token, home_url( '/' ) ),
+			'cart_url'         => wc_get_cart_url(),
+			'site_title'       => get_bloginfo( 'name' ),
+			'email'            => $row->email,
 		);
+	}
+
+	/**
+	 * The fallback plain text reminder, used only when the WooCommerce email is not available.
+	 */
+	private static function send_plain( $row, $data ) {
+		$body = array(
+			/* translators: %s: shopper's first name */
+			sprintf( __( 'Hello %s,', 'nashenski-commerce' ), $data['name'] ),
+			'',
+			__( 'You left these items in your cart:', 'nashenski-commerce' ),
+			$data['items'],
+			'',
+			/* translators: %s: cart total, with the currency */
+			sprintf( __( 'Total: %s', 'nashenski-commerce' ), $data['cart_total'] ),
+		);
+
+		if ( '' !== $data['coupon_line'] ) {
+			$body[] = '';
+			$body[] = $data['coupon_line'];
+		}
+
+		$body[] = '';
+		$body[] = __( 'Go back to your cart:', 'nashenski-commerce' );
+		$body[] = $data['resume_link'];
+		$body[] = '';
+		$body[] = __( 'Do not want these emails? Unsubscribe here:', 'nashenski-commerce' );
+		$body[] = $data['unsubscribe_link'];
 
 		return (bool) wp_mail(
 			$row->email,
@@ -373,6 +481,159 @@ class Tracker {
 			sprintf( __( 'You left items in your cart at %s', 'nashenski-commerce' ), get_bloginfo( 'name' ) ),
 			implode( "\n", $body )
 		);
+	}
+
+	/**
+	 * The coupon code to name in a reminder. With auto coupons on, the cart gets its own single-use
+	 * coupon, made once and kept on the row. Otherwise the manually saved code is used.
+	 */
+	public static function coupon_for( $row ) {
+		$amount = (float) str_replace( ',', '.', (string) nashenski_get_option( 'abandoned_carts', 'coupon_amount' ) );
+
+		if ( 'yes' !== nashenski_get_option( 'abandoned_carts', 'auto_coupon' ) || $amount <= 0 ) {
+			return self::manual_coupon();
+		}
+
+		$code = isset( $row->coupon_code ) ? trim( (string) $row->coupon_code ) : '';
+
+		// A code kept on the row is only trusted while the coupon behind it exists. A row saved by an
+		// older build can carry a code that was never created, and naming such a code would leave the
+		// shopper with something WooCommerce does not know, so it is replaced by a real coupon.
+		if ( '' !== $code && self::coupon_exists( $code ) ) {
+			return $code;
+		}
+
+		return self::create_coupon( $row, $amount );
+	}
+
+	/**
+	 * Whether WooCommerce has a coupon with this code.
+	 */
+	private static function coupon_exists( $code ) {
+		if ( '' === $code ) {
+			return false;
+		}
+
+		// Without the lookup the stored code is the only evidence there is, so it is kept as it was.
+		if ( ! function_exists( 'wc_get_coupon_id_by_code' ) ) {
+			return true;
+		}
+
+		return (int) wc_get_coupon_id_by_code( $code ) > 0;
+	}
+
+	public static function manual_coupon() {
+		return sanitize_text_field( (string) nashenski_get_option( 'abandoned_carts', 'coupon' ) );
+	}
+
+	private static function create_coupon( $row, $amount ) {
+		if ( ! class_exists( 'WC_Coupon' ) ) {
+			return self::manual_coupon();
+		}
+
+		try {
+			$code   = 'NASH-' . strtoupper( wp_generate_password( 8, false, false ) );
+			$coupon = new \WC_Coupon();
+
+			$coupon->set_code( $code );
+			$coupon->set_discount_type( nashenski_get_choice( 'abandoned_carts', 'coupon_type', self::coupon_types() ) );
+			$coupon->set_amount( $amount );
+			$coupon->set_usage_limit( 1 );
+			$coupon->set_usage_limit_per_user( 1 );
+			$coupon->set_individual_use( true );
+
+			if ( is_email( $row->email ) ) {
+				$coupon->set_email_restrictions( array( $row->email ) );
+			}
+
+			$days = (int) nashenski_get_option( 'abandoned_carts', 'coupon_days' );
+
+			if ( $days > 0 ) {
+				$coupon->set_date_expires( time() + $days * DAY_IN_SECONDS );
+			}
+
+			/* translators: %s: shopper's email */
+			$coupon->set_description( sprintf( __( 'Abandoned cart coupon for %s', 'nashenski-commerce' ), $row->email ) );
+			$saved = $coupon->save();
+
+			// Nothing is remembered for the row unless the coupon really exists in WooCommerce, so a
+			// reminder can never name a code that was not created.
+			if ( ! $saved || $coupon->get_id() <= 0 ) {
+				return '';
+			}
+
+			global $wpdb;
+
+			$wpdb->update( self::table(), array(
+				'coupon_code' => $code,
+				'coupon_id'   => (int) $coupon->get_id(),
+			), array( 'id' => (int) $row->id ) );
+
+			$row->coupon_code = $code;
+
+			return $code;
+		} catch ( \Exception $e ) {
+			return '';
+		}
+	}
+
+	/**
+	 * The link in a reminder that refills the cart from the row and applies its coupon.
+	 */
+	public static function resume() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the token is the check; a link in an email cannot carry a nonce.
+		if ( empty( $_GET[ self::RESUME_VAR ] ) || ! get_option( self::DB_OPTION ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- see above.
+		$token = sanitize_text_field( wp_unslash( $_GET[ self::RESUME_VAR ] ) );
+
+		if ( '' === $token || ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->session ) {
+			return;
+		}
+
+		global $wpdb;
+
+		$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE token = %s', self::table(), $token ) );
+
+		if ( ! $row ) {
+			return;
+		}
+
+		if ( ! WC()->cart->is_empty() ) {
+			WC()->cart->empty_cart();
+		}
+
+		$added = 0;
+
+		foreach ( (array) json_decode( (string) $row->cart, true ) as $item ) {
+			$product_id   = isset( $item['product_id'] ) ? (int) $item['product_id'] : 0;
+			$variation_id = isset( $item['variation_id'] ) ? (int) $item['variation_id'] : 0;
+			$variation    = isset( $item['variation'] ) && is_array( $item['variation'] ) ? $item['variation'] : array();
+			$quantity     = isset( $item['quantity'] ) ? max( 1, (int) $item['quantity'] ) : 1;
+
+			if ( $product_id && WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $variation ) ) {
+				$added++;
+			}
+		}
+
+		$coupon = sanitize_text_field( (string) $row->coupon_code );
+
+		if ( $added && '' !== $coupon ) {
+			WC()->cart->apply_coupon( $coupon );
+		}
+
+		WC()->session->set_customer_session_cookie( true );
+
+		if ( $added ) {
+			wc_add_notice( __( 'We put the items back in your cart.', 'nashenski-commerce' ), 'success' );
+		} else {
+			wc_add_notice( __( 'The items from the reminder are no longer available.', 'nashenski-commerce' ), 'error' );
+		}
+
+		wp_safe_redirect( wc_get_cart_url() );
+		exit;
 	}
 
 	/**
@@ -418,5 +679,99 @@ class Tracker {
 			self::table(),
 			gmdate( 'Y-m-d H:i:s', time() - self::retention_days() * DAY_IN_SECONDS )
 		) );
+	}
+
+	/*
+	 * The read and write helpers the WooCommerce > Abandoned carts screen uses.
+	 */
+
+	public static function get_row( $id ) {
+		global $wpdb;
+
+		return $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', self::table(), (int) $id ) );
+	}
+
+	/**
+	 * A page of carts, newest first, optionally only one status.
+	 */
+	public static function get_rows( $status = '', $limit = 20, $offset = 0 ) {
+		global $wpdb;
+		$table = self::table();
+
+		if ( '' !== $status ) {
+			return $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i WHERE status = %s ORDER BY last_activity DESC LIMIT %d OFFSET %d', $table, $status, $limit, $offset ) );
+		}
+
+		return $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY last_activity DESC LIMIT %d OFFSET %d', $table, $limit, $offset ) );
+	}
+
+	public static function count_rows( $status = '' ) {
+		global $wpdb;
+		$table = self::table();
+
+		if ( '' !== $status ) {
+			return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE status = %s', $table, $status ) );
+		}
+
+		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) );
+	}
+
+	/**
+	 * The value of the open carts, for the summary line.
+	 */
+	public static function open_value() {
+		global $wpdb;
+
+		return (float) $wpdb->get_var( $wpdb->prepare( 'SELECT COALESCE(SUM(cart_total),0) FROM %i WHERE status = %s', self::table(), 'open' ) );
+	}
+
+	/**
+	 * Counts per status, for the summary row: array( 'open' => 3, ... ).
+	 */
+	public static function counts_by_status() {
+		global $wpdb;
+
+		$rows   = $wpdb->get_results( $wpdb->prepare( 'SELECT status, COUNT(*) AS found FROM %i GROUP BY status', self::table() ) );
+		$counts = array();
+
+		foreach ( (array) $rows as $row ) {
+			$counts[ $row->status ] = (int) $row->found;
+		}
+
+		return $counts;
+	}
+
+	public static function update_contact( $id, $email, $name, $phone ) {
+		global $wpdb;
+
+		return (bool) $wpdb->update( self::table(), array(
+			'email'      => sanitize_email( (string) $email ),
+			'first_name' => sanitize_text_field( (string) $name ),
+			'phone'      => sanitize_text_field( (string) $phone ),
+		), array( 'id' => (int) $id ) );
+	}
+
+	public static function delete_row( $id ) {
+		global $wpdb;
+
+		return (bool) $wpdb->delete( self::table(), array( 'id' => (int) $id ) );
+	}
+
+	/**
+	 * @param int[] $ids
+	 * @return int Rows removed.
+	 */
+	public static function delete_rows( $ids ) {
+		$ids = array_values( array_unique( array_filter( array_map( 'intval', (array) $ids ) ) ) );
+
+		if ( ! $ids ) {
+			return 0;
+		}
+
+		global $wpdb;
+		$table = self::table();
+		$in    = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+
+		return (int) $wpdb->query( $wpdb->prepare( "DELETE FROM %i WHERE id IN ($in)", array_merge( array( $table ), $ids ) ) );
 	}
 }

@@ -5,11 +5,11 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.14.2
+Stable tag: 0.15.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Everything a WooCommerce store needs to sell in Bulgaria: Econt, Speedy, BOX NOW, CVC and Pigeon Express shipping, invoices and Ordinance N-18.
+Everything a WooCommerce store needs to sell in Bulgaria: Econt, Speedy, BOX NOW, CVC and Pigeon Express shipping, invoices, Ordinance N-18, quick order and abandoned cart reminders.
 
 == Description ==
 
@@ -38,6 +38,14 @@ Nashenski Commerce ("нашенски" means "ours, done the local way") adds wh
 * Company invoice fields at checkout (on or off), in every checkout type, and EU VAT number check (VIES).
 * The total in words on documents, in euro.
 * A check for "mathematically impossible" prices with VAT.
+
+**Quick order**
+
+* A "Quick order" button on the product page and the cart: a short form (a dialog, inline under the button, or a sliding panel) with ready-made or custom fields. Only Bulgarian phone numbers are accepted, local or international. The order waits for your confirmation; no stock is reserved and no payment link is sent until you confirm.
+
+**Abandoned carts**
+
+* Off by default. Keeps carts that were not ordered, records the email as soon as the shopper types it (even a logged-out shopper at checkout), and sends reminders through an editable WooCommerce email, with an optional single-use coupon and a link that refills the cart. A list with totals is under WooCommerce > Abandoned carts.
 
 **EU withdrawal function**
 
@@ -96,6 +104,10 @@ The plugin only contacts a service after you turn it on and enter your own accou
 * EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/
 
 == Changelog ==
+
+= 0.15.0 =
+* Quick order: a short form on the product page and the cart for shoppers who do not want to check out, with ready-made templates, Bulgarian phone masking and a spam check.
+* Abandoned carts: off by default, keeps carts that were not ordered, records the email when the shopper types it and sends reminders through an editable WooCommerce email, with an optional single-use coupon and a link that refills the cart. A list with totals is under WooCommerce > Abandoned carts.
 
 = 0.14.2 =
 * Checkout no longer fails for CVC addresses, and Speedy offices show no PHP notices, while a courier is not connected yet.

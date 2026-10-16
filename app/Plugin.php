@@ -4,7 +4,7 @@ namespace Nashenski;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin {
-	const VERSION = '0.14.2';
+	const VERSION = '0.15.0';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
@@ -209,9 +209,44 @@ class Plugin {
 	}
 
 	/**
+	 * The WooCommerce Emails listing can only edit block-based emails. Our reminder is a classic
+	 * WC_Email, so its Edit button errors out. On that screen we make the button open the classic
+	 * per-email settings page instead, which still renders and saves our form the normal way.
+	 */
+	private static function maybe_redirect_email_edit() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- screen detection only.
+		if ( ! isset( $_GET['page'], $_GET['tab'] ) || 'wc-settings' !== $_GET['page'] || 'email' !== $_GET['tab'] ) {
+			return;
+		}
+
+		if ( ! function_exists( 'wp_add_inline_script' ) ) {
+			return;
+		}
+
+		$classic_url = admin_url( 'admin.php?page=wc-settings&tab=email&section=nashenski_abandoned_cart' );
+
+		wp_register_script( 'nashenski-email-edit', false, array( 'wp-api-fetch' ), self::VERSION, true );
+		wp_enqueue_script( 'nashenski-email-edit' );
+		wp_add_inline_script( 'nashenski-email-edit', '(function(){
+			if(!window.wp||!wp.apiFetch||!wp.apiFetch.use){return;}
+			var url=' . wp_json_encode( $classic_url ) . ';
+			wp.apiFetch.use(function(options,next){
+				var path=options&&options.path?String(options.path):"";
+				if(path.indexOf("recreate-email-post")!==-1&&options.data&&options.data.email_id==="nashenski_abandoned_cart"){
+					window.location.href=url;
+					return new Promise(function(){});
+				}
+				return next(options);
+			});
+		})();' );
+	}
+
+	/**
 	 * Enqueue admin scripts and styles.
 	 */
 	public static function admin_enqueue_scripts() {
+		self::maybe_redirect_email_edit();
+
 		// Our settings tab is plain WooCommerce settings: only our small readable files.
 		if ( Admin\Settings::is_current() ) {
 			wp_enqueue_media();
