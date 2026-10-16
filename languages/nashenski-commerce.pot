@@ -2,10 +2,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.15.3\n"
+"Project-Id-Version: Nashenski Commerce 0.15.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-16 16:19+0000\n"
-"PO-Revision-Date: 2026-10-16 16:19+0000\n"
+"POT-Creation-Date: 2026-10-16 16:33+0000\n"
+"PO-Revision-Date: 2026-10-16 16:33+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -160,7 +160,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: app/Admin/Abandoned_Carts_Page.php:250 app/Admin/Help_Page.php:228
+#: app/Admin/Abandoned_Carts_Page.php:250 app/Admin/Help_Page.php:227
 msgid "Apply"
 msgstr ""
 
@@ -732,7 +732,7 @@ msgstr ""
 msgid "Nothing matches these filters."
 msgstr ""
 
-#: app/Admin/Export_Builder.php:152 app/Front_End/Quick_Order.php:287 app/Plugin.php:261
+#: app/Admin/Export_Builder.php:152 app/Front_End/Quick_Order.php:287 app/Plugin.php:259
 msgid "Something went wrong. Please try again."
 msgstr ""
 
@@ -1192,7 +1192,7 @@ msgstr ""
 msgid "nekorekten.com, Connectix and NepoStop tell you whether a phone number has a history of refused parcels. Nashenski Commerce can show a warning on the order and hide cash on delivery for such customers."
 msgstr ""
 
-#: app/Admin/Help_Page.php:139 app/Admin/Help_Page.php:175
+#: app/Admin/Help_Page.php:139 app/Admin/Help_Page.php:174
 msgid "Moving from another plugin"
 msgstr ""
 
@@ -1213,92 +1213,88 @@ msgid "Updates"
 msgstr ""
 
 #: app/Admin/Help_Page.php:145
-msgid "New versions are published on GitHub and show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too."
+msgid "New versions show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too."
 msgstr ""
 
-#: app/Admin/Help_Page.php:146
-msgid "While the GitHub repository is private, each site needs a read-only access token: on GitHub, create a fine-grained token with read access to the repository contents, then add define( 'NASHENSKI_UPDATE_TOKEN', 'your token' ); to wp-config.php."
-msgstr ""
-
-#: app/Admin/Help_Page.php:148
+#: app/Admin/Help_Page.php:147
 msgid "When something does not work"
 msgstr ""
 
-#: app/Admin/Help_Page.php:149
+#: app/Admin/Help_Page.php:148
 msgid "\"Nothing found\" under a courier: check the login on the courier page. In BOX NOW demo mode there are only two test lockers, both in Sofia."
 msgstr ""
 
-#: app/Admin/Help_Page.php:150
+#: app/Admin/Help_Page.php:149
 msgid "No courier options at checkout: add the methods to the shipping zone of the customer's address and give your products a weight."
 msgstr ""
 
-#: app/Admin/Help_Page.php:151
+#: app/Admin/Help_Page.php:150
 msgid "\"Complete the fields to calculate\" does not go away: the customer has not chosen an office, a locker or an address yet."
 msgstr ""
 
-#: app/Admin/Help_Page.php:152
+#: app/Admin/Help_Page.php:151
 msgid "No documents: turn on \"Invoices and N-18\" in Overview and check \"When to generate documents?\" in Documents."
 msgstr ""
 
-#: app/Admin/Help_Page.php:164 app/Admin/Import_Sources.php:177
+#: app/Admin/Help_Page.php:163 app/Admin/Import_Sources.php:177
 msgid "Bulgarisation for WooCommerce"
 msgstr ""
 
-#: app/Admin/Help_Page.php:176
+#: app/Admin/Help_Page.php:175
 msgid "These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use and switches the plugin off."
 msgstr ""
 
 #. translators: %s: date
-#: app/Admin/Help_Page.php:186
+#: app/Admin/Help_Page.php:185
 #, php-format
 msgid "Imported on %s"
 msgstr ""
 
-#: app/Admin/Help_Page.php:189
+#: app/Admin/Help_Page.php:188
 msgid "Import and switch off"
 msgstr ""
 
 #. translators: %d: number of settings
-#: app/Admin/Help_Page.php:210
+#: app/Admin/Help_Page.php:209
 #, php-format
 msgid "%d setting changed."
 msgid_plural "%d settings changed."
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Admin/Help_Page.php:223
+#: app/Admin/Help_Page.php:222
 msgid "Recommended settings"
 msgstr ""
 
-#: app/Admin/Help_Page.php:224
+#: app/Admin/Help_Page.php:223
 msgid "Settings that suit most Bulgarian stores. Tick the ones you want and apply them; nothing else changes."
 msgstr ""
 
-#: app/Admin/Help_Page.php:229
+#: app/Admin/Help_Page.php:228
 msgid "Setting"
 msgstr ""
 
-#: app/Admin/Help_Page.php:230 app/Plugin.php:266
+#: app/Admin/Help_Page.php:229 app/Plugin.php:264
 msgid "Now"
 msgstr ""
 
-#: app/Admin/Help_Page.php:231
+#: app/Admin/Help_Page.php:230
 msgid "Recommended"
 msgstr ""
 
-#: app/Admin/Help_Page.php:232
+#: app/Admin/Help_Page.php:231
 msgid "Why"
 msgstr ""
 
-#: app/Admin/Help_Page.php:245
+#: app/Admin/Help_Page.php:244
 msgid "Already set"
 msgstr ""
 
-#: app/Admin/Help_Page.php:262
+#: app/Admin/Help_Page.php:261
 msgid "Apply recommended settings"
 msgstr ""
 
-#: app/Admin/Help_Page.php:264
+#: app/Admin/Help_Page.php:263
 msgid "All recommended settings are in place."
 msgstr ""
 
@@ -2076,7 +2072,7 @@ msgstr ""
 msgid "Up to (kg)"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:600 app/Admin/Settings_Page.php:694 app/Plugin.php:262
+#: app/Admin/Settings_Page.php:600 app/Admin/Settings_Page.php:694 app/Plugin.php:260
 msgid "Remove row"
 msgstr ""
 
@@ -3926,7 +3922,7 @@ msgstr ""
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr ""
 
-#: app/Admin/Tabs/Settings_Tab.php:8 app/Plugin.php:78 app/Plugin.php:210
+#: app/Admin/Tabs/Settings_Tab.php:8 app/Plugin.php:78 app/Plugin.php:208
 msgid "Settings"
 msgstr ""
 
@@ -4831,7 +4827,7 @@ msgstr ""
 msgid "Leave your details and we will contact you to confirm the order."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:403 app/Plugin.php:267
+#: app/Front_End/Quick_Order.php:403 app/Plugin.php:265
 msgid "Website"
 msgstr ""
 
@@ -5217,27 +5213,27 @@ msgstr ""
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr ""
 
-#: app/Plugin.php:260
+#: app/Plugin.php:258
 msgid "The file was downloaded."
 msgstr ""
 
-#: app/Plugin.php:263
+#: app/Plugin.php:261
 msgid "Built-in prices restored. Save to keep them."
 msgstr ""
 
-#: app/Plugin.php:264
+#: app/Plugin.php:262
 msgid "Your prices match the courier website."
 msgstr ""
 
-#: app/Plugin.php:265
+#: app/Plugin.php:263
 msgid "The courier website has different prices:"
 msgstr ""
 
-#: app/Plugin.php:268
+#: app/Plugin.php:266
 msgid "Use these prices"
 msgstr ""
 
-#: app/Plugin.php:269
+#: app/Plugin.php:267
 msgid "New prices filled in. Check them and save."
 msgstr ""
 
@@ -5832,25 +5828,21 @@ msgstr ""
 msgid "Speedy - %s"
 msgstr ""
 
-#: app/Updater.php:126
-msgid "The update could not be downloaded from GitHub. For a private repository, add NASHENSKI_UPDATE_TOKEN to wp-config.php."
-msgstr ""
-
 #. translators: %1$s is minimum php version and %2$s is minimum WP version
-#: nashenski-commerce.php:66
+#: nashenski-commerce.php:65
 #, php-format
 msgid "Nashenski Commerce requires PHP version %1$s+ and WP version %2$s+, plugin is currently NOT RUNNING."
 msgstr ""
 
-#: nashenski-commerce.php:76
+#: nashenski-commerce.php:75
 msgid "Nashenski Commerce is paused: please deactivate Bulgarisation for WooCommerce first. Your settings and orders can be imported afterwards."
 msgstr ""
 
-#: nashenski-commerce.php:85
+#: nashenski-commerce.php:84
 msgid "Nashenski Commerce - Please enable WooCommerce first."
 msgstr ""
 
-#: nashenski-commerce.php:96
+#: nashenski-commerce.php:95
 msgid "Please run `composer install` in the plugin folder `nashenski-commerce`"
 msgstr ""
 

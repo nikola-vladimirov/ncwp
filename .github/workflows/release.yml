@@ -1,5 +1,6 @@
-# A push to main whose plugin Version has no release yet publishes release vX.Y.Z with the plugin zip.
-# Sites with Nashenski Commerce then see the update in Dashboard > Updates.
+# A push to main whose plugin Version has no release yet publishes release vX.Y.Z with one zip:
+# nashenski-commerce-X.Y.Z.zip (the plugin).
+# A version with a dash (0.16.0-beta1) is published as a pre-release.
 name: Release
 
 on:
@@ -22,4 +23,5 @@ jobs:
           if gh release view "v$v" > /dev/null 2>&1; then echo "v$v is already released"; exit 0; fi
           git archive --format=zip --prefix=nashenski-commerce/ -o "nashenski-commerce-$v.zip" HEAD
           awk -v h="## $v " 'index($0, h) == 1 { on = 1; next } /^## / { on = 0 } on' CHANGELOG.md > notes.md
-          gh release create "v$v" "nashenski-commerce-$v.zip" --title "Nashenski Commerce $v" --notes-file notes.md --target "$GITHUB_SHA"
+          pre=""; case "$v" in *-*) pre="--prerelease";; esac
+          gh release create "v$v" "nashenski-commerce-$v.zip" $pre --title "Nashenski Commerce $v" --notes-file notes.md --target "$GITHUB_SHA"

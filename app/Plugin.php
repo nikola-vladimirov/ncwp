@@ -4,7 +4,7 @@ namespace Nashenski;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin {
-	const VERSION = '0.15.4';
+	const VERSION = '0.16.0';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
@@ -118,8 +118,6 @@ class Plugin {
 
 		// The order document is made for every order, so these load with documents off too.
 		new Document_Storage();
-		// Loaded outside the admin too: update checks and auto-updates run in WP-Cron.
-		new Updater();
 		new Admin\Order\Actions();
 		new Admin\Order\MetaBox();
 

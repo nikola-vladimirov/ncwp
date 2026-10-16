@@ -142,8 +142,7 @@ class Help_Page {
 				esc_html__( 'Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import.', 'nashenski-commerce' ),
 			),
 			__( 'Updates', 'nashenski-commerce' ) => array(
-				esc_html__( 'New versions are published on GitHub and show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too.', 'nashenski-commerce' ),
-				esc_html__( 'While the GitHub repository is private, each site needs a read-only access token: on GitHub, create a fine-grained token with read access to the repository contents, then add define( \'NASHENSKI_UPDATE_TOKEN\', \'your token\' ); to wp-config.php.', 'nashenski-commerce' ),
+				esc_html__( 'New versions show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too.', 'nashenski-commerce' ),
 			),
 			__( 'When something does not work', 'nashenski-commerce' ) => array(
 				esc_html__( '"Nothing found" under a courier: check the login on the courier page. In BOX NOW demo mode there are only two test lockers, both in Sofia.', 'nashenski-commerce' ),

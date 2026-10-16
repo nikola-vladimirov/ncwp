@@ -1,5 +1,10 @@
 # Nashenski Commerce changelog
 
+## 0.16.0 (2026-10-16)
+
+### Updates
+- Stable versions now come from WordPress.org, through Dashboard > Updates like any other plugin. The plugin no longer checks GitHub itself.
+
 ## 0.15.4 (2026-10-16)
 
 ### Customer checks

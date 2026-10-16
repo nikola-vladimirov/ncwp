@@ -6,7 +6,7 @@ Description:  Everything a WooCommerce store needs to sell in Bulgaria: Econt, S
 Requires Plugins: woocommerce
 Author:       PristaDigital
 Author URI:   https://pristadigital.com/
-Version:      0.15.4
+Version:      0.16.0
 Requires at least: 6.5
 Requires PHP: 7.4
 WC requires at least: 9.4.0
@@ -15,7 +15,6 @@ Text Domain:  nashenski-commerce
 Domain Path:  /languages
 License:      GPLv3 or later
 License URI:  https://www.gnu.org/licenses/gpl-3.0.html
-Update URI:   https://github.com/nikola-vladimirov/nashenski-commerce
 */
 
 /*

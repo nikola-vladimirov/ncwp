@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.15.4
+Stable tag: 0.16.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -104,6 +104,9 @@ The plugin only contacts a service after you turn it on and enter your own accou
 * EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/
 
 == Changelog ==
+
+= 0.16.0 =
+* Updates: new versions come through Dashboard > Updates like any other plugin; the plugin no longer checks GitHub itself.
 
 = 0.15.4 =
 * Customer checks: a report to nekorekten.com carries the name, phone and email of the order, and a report sent from an order can be edited or deleted there.
