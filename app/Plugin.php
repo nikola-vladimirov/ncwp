@@ -10,6 +10,8 @@ class Plugin {
 	 * Courier slugs, in display order (names: nashenski_couriers()).
 	 */
 	const COURIERS = array( 'econt', 'speedy', 'boxnow', 'pigeon', 'cvc' );
+	// Couriers whose label box is readable JS (assets/js/label-<courier>.js). See docs/plans/dist-rewrite.md.
+	const READABLE_BOXES = array( 'cvc' );
 
 	protected static $_instance;
 
@@ -300,10 +302,19 @@ class Plugin {
 			\Nashenski\Plugin::VERSION
 		);
 
-		// The label boxes of the couriers that are turned on.
+		// The label boxes of the couriers that are turned on. Couriers in READABLE_BOXES use assets/js/label-<courier>.js
+		// on the shared label-box.js; the rest still use the compiled bundle until they are rewritten.
+		wp_register_script( 'nashenski-label-box', nashenski()->plugin_dir_url() . 'assets/js/label-box.js', array( 'jquery', 'nashenski-js-admin' ), self::VERSION, true );
+		wp_localize_script( 'nashenski-label-box', 'nashenskiLabelBoxText', array( 'error' => __( 'The request failed. Reload the page and try again.', 'nashenski-commerce' ) ) );
+
 		foreach ( self::COURIERS as $courier ) {
 			if ( 'yes' === nashenski_get_option( 'apis', 'enable_' . $courier ) ) {
-				wp_enqueue_script( 'nashenski-js-' . $courier, nashenski()->plugin_dir_url() . nashenski_assets_bundle( $courier . '-admin.js' ), array( 'jquery' ), self::VERSION, true );
+				if ( in_array( $courier, self::READABLE_BOXES, true ) ) {
+					wp_enqueue_script( 'nashenski-js-' . $courier, nashenski()->plugin_dir_url() . 'assets/js/label-' . $courier . '.js', array( 'nashenski-label-box' ), self::VERSION, true );
+				} else {
+					wp_enqueue_script( 'nashenski-js-' . $courier, nashenski()->plugin_dir_url() . nashenski_assets_bundle( $courier . '-admin.js' ), array( 'jquery' ), self::VERSION, true );
+				}
+
 				wp_enqueue_style( 'nashenski-css-' . $courier, nashenski()->plugin_dir_url() . nashenski_assets_bundle( $courier . '-admin.css' ), array(), self::VERSION );
 			}
 		}

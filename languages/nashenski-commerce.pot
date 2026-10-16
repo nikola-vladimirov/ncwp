@@ -2,10 +2,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.16.1\n"
+"Project-Id-Version: Nashenski Commerce 0.16.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-16 16:55+0000\n"
-"PO-Revision-Date: 2026-10-16 16:55+0000\n"
+"POT-Creation-Date: 2026-10-16 17:14+0000\n"
+"PO-Revision-Date: 2026-10-16 17:14+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -736,7 +736,7 @@ msgstr ""
 msgid "Nothing matches these filters."
 msgstr ""
 
-#: app/Admin/Export_Builder.php:152 app/Front_End/Quick_Order.php:287 app/Plugin.php:259
+#: app/Admin/Export_Builder.php:152 app/Front_End/Quick_Order.php:287 app/Plugin.php:261
 msgid "Something went wrong. Please try again."
 msgstr ""
 
@@ -1384,7 +1384,7 @@ msgstr ""
 msgid "Setting"
 msgstr ""
 
-#: app/Admin/Help_Page.php:261 app/Plugin.php:264
+#: app/Admin/Help_Page.php:261 app/Plugin.php:266
 msgid "Now"
 msgstr ""
 
@@ -1912,6 +1912,10 @@ msgstr ""
 msgid "Pro forma"
 msgstr ""
 
+#: app/Admin/Order/Labels.php:51
+msgid "No label was made. Open the order and make the label in the courier box."
+msgstr ""
+
 #: app/Admin/Order/MetaBox.php:19
 msgid "PDF Files"
 msgstr ""
@@ -2190,7 +2194,7 @@ msgstr ""
 msgid "Up to (kg)"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:600 app/Admin/Settings_Page.php:694 app/Plugin.php:260
+#: app/Admin/Settings_Page.php:600 app/Admin/Settings_Page.php:694 app/Plugin.php:262
 msgid "Remove row"
 msgstr ""
 
@@ -4040,7 +4044,7 @@ msgstr ""
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr ""
 
-#: app/Admin/Tabs/Settings_Tab.php:8 app/Plugin.php:78 app/Plugin.php:208
+#: app/Admin/Tabs/Settings_Tab.php:8 app/Plugin.php:80 app/Plugin.php:210
 msgid "Settings"
 msgstr ""
 
@@ -4945,7 +4949,7 @@ msgstr ""
 msgid "Leave your details and we will contact you to confirm the order."
 msgstr ""
 
-#: app/Front_End/Quick_Order.php:403 app/Plugin.php:265
+#: app/Front_End/Quick_Order.php:403 app/Plugin.php:267
 msgid "Website"
 msgstr ""
 
@@ -5326,33 +5330,37 @@ msgid "The invoice has been issued on the basis of Article 113, paragraph 9 of t
 msgstr ""
 
 #. translators: %s: link to the settings
-#: app/Plugin.php:78
+#: app/Plugin.php:80
 #, php-format
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr ""
 
-#: app/Plugin.php:258
+#: app/Plugin.php:260
 msgid "The file was downloaded."
 msgstr ""
 
-#: app/Plugin.php:261
+#: app/Plugin.php:263
 msgid "Built-in prices restored. Save to keep them."
 msgstr ""
 
-#: app/Plugin.php:262
+#: app/Plugin.php:264
 msgid "Your prices match the courier website."
 msgstr ""
 
-#: app/Plugin.php:263
+#: app/Plugin.php:265
 msgid "The courier website has different prices:"
 msgstr ""
 
-#: app/Plugin.php:266
+#: app/Plugin.php:268
 msgid "Use these prices"
 msgstr ""
 
-#: app/Plugin.php:267
+#: app/Plugin.php:269
 msgid "New prices filled in. Check them and save."
+msgstr ""
+
+#: app/Plugin.php:308
+msgid "The request failed. Reload the page and try again."
 msgstr ""
 
 #: app/Pricing/Updater.php:40

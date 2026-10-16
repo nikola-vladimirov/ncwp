@@ -3,10 +3,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.16.1\n"
+"Project-Id-Version: Nashenski Commerce 0.16.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-16 16:55+0000\n"
-"PO-Revision-Date: 2026-10-16 16:55+0000\n"
+"POT-Creation-Date: 2026-10-16 17:14+0000\n"
+"PO-Revision-Date: 2026-10-16 17:14+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -741,7 +741,7 @@ msgstr "Първите %1$d от %2$d реда. Файл: %3$s"
 msgid "Nothing matches these filters."
 msgstr "Няма записи по тези филтри."
 
-#: app/Admin/Export_Builder.php:152 app/Front_End/Quick_Order.php:287 app/Plugin.php:259
+#: app/Admin/Export_Builder.php:152 app/Front_End/Quick_Order.php:287 app/Plugin.php:261
 msgid "Something went wrong. Please try again."
 msgstr "Нещо се обърка. Опитайте отново."
 
@@ -1389,7 +1389,7 @@ msgstr "Настройки, подходящи за повечето бълга�
 msgid "Setting"
 msgstr "Настройка"
 
-#: app/Admin/Help_Page.php:261 app/Plugin.php:264
+#: app/Admin/Help_Page.php:261 app/Plugin.php:266
 msgid "Now"
 msgstr "Сега"
 
@@ -1917,6 +1917,10 @@ msgstr "Копие на кредитно известие"
 msgid "Pro forma"
 msgstr "Проформа"
 
+#: app/Admin/Order/Labels.php:51
+msgid "No label was made. Open the order and make the label in the courier box."
+msgstr "Товарителница не е създадена. Отворете поръчката и я създайте в полето на куриера."
+
 #: app/Admin/Order/MetaBox.php:19
 msgid "PDF Files"
 msgstr "PDF файлове"
@@ -2195,7 +2199,7 @@ msgstr "До автомат"
 msgid "Up to (kg)"
 msgstr "До (кг)"
 
-#: app/Admin/Settings_Page.php:600 app/Admin/Settings_Page.php:694 app/Plugin.php:260
+#: app/Admin/Settings_Page.php:600 app/Admin/Settings_Page.php:694 app/Plugin.php:262
 msgid "Remove row"
 msgstr "Премахване на реда"
 
@@ -4045,7 +4049,7 @@ msgstr "Показване във формата (собствен шаблон)
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr "Кратка форма за купувачи, които не искат да минават през количката. Купувачът изпраща име, телефон и имейл, а поръчката чака вашето потвърждение. Наличността не се резервира, докато не потвърдите. Сменете статуса на поръчката на „Очаква плащане“, за да изпратите линк за плащане."
 
-#: app/Admin/Tabs/Settings_Tab.php:8 app/Plugin.php:78 app/Plugin.php:208
+#: app/Admin/Tabs/Settings_Tab.php:8 app/Plugin.php:80 app/Plugin.php:210
 msgid "Settings"
 msgstr "Настройки"
 
@@ -4950,7 +4954,7 @@ msgstr "политиката за поверителност"
 msgid "Leave your details and we will contact you to confirm the order."
 msgstr "Оставете данните си и ще се свържем с вас, за да потвърдим поръчката."
 
-#: app/Front_End/Quick_Order.php:403 app/Plugin.php:265
+#: app/Front_End/Quick_Order.php:403 app/Plugin.php:267
 msgid "Website"
 msgstr "Сайт"
 
@@ -5331,34 +5335,38 @@ msgid "The invoice has been issued on the basis of Article 113, paragraph 9 of t
 msgstr "Фактурата е издадена на основание чл. 113, ал. 9 от ЗДДС."
 
 #. translators: %s: link to the settings
-#: app/Plugin.php:78
+#: app/Plugin.php:80
 #, php-format
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr "Нашенски Комерс: прегледайте настройките и ги запазете отново от „%s“."
 
-#: app/Plugin.php:258
+#: app/Plugin.php:260
 msgid "The file was downloaded."
 msgstr "Файлът е изтеглен."
 
-#: app/Plugin.php:261
+#: app/Plugin.php:263
 msgid "Built-in prices restored. Save to keep them."
 msgstr "Вградените цени са възстановени. Запазете, за да ги задържите."
 
-#: app/Plugin.php:262
+#: app/Plugin.php:264
 msgid "Your prices match the courier website."
 msgstr "Цените ви съвпадат със сайта на куриера."
 
-#: app/Plugin.php:263
+#: app/Plugin.php:265
 msgid "The courier website has different prices:"
 msgstr "Сайтът на куриера има различни цени:"
 
-#: app/Plugin.php:266
+#: app/Plugin.php:268
 msgid "Use these prices"
 msgstr "Използване на тези цени"
 
-#: app/Plugin.php:267
+#: app/Plugin.php:269
 msgid "New prices filled in. Check them and save."
 msgstr "Новите цени са попълнени. Проверете ги и запазете."
+
+#: app/Plugin.php:308
+msgid "The request failed. Reload the page and try again."
+msgstr "Заявката не успя. Презаредете страницата и опитайте отново."
 
 #: app/Pricing/Updater.php:40
 msgid "There is no public price list for this courier."
