@@ -2,6 +2,7 @@
 namespace Nashenski\Client\Speedy;
 use Nashenski\Container\Client;
 use Nashenski\File;
+use Nashenski\Transliteration;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -25,7 +26,8 @@ class Streets {
 		$streets = File::get_file( $streets_file );
 
 		if ( !$streets ) {
-			$api_call = $this->container[ Client::SPEEDY ]->api_call( self::STREETS_ENDPOINT, array( 'siteId' => $city_id, 'name' => $query ) );
+			// Speedy matches names in Latin (nameEn), so a Cyrillic query finds nothing.
+			$api_call = $this->container[ Client::SPEEDY ]->api_call( self::STREETS_ENDPOINT, array( 'siteId' => $city_id, 'name' => Transliteration::to_latin( $query ) ) );
 
 			if ( is_array( $api_call ) ) {
 				if ( $this->container[ Client::SPEEDY ]::validate_access( $api_call ) ) {

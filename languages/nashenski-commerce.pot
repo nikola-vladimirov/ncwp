@@ -1132,6 +1132,10 @@ msgstr ""
 msgid "Econt courier requests skip weekends and holidays by themselves. Speedy picks the next possible day."
 msgstr ""
 
+#: app/Admin/Help_Page.php:117
+msgid "Speedy: the city and region of a waybill come from the order's address. In the street box, type in Bulgarian or Latin letters; the list shows Speedy's streets and quarters for that city."
+msgstr ""
+
 #: app/Admin/Help_Page.php:116
 msgid "\"Generate label after checkout\" on a courier page makes the waybill as soon as an order is placed."
 msgstr ""

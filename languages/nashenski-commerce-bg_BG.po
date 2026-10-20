@@ -1137,6 +1137,10 @@ msgstr "Отпечатайте етикета от поръчката или о�
 msgid "Econt courier requests skip weekends and holidays by themselves. Speedy picks the next possible day."
 msgstr "Заявките за куриер на Еконт сами прескачат почивни и празнични дни. Спиди избира следващия възможен ден."
 
+#: app/Admin/Help_Page.php:117
+msgid "Speedy: the city and region of a waybill come from the order's address. In the street box, type in Bulgarian or Latin letters; the list shows Speedy's streets and quarters for that city."
+msgstr "Спиди: населеното място и областта на товарителницата се взимат от адреса на поръчката. В полето за улица пишете на български или на латиница; списъкът показва улиците и кварталите на Спиди за това населено място."
+
 #: app/Admin/Help_Page.php:116
 msgid "\"Generate label after checkout\" on a courier page makes the waybill as soon as an order is placed."
 msgstr "„Създаване на товарителница след поръчка“ на страницата на куриера създава товарителницата веднага щом поръчката е направена."

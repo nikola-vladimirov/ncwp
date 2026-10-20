@@ -1,5 +1,12 @@
 # Nashenski Commerce changelog
 
+## 0.16.6 (2026-10-20)
+
+### Speedy
+- The city and region on a waybill come from the order's address, not from the checkout. Before, a waybill could go to the city chosen at checkout after the address was changed.
+- Speedy's city list matches the region of the order, also when the order keeps the region by name. Before, "Invalid site" came up for these orders and the street lists stayed empty.
+- Street and quarter search works when typing in Bulgarian letters. Before, Speedy found nothing for them.
+
 ## 0.16.5 (2026-10-16)
 
 ### BOX NOW

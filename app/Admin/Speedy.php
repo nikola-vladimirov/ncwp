@@ -74,10 +74,18 @@ class Speedy {
 						}	
 					}
 
+					// City and region come from the order's address (the one the street lists use), not from the
+					// checkout data, which can be stale after the address was edited.
+					if ( is_array( $cookie_data ) ) {
+						$prefix = nashenski_is_different_shipping_address( $theorder ) ? 'shipping' : 'billing';
+						$cookie_data['city'] = $theorder->{"get_{$prefix}_city"}();
+						$cookie_data['state'] = $theorder->{"get_{$prefix}_state"}();
+					}
+
 					if ( $theorder->get_payment_method() === 'cod' && !isset( $label_data['service']['additionalServices'] ) ) {
 						$label_data = self::fix_cod_data( $label_data, $theorder );
 					}
-					
+
 					wp_localize_script( 'nashenski-js-admin', 'nashenski_speedy', array(
 						'label' => $label_data,
 						'shipmentStatus' => $shipment_status,

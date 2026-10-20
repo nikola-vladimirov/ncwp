@@ -113,6 +113,7 @@ class Help_Page {
 					esc_html__( 'In the "Order actions" box of an order, and in the bulk actions of the orders list: "Create waybill" makes the waybill from the customer\'s choices, "Request a courier" books a pickup with Econt or Speedy for all the chosen waybills, "Check the shipment now" reads the status from the courier.', 'nashenski-commerce' ),
 					esc_html__( 'Print the label from the order or from the orders list. Where a courier offers several print sizes, such as A4 or A6 for Speedy, choose one first.', 'nashenski-commerce' ),
 					esc_html__( 'Econt courier requests skip weekends and holidays by themselves. Speedy picks the next possible day.', 'nashenski-commerce' ),
+						esc_html__( 'Speedy: the city and region of a waybill come from the order\'s address. In the street box, type in Bulgarian or Latin letters; the list shows Speedy\'s streets and quarters for that city.', 'nashenski-commerce' ),
 					esc_html__( '"Generate label after checkout" on a courier page makes the waybill as soon as an order is placed.', 'nashenski-commerce' ),
 					/* translators: %s: link to the Overview section */
 					sprintf( esc_html__( 'In %s > Waybills and order statuses: put the order number on the waybill, and choose the status orders get when the parcel is delivered or goes back to you. Open orders are checked every hour.', 'nashenski-commerce' ), $overview ),
