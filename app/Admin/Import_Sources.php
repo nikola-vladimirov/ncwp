@@ -51,6 +51,8 @@ class Import_Sources {
 		'mreja_econt' => 'woocommerce_econt_shipping_method_settings',
 		'mreja_boxnow' => 'boxnowoptions',
 		'mreja_n18' => 'notasuptooptions',
+		'mreja_speedy' => 'woocommerce_speedy_shipping_method_settings',
+		'mreja_pigeon' => 'woocommerce_pigeon_express_shipping_settings',
 		'econt_delivery' => 'delivery-with-econt',
 		'speedy_official' => 'woocommerce_speedy_shipping_settings',
 	);
@@ -67,6 +69,8 @@ class Import_Sources {
 			'mreja_econt' => __( 'Econt Express shipping method (mreja.net)', 'nashenski-commerce' ),
 			'mreja_boxnow' => __( 'BOX NOW Delivery (mreja.net)', 'nashenski-commerce' ),
 			'mreja_n18' => __( 'Ordinance N-18 light regime (mreja.net)', 'nashenski-commerce' ),
+			'mreja_speedy' => __( 'Speedy shipping method (mreja.net)', 'nashenski-commerce' ),
+			'mreja_pigeon' => __( 'Pigeon Express shipping (mreja.net)', 'nashenski-commerce' ),
 			'mreja_buttons' => __( 'Change Speedy and Econt Shipping Methods (mreja.net)', 'nashenski-commerce' ),
 			'drusoft_econt' => __( 'Drusoft Shipping for Econt', 'nashenski-commerce' ),
 			'drusoft_speedy' => __( 'Drusoft Shipping for Speedy', 'nashenski-commerce' ),
@@ -222,7 +226,7 @@ class Import_Sources {
 	 * Import one source and switch its plugins off. Returns the lines of the report.
 	 */
 	public static function import( $slug ) {
-		$count = array( 'settings' => 0, 'waybills' => 0, 'zones' => 0, 'documents' => 0 );
+		$count = array( 'settings' => 0, 'waybills' => 0, 'zones' => 0, 'documents' => 0, 'kept' => 0 );
 		$notes = array();
 		$source = self::sources()[ $slug ] ?? array( 'plugins' => array() );
 
@@ -263,6 +267,26 @@ class Import_Sources {
 
 			case 'mreja_n18':
 				self::n18( (array) get_option( 'notasuptooptions', array() ), $count );
+				break;
+
+			case 'mreja_speedy':
+				$s = (array) get_option( 'woocommerce_speedy_shipping_method_settings', array() );
+				self::login( 'speedy', array( 'user' => $s['api_username'] ?? '', 'password' => $s['api_password'] ?? '' ), $count );
+				self::fill( 'speedy', 'name', $s['contact_name'] ?? '', $count );
+				self::fill( 'speedy', 'phone', $s['phone1'] ?? '', $count );
+				self::fill( 'speedy_send_from', 'office', ! empty( $s['dropoff_office_id'] ) ? 'officeID-' . $s['dropoff_office_id'] : '', $count );
+				self::fill( 'speedy', 'send_from', strtolower( $s['send_from'] ?? '' ), $count );
+				self::zones( 'speedy_shipping_method', 'speedy', array( 'office', 'automat', 'address' ), $count );
+				break;
+
+			case 'mreja_pigeon':
+				// Nashenski's Pigeon sender is an office or an address and has no name or phone field, so the contact details stay on the old plugin.
+				$s = (array) get_option( 'woocommerce_pigeon_express_shipping_settings', array() );
+				$o = (array) get_option( 'pigeon_express_options', array() );
+				self::login( 'pigeon', array( 'api_key' => $s['api_key'] ?? '', 'api_secret' => $s['api_secret'] ?? '', 'env' => in_array( (string) ( $s['live'] ?? '' ), array( '1', 'yes' ), true ) ? 'live' : 'sandbox' ), $count );
+				self::fill( 'pigeon_send_from', 'office', ! empty( $o['pickup_office_id'] ) ? 'officeID-' . $o['pickup_office_id'] : '', $count );
+				self::fill( 'pigeon', 'send_from', strtolower( $s['send_from'] ?? '' ), $count );
+				self::zones( 'pigeon_express_shipping', 'pigeon', array( 'office', 'locker', 'address' ), $count );
 				break;
 
 			case 'drusoft_econt':
@@ -323,6 +347,11 @@ class Import_Sources {
 		if ( $count['documents'] ) {
 			/* translators: %d: number */
 			$report[] = sprintf( _n( '%d document number', '%d document numbers', $count['documents'], 'nashenski-commerce' ), $count['documents'] );
+		}
+
+		if ( $count['kept'] ) {
+			/* translators: %d: number of settings */
+			$report[] = sprintf( __( 'Already set, kept as it is: %d', 'nashenski-commerce' ), $count['kept'] );
 		}
 
 		$kept = self::keep( $slug );
@@ -570,6 +599,8 @@ class Import_Sources {
 		if ( '' !== $value && '' === trim( (string) nashenski_get_option( $group, $name ) ) ) {
 			nashenski_set_option( $group, $name, $value );
 			$count['settings']++;
+		} elseif ( '' !== $value ) {
+			$count['kept']++;
 		}
 	}
 
@@ -580,7 +611,12 @@ class Import_Sources {
 		$keys = array_diff( array_keys( $fields ), array( 'env' ) );
 
 		foreach ( $keys as $key ) {
-			if ( '' === trim( (string) $fields[ $key ] ) || '' !== trim( (string) nashenski_get_option( $courier, $key ) ) ) {
+			if ( '' !== trim( (string) nashenski_get_option( $courier, $key ) ) ) {
+				$count['kept']++;
+				return;
+			}
+
+			if ( '' === trim( (string) $fields[ $key ] ) ) {
 				return;
 			}
 		}
@@ -703,6 +739,7 @@ class Import_Sources {
 		$titles = array(
 			'office' => __( 'To an office', 'nashenski-commerce' ),
 			'automat' => __( 'To a parcel locker', 'nashenski-commerce' ),
+			'locker' => __( 'To a parcel locker', 'nashenski-commerce' ),
 			'address' => __( 'To an address', 'nashenski-commerce' ),
 			'' => 'BOX NOW',
 		);
