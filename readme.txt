@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.16.7
+Stable tag: 0.16.8
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -118,9 +118,9 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 
 == Changelog ==
 
-= Unreleased =
-
+= 0.16.8 =
 * New WP-CLI commands for every setting: `wp nashenski setting list`, `get`, `set` and `reset`, and `wp nashenski courier reload` and `check`.
+* WP-CLI `setting set` runs the plugin's own checks for custom fields directly.
 
 = 0.16.7 =
 * Pigeon Express: labels for a region given by name, and for a new pack with its sizes.
