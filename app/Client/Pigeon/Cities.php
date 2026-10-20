@@ -144,7 +144,7 @@ class Cities {
 	public function get_state_name( $state_code, $country_code = 'BG' ) {
 		$states = $this->get_regions( $country_code );
 
-		return $states[ $state_code ];
+		return $states[ $state_code ] ?? '';
 	}
 
 	public function get_filtered_cities( $query, $state ) {
@@ -160,7 +160,8 @@ class Cities {
 		}
 
 		$city = $this->normalize_city_name( $query );
-		$state_name = $this->get_state_name( $state );
+		// The state can be a code (BG-22) or a region name ("София (столица)"); the list uses names as districts.
+		$state_name = $this->get_state_name( $this->region_code( $state ) );
 		$cities = $this->find_city( $city );
 
 		$cities_only_names = [];
@@ -169,7 +170,8 @@ class Cities {
 		
 		if ( !empty( $cities ) ) {
 			foreach ( $cities as $temp_city ) {
-				if ( $this->normalize_text( $temp_city['district'] ) !== $this->normalize_text( $state_name ) ) {
+				// A state we cannot place takes every district; the exact match is then only used when it is unique.
+				if ( $state_name && $this->normalize_text( $temp_city['district'] ) !== $this->normalize_text( $state_name ) ) {
 					continue;
 				}
 				
@@ -182,6 +184,10 @@ class Cities {
 
 		$city_key = array_search( $city, array_column( $cities_search_names, 'name' ) );
 
+		if ( ! $state_name && count( array_keys( array_column( $cities_search_names, 'name' ), $city, true ) ) > 1 ) {
+			$city_key = false;
+		}
+
 		return [
 			'city' => $city,
 			'cities' => $cities,
@@ -192,6 +198,24 @@ class Cities {
 		];
 	}
 
+	/**
+	 * The region code for a code or a region name, or '' when it is neither.
+	 */
+	private function region_code( $state ) {
+		$regions = $this->get_regions();
+
+		if ( isset( $regions[ $state ] ) ) {
+			return $state;
+		}
+
+		foreach ( $regions as $code => $name ) {
+			if ( $this->normalize_text( $name ) === $this->normalize_text( $state ) ) {
+				return $code;
+			}
+		}
+
+		return '';
+	}
 	private function normalize_city_name( $city ) {
 		$city = nashenski_remove_city_prefix( $city );
 		$city = Transliteration::latin2cyrillic( $city );

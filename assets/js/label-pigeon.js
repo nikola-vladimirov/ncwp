@@ -196,7 +196,7 @@
 			pack = L.copy( packs[ 0 ] );
 			delete pack.id;
 		} else {
-			pack = { seqNo: 1, weight: 1, size: { depth: '', width: '', height: '' } };
+			pack = { seqNo: 1, weight: 1, length: '', width: '', height: '' };
 		}
 
 		packs.push( pack );

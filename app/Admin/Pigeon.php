@@ -61,6 +61,14 @@ class Pigeon {
 						}	
 					}
 					
+					// City and region come from the order's address (the one the street lists use), not from the
+					// checkout data, which can be stale after the address was edited.
+					if ( is_array( $cookie_data ) ) {
+						$place = self::receiver_place( $theorder );
+						$cookie_data['city'] = $place['city'];
+						$cookie_data['state'] = $place['state'];
+					}
+
 					wp_localize_script( 'nashenski-js-admin', 'nashenski_pigeon', array(
 						'label' => $label_data,
 						'shipmentStatus' => $shipment_status,
@@ -97,21 +105,36 @@ class Pigeon {
 		return $data;
 	}
 
+	/**
+	 * City and region the receiver is in: the shipping address when it differs from the billing one. When that
+	 * address has no region, the other address is used, so an order with only one region filled in still finds its city.
+	 */
+	public static function receiver_place( $order ) {
+		$prefix = nashenski_is_different_shipping_address( $order ) ? 'shipping' : 'billing';
+		$other = 'shipping' === $prefix ? 'billing' : 'shipping';
+		$place = array(
+			'city' => $order->{"get_{$prefix}_city"}(),
+			'state' => $order->{"get_{$prefix}_state"}(),
+		);
+
+		if ( '' === $place['state'] ) {
+			$place = array(
+				'city' => $order->{"get_{$other}_city"}(),
+				'state' => $order->{"get_{$other}_state"}(),
+			);
+		}
+
+		return $place;
+	}
 	private static function get_city_id( $order ) {
 		if ( !self::$container ) {
 			self::$container = nashenski()->container();
 		}
 
 		$city_id = false;
-		$state = $order->get_billing_state();
-		$city = $order->get_billing_city();
-		
-		if ( nashenski_is_different_shipping_address( $order ) ) {
-			$state = $order->get_shipping_state();
-			$city = $order->get_shipping_city();
-		}
-
-		$city = Transliteration::latin2cyrillic( $city );
+		$place = self::receiver_place( $order );
+		$state = $place['state'];
+		$city = Transliteration::latin2cyrillic( $place['city'] );
 		$cities_data = self::$container[ Client::PIGEON_CITIES ]->get_filtered_cities( $city, $state );
 
 		if ( $cities_data['city_key'] !== false ) {
@@ -145,15 +168,9 @@ class Pigeon {
 
 	protected static function get_streets( $cookie_data, $order ) {
 		$streets = [];
-		$state = $order->get_billing_state();
-		$city = $order->get_billing_city();
-		
-		if ( nashenski_is_different_shipping_address( $order ) ) {
-			$state = $order->get_shipping_state();
-			$city = $order->get_shipping_city();
-		}
-
-		$city = Transliteration::latin2cyrillic( $city );
+		$place = self::receiver_place( $order );
+		$state = $place['state'];
+		$city = Transliteration::latin2cyrillic( $place['city'] );
 		$cities_data = self::$container[ Client::PIGEON_CITIES ]->get_filtered_cities( $city, $state );
 
 		if ( $cities_data['city_key'] !== false ) {
@@ -407,11 +424,13 @@ class Pigeon {
 			$declared_value = nashenski_label_request( 'declaredValue' );
 		}
 
+		$test = '';
+
 		if ( ( null !== nashenski_label_request( 'testOption', null ) ) ) {
 			$test = nashenski_label_request( 'testOption' );
 		}
 
-		$label['sms_notification'] = wc_string_to_bool( $label['sms_notification'] );
+		$label['sms_notification'] = wc_string_to_bool( $label['sms_notification'] ?? '' );
 
 		$is_fragile = wc_string_to_bool( nashenski_get_option( 'pigeon_services', 'declared_value' ) );
 		
