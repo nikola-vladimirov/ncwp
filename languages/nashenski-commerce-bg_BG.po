@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.16.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-20 08:58+0000\n"
-"PO-Revision-Date: 2026-10-20 08:58+0000\n"
+"POT-Creation-Date: 2026-10-20 09:26+0000\n"
+"PO-Revision-Date: 2026-10-20 09:26+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -119,7 +119,7 @@ msgstr "Няма да получавате повече напомняния о�
 msgid "Unsubscribed"
 msgstr "Отписан"
 
-#: app/Admin/Abandoned_Carts_Page.php:43 app/Admin/Abandoned_Carts_Page.php:44 app/Admin/Abandoned_Carts_Page.php:197 app/Admin/Help_Page.php:129 app/Admin/Settings_Page.php:99 app/Admin/Tabs/Abandoned_Carts_Tab.php:14
+#: app/Admin/Abandoned_Carts_Page.php:43 app/Admin/Abandoned_Carts_Page.php:44 app/Admin/Abandoned_Carts_Page.php:197 app/Admin/Help_Page.php:129 app/Admin/Settings_Page.php:101 app/Admin/Tabs/Abandoned_Carts_Tab.php:14
 msgid "Abandoned carts"
 msgstr "Изоставени колички"
 
@@ -135,7 +135,7 @@ msgstr "Поръчана"
 msgid "Emptied"
 msgstr "Изпразнена"
 
-#: app/Admin/Abandoned_Carts_Page.php:129 app/Admin/BoxNow.php:523 app/Admin/Import_Sources.php:208 app/Admin/Migration.php:87 app/Admin/Pigeon.php:558 app/Admin/Recommended_Settings.php:134
+#: app/Admin/Abandoned_Carts_Page.php:129 app/Admin/BoxNow.php:523 app/Admin/Import_Sources.php:208 app/Admin/Migration.php:87 app/Admin/Pigeon.php:577 app/Admin/Recommended_Settings.php:134
 msgid "You do not have permission to perform this action."
 msgstr "Нямате права за това действие."
 
@@ -165,7 +165,7 @@ msgstr "Изпращане на напомняне"
 msgid "Delete"
 msgstr "Изтриване"
 
-#: app/Admin/Abandoned_Carts_Page.php:250 app/Admin/Help_Page.php:261
+#: app/Admin/Abandoned_Carts_Page.php:250 app/Admin/Help_Page.php:262
 msgid "Apply"
 msgstr "Прилагане"
 
@@ -209,7 +209,7 @@ msgstr "Действия"
 msgid "No carts found."
 msgstr "Няма намерени колички."
 
-#: app/Admin/Abandoned_Carts_Page.php:293 app/Admin/Help_Page.php:68 app/Admin/Help_Page.php:82 app/Admin/Help_Page.php:103 app/Admin/Settings_Page.php:90
+#: app/Admin/Abandoned_Carts_Page.php:293 app/Admin/Help_Page.php:68 app/Admin/Help_Page.php:82 app/Admin/Help_Page.php:103 app/Admin/Settings_Page.php:92
 msgid "Checkout"
 msgstr "Плащане"
 
@@ -303,7 +303,7 @@ msgstr "Първо изберете поне една количка."
 msgid "If you like %1$s please leave us a %2$s rating. A huge thanks in advance!"
 msgstr "Ако харесвате %1$s, оставете ни оценка %2$s. Благодарим ви предварително!"
 
-#: app/Admin/Admin_Menus.php:79 app/Admin/Settings_Page.php:23 app/Admin/Settings_Page.php:337
+#: app/Admin/Admin_Menus.php:79 app/Admin/Settings_Page.php:23 app/Admin/Settings_Page.php:344
 msgid "Nashenski Commerce"
 msgstr "Нашенски Комерс"
 
@@ -319,7 +319,7 @@ msgstr "Доставка с BOX NOW"
 msgid "Send to"
 msgstr "Изпращане до"
 
-#: app/Admin/BoxNow.php:83 app/Admin/Econt.php:132 app/Admin/Pigeon.php:210 app/Admin/Speedy.php:185 app/Admin/Tabs/CVC_Tab.php:70 app/Admin/Tabs/Econt_Tab.php:107
+#: app/Admin/BoxNow.php:83 app/Admin/Econt.php:132 app/Admin/Pigeon.php:227 app/Admin/Speedy.php:185 app/Admin/Tabs/CVC_Tab.php:70 app/Admin/Tabs/Econt_Tab.php:107
 msgid "Send From"
 msgstr "Изпращане от"
 
@@ -339,35 +339,35 @@ msgstr "Обща цена"
 msgid "Allow returns"
 msgstr "Разрешаване на връщане"
 
-#: app/Admin/BoxNow.php:88 app/Admin/CVC.php:81 app/Admin/Econt.php:90 app/Admin/Pigeon.php:173 app/Admin/Speedy.php:141
+#: app/Admin/BoxNow.php:88 app/Admin/CVC.php:81 app/Admin/Econt.php:90 app/Admin/Pigeon.php:190 app/Admin/Speedy.php:141
 msgid "Update shipment status"
 msgstr "Обновяване на статуса на пратката"
 
-#: app/Admin/BoxNow.php:89 app/Admin/CVC.php:83 app/Admin/Econt.php:92 app/Admin/fragments/label-column.php:21 app/Admin/Pigeon.php:175 app/Admin/Speedy.php:143
+#: app/Admin/BoxNow.php:89 app/Admin/CVC.php:83 app/Admin/Econt.php:92 app/Admin/fragments/label-column.php:21 app/Admin/Pigeon.php:192 app/Admin/Speedy.php:143
 msgid "Generate label"
 msgstr "Създаване на товарителница"
 
-#: app/Admin/BoxNow.php:90 app/Admin/CVC.php:84 app/Admin/Econt.php:93 app/Admin/Pigeon.php:176 app/Admin/Speedy.php:144
+#: app/Admin/BoxNow.php:90 app/Admin/CVC.php:84 app/Admin/Econt.php:93 app/Admin/Pigeon.php:193 app/Admin/Speedy.php:144
 msgid "Delete label"
 msgstr "Изтриване на товарителницата"
 
-#: app/Admin/BoxNow.php:91 app/Admin/CVC.php:85 app/Admin/Econt.php:94 app/Admin/Order/Columns.php:27 app/Admin/Pigeon.php:177 app/Admin/Speedy.php:145
+#: app/Admin/BoxNow.php:91 app/Admin/CVC.php:85 app/Admin/Econt.php:94 app/Admin/Order/Columns.php:27 app/Admin/Pigeon.php:194 app/Admin/Speedy.php:145
 msgid "Label"
 msgstr "Товарителница"
 
-#: app/Admin/BoxNow.php:92 app/Admin/CVC.php:87 app/Admin/Econt.php:96 app/Admin/Pigeon.php:179 app/Admin/Speedy.php:147
+#: app/Admin/BoxNow.php:92 app/Admin/CVC.php:87 app/Admin/Econt.php:96 app/Admin/Pigeon.php:196 app/Admin/Speedy.php:147
 msgid "Selected"
 msgstr "Избрано"
 
-#: app/Admin/BoxNow.php:93 app/Admin/CVC.php:88 app/Admin/Econt.php:97 app/Admin/Order/Delivery_Box.php:173 app/Admin/Pigeon.php:180 app/Admin/Speedy.php:148
+#: app/Admin/BoxNow.php:93 app/Admin/CVC.php:88 app/Admin/Econt.php:97 app/Admin/Order/Delivery_Box.php:173 app/Admin/Pigeon.php:197 app/Admin/Speedy.php:148
 msgid "Choose"
 msgstr "Избери"
 
-#: app/Admin/BoxNow.php:94 app/Admin/CVC.php:100 app/Admin/Econt.php:116 app/Admin/Pigeon.php:193 app/Admin/Speedy.php:166
+#: app/Admin/BoxNow.php:94 app/Admin/CVC.php:100 app/Admin/Econt.php:116 app/Admin/Pigeon.php:210 app/Admin/Speedy.php:166
 msgid "Label data"
 msgstr "Данни за товарителницата"
 
-#: app/Admin/BoxNow.php:95 app/Admin/CVC.php:108 app/Admin/Econt.php:123 app/Admin/Pigeon.php:200 app/Admin/Speedy.php:175
+#: app/Admin/BoxNow.php:95 app/Admin/CVC.php:108 app/Admin/Econt.php:123 app/Admin/Pigeon.php:217 app/Admin/Speedy.php:175
 msgid "Shipment status"
 msgstr "Статус на пратката"
 
@@ -391,19 +391,19 @@ msgstr "Средна кутия"
 msgid "Large Box"
 msgstr "Голяма кутия"
 
-#: app/Admin/BoxNow.php:101 app/Admin/Econt.php:136 app/Admin/Econt.php:194 app/Admin/Pigeon.php:214 app/Admin/Speedy.php:189
+#: app/Admin/BoxNow.php:101 app/Admin/Econt.php:136 app/Admin/Econt.php:194 app/Admin/Pigeon.php:231 app/Admin/Speedy.php:189
 msgid "Pack"
 msgstr "Пакет"
 
-#: app/Admin/BoxNow.php:102 app/Admin/Econt.php:137 app/Admin/Pigeon.php:215 app/Admin/Speedy.php:190
+#: app/Admin/BoxNow.php:102 app/Admin/Econt.php:137 app/Admin/Pigeon.php:232 app/Admin/Speedy.php:190
 msgid "Add Pack"
 msgstr "Добавяне на пакет"
 
-#: app/Admin/BoxNow.php:103 app/Admin/Econt.php:138 app/Admin/Pigeon.php:216 app/Admin/Speedy.php:191
+#: app/Admin/BoxNow.php:103 app/Admin/Econt.php:138 app/Admin/Pigeon.php:233 app/Admin/Speedy.php:191
 msgid "Remove Pack"
 msgstr "Премахване на пакет"
 
-#: app/Admin/BoxNow.php:104 app/Admin/CVC.php:104 app/Admin/Econt.php:119 app/Admin/Pigeon.php:196
+#: app/Admin/BoxNow.php:104 app/Admin/CVC.php:104 app/Admin/Econt.php:119 app/Admin/Pigeon.php:213
 msgid "Weight"
 msgstr "Тегло"
 
@@ -423,7 +423,7 @@ msgstr "Поръчки с наложен платеж не могат да се 
 msgid "BOX NOW did not answer. Check the connection settings and try again."
 msgstr "BOX NOW не отговори. Проверете настройките за връзка и опитайте отново."
 
-#: app/Admin/BoxNow.php:528 app/Admin/Pigeon.php:563 app/Admin/Speedy.php:913
+#: app/Admin/BoxNow.php:528 app/Admin/Pigeon.php:582 app/Admin/Speedy.php:913
 msgid "This link has expired. Reload the order page and try again."
 msgstr "Връзката е изтекла. Презаредете страницата на поръчката и опитайте отново."
 
@@ -447,63 +447,63 @@ msgstr "Нямате достъп до тази страница."
 msgid "CVC Delivery"
 msgstr "Доставка с CVC"
 
-#: app/Admin/CVC.php:82 app/Admin/Econt.php:91 app/Admin/Pigeon.php:174 app/Admin/Speedy.php:142
+#: app/Admin/CVC.php:82 app/Admin/Econt.php:91 app/Admin/Pigeon.php:191 app/Admin/Speedy.php:142
 msgid "Update label"
 msgstr "Обновяване на товарителницата"
 
-#: app/Admin/CVC.php:86 app/Admin/Econt.php:95 app/Admin/Pigeon.php:178 app/Admin/Recommended_Settings.php:67 app/Admin/Speedy.php:146
+#: app/Admin/CVC.php:86 app/Admin/Econt.php:95 app/Admin/Pigeon.php:195 app/Admin/Recommended_Settings.php:67 app/Admin/Speedy.php:146
 msgid "Default"
 msgstr "По подразбиране"
 
-#: app/Admin/CVC.php:89 app/Admin/Econt.php:98 app/Admin/Pigeon.php:181 app/Admin/Speedy.php:149
+#: app/Admin/CVC.php:89 app/Admin/Econt.php:98 app/Admin/Pigeon.php:198 app/Admin/Speedy.php:149
 msgid "Delivery is payed by"
 msgstr "Доставката се плаща от"
 
-#: app/Admin/CVC.php:90 app/Admin/Econt.php:99 app/Admin/Pigeon.php:182 app/Admin/Speedy.php:150 app/Admin/Tabs/Settings_Tab.php:30
+#: app/Admin/CVC.php:90 app/Admin/Econt.php:99 app/Admin/Pigeon.php:199 app/Admin/Speedy.php:150 app/Admin/Tabs/Settings_Tab.php:30
 msgid "Cash on delivery"
 msgstr "Наложен платеж"
 
-#: app/Admin/CVC.php:91 app/Admin/Econt.php:100 app/Admin/Pigeon.php:183 app/Admin/Speedy.php:151
+#: app/Admin/CVC.php:91 app/Admin/Econt.php:100 app/Admin/Pigeon.php:200 app/Admin/Speedy.php:151
 msgid "Pack count"
 msgstr "Брой пакети"
 
-#: app/Admin/CVC.php:92 app/Admin/Econt.php:101 app/Admin/Pigeon.php:184 app/Admin/Speedy.php:152
+#: app/Admin/CVC.php:92 app/Admin/Econt.php:101 app/Admin/Pigeon.php:201 app/Admin/Speedy.php:152
 msgid "Shipment type"
 msgstr "Вид на пратката"
 
-#: app/Admin/CVC.php:93 app/Admin/Econt.php:102 app/Admin/Pigeon.php:185 app/Admin/Speedy.php:153 app/functions.php:86 app/functions.php:111
+#: app/Admin/CVC.php:93 app/Admin/Econt.php:102 app/Admin/Pigeon.php:202 app/Admin/Speedy.php:153 app/functions.php:86 app/functions.php:111
 msgid "Other"
 msgstr "Друго"
 
-#: app/Admin/CVC.php:94 app/Admin/Econt.php:103 app/Admin/Pigeon.php:186 app/Admin/Speedy.php:154
+#: app/Admin/CVC.php:94 app/Admin/Econt.php:103 app/Admin/Pigeon.php:203 app/Admin/Speedy.php:154
 msgid "bl. vh. et."
 msgstr "бл. вх. ет."
 
-#: app/Admin/CVC.php:95 app/Admin/Econt.php:104 app/Admin/Pigeon.php:187 app/Admin/Speedy.php:155
+#: app/Admin/CVC.php:95 app/Admin/Econt.php:104 app/Admin/Pigeon.php:204 app/Admin/Speedy.php:155
 msgid "Street number"
 msgstr "Номер на улица"
 
-#: app/Admin/CVC.php:96 app/Admin/Econt.php:111 app/Admin/Pigeon.php:188 app/Admin/Speedy.php:161
+#: app/Admin/CVC.php:96 app/Admin/Econt.php:111 app/Admin/Pigeon.php:205 app/Admin/Speedy.php:161
 msgid "Street/Quarter"
 msgstr "Улица/квартал"
 
-#: app/Admin/CVC.php:97 app/Admin/Econt.php:112 app/Admin/Pigeon.php:189 app/Admin/Speedy.php:162 app/Admin/Tabs/CVC_Tab.php:64 app/Admin/Tabs/CVC_Tab.php:79
+#: app/Admin/CVC.php:97 app/Admin/Econt.php:112 app/Admin/Pigeon.php:206 app/Admin/Speedy.php:162 app/Admin/Tabs/CVC_Tab.php:64 app/Admin/Tabs/CVC_Tab.php:79
 msgid "Office"
 msgstr "Офис"
 
-#: app/Admin/CVC.php:98 app/Admin/Econt.php:114 app/Admin/Pigeon.php:190 app/Admin/Speedy.php:164 app/Admin/Tabs/CVC_Tab.php:68 app/Admin/Tabs/Econt_Tab.php:105
+#: app/Admin/CVC.php:98 app/Admin/Econt.php:114 app/Admin/Pigeon.php:207 app/Admin/Speedy.php:164 app/Admin/Tabs/CVC_Tab.php:68 app/Admin/Tabs/Econt_Tab.php:105
 msgid "Address"
 msgstr "Адрес"
 
-#: app/Admin/CVC.php:99 app/Admin/Econt.php:115 app/Admin/Pigeon.php:192 app/Admin/Speedy.php:165 app/Export/Builder/Fields.php:83 app/Front_End/Checkout/Appearance.php:175
+#: app/Admin/CVC.php:99 app/Admin/Econt.php:115 app/Admin/Pigeon.php:209 app/Admin/Speedy.php:165 app/Export/Builder/Fields.php:83 app/Front_End/Checkout/Appearance.php:175
 msgid "Delivery type"
 msgstr "Вид доставка"
 
-#: app/Admin/CVC.php:101 app/Admin/Econt.php:117 app/Admin/Pigeon.php:194 app/Admin/Speedy.php:167
+#: app/Admin/CVC.php:101 app/Admin/Econt.php:117 app/Admin/Pigeon.php:211 app/Admin/Speedy.php:167
 msgid "Buyer"
 msgstr "Купувач"
 
-#: app/Admin/CVC.php:102 app/Admin/Econt.php:118 app/Admin/Pigeon.php:195 app/Admin/Speedy.php:168
+#: app/Admin/CVC.php:102 app/Admin/Econt.php:118 app/Admin/Pigeon.php:212 app/Admin/Speedy.php:168
 msgid "Sender"
 msgstr "Подател"
 
@@ -511,11 +511,11 @@ msgstr "Подател"
 msgid "Contract"
 msgstr "Договор"
 
-#: app/Admin/CVC.php:105 app/Admin/Econt.php:120 app/Admin/Pigeon.php:197 app/Admin/Speedy.php:172 app/Shipping/CVC/Method.php:189 app/Shipping/Pigeon/Method.php:196
+#: app/Admin/CVC.php:105 app/Admin/Econt.php:120 app/Admin/Pigeon.php:214 app/Admin/Speedy.php:172 app/Shipping/CVC/Method.php:189 app/Shipping/Pigeon/Method.php:196
 msgid "Fixed price"
 msgstr "Фиксирана цена"
 
-#: app/Admin/CVC.php:106 app/Admin/Econt.php:121 app/Admin/Pigeon.php:198 app/Admin/Speedy.php:173
+#: app/Admin/CVC.php:106 app/Admin/Econt.php:121 app/Admin/Pigeon.php:215 app/Admin/Speedy.php:173
 msgid "Copy Label Data"
 msgstr "Копиране на данните за товарителницата"
 
@@ -523,27 +523,27 @@ msgstr "Копиране на данните за товарителницата
 msgid "You just copied the label data used for the cvc API."
 msgstr "Копирахте данните за товарителницата, изпратени към API на CVC."
 
-#: app/Admin/CVC.php:109 app/Admin/Econt.php:124 app/Admin/Pigeon.php:203 app/Admin/Speedy.php:176
+#: app/Admin/CVC.php:109 app/Admin/Econt.php:124 app/Admin/Pigeon.php:220 app/Admin/Speedy.php:176
 msgid "Time:"
 msgstr "Час:"
 
-#: app/Admin/CVC.php:110 app/Admin/Econt.php:125 app/Admin/Pigeon.php:204 app/Admin/Speedy.php:177
+#: app/Admin/CVC.php:110 app/Admin/Econt.php:125 app/Admin/Pigeon.php:221 app/Admin/Speedy.php:177
 msgid "Event:"
 msgstr "Събитие:"
 
-#: app/Admin/CVC.php:111 app/Admin/Econt.php:126 app/Admin/Pigeon.php:205 app/Admin/Speedy.php:178
+#: app/Admin/CVC.php:111 app/Admin/Econt.php:126 app/Admin/Pigeon.php:222 app/Admin/Speedy.php:178
 msgid "Details:"
 msgstr "Подробности:"
 
-#: app/Admin/CVC.php:112 app/Admin/Econt.php:127 app/Admin/Pigeon.php:206 app/Admin/Speedy.php:179 app/functions.php:223 app/Shipping/CVC/Method.php:148
+#: app/Admin/CVC.php:112 app/Admin/Econt.php:127 app/Admin/Pigeon.php:223 app/Admin/Speedy.php:179 app/functions.php:223 app/Shipping/CVC/Method.php:148
 msgid "Review and test"
 msgstr "Преглед и тест"
 
-#: app/Admin/CVC.php:113 app/Admin/Econt.php:128 app/Admin/Pigeon.php:207 app/Admin/Speedy.php:180 app/Admin/Tabs/Econt_Tab.php:65 app/Admin/Tabs/Pigeon_Tab.php:70
+#: app/Admin/CVC.php:113 app/Admin/Econt.php:128 app/Admin/Pigeon.php:224 app/Admin/Speedy.php:180 app/Admin/Tabs/Econt_Tab.php:65 app/Admin/Tabs/Pigeon_Tab.php:70
 msgid "Declared value"
 msgstr "Обявена стойност"
 
-#: app/Admin/CVC.php:114 app/Admin/Econt.php:129 app/Admin/Pigeon.php:209 app/Admin/Speedy.php:182
+#: app/Admin/CVC.php:114 app/Admin/Econt.php:129 app/Admin/Pigeon.php:226 app/Admin/Speedy.php:182
 msgid "Description"
 msgstr "Описание"
 
@@ -587,15 +587,15 @@ msgstr "Номер на фактура"
 msgid "Partial delivery"
 msgstr "Частична доставка"
 
-#: app/Admin/Econt.php:133 app/Admin/Pigeon.php:211 app/Admin/Speedy.php:186
+#: app/Admin/Econt.php:133 app/Admin/Pigeon.php:228 app/Admin/Speedy.php:186
 msgid "Length"
 msgstr "Дължина"
 
-#: app/Admin/Econt.php:134 app/Admin/Pigeon.php:212 app/Admin/Speedy.php:187 app/Front_End/Checkout/Field_Editor.php:633
+#: app/Admin/Econt.php:134 app/Admin/Pigeon.php:229 app/Admin/Speedy.php:187 app/Front_End/Checkout/Field_Editor.php:633
 msgid "Width"
 msgstr "Ширина"
 
-#: app/Admin/Econt.php:135 app/Admin/Pigeon.php:213 app/Admin/Speedy.php:188
+#: app/Admin/Econt.php:135 app/Admin/Pigeon.php:230 app/Admin/Speedy.php:188
 msgid "Height"
 msgstr "Височина"
 
@@ -699,7 +699,7 @@ msgstr "Запазени експорти"
 msgid "Add"
 msgstr "Добавяне"
 
-#: app/Admin/Export_Builder.php:141 app/Admin/Settings_Page.php:598 app/Admin/Settings_Page.php:693 app/Admin/Settings_Page.php:758 app/Front_End/Checkout/Field_Editor.php:614 app/Front_End/Checkout/Field_Editor.php:634
+#: app/Admin/Export_Builder.php:141 app/Admin/Settings_Page.php:605 app/Admin/Settings_Page.php:700 app/Admin/Settings_Page.php:805 app/Front_End/Checkout/Field_Editor.php:614 app/Front_End/Checkout/Field_Editor.php:634
 msgid "Remove"
 msgstr "Премахване"
 
@@ -793,7 +793,7 @@ msgstr "Продадени продукти"
 msgid "One row per product line"
 msgstr "По един ред за всеки продукт в поръчката"
 
-#: app/Admin/Export_Builder.php:199 app/Admin/Help_Page.php:70 app/Admin/Help_Page.php:83 app/Admin/Order/Columns.php:24 app/Admin/Settings_Page.php:103 app/Admin/Tabs/Export_Tab.php:28
+#: app/Admin/Export_Builder.php:199 app/Admin/Help_Page.php:70 app/Admin/Help_Page.php:83 app/Admin/Order/Columns.php:24 app/Admin/Settings_Page.php:105 app/Admin/Tabs/Export_Tab.php:28
 msgid "Documents"
 msgstr "Документи"
 
@@ -805,11 +805,11 @@ msgstr "По един ред за фактура, кредитно извест�
 msgid "Which records"
 msgstr "Кои записи"
 
-#: app/Admin/Export_Builder.php:206 app/Admin/Settings_Page.php:677 app/Admin/Settings_Page.php:677 app/Admin/Settings_Page.php:678
+#: app/Admin/Export_Builder.php:206 app/Admin/Settings_Page.php:684 app/Admin/Settings_Page.php:684 app/Admin/Settings_Page.php:685
 msgid "From"
 msgstr "От"
 
-#: app/Admin/Export_Builder.php:207 app/Admin/Settings_Page.php:677 app/Admin/Settings_Page.php:677 app/Admin/Settings_Page.php:678
+#: app/Admin/Export_Builder.php:207 app/Admin/Settings_Page.php:684 app/Admin/Settings_Page.php:684 app/Admin/Settings_Page.php:685
 msgid "To"
 msgstr "До"
 
@@ -1001,7 +1001,7 @@ msgstr "WooCommerce > Настройки > Доставка"
 msgid "In %s, turn on the couriers you work with, invoices and the customer checks you need, and save."
 msgstr "В %s включете куриерите, с които работите, фактурите и нужните проверки на клиенти и запазете."
 
-#: app/Admin/Help_Page.php:62 app/Admin/Help_Page.php:80 app/Admin/Settings_Page.php:82
+#: app/Admin/Help_Page.php:62 app/Admin/Help_Page.php:80 app/Admin/Settings_Page.php:84
 msgid "Overview"
 msgstr "Общ преглед"
 
@@ -1011,7 +1011,7 @@ msgstr "Общ преглед"
 msgid "In %s, enter the login or API keys the courier gave you for online shops."
 msgstr "В %s въведете данните за вход или API ключовете, които куриерът Ви е дал за онлайн магазини."
 
-#: app/Admin/Help_Page.php:64 app/Admin/Help_Page.php:81 app/Admin/Settings_Page.php:86 app/Admin/Settings_Page.php:403 app/Admin/Tabs/Settings_Tab.php:16
+#: app/Admin/Help_Page.php:64 app/Admin/Help_Page.php:81 app/Admin/Settings_Page.php:88 app/Admin/Settings_Page.php:410 app/Admin/Tabs/Settings_Tab.php:16
 msgid "Couriers"
 msgstr "Куриери"
 
@@ -1039,7 +1039,7 @@ msgstr "В %s попълнете данните на фирмата си и из
 msgid "Every month, create the NRA audit file in %s and submit it by the 15th, or have it emailed to your accountant."
 msgstr "Всеки месец създавайте одиторския файл за НАП в %s и го подавайте до 15-о число или нека се изпраща на счетоводителя Ви по имейл."
 
-#: app/Admin/Help_Page.php:72 app/Admin/Help_Page.php:84 app/Admin/Settings_Page.php:111
+#: app/Admin/Help_Page.php:72 app/Admin/Help_Page.php:84 app/Admin/Settings_Page.php:113
 msgid "Exports"
 msgstr "Експорти"
 
@@ -1155,7 +1155,7 @@ msgstr "В %s > Товарителници и статуси на поръчки
 msgid "Customers see \"Track your parcel\" with the waybill number on their order page, and get it in the order emails."
 msgstr "Клиентите виждат „Проследете пратката си“ с номера на товарителницата на страницата на поръчката си и го получават в имейлите за поръчката."
 
-#: app/Admin/Help_Page.php:122 app/Admin/Settings_Page.php:95 app/Admin/Tabs/Quick_Order_Tab.php:14 app/Admin/Tabs/Quick_Order_Tab.php:96 app/Admin/Tabs/Settings_Tab.php:22 app/Front_End/Quick_Order.php:261
+#: app/Admin/Help_Page.php:122 app/Admin/Settings_Page.php:97 app/Admin/Tabs/Quick_Order_Tab.php:14 app/Admin/Tabs/Quick_Order_Tab.php:96 app/Admin/Tabs/Settings_Tab.php:22 app/Front_End/Quick_Order.php:261
 msgid "Quick order"
 msgstr "Бърза поръчка"
 
@@ -1279,7 +1279,7 @@ msgstr "Поставете връзката сами с краткия код [n
 msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
 msgstr "Заявките се виждат в списъка с поръчки (колона „Отказ“) и в поръчката, с всичко, което клиентът е подал."
 
-#: app/Admin/Help_Page.php:162 app/Admin/Settings_Page.php:107 app/Admin/Tabs/Settings_Tab.php:44 app/Reports/Reports.php:128
+#: app/Admin/Help_Page.php:162 app/Admin/Settings_Page.php:109 app/Admin/Tabs/Settings_Tab.php:44 app/Reports/Reports.php:129
 msgid "Customer checks"
 msgstr "Проверки на клиенти"
 
@@ -1288,136 +1288,140 @@ msgid "nekorekten.com, Connectix and NepoStop tell you whether a phone number ha
 msgstr "nekorekten.com, Connectix и NepoStop показват дали един телефонен номер има история на отказани пратки. Нашенски Комерс може да покаже предупреждение в поръчката и да скрие наложения платеж за такива клиенти."
 
 #: app/Admin/Help_Page.php:164
+msgid "In NepoStop and nekorekten.com you can also tick the shipping methods to hide under \"Hide these methods\". When the service flags the customer at its level of warning, those methods are not offered at checkout."
+msgstr "В NepoStop и nekorekten.com може също да отметнете методите за доставка, които да се скрият, под „Скрий тези методи“. Когато услугата маркира клиента при нивото си на предупреждение, тези методи не се предлагат при поръчка."
+
+#: app/Admin/Help_Page.php:165
 msgid "Turn a service on in Overview, save, then enter its API key or token in Customer checks. A service without a key is not asked."
 msgstr "Включете услуга в „Общ преглед“, запазете, после въведете нейния API ключ или токен в „Проверки на клиенти“. Услуга без ключ не се пита."
 
-#: app/Admin/Help_Page.php:165
+#: app/Admin/Help_Page.php:166
 msgid "On the order, the Reports box shows the answers. Press \"Refresh data\" to ask again."
 msgstr "В поръчката полето „Сигнали“ показва отговорите. Натиснете „Обнови данните“, за да попитате отново."
 
-#: app/Admin/Help_Page.php:166
+#: app/Admin/Help_Page.php:167
 msgid "For nekorekten.com you can report a customer yourself: write what happened and press \"Send report\". The report carries the name, phone and email of the order. Change the text and press \"Save report\", or press \"Delete report\" to remove it from nekorekten.com."
 msgstr "В nekorekten.com можете сами да подадете сигнал за клиент: опишете какво се е случило и натиснете „Изпрати сигнал“. Сигналът съдържа името, телефона и имейла от поръчката. Променете текста и натиснете „Запази сигнала“ или натиснете „Изтрий сигнала“, за да го премахнете от nekorekten.com."
 
-#: app/Admin/Help_Page.php:167
+#: app/Admin/Help_Page.php:168
 msgid "Connectix and NepoStop can also get tracking information or labels from your orders. Both are optional."
 msgstr "Connectix и NepoStop могат да получават и информация за проследяване или етикети от вашите поръчки. И двете са по избор."
 
-#: app/Admin/Help_Page.php:169 app/Admin/ImpossibleVatPrice.php:26 app/Admin/ImpossibleVatPrice.php:27 app/Admin/ImpossibleVatPrice.php:102
+#: app/Admin/Help_Page.php:170 app/Admin/ImpossibleVatPrice.php:26 app/Admin/ImpossibleVatPrice.php:27 app/Admin/ImpossibleVatPrice.php:102
 msgid "Mathematically impossible prices"
 msgstr "Математически невъзможни цени"
 
-#: app/Admin/Help_Page.php:170
+#: app/Admin/Help_Page.php:171
 msgid "Open Products > Mathematically impossible prices and press \"Scan products\". It lists the prices that cannot be split into a price without VAT and the VAT without rounding."
 msgstr "Отворете Продукти > Математически невъзможни цени и натиснете „Сканирай продуктите“. Показва цените, които не могат да се разделят на цена без ДДС и ДДС без закръгляне."
 
-#: app/Admin/Help_Page.php:171
+#: app/Admin/Help_Page.php:172
 msgid "Press \"Fix all\" to correct them. The check matters most when your prices are entered including tax."
 msgstr "Натиснете „Поправи всички“, за да ги коригирате. Проверката е най-важна, когато цените ви се въвеждат с включен данък."
 
-#: app/Admin/Help_Page.php:173 app/Admin/Help_Page.php:208
+#: app/Admin/Help_Page.php:174 app/Admin/Help_Page.php:209
 msgid "Moving from another plugin"
 msgstr "Преминаване от друг плъгин"
 
-#: app/Admin/Help_Page.php:174
+#: app/Admin/Help_Page.php:175
 msgid "Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping."
 msgstr "Нашенски Комерс внася данни от Bulgarisation for WooCommerce, плъгините на mreja.net (Еконт Експрес, BOX NOW Delivery, Метод за доставка Спиди, Pigeon Express, Наредба Н-18), Drusoft Shipping за Еконт и за Спиди, Econt Delivery и Speedy Shipping."
 
-#: app/Admin/Help_Page.php:175
+#: app/Admin/Help_Page.php:176
 msgid "It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods and, from the N-18 plugin, the company details and document numbers. Then the old plugin is switched off. Its own data stays in the database."
 msgstr "Взема данните за вход към куриерите, данните на подателя, номерата на товарителниците на поръчките, методите в зоните за доставка, а от плъгина за Н-18 и данните на фирмата и номерата на документите. След това старият плъгин се изключва. Неговите данни остават в базата данни."
 
-#: app/Admin/Help_Page.php:176
+#: app/Admin/Help_Page.php:177
 msgid "Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import."
 msgstr "Econt Delivery и Drusoft Shipping за Еконт използват друг ключ на Еконт: след внасянето въведете потребителското си име и паролата за Еконт."
 
-#: app/Admin/Help_Page.php:178
+#: app/Admin/Help_Page.php:179
 msgid "Updates"
 msgstr "Обновления"
 
-#: app/Admin/Help_Page.php:179
+#: app/Admin/Help_Page.php:180
 msgid "New versions show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too."
 msgstr "Новите версии се появяват в Табло > Обновления и на екрана с разширенията, като всяко друго обновление. Там може да включите и автоматичните обновления."
 
-#: app/Admin/Help_Page.php:181
+#: app/Admin/Help_Page.php:182
 msgid "When something does not work"
 msgstr "Когато нещо не работи"
 
-#: app/Admin/Help_Page.php:182
+#: app/Admin/Help_Page.php:183
 msgid "\"Nothing found\" under a courier: check the login on the courier page. In BOX NOW demo mode there are only two test lockers, both in Sofia."
 msgstr "„Нищо не е намерено“ под куриер: проверете входа на страницата на куриера. В демо режим на BOX NOW има само два тестови автомата, и двата в София."
 
-#: app/Admin/Help_Page.php:183
+#: app/Admin/Help_Page.php:184
 msgid "No courier options at checkout: add the methods to the shipping zone of the customer's address and give your products a weight."
 msgstr "Няма опции за куриер при плащане: добавете методите към зоната за доставка на адреса на клиента и задайте тегло на продуктите."
 
-#: app/Admin/Help_Page.php:184
+#: app/Admin/Help_Page.php:185
 msgid "\"Complete the fields to calculate\" does not go away: the customer has not chosen an office, a locker or an address yet."
 msgstr "„Попълнете данните за изчисляване“ не изчезва: клиентът още не е избрал офис, автомат или адрес."
 
-#: app/Admin/Help_Page.php:185
+#: app/Admin/Help_Page.php:186
 msgid "No documents: turn on \"Invoices and N-18\" in Overview and check \"When to generate documents?\" in Documents."
 msgstr "Няма документи: включете „Фактури и Н-18“ в „Общ преглед“ и проверете „Кога да се създават документите?“ в „Документи“."
 
-#: app/Admin/Help_Page.php:197 app/Admin/Import_Sources.php:181
+#: app/Admin/Help_Page.php:198 app/Admin/Import_Sources.php:181
 msgid "Bulgarisation for WooCommerce"
 msgstr "Bulgarisation for WooCommerce"
 
-#: app/Admin/Help_Page.php:209
+#: app/Admin/Help_Page.php:210
 msgid "These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use and switches the plugin off."
 msgstr "Тези плъгини са инсталирани или са оставили данни на сайта Ви. Внасянето взема това, което Нашенски Комерс може да използва, и изключва плъгина."
 
 #. translators: %s: date
-#: app/Admin/Help_Page.php:219
+#: app/Admin/Help_Page.php:220
 #, php-format
 msgid "Imported on %s"
 msgstr "Внесено на %s"
 
-#: app/Admin/Help_Page.php:222
+#: app/Admin/Help_Page.php:223
 msgid "Import and switch off"
 msgstr "Внеси и изключи"
 
 #. translators: %d: number of settings
-#: app/Admin/Help_Page.php:243
+#: app/Admin/Help_Page.php:244
 #, php-format
 msgid "%d setting changed."
 msgid_plural "%d settings changed."
 msgstr[0] "Променена е %d настройка."
 msgstr[1] "Променени са %d настройки."
 
-#: app/Admin/Help_Page.php:256
+#: app/Admin/Help_Page.php:257
 msgid "Recommended settings"
 msgstr "Препоръчителни настройки"
 
-#: app/Admin/Help_Page.php:257
+#: app/Admin/Help_Page.php:258
 msgid "Settings that suit most Bulgarian stores. Tick the ones you want and apply them; nothing else changes."
 msgstr "Настройки, подходящи за повечето български магазини. Отметнете желаните и ги приложете; нищо друго не се променя."
 
-#: app/Admin/Help_Page.php:262
+#: app/Admin/Help_Page.php:263
 msgid "Setting"
 msgstr "Настройка"
 
-#: app/Admin/Help_Page.php:263 app/Plugin.php:263
+#: app/Admin/Help_Page.php:264 app/Plugin.php:263
 msgid "Now"
 msgstr "Сега"
 
-#: app/Admin/Help_Page.php:264
+#: app/Admin/Help_Page.php:265
 msgid "Recommended"
 msgstr "Препоръчано"
 
-#: app/Admin/Help_Page.php:265
+#: app/Admin/Help_Page.php:266
 msgid "Why"
 msgstr "Защо"
 
-#: app/Admin/Help_Page.php:278
+#: app/Admin/Help_Page.php:279
 msgid "Already set"
 msgstr "Вече е зададено"
 
-#: app/Admin/Help_Page.php:295
+#: app/Admin/Help_Page.php:296
 msgid "Apply recommended settings"
 msgstr "Прилагане на препоръчителните настройки"
 
-#: app/Admin/Help_Page.php:297
+#: app/Admin/Help_Page.php:298
 msgid "All recommended settings are in place."
 msgstr "Всички препоръчителни настройки са приложени."
 
@@ -1481,16 +1485,16 @@ msgstr "Нашенски Комерс може да поеме данните н
 msgid "Review and import"
 msgstr "Преглед и внасяне"
 
-#: app/Admin/Import_Sources.php:168 app/Admin/Settings_Page.php:525
+#: app/Admin/Import_Sources.php:168 app/Admin/Settings_Page.php:532
 msgid "Dismiss"
 msgstr "Скриване"
 
-#: app/Admin/Import_Sources.php:293 app/Admin/Import_Sources.php:315
+#: app/Admin/Import_Sources.php:299 app/Admin/Import_Sources.php:321
 msgid "The Econt key of that plugin works only with Econt's \"Deliver with Econt\" service. Enter your Econt username and password in Couriers > Econt."
 msgstr "Ключът на Еконт от този плъгин работи само с услугата „Достави с Еконт“. Въведете потребителското си име и паролата за Еконт в Куриери > Еконт."
 
 #. translators: %d: number
-#: app/Admin/Import_Sources.php:334
+#: app/Admin/Import_Sources.php:340
 #, php-format
 msgid "%d setting"
 msgid_plural "%d settings"
@@ -1498,7 +1502,7 @@ msgstr[0] "%d настройка"
 msgstr[1] "%d настройки"
 
 #. translators: %d: number
-#: app/Admin/Import_Sources.php:336
+#: app/Admin/Import_Sources.php:342
 #, php-format
 msgid "%d order waybill"
 msgid_plural "%d order waybills"
@@ -1506,7 +1510,7 @@ msgstr[0] "%d товарителница на поръчка"
 msgstr[1] "%d товарителници на поръчки"
 
 #. translators: %d: number
-#: app/Admin/Import_Sources.php:338
+#: app/Admin/Import_Sources.php:344
 #, php-format
 msgid "%d shipping zone method"
 msgid_plural "%d shipping zone methods"
@@ -1514,7 +1518,7 @@ msgstr[0] "%d метод в зона за доставка"
 msgstr[1] "%d метода в зони за доставка"
 
 #. translators: %d: number
-#: app/Admin/Import_Sources.php:343
+#: app/Admin/Import_Sources.php:349
 #, php-format
 msgid "%d document number"
 msgid_plural "%d document numbers"
@@ -1522,13 +1526,13 @@ msgstr[0] "%d номер на документ"
 msgstr[1] "%d номера на документи"
 
 #. translators: %d: number of settings
-#: app/Admin/Import_Sources.php:348
+#: app/Admin/Import_Sources.php:354
 #, php-format
 msgid "Already set, kept as it is: %d"
 msgstr "Вече е зададено, оставено както е: %d"
 
 #. translators: %d: number of orders
-#: app/Admin/Import_Sources.php:355
+#: app/Admin/Import_Sources.php:361
 #, php-format
 msgid "%d order keeps everything the old plugin saved on it (see \"From earlier plugins\" on the order)"
 msgid_plural "%d orders keep everything the old plugin saved on them (see \"From earlier plugins\" on the order)"
@@ -1536,44 +1540,44 @@ msgstr[0] "%d поръчка запазва всичко, което стари�
 msgstr[1] "%d поръчки запазват всичко, което старият плъгин е записал в тях (вижте „От предишни плъгини“ в поръчката)"
 
 #. translators: %s: plugin name
-#: app/Admin/Import_Sources.php:383
+#: app/Admin/Import_Sources.php:389
 #, php-format
 msgid "%s was switched off."
 msgstr "%s беше изключен."
 
-#: app/Admin/Import_Sources.php:519
+#: app/Admin/Import_Sources.php:525
 msgid "From earlier plugins"
 msgstr "От предишни плъгини"
 
-#: app/Admin/Import_Sources.php:527
+#: app/Admin/Import_Sources.php:533
 msgid "What the earlier plugins saved on this order, kept when their data was imported."
 msgstr "Това, което предишните плъгини са записали в тази поръчка, запазено при внасянето на данните им."
 
-#: app/Admin/Import_Sources.php:566 app/Export/Builder/Fields.php:234
+#: app/Admin/Import_Sources.php:572 app/Export/Builder/Fields.php:234
 msgid "Order document"
 msgstr "Документ за продажба"
 
-#: app/Admin/Import_Sources.php:567 app/Admin/Order/Documents.php:126 app/Export/Builder/Fields.php:235
+#: app/Admin/Import_Sources.php:573 app/Admin/Order/Documents.php:126 app/Export/Builder/Fields.php:235
 msgid "Invoice"
 msgstr "Фактура"
 
-#: app/Admin/Import_Sources.php:568 app/Export/Builder/Fields.php:236
+#: app/Admin/Import_Sources.php:574 app/Export/Builder/Fields.php:236
 msgid "Credit note"
 msgstr "Кредитно известие"
 
-#: app/Admin/Import_Sources.php:569
+#: app/Admin/Import_Sources.php:575
 msgid "Cancelled order document"
 msgstr "Документ за отказана поръчка"
 
-#: app/Admin/Import_Sources.php:734 app/Admin/Settings_Page.php:580 app/Front_End/Checkout/Pickers.php:353
+#: app/Admin/Import_Sources.php:740 app/Admin/Settings_Page.php:587 app/Front_End/Checkout/Pickers.php:353
 msgid "To an office"
 msgstr "До офис"
 
-#: app/Admin/Import_Sources.php:735 app/Front_End/Checkout/Pickers.php:354 app/Front_End/Checkout/Pickers.php:355 app/Front_End/Checkout/Pickers.php:356
+#: app/Admin/Import_Sources.php:741 app/Admin/Import_Sources.php:742 app/Front_End/Checkout/Pickers.php:354 app/Front_End/Checkout/Pickers.php:355 app/Front_End/Checkout/Pickers.php:356
 msgid "To a parcel locker"
 msgstr "До автомат за пратки"
 
-#: app/Admin/Import_Sources.php:736 app/Admin/Settings_Page.php:582
+#: app/Admin/Import_Sources.php:743 app/Admin/Settings_Page.php:589
 msgid "To an address"
 msgstr "До адрес"
 
@@ -1915,7 +1919,7 @@ msgstr "Доставката не е запазена: първо изберет
 msgid "Delivery set on the order screen: %1$s, %2$s. The price comes with the label."
 msgstr "Доставката е зададена от страницата на поръчката: %1$s, %2$s. Цената идва с товарителницата."
 
-#: app/Admin/Order/Documents.php:125 app/Export/Builder/Fields.php:34 app/Reports/Reports.php:115
+#: app/Admin/Order/Documents.php:125 app/Export/Builder/Fields.php:34 app/Reports/Reports.php:116
 msgid "Order"
 msgstr "Поръчка"
 
@@ -1959,31 +1963,31 @@ msgstr "Използва вида на PDF, зададен в Документи
 msgid "Pigeon Express"
 msgstr "Pigeon Express"
 
-#: app/Admin/Pigeon.php:191
+#: app/Admin/Pigeon.php:208
 msgid "Locker"
 msgstr "Шкафче"
 
-#: app/Admin/Pigeon.php:199
+#: app/Admin/Pigeon.php:216
 msgid "You just copied the label data used for the Pigeon Express API."
 msgstr "Копирахте данните за товарителницата, изпратени към API на Pigeon Express."
 
-#: app/Admin/Pigeon.php:201
+#: app/Admin/Pigeon.php:218
 msgid "Reference number"
 msgstr "Референтен номер"
 
-#: app/Admin/Pigeon.php:202
+#: app/Admin/Pigeon.php:219
 msgid "Tracking codes"
 msgstr "Кодове за проследяване"
 
-#: app/Admin/Pigeon.php:208 app/Admin/Speedy.php:181 app/Front_End/Checkout/Pickers.php:376
+#: app/Admin/Pigeon.php:225 app/Admin/Speedy.php:181 app/Front_End/Checkout/Pickers.php:376
 msgid "Street or quarter"
 msgstr "Улица или квартал"
 
-#: app/Admin/Pigeon.php:217
+#: app/Admin/Pigeon.php:234
 msgid "Return at my expense"
 msgstr "Връщане за моя сметка"
 
-#: app/Admin/Pigeon.php:218
+#: app/Admin/Pigeon.php:235
 msgid "Note for courier"
 msgstr "Бележка за куриера"
 
@@ -2139,189 +2143,193 @@ msgstr "Не"
 msgid "(not set)"
 msgstr "(не е зададено)"
 
-#: app/Admin/Settings_Page.php:115
+#: app/Admin/Settings_Page.php:117
 msgid "Help"
 msgstr "Помощ"
 
-#: app/Admin/Settings_Page.php:192
+#: app/Admin/Settings_Page.php:194
 msgid "Available once the courier login works."
 msgstr "Достъпно, след като входът в куриера проработи."
 
-#: app/Admin/Settings_Page.php:234
+#: app/Admin/Settings_Page.php:236
 msgid "Available once the courier login works"
 msgstr "Достъпно, след като входът в куриера проработи"
 
-#: app/Admin/Settings_Page.php:283
+#: app/Admin/Settings_Page.php:285
 msgid "Enable"
 msgstr "Включване"
 
-#: app/Admin/Settings_Page.php:366
+#: app/Admin/Settings_Page.php:373
 msgid "Turn on documents in the Overview to also get the NRA audit file, the invoice archive and the Microinvest Delta file here."
 msgstr "Включете документите в Общ преглед, за да имате тук и одиторския файл за НАП, архива с фактури и файла за Microinvest Delta."
 
 #. translators: %s: courier name
-#: app/Admin/Settings_Page.php:433
+#: app/Admin/Settings_Page.php:440
 #, php-format
 msgid "Connected to %s. Prices and labels use your account."
 msgstr "Свързано с %s. Цените и товарителниците използват вашия профил."
 
-#: app/Admin/Settings_Page.php:444
+#: app/Admin/Settings_Page.php:451
 msgid "Reload offices and cities"
 msgstr "Презареждане на офиси и населени места"
 
-#: app/Admin/Settings_Page.php:445
+#: app/Admin/Settings_Page.php:452
 msgid "Downloads the latest cities, offices and lockers (and your profile) from the courier. They also update by themselves once a week."
 msgstr "Изтегля най-новите населени места, офиси и автомати (и вашия профил) от куриера. Те се обновяват и сами веднъж седмично."
 
-#: app/Admin/Settings_Page.php:465
+#: app/Admin/Settings_Page.php:472
 msgid "Offices and cities will be downloaded again the next time they are needed."
 msgstr "Офисите и населените места ще бъдат изтеглени отново, когато потрябват."
 
 #. translators: %s: courier names with links
-#: app/Admin/Settings_Page.php:523
+#: app/Admin/Settings_Page.php:530
 #, php-format
 msgid "New published prices were found for %s. Open the courier, press \"Check the courier website\" and decide whether to use them."
 msgstr "Открити са нови публикувани цени за %s. Отворете куриера, натиснете „Проверка в сайта на куриера“ и решете дали да ги използвате."
 
-#: app/Admin/Settings_Page.php:543
+#: app/Admin/Settings_Page.php:550
 msgid "Public prices"
 msgstr "Публични цени"
 
 #. translators: 1: link to the courier price list, 2: date
-#: app/Admin/Settings_Page.php:546
+#: app/Admin/Settings_Page.php:553
 #, php-format
 msgid "Used to price orders when this courier is not connected or does not answer, so customers can always order. The built-in prices come from the %1$s (valid from %2$s). Edit them, or let Nashenski Commerce check the courier website for newer prices."
 msgstr "Използват се за цените на поръчките, когато куриерът не е свързан или не отговаря, за да могат клиентите винаги да поръчат. Вградените цени са от %1$s (в сила от %2$s). Редактирайте ги или оставете Нашенски Комерс да провери сайта на куриера за по-нови цени."
 
-#: app/Admin/Settings_Page.php:547
+#: app/Admin/Settings_Page.php:554
 msgid "courier's published price list"
 msgstr "публикувания ценоразпис на куриера"
 
-#: app/Admin/Settings_Page.php:548
+#: app/Admin/Settings_Page.php:555
 msgid "unknown"
 msgstr "неизвестно"
 
-#: app/Admin/Settings_Page.php:554
+#: app/Admin/Settings_Page.php:561
 msgid "Use public prices"
 msgstr "Публични цени"
 
-#: app/Admin/Settings_Page.php:555
+#: app/Admin/Settings_Page.php:562
 msgid "Price orders with this list when there is no working courier login"
 msgstr "Цените на поръчките се изчисляват по този ценоразпис, когато няма работещ вход в куриера"
 
-#: app/Admin/Settings_Page.php:561
+#: app/Admin/Settings_Page.php:568
 msgid "Price list"
 msgstr "Ценоразпис"
 
-#: app/Admin/Settings_Page.php:581
+#: app/Admin/Settings_Page.php:588
 msgid "To a locker"
 msgstr "До автомат"
 
-#: app/Admin/Settings_Page.php:594
+#: app/Admin/Settings_Page.php:601
 msgid "Up to (kg)"
 msgstr "До (кг)"
 
-#: app/Admin/Settings_Page.php:608 app/Admin/Settings_Page.php:702 app/Plugin.php:259
+#: app/Admin/Settings_Page.php:615 app/Admin/Settings_Page.php:709 app/Plugin.php:259
 msgid "Remove row"
 msgstr "Премахване на реда"
 
-#: app/Admin/Settings_Page.php:614
+#: app/Admin/Settings_Page.php:621
 msgid "Heavier: base"
 msgstr "По-тежки: основна цена"
 
-#: app/Admin/Settings_Page.php:621
+#: app/Admin/Settings_Page.php:628
 msgid "+ per kg above the last row"
 msgstr "+ за кг над последния ред"
 
-#: app/Admin/Settings_Page.php:629 app/Admin/Settings_Page.php:707
+#: app/Admin/Settings_Page.php:636 app/Admin/Settings_Page.php:714
 msgid "Add row"
 msgstr "Добавяне на ред"
 
-#: app/Admin/Settings_Page.php:632
+#: app/Admin/Settings_Page.php:639
 msgid "Prices include VAT"
 msgstr "Цените са с ДДС"
 
-#: app/Admin/Settings_Page.php:633
+#: app/Admin/Settings_Page.php:640
 msgid "Extra surcharge (fuel, toll) %"
 msgstr "Допълнителна такса (гориво, пътна такса) %"
 
-#: app/Admin/Settings_Page.php:634
+#: app/Admin/Settings_Page.php:641
 msgid "Cash on delivery fee %"
 msgstr "Такса за наложен платеж %"
 
-#: app/Admin/Settings_Page.php:635
+#: app/Admin/Settings_Page.php:642
 msgid "at least"
 msgstr "най-малко"
 
-#: app/Admin/Settings_Page.php:636 app/Pricing/Updater.php:432
+#: app/Admin/Settings_Page.php:643 app/Pricing/Updater.php:432
 msgid "Valid from"
 msgstr "В сила от"
 
-#: app/Admin/Settings_Page.php:641
+#: app/Admin/Settings_Page.php:648
 msgid "Check the courier website"
 msgstr "Проверка в сайта на куриера"
 
-#: app/Admin/Settings_Page.php:642
+#: app/Admin/Settings_Page.php:649
 msgid "Restore the built-in prices"
 msgstr "Възстановяване на вградените цени"
 
-#: app/Admin/Settings_Page.php:646
+#: app/Admin/Settings_Page.php:653
 msgid "Prices are for parcels you hand in at a courier office. Changes take effect after you save."
 msgstr "Цените са за пратки, предадени в офис на куриера. Промените влизат в сила след запазване."
 
-#: app/Admin/Settings_Page.php:757
+#: app/Admin/Settings_Page.php:766
+msgid "No shipping method is turned on in the shipping zones yet."
+msgstr "Още няма включен метод за доставка в зоните за доставка."
+
+#: app/Admin/Settings_Page.php:804
 msgid "Choose image"
 msgstr "Избор на изображение"
 
-#: app/Admin/Settings_Page.php:786
+#: app/Admin/Settings_Page.php:833
 msgid "Standardised audit file (Annex 38)"
 msgstr "Стандартизиран одиторски файл (Приложение 38)"
 
-#: app/Admin/Settings_Page.php:787
+#: app/Admin/Settings_Page.php:834
 msgid "The monthly XML file for the NRA under Ordinance N-18. There is no limit on the number of orders."
 msgstr "Месечният XML файл за НАП по Наредба Н-18. Няма ограничение за броя поръчки."
 
-#: app/Admin/Settings_Page.php:788
+#: app/Admin/Settings_Page.php:835
 msgid "Create XML file"
 msgstr "Създаване на XML файл"
 
-#: app/Admin/Settings_Page.php:795
+#: app/Admin/Settings_Page.php:842
 msgid "Invoice archive"
 msgstr "Архив с фактури"
 
-#: app/Admin/Settings_Page.php:796
+#: app/Admin/Settings_Page.php:843
 msgid "A ZIP file with all invoices and credit notes of the month."
 msgstr "ZIP файл с всички фактури и кредитни известия за месеца."
 
-#: app/Admin/Settings_Page.php:797
+#: app/Admin/Settings_Page.php:844
 msgid "Download archive"
 msgstr "Изтегляне на архива"
 
-#: app/Admin/Settings_Page.php:802
+#: app/Admin/Settings_Page.php:849
 msgid "Microinvest Delta"
 msgstr "Microinvest Delta"
 
-#: app/Admin/Settings_Page.php:803
+#: app/Admin/Settings_Page.php:850
 msgid "The documents of the month in the import format of Microinvest Delta."
 msgstr "Документите за месеца във формата за импорт на Microinvest Delta."
 
-#: app/Admin/Settings_Page.php:804
+#: app/Admin/Settings_Page.php:851
 msgid "Create file"
 msgstr "Създаване на файл"
 
-#: app/Admin/Settings_Page.php:808
+#: app/Admin/Settings_Page.php:855
 msgid "Ready-made files"
 msgstr "Готови файлове"
 
-#: app/Admin/Settings_Page.php:820
+#: app/Admin/Settings_Page.php:867
 msgid "Month"
 msgstr "Месец"
 
-#: app/Admin/Settings_Page.php:825
+#: app/Admin/Settings_Page.php:872
 msgid "Older orders"
 msgstr "По-стари поръчки"
 
-#: app/Admin/Settings_Page.php:827
+#: app/Admin/Settings_Page.php:874
 msgid "Create missing documents for orders placed before the plugin was installed"
 msgstr "Създаване на липсващите документи за поръчки отпреди инсталирането на разширението"
 
@@ -3415,7 +3423,7 @@ msgstr "Фактура на фирма"
 msgid "Works in the classic checkout, the block checkout and page builder checkouts. In a builder checkout made of single field elements, the fields appear after the billing fields unless you placed them yourself."
 msgstr "Работи при класическото плащане, при блоковото плащане и при плащане, създадено с конструктор. В плащане от отделни полета, създадено с конструктор, полетата се показват след полетата за фактуриране, освен ако не сте ги поставили сами."
 
-#: app/Admin/Tabs/Nekorekten_Tab.php:14 app/Admin/Tabs/Nekorekten_Tab.php:50 app/Reports/Providers/Nekorekten.php:16
+#: app/Admin/Tabs/Nekorekten_Tab.php:14 app/Admin/Tabs/Nekorekten_Tab.php:51 app/Reports/Providers/Nekorekten.php:16
 msgid "nekorekten.com"
 msgstr "nekorekten.com"
 
@@ -3441,15 +3449,23 @@ msgstr "Брой сигнали"
 msgid "From how many reports about a phone number the order shows a warning and cash on delivery is turned off at checkout."
 msgstr "От колко сигнала за един телефонен номер поръчката показва предупреждение и наложеният платеж се изключва при плащане."
 
-#: app/Admin/Tabs/Nekorekten_Tab.php:59
+#: app/Admin/Tabs/Nekorekten_Tab.php:41 app/Admin/Tabs/NepoStop_Tab.php:23
+msgid "Hide these methods"
+msgstr "Скрий тези методи"
+
+#: app/Admin/Tabs/Nekorekten_Tab.php:41 app/Admin/Tabs/NepoStop_Tab.php:23
+msgid "The checked methods are not offered to a customer that this service flags at the level of warning above."
+msgstr "Отметнатите методи не се предлагат на клиент, който услугата маркира при нивото на предупреждение по-горе."
+
+#: app/Admin/Tabs/Nekorekten_Tab.php:60
 msgid "Enter your nekorekten.com API key."
 msgstr "Въведете API ключа си за nekorekten.com."
 
-#: app/Admin/Tabs/Nekorekten_Tab.php:62
+#: app/Admin/Tabs/Nekorekten_Tab.php:63
 msgid "nekorekten.com did not accept the API key. Check the key and the allowed IP addresses in your nekorekten.com profile."
 msgstr "nekorekten.com не прие API ключа. Проверете ключа и разрешените IP адреси в профила си в nekorekten.com."
 
-#: app/Admin/Tabs/NepoStop_Tab.php:14 app/Admin/Tabs/NepoStop_Tab.php:33 app/Admin/Tabs/Settings_Tab.php:28 app/Reports/Providers/NepoStop.php:10
+#: app/Admin/Tabs/NepoStop_Tab.php:14 app/Admin/Tabs/NepoStop_Tab.php:34 app/Admin/Tabs/Settings_Tab.php:28 app/Reports/Providers/NepoStop.php:10
 msgid "NepoStop"
 msgstr "NepoStop"
 
@@ -3469,15 +3485,15 @@ msgstr "В проценти"
 msgid "Enter how many percentages will trigger a warning or disable COD."
 msgstr "Въведете от колко процента да има предупреждение или да се скрие наложеният платеж."
 
-#: app/Admin/Tabs/NepoStop_Tab.php:23
+#: app/Admin/Tabs/NepoStop_Tab.php:24
 msgid "Automatically upload labels to nepostop.com"
 msgstr "Автоматично качване на товарителниците в nepostop.com"
 
-#: app/Admin/Tabs/NepoStop_Tab.php:23
+#: app/Admin/Tabs/NepoStop_Tab.php:24
 msgid "By enabling this option, the plugin will send Speedy and Econt tracking numbers to nepostop.com and you can track them from their platform. This way, you will help the service work better."
 msgstr "Разширението изпраща номерата за проследяване на Спиди и Еконт към nepostop.com и можете да ги следите в тяхната платформа. Така помагате услугата да работи по-добре."
 
-#: app/Admin/Tabs/NepoStop_Tab.php:44
+#: app/Admin/Tabs/NepoStop_Tab.php:45
 msgid "API Key is incorrect."
 msgstr "API ключът е грешен."
 
@@ -5650,45 +5666,45 @@ msgstr "Доставени пратки: %1$s ( %2$s%% )"
 msgid "Undelivered shipments: %1$s ( %2$s%% )"
 msgstr "Недоставени пратки: %1$s ( %2$s%% )"
 
-#: app/Reports/Reports.php:98 app/Reports/Reports.php:227
+#: app/Reports/Reports.php:99 app/Reports/Reports.php:228
 msgid "Reports"
 msgstr "Сигнали"
 
-#: app/Reports/Reports.php:119
+#: app/Reports/Reports.php:120
 msgid "Refresh data"
 msgstr "Обновяване на данните"
 
 #. translators: %s: link to the Customer checks settings
-#: app/Reports/Reports.php:127
+#: app/Reports/Reports.php:128
 #, php-format
 msgid "Not checked: turned on without an API key or token. Add it in %s, or turn the service off there."
 msgstr "Не е проверено: включено е без API ключ или токен. Добавете го в %s или изключете услугата оттам."
 
-#: app/Reports/Reports.php:162
+#: app/Reports/Reports.php:163
 msgid "Customer has reports for refused parcels. See the Reports box."
 msgstr "Клиентът има сигнали за отказани пратки. Вижте полето „Сигнали“."
 
-#: app/Reports/Reports.php:163
+#: app/Reports/Reports.php:164
 msgid "No reports for this customer."
 msgstr "Няма сигнали за този клиент."
 
-#: app/Reports/Reports.php:176
+#: app/Reports/Reports.php:177
 msgid "Not checked"
 msgstr "Не е проверено"
 
-#: app/Reports/Reports.php:180
+#: app/Reports/Reports.php:181
 msgid "No reports"
 msgstr "Няма сигнали"
 
 #. translators: %d: number of reports
-#: app/Reports/Reports.php:184
+#: app/Reports/Reports.php:185
 #, php-format
 msgid "%d report"
 msgid_plural "%d reports"
 msgstr[0] "%d сигнал"
 msgstr[1] "%d сигнала"
 
-#: app/Reports/Reports.php:300
+#: app/Reports/Reports.php:295
 msgid "Cash on delivery is not available for this order. Please choose another payment method."
 msgstr "Наложеният платеж не е наличен за тази поръчка. Моля, изберете друг начин на плащане."
 

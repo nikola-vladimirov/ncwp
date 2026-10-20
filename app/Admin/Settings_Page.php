@@ -26,7 +26,9 @@ class Settings_Page extends \WC_Settings_Page {
 
 		add_action( 'woocommerce_admin_field_nashenski_box', array( __CLASS__, 'output_box' ) );
 		add_action( 'woocommerce_admin_field_nashenski_rows', array( __CLASS__, 'output_rows_field' ) );
+		add_action( 'woocommerce_admin_field_nashenski_methods', array( __CLASS__, 'output_methods_field' ) );
 		add_filter( 'woocommerce_admin_settings_sanitize_option', array( __CLASS__, 'sanitize_rows_field' ), 10, 3 );
+		add_filter( 'woocommerce_admin_settings_sanitize_option', array( __CLASS__, 'sanitize_methods_field' ), 10, 3 );
 		add_action( 'woocommerce_admin_field_nashenski_image', array( __CLASS__, 'output_image_field' ) );
 		add_filter( 'woocommerce_admin_settings_sanitize_option', array( __CLASS__, 'sanitize_image_field' ), 10, 3 );
 		add_action( 'woocommerce_admin_field_nashenski_price_list', array( __CLASS__, 'output_price_list_field' ) );
@@ -307,6 +309,11 @@ class Settings_Page extends \WC_Settings_Page {
 
 			case 'image':
 				$setting['type'] = 'nashenski_image';
+				break;
+
+			case 'methods':
+				$setting['type'] = 'nashenski_methods';
+				$setting['choices'] = (array) $field->get_choices();
 				break;
 
 			case 'multi':
@@ -737,6 +744,46 @@ class Settings_Page extends \WC_Settings_Page {
 		return wp_json_encode( $rows );
 	}
 
+	/**
+	 * Shipping methods with a checkbox each. Saved as a JSON list of the checked method keys.
+	 */
+	public static function output_methods_field( $value ) {
+		$saved = json_decode( (string) get_option( $value['id'], '' ), true );
+		$saved = is_array( $saved ) ? $saved : array();
+		$choices = (array) ( $value['choices'] ?? array() );
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc">
+				<label><?php echo esc_html( $value['title'] ); ?></label>
+			</th>
+			<td class="forminp nashenski-methods-field">
+				<fieldset>
+					<?php if ( $choices ) : ?>
+						<?php foreach ( $choices as $key => $label ) : ?>
+							<label class="nashenski-methods-field__item"><input type="checkbox" name="<?php echo esc_attr( $value['id'] ); ?>[]" value="<?php echo esc_attr( $key ); ?>"<?php checked( in_array( $key, $saved, true ) ); ?>> <?php echo esc_html( $label ); ?></label><br>
+						<?php endforeach; ?>
+					<?php else : ?>
+						<p class="description"><?php esc_html_e( 'No shipping method is turned on in the shipping zones yet.', 'nashenski-commerce' ); ?></p>
+					<?php endif; ?>
+				</fieldset>
+				<?php if ( ! empty( $value['desc'] ) ) : ?>
+					<p class="description"><?php echo wp_kses_post( $value['desc'] ); ?></p>
+				<?php endif; ?>
+			</td>
+		</tr>
+		<?php
+	}
+
+	public static function sanitize_methods_field( $value, $option, $raw_value ) {
+		if ( 'nashenski_methods' !== ( $option['type'] ?? '' ) ) {
+			return $value;
+		}
+
+		// Only the methods that are listed can be saved.
+		$checked = array_map( 'sanitize_text_field', (array) $raw_value );
+
+		return wp_json_encode( array_values( array_intersect( array_keys( (array) ( $option['choices'] ?? array() ) ), $checked ) ) );
+	}
 	/**
 	 * Image from the media library (stores the attachment ID).
 	 */

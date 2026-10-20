@@ -21,6 +21,7 @@ class Reports {
 			return;
 		}
 
+        add_filter( 'woocommerce_package_rates', array( __CLASS__, 'hide_methods' ), 95, 2 );
         add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_boxes' ) );
 		add_action( 'woocommerce_process_shop_order_meta', array( Providers\Nekorekten::class, 'handle_form' ), 70 );
         add_action( 'woocommerce_admin_order_data_after_order_details', array( __CLASS__, 'customer_status_info' ) );
@@ -261,13 +262,7 @@ class Reports {
 			return $available_gateways;
 		}
 
-		$data = nashenski_order_review_data();
-		$phone = $data['billing_phone'] ?? '';
-
-		// Block checkout: the Store API keeps the phone on the cart's customer.
-		if ( '' === $phone && WC()->customer && method_exists( WC(), 'is_store_api_request' ) && WC()->is_store_api_request() ) {
-			$phone = (string) WC()->customer->get_billing_phone();
-		}
+		$phone = self::checkout_phone();
 
 		if ( '' === $phone ) {
 			return $available_gateways;
@@ -301,32 +296,115 @@ class Reports {
 		}
 	}
 
+	/**
+	 * Reports the customer's phone has, from every service that is on.
+	 */
 	public static function check_in_session( $phone ) {
-		$phones = [];
+		$found = array();
 
-		if ( $cached = WC()->session->get( self::CHECKOUT_SESSION_NAME ) ) {
-			$phones = $cached;
+		foreach ( self::get_providers() as $provider ) {
+			$found = array_merge( $found, self::reports_for( $provider, $phone ) );
 		}
 
-		if ( ! isset( $phones[ md5( $phone ) ] ) ) {
-			$found_reports = [];
+		return $found;
+	}
 
-			foreach ( self::get_providers() as $provider ) {
-				$provider_reports = $provider::check_for_reports_on_checkout( $phone );
-				$found_reports = array_merge( $found_reports, $provider_reports );
+	/**
+	 * Reports one service has about the phone. Asked once per session and phone, so the checkout
+	 * does not call the service again on every price update.
+	 */
+	private static function reports_for( $provider, $phone ) {
+		$cache = WC()->session->get( self::CHECKOUT_SESSION_NAME );
+		$cache = is_array( $cache ) ? $cache : array();
+		$phone_key = md5( $phone );
+		$class = get_class( $provider );
+
+		if ( ! isset( $cache[ $phone_key ][ $class ] ) ) {
+			$cache[ $phone_key ][ $class ] = (array) $provider::check_for_reports_on_checkout( $phone );
+			WC()->session->set( self::CHECKOUT_SESSION_NAME, $cache );
+		}
+
+		return $cache[ $phone_key ][ $class ];
+	}
+
+	/**
+	 * The phone of the checkout: the billing phone, or the cart customer's for the block checkout.
+	 */
+	public static function checkout_phone() {
+		$data = nashenski_order_review_data();
+		$phone = $data['billing_phone'] ?? '';
+
+		// Block checkout: the Store API keeps the phone on the cart's customer.
+		if ( '' === $phone && WC()->customer && method_exists( WC(), 'is_store_api_request' ) && WC()->is_store_api_request() ) {
+			$phone = (string) WC()->customer->get_billing_phone();
+		}
+
+		return (string) $phone;
+	}
+
+	/**
+	 * Hides the rates of the methods a service lists, when that service flags the checkout phone
+	 * (its own level of warning). Each service's list is used only while that service is on.
+	 */
+	public static function hide_methods( $rates, $package ) {
+		if ( ( is_admin() && ! wp_doing_ajax() ) || ! WC()->session ) {
+			return $rates;
+		}
+
+		$phone = self::checkout_phone();
+
+		if ( '' === $phone ) {
+			return $rates;
+		}
+
+		$hidden = array();
+
+		foreach ( self::SERVICES as $slug => list( $login, $class ) ) {
+			$methods = self::hidden_methods( $slug );
+
+			if ( ! $methods || 'yes' !== nashenski_get_option( 'reports', 'enable_' . $slug ) || '' === trim( (string) nashenski_get_option( $slug, $login ) ) ) {
+				continue;
 			}
 
-			$phones[ md5( $phone ) ] = $found_reports;
-
-			WC()->session->set( self::CHECKOUT_SESSION_NAME, $phones );
+			if ( self::reports_for( new $class(), $phone ) ) {
+				$hidden = array_merge( $hidden, $methods );
+			}
 		}
-        
-        if ( !empty( $phones[ md5( $phone ) ] ) ) {
-        	return $phones[ md5( $phone ) ];
-        }
+
+		return $hidden ? array_diff_key( $rates, array_flip( $hidden ) ) : $rates;
+	}
+
+	/**
+	 * The method keys ("method_id:instance_id") a service hides.
+	 */
+	public static function hidden_methods( $slug ) {
+		$methods = json_decode( (string) nashenski_get_option( $slug, 'hide_methods' ), true );
+
+		return is_array( $methods ) ? array_values( $methods ) : array();
+	}
+
+	/**
+	 * Shipping methods turned on in the shipping zones, and in the rest of the world:
+	 * "method_id:instance_id" => "Zone - Method title".
+	 */
+	public static function shipping_method_choices() {
+		$choices = array();
+		$zones = \WC_Shipping_Zones::get_zones();
+		$zones[] = array( 'zone_name' => __( 'Rest of the world', 'woocommerce' ), 'shipping_methods' => ( new \WC_Shipping_Zone( 0 ) )->get_shipping_methods( true ) );
+
+		foreach ( $zones as $zone ) {
+			foreach ( $zone['shipping_methods'] ?? array() as $method ) {
+				if ( 'yes' === $method->enabled ) {
+					$choices[ $method->id . ':' . $method->instance_id ] = $zone['zone_name'] . ' - ' . $method->get_title();
+				}
+			}
+		}
+
+		return $choices;
 	}
 
 	public static function unset_session() {
 		WC()->session->__unset( self::CHECKOUT_SESSION_NAME );
 	}
+
 }
