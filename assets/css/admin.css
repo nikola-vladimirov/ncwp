@@ -224,10 +224,11 @@
 	text-decoration: none;
 }
 
-/* Same box for every logo, whatever its shape. */
+/* Same height for every logo; the width follows each logo's own shape. */
 .nashenski-courier-nav__item img {
-	width: 56px;
-	height: 20px;
+	height: 26px;
+	width: auto;
+	max-width: 100px;
 	object-fit: contain;
 }
 
