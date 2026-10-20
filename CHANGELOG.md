@@ -1,5 +1,21 @@
 # Nashenski Commerce changelog
 
+## 0.16.7 (2026-10-20)
+
+### Pigeon Express
+- A receiver whose region is stored by name (for example "София (столица)") gets the right city on the label. Before, Pigeon Express refused the label for a missing city.
+- A new pack on a label starts with its length, width and height fields. Before, a label without a pack was refused.
+- The receiver's city and region come from the order's address. When the shipping address has no region, the billing address is used.
+
+### Moving from another plugin
+- Speedy shipping method and Pigeon Express (mreja.net) can be imported: the logins, the Speedy sender name and phone, the sender office and the shipping zone methods.
+
+### Customer checks
+- NepoStop and nekorekten.com: "Hide these payment methods" hides the ticked payment methods at checkout when the service flags the phone at its level of warning.
+
+### Couriers
+- The courier logos on the Couriers tab have the same height, and each keeps its own width.
+
 ## 0.16.6 (2026-10-20)
 
 ### Speedy

@@ -745,7 +745,7 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 
 	/**
-	 * Shipping methods with a checkbox each. Saved as a JSON list of the checked method keys.
+	 * Choices with a checkbox each. Saved as a JSON list of the checked keys.
 	 */
 	public static function output_methods_field( $value ) {
 		$saved = json_decode( (string) get_option( $value['id'], '' ), true );
@@ -763,7 +763,7 @@ class Settings_Page extends \WC_Settings_Page {
 							<label class="nashenski-methods-field__item"><input type="checkbox" name="<?php echo esc_attr( $value['id'] ); ?>[]" value="<?php echo esc_attr( $key ); ?>"<?php checked( in_array( $key, $saved, true ) ); ?>> <?php echo esc_html( $label ); ?></label><br>
 						<?php endforeach; ?>
 					<?php else : ?>
-						<p class="description"><?php esc_html_e( 'No shipping method is turned on in the shipping zones yet.', 'nashenski-commerce' ); ?></p>
+						<p class="description"><?php esc_html_e( 'No payment method is turned on in WooCommerce yet.', 'nashenski-commerce' ); ?></p>
 					<?php endif; ?>
 				</fieldset>
 				<?php if ( ! empty( $value['desc'] ) ) : ?>

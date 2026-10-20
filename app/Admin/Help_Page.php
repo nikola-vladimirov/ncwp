@@ -161,7 +161,7 @@ class Help_Page {
 				),
 				__( 'Customer checks', 'nashenski-commerce' ) => array(
 					esc_html__( 'nekorekten.com, Connectix and NepoStop tell you whether a phone number has a history of refused parcels. Nashenski Commerce can show a warning on the order and hide cash on delivery for such customers.', 'nashenski-commerce' ),
-					esc_html__( 'In NepoStop and nekorekten.com you can also tick the shipping methods to hide under "Hide these methods". When the service flags the customer at its level of warning, those methods are not offered at checkout.', 'nashenski-commerce' ),
+					esc_html__( 'In NepoStop and nekorekten.com you can also tick the payment methods to hide under "Hide these payment methods". When the service flags the customer at its level of warning, those payment methods are not offered at checkout.', 'nashenski-commerce' ),
 					esc_html__( 'Turn a service on in Overview, save, then enter its API key or token in Customer checks. A service without a key is not asked.', 'nashenski-commerce' ),
 					esc_html__( 'On the order, the Reports box shows the answers. Press "Refresh data" to ask again.', 'nashenski-commerce' ),
 					esc_html__( 'For nekorekten.com you can report a customer yourself: write what happened and press "Send report". The report carries the name, phone and email of the order. Change the text and press "Save report", or press "Delete report" to remove it from nekorekten.com.', 'nashenski-commerce' ),

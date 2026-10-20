@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.16.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-20 09:26+0000\n"
-"PO-Revision-Date: 2026-10-20 09:26+0000\n"
+"POT-Creation-Date: 2026-10-20 09:32+0000\n"
+"PO-Revision-Date: 2026-10-20 09:32+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1288,8 +1288,8 @@ msgid "nekorekten.com, Connectix and NepoStop tell you whether a phone number ha
 msgstr "nekorekten.com, Connectix и NepoStop показват дали един телефонен номер има история на отказани пратки. Нашенски Комерс може да покаже предупреждение в поръчката и да скрие наложения платеж за такива клиенти."
 
 #: app/Admin/Help_Page.php:164
-msgid "In NepoStop and nekorekten.com you can also tick the shipping methods to hide under \"Hide these methods\". When the service flags the customer at its level of warning, those methods are not offered at checkout."
-msgstr "В NepoStop и nekorekten.com може също да отметнете методите за доставка, които да се скрият, под „Скрий тези методи“. Когато услугата маркира клиента при нивото си на предупреждение, тези методи не се предлагат при поръчка."
+msgid "In NepoStop and nekorekten.com you can also tick the payment methods to hide under \"Hide these payment methods\". When the service flags the customer at its level of warning, those payment methods are not offered at checkout."
+msgstr "В NepoStop и nekorekten.com може също да отметнете начините на плащане, които да се скрият, под „Скрий тези начини на плащане“. Когато услугата маркира клиента при нивото си на предупреждение, тези начини на плащане не се предлагат при поръчка."
 
 #: app/Admin/Help_Page.php:165
 msgid "Turn a service on in Overview, save, then enter its API key or token in Customer checks. A service without a key is not asked."
@@ -2274,8 +2274,8 @@ msgid "Prices are for parcels you hand in at a courier office. Changes take effe
 msgstr "Цените са за пратки, предадени в офис на куриера. Промените влизат в сила след запазване."
 
 #: app/Admin/Settings_Page.php:766
-msgid "No shipping method is turned on in the shipping zones yet."
-msgstr "Още няма включен метод за доставка в зоните за доставка."
+msgid "No payment method is turned on in WooCommerce yet."
+msgstr "В WooCommerce още няма включен начин на плащане."
 
 #: app/Admin/Settings_Page.php:804
 msgid "Choose image"
@@ -3450,12 +3450,12 @@ msgid "From how many reports about a phone number the order shows a warning and 
 msgstr "От колко сигнала за един телефонен номер поръчката показва предупреждение и наложеният платеж се изключва при плащане."
 
 #: app/Admin/Tabs/Nekorekten_Tab.php:41 app/Admin/Tabs/NepoStop_Tab.php:23
-msgid "Hide these methods"
-msgstr "Скрий тези методи"
+msgid "Hide these payment methods"
+msgstr "Скрий тези начини на плащане"
 
 #: app/Admin/Tabs/Nekorekten_Tab.php:41 app/Admin/Tabs/NepoStop_Tab.php:23
-msgid "The checked methods are not offered to a customer that this service flags at the level of warning above."
-msgstr "Отметнатите методи не се предлагат на клиент, който услугата маркира при нивото на предупреждение по-горе."
+msgid "The checked payment methods are not offered to a customer that this service flags at the level of warning above."
+msgstr "Отметнатите начини на плащане не се предлагат на клиент, който услугата маркира при нивото на предупреждение по-горе."
 
 #: app/Admin/Tabs/Nekorekten_Tab.php:60
 msgid "Enter your nekorekten.com API key."

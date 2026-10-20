@@ -38,7 +38,7 @@ class Nekorekten_Tab extends Base_Tab {
 					__( 'From how many reports about a phone number the order shows a warning and cash on delivery is turned off at checkout.', 'nashenski-commerce' ),
 					'number'
 				) )->set_default( '1' ),
-				new Fields\Methods_Field( \Nashenski\Reports\Reports::shipping_method_choices(), 'hide_methods', __( 'Hide these methods', 'nashenski-commerce' ), __( 'The checked methods are not offered to a customer that this service flags at the level of warning above.', 'nashenski-commerce' ) ),
+				new Fields\Methods_Field( \Nashenski\Reports\Reports::payment_method_choices(), 'hide_payments', __( 'Hide these payment methods', 'nashenski-commerce' ), __( 'The checked payment methods are not offered to a customer that this service flags at the level of warning above.', 'nashenski-commerce' ) ),
 			),
 		) );
 

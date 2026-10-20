@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.16.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-20 09:26+0000\n"
-"PO-Revision-Date: 2026-10-20 09:26+0000\n"
+"POT-Creation-Date: 2026-10-20 09:32+0000\n"
+"PO-Revision-Date: 2026-10-20 09:32+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1283,7 +1283,7 @@ msgid "nekorekten.com, Connectix and NepoStop tell you whether a phone number ha
 msgstr ""
 
 #: app/Admin/Help_Page.php:164
-msgid "In NepoStop and nekorekten.com you can also tick the shipping methods to hide under \"Hide these methods\". When the service flags the customer at its level of warning, those methods are not offered at checkout."
+msgid "In NepoStop and nekorekten.com you can also tick the payment methods to hide under \"Hide these payment methods\". When the service flags the customer at its level of warning, those payment methods are not offered at checkout."
 msgstr ""
 
 #: app/Admin/Help_Page.php:165
@@ -2269,7 +2269,7 @@ msgid "Prices are for parcels you hand in at a courier office. Changes take effe
 msgstr ""
 
 #: app/Admin/Settings_Page.php:766
-msgid "No shipping method is turned on in the shipping zones yet."
+msgid "No payment method is turned on in WooCommerce yet."
 msgstr ""
 
 #: app/Admin/Settings_Page.php:804
@@ -3445,11 +3445,11 @@ msgid "From how many reports about a phone number the order shows a warning and 
 msgstr ""
 
 #: app/Admin/Tabs/Nekorekten_Tab.php:41 app/Admin/Tabs/NepoStop_Tab.php:23
-msgid "Hide these methods"
+msgid "Hide these payment methods"
 msgstr ""
 
 #: app/Admin/Tabs/Nekorekten_Tab.php:41 app/Admin/Tabs/NepoStop_Tab.php:23
-msgid "The checked methods are not offered to a customer that this service flags at the level of warning above."
+msgid "The checked payment methods are not offered to a customer that this service flags at the level of warning above."
 msgstr ""
 
 #: app/Admin/Tabs/Nekorekten_Tab.php:60

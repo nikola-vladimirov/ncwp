@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.16.6
+Stable tag: 0.16.7
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -108,6 +108,12 @@ The plugin only contacts a service after you turn it on and enter your own accou
 The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf php-font-lib (LGPL-2.1 or later) and php-svg-lib (LGPL-3.0 or later), which make the PDF documents; and Pimple, Masterminds HTML5, sabberworm PHP-CSS-Parser, setasign FPDI, chillerlan php-qrcode and php-settings-container, clegginabox PDF merger, ddeboer VATIN and PSR container (all MIT). Their licences are in each library's folder.
 
 == Changelog ==
+
+= 0.16.7 =
+* Pigeon Express: labels for a region given by name, and for a new pack with its sizes.
+* Speedy and Pigeon Express (mreja.net) can be imported: logins, sender details and shipping zone methods.
+* NepoStop and nekorekten.com: choose the payment methods to hide for a flagged customer.
+* Courier logos on the Couriers tab have the same height.
 
 = 0.16.6 =
 * Speedy: the city and region on a waybill come from the order's address, and street search works when typing in Bulgarian letters.

@@ -21,7 +21,7 @@ class Reports {
 			return;
 		}
 
-        add_filter( 'woocommerce_package_rates', array( __CLASS__, 'hide_methods' ), 95, 2 );
+        add_filter( 'woocommerce_available_payment_gateways', array( __CLASS__, 'hide_payment_methods' ), 20 );
         add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_boxes' ) );
 		add_action( 'woocommerce_process_shop_order_meta', array( Providers\Nekorekten::class, 'handle_form' ), 70 );
         add_action( 'woocommerce_admin_order_data_after_order_details', array( __CLASS__, 'customer_status_info' ) );
@@ -343,66 +343,60 @@ class Reports {
 	}
 
 	/**
-	 * Hides the rates of the methods a service lists, when that service flags the checkout phone
-	 * (its own level of warning). Each service's list is used only while that service is on.
+	 * Hides the payment methods a service lists, when that service flags the checkout phone (its own
+	 * level of warning). Each service's list is used only while that service is on.
 	 */
-	public static function hide_methods( $rates, $package ) {
+	public static function hide_payment_methods( $gateways ) {
 		if ( ( is_admin() && ! wp_doing_ajax() ) || ! WC()->session ) {
-			return $rates;
+			return $gateways;
 		}
 
 		$phone = self::checkout_phone();
 
 		if ( '' === $phone ) {
-			return $rates;
+			return $gateways;
 		}
 
 		$hidden = array();
 
 		foreach ( self::SERVICES as $slug => list( $login, $class ) ) {
-			$methods = self::hidden_methods( $slug );
+			$payments = self::hidden_payments( $slug );
 
-			if ( ! $methods || 'yes' !== nashenski_get_option( 'reports', 'enable_' . $slug ) || '' === trim( (string) nashenski_get_option( $slug, $login ) ) ) {
+			if ( ! $payments || 'yes' !== nashenski_get_option( 'reports', 'enable_' . $slug ) || '' === trim( (string) nashenski_get_option( $slug, $login ) ) ) {
 				continue;
 			}
 
 			if ( self::reports_for( new $class(), $phone ) ) {
-				$hidden = array_merge( $hidden, $methods );
+				$hidden = array_merge( $hidden, $payments );
 			}
 		}
 
-		return $hidden ? array_diff_key( $rates, array_flip( $hidden ) ) : $rates;
+		return $hidden ? array_diff_key( $gateways, array_flip( $hidden ) ) : $gateways;
 	}
 
 	/**
-	 * The method keys ("method_id:instance_id") a service hides.
+	 * The payment method IDs a service hides.
 	 */
-	public static function hidden_methods( $slug ) {
-		$methods = json_decode( (string) nashenski_get_option( $slug, 'hide_methods' ), true );
+	public static function hidden_payments( $slug ) {
+		$payments = json_decode( (string) nashenski_get_option( $slug, 'hide_payments' ), true );
 
-		return is_array( $methods ) ? array_values( $methods ) : array();
+		return is_array( $payments ) ? array_values( $payments ) : array();
 	}
 
 	/**
-	 * Shipping methods turned on in the shipping zones, and in the rest of the world:
-	 * "method_id:instance_id" => "Zone - Method title".
+	 * Payment methods turned on in WooCommerce: gateway ID => title.
 	 */
-	public static function shipping_method_choices() {
+	public static function payment_method_choices() {
 		$choices = array();
-		$zones = \WC_Shipping_Zones::get_zones();
-		$zones[] = array( 'zone_name' => __( 'Rest of the world', 'woocommerce' ), 'shipping_methods' => ( new \WC_Shipping_Zone( 0 ) )->get_shipping_methods( true ) );
 
-		foreach ( $zones as $zone ) {
-			foreach ( $zone['shipping_methods'] ?? array() as $method ) {
-				if ( 'yes' === $method->enabled ) {
-					$choices[ $method->id . ':' . $method->instance_id ] = $zone['zone_name'] . ' - ' . $method->get_title();
-				}
+		foreach ( WC()->payment_gateways()->payment_gateways() as $id => $gateway ) {
+			if ( 'yes' === $gateway->enabled ) {
+				$choices[ $id ] = $gateway->get_title();
 			}
 		}
 
 		return $choices;
 	}
-
 	public static function unset_session() {
 		WC()->session->__unset( self::CHECKOUT_SESSION_NAME );
 	}

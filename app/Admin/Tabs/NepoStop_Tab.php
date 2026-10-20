@@ -20,7 +20,7 @@ class NepoStop_Tab extends Base_Tab {
 			'nepostop' => array(
 				new Fields\Text_Field( 'api_key', __( 'API Key', 'nashenski-commerce' ), null, 'required', __( 'Enter the provided API key from nepostop.com.', 'nashenski-commerce' ) ),
 				new Fields\Text_Field( 'level_of_warning', __( 'Level of Warning', 'nashenski-commerce' ), __('In percentages', 'nashenski-commerce'), 'required', __( 'Enter how many percentages will trigger a warning or disable COD.', 'nashenski-commerce' ), 'number' ),
-				new Fields\Methods_Field( \Nashenski\Reports\Reports::shipping_method_choices(), 'hide_methods', __( 'Hide these methods', 'nashenski-commerce' ), __( 'The checked methods are not offered to a customer that this service flags at the level of warning above.', 'nashenski-commerce' ) ),
+				new Fields\Methods_Field( \Nashenski\Reports\Reports::payment_method_choices(), 'hide_payments', __( 'Hide these payment methods', 'nashenski-commerce' ), __( 'The checked payment methods are not offered to a customer that this service flags at the level of warning above.', 'nashenski-commerce' ) ),
 				new Fields\TrueFalse_Field( 'upload_labels', __( 'Automatically upload labels to nepostop.com', 'nashenski-commerce' ), null, null, __('By enabling this option, the plugin will send Speedy and Econt tracking numbers to nepostop.com and you can track them from their platform. This way, you will help the service work better.', 'nashenski-commerce' ) ),
 			)
 		) );

@@ -205,11 +205,13 @@
 }
 
 /* Courier links in the Couriers section. */
-.nashenski-courier-nav {
+/* WooCommerce gives every nav in the settings form a negative margin; this keeps the bar in the content column. */
+body.woocommerce_page_wc-settings #mainform .nashenski-courier-nav {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;
 	margin: 12px 0 4px;
+	width: auto;
 }
 
 .nashenski-courier-nav__item {

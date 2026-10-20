@@ -117,8 +117,9 @@ order page and in the order emails during the withdrawal period, and a shortcode
 ### Customer checks
 
 nekorekten.com, Connectix and NepoStop look up a phone number's history of refused parcels. The
-order shows a warning, and cash on delivery can be hidden for such customers. From an order you can
-send a report to nekorekten.com, then edit or delete it.
+order shows a warning, and cash on delivery can be hidden for such customers. In the NepoStop and
+nekorekten.com settings you can also tick payment methods to hide for a flagged customer. From an order
+you can send a report to nekorekten.com, then edit or delete it.
 
 ### Prices with VAT
 
@@ -127,7 +128,7 @@ A scan finds prices that cannot come from a whole net price plus VAT and offers 
 ## Moving from another plugin
 
 The plugin imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW
-Delivery, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy
+Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy
 Shipping: courier logins, sender details, waybill numbers, shipping zone methods and, from the N-18
 plugin, company details and document numbers. Go to WooCommerce > Settings > Nashenski Commerce >
 Help and press "Import now". The old plugin is switched off; its data stays in the database.
