@@ -144,7 +144,7 @@ class Settings_Command {
 
 		if ( 0 === strpos( $setting['type'], 'nashenski_' ) ) {
 			// The same sanitizers the settings page runs on save (price lists, rows, methods, layout, style, image).
-			$value = apply_filters( 'woocommerce_admin_settings_sanitize_option', $value, $setting, $value );
+			$value = \Nashenski\Admin\Settings_Page::sanitize_value( $value, $setting );
 		}
 
 		update_option( $setting['id'], $value );

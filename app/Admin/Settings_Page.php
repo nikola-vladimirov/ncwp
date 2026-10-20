@@ -656,6 +656,25 @@ class Settings_Page extends \WC_Settings_Page {
 		<?php
 	}
 
+	/**
+	 * Runs the sanitizers of the custom field types, the same ones the settings screen runs on save.
+	 * The command line calls this instead of the WooCommerce filter. Each sanitizer ignores the types it does not handle.
+	 *
+	 * @param mixed $value  Value to clean.
+	 * @param array $option Setting definition.
+	 * @return mixed
+	 */
+	public static function sanitize_value( $value, $option ) {
+		$value = self::sanitize_rows_field( $value, $option, $value );
+		$value = self::sanitize_methods_field( $value, $option, $value );
+		$value = self::sanitize_image_field( $value, $option, $value );
+		$value = self::sanitize_price_list_field( $value, $option, $value );
+		$value = \Nashenski\Front_End\Checkout\Appearance::sanitize_style_field( $value, $option, $value );
+		$value = \Nashenski\Front_End\Checkout\Field_Editor::sanitize_layout_field( $value, $option, $value );
+
+		return $value;
+	}
+
 	public static function sanitize_price_list_field( $value, $option, $raw_value ) {
 		if ( 'nashenski_price_list' !== ( $option['type'] ?? '' ) ) {
 			return $value;
