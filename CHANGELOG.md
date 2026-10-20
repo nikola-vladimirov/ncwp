@@ -1,5 +1,11 @@
 # Nashenski Commerce changelog
 
+## Unreleased
+
+### Command line
+- New WP-CLI commands for every setting on the settings screens: `wp nashenski setting list`, `get`, `set` and `reset`. A value is checked the same way the screen checks it. A password can be read from standard input so it stays out of the shell history.
+- `wp nashenski courier reload` downloads a courier's offices and cities again, and `wp nashenski courier check` checks its login. They do what the buttons on the courier tab do.
+
 ## 0.16.7 (2026-10-20)
 
 ### Pigeon Express

@@ -162,6 +162,12 @@ class Plugin {
 
 		new Reports\Reports();
 		
+		// WP-CLI: wp nashenski setting ... and wp nashenski courier ... (the settings page, from the command line).
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			\WP_CLI::add_command( 'nashenski setting', 'Nashenski\CLI\Settings_Command' );
+			\WP_CLI::add_command( 'nashenski courier', 'Nashenski\CLI\Courier_Command' );
+		}
+
 		do_action( 'nashenski/init-classes' );
 	}
 

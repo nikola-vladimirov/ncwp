@@ -86,6 +86,15 @@ In WooCommerce > Settings > Nashenski Commerce.
 
 No. Your site talks directly to the couriers and services you turn on. The NRA XML file is built on your site.
 
+== Screenshots ==
+
+1. Couriers: each courier's login, sender address, and offices and cities, refreshed from the courier.
+2. Checkout: countries, courier logos, address transliteration and the company invoice fields.
+3. Documents: company details for invoices and the NRA audit file, VAT group and refund method.
+4. Customer checks: reports from nekorekten.com, Connectix and NepoStop, with cash on delivery held back when a report is found.
+5. Quick order: a short form for shoppers who do not want to check out. The order waits for your confirmation.
+6. Order screen: the customer's history on the order, with a warning when the customer has reports.
+
 == External services ==
 
 The plugin only contacts a service after you turn it on and enter your own account details for it.
@@ -108,6 +117,10 @@ The plugin only contacts a service after you turn it on and enter your own accou
 The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf php-font-lib (LGPL-2.1 or later) and php-svg-lib (LGPL-3.0 or later), which make the PDF documents; and Pimple, Masterminds HTML5, sabberworm PHP-CSS-Parser, setasign FPDI, chillerlan php-qrcode and php-settings-container, clegginabox PDF merger, ddeboer VATIN and PSR container (all MIT). Their licences are in each library's folder.
 
 == Changelog ==
+
+= Unreleased =
+
+* New WP-CLI commands for every setting: `wp nashenski setting list`, `get`, `set` and `reset`, and `wp nashenski courier reload` and `check`.
 
 = 0.16.7 =
 * Pigeon Express: labels for a region given by name, and for a new pack with its sizes.

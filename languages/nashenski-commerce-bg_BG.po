@@ -3,10 +3,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.16.6\n"
+"Project-Id-Version: Nashenski Commerce 0.16.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-20 09:32+0000\n"
-"PO-Revision-Date: 2026-10-20 09:32+0000\n"
+"POT-Creation-Date: 2026-10-20 10:22+0000\n"
+"PO-Revision-Date: 2026-10-20 10:22+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -165,7 +165,7 @@ msgstr "Изпращане на напомняне"
 msgid "Delete"
 msgstr "Изтриване"
 
-#: app/Admin/Abandoned_Carts_Page.php:250 app/Admin/Help_Page.php:262
+#: app/Admin/Abandoned_Carts_Page.php:250 app/Admin/Help_Page.php:267
 msgid "Apply"
 msgstr "Прилагане"
 
@@ -741,7 +741,7 @@ msgstr "Първите %1$d от %2$d реда. Файл: %3$s"
 msgid "Nothing matches these filters."
 msgstr "Няма записи по тези филтри."
 
-#: app/Admin/Export_Builder.php:152 app/Front_End/Quick_Order.php:287 app/Plugin.php:258
+#: app/Admin/Export_Builder.php:152 app/Front_End/Quick_Order.php:287 app/Plugin.php:264
 msgid "Something went wrong. Please try again."
 msgstr "Нещо се обърка. Опитайте отново."
 
@@ -1319,7 +1319,7 @@ msgstr "Отворете Продукти > Математически невъ�
 msgid "Press \"Fix all\" to correct them. The check matters most when your prices are entered including tax."
 msgstr "Натиснете „Поправи всички“, за да ги коригирате. Проверката е най-важна, когато цените ви се въвеждат с включен данък."
 
-#: app/Admin/Help_Page.php:174 app/Admin/Help_Page.php:209
+#: app/Admin/Help_Page.php:174 app/Admin/Help_Page.php:214
 msgid "Moving from another plugin"
 msgstr "Преминаване от друг плъгин"
 
@@ -1336,92 +1336,108 @@ msgid "Econt Delivery and Drusoft Shipping for Econt use a different Econt key: 
 msgstr "Econt Delivery и Drusoft Shipping за Еконт използват друг ключ на Еконт: след внасянето въведете потребителското си име и паролата за Еконт."
 
 #: app/Admin/Help_Page.php:179
+msgid "Command line (WP-CLI)"
+msgstr "Команден ред (WP-CLI)"
+
+#: app/Admin/Help_Page.php:180
+msgid "Settings can be read and changed with WP-CLI: wp nashenski setting list, get, set and reset. The names are the option names without \"nashenski_settings_\", for example apis_enable_econt."
+msgstr "Настройките могат да се четат и променят с WP-CLI: wp nashenski setting list, get, set и reset. Имената са имената на опциите без \"nashenski_settings_\", например apis_enable_econt."
+
+#: app/Admin/Help_Page.php:181
+msgid "Save a password from standard input so it stays out of the shell history: echo \"$PASSWORD\" | wp nashenski setting set econt_password -"
+msgstr "Запишете паролата от стандартния вход, за да не остане в историята на командния ред: echo \"$PASSWORD\" | wp nashenski setting set econt_password -"
+
+#: app/Admin/Help_Page.php:182
+msgid "wp nashenski courier reload and check do the \"Reload offices and cities\" button and the login check of a courier."
+msgstr "С wp nashenski courier reload и check се изпълняват бутонът \"Презареждане на офиси и населени места\" и проверката на входа на куриера."
+
+#: app/Admin/Help_Page.php:184
 msgid "Updates"
 msgstr "Обновления"
 
-#: app/Admin/Help_Page.php:180
+#: app/Admin/Help_Page.php:185
 msgid "New versions show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too."
 msgstr "Новите версии се появяват в Табло > Обновления и на екрана с разширенията, като всяко друго обновление. Там може да включите и автоматичните обновления."
 
-#: app/Admin/Help_Page.php:182
+#: app/Admin/Help_Page.php:187
 msgid "When something does not work"
 msgstr "Когато нещо не работи"
 
-#: app/Admin/Help_Page.php:183
+#: app/Admin/Help_Page.php:188
 msgid "\"Nothing found\" under a courier: check the login on the courier page. In BOX NOW demo mode there are only two test lockers, both in Sofia."
 msgstr "„Нищо не е намерено“ под куриер: проверете входа на страницата на куриера. В демо режим на BOX NOW има само два тестови автомата, и двата в София."
 
-#: app/Admin/Help_Page.php:184
+#: app/Admin/Help_Page.php:189
 msgid "No courier options at checkout: add the methods to the shipping zone of the customer's address and give your products a weight."
 msgstr "Няма опции за куриер при плащане: добавете методите към зоната за доставка на адреса на клиента и задайте тегло на продуктите."
 
-#: app/Admin/Help_Page.php:185
+#: app/Admin/Help_Page.php:190
 msgid "\"Complete the fields to calculate\" does not go away: the customer has not chosen an office, a locker or an address yet."
 msgstr "„Попълнете данните за изчисляване“ не изчезва: клиентът още не е избрал офис, автомат или адрес."
 
-#: app/Admin/Help_Page.php:186
+#: app/Admin/Help_Page.php:191
 msgid "No documents: turn on \"Invoices and N-18\" in Overview and check \"When to generate documents?\" in Documents."
 msgstr "Няма документи: включете „Фактури и Н-18“ в „Общ преглед“ и проверете „Кога да се създават документите?“ в „Документи“."
 
-#: app/Admin/Help_Page.php:198 app/Admin/Import_Sources.php:181
+#: app/Admin/Help_Page.php:203 app/Admin/Import_Sources.php:181
 msgid "Bulgarisation for WooCommerce"
 msgstr "Bulgarisation for WooCommerce"
 
-#: app/Admin/Help_Page.php:210
+#: app/Admin/Help_Page.php:215
 msgid "These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use and switches the plugin off."
 msgstr "Тези плъгини са инсталирани или са оставили данни на сайта Ви. Внасянето взема това, което Нашенски Комерс може да използва, и изключва плъгина."
 
 #. translators: %s: date
-#: app/Admin/Help_Page.php:220
+#: app/Admin/Help_Page.php:225
 #, php-format
 msgid "Imported on %s"
 msgstr "Внесено на %s"
 
-#: app/Admin/Help_Page.php:223
+#: app/Admin/Help_Page.php:228
 msgid "Import and switch off"
 msgstr "Внеси и изключи"
 
 #. translators: %d: number of settings
-#: app/Admin/Help_Page.php:244
+#: app/Admin/Help_Page.php:249
 #, php-format
 msgid "%d setting changed."
 msgid_plural "%d settings changed."
 msgstr[0] "Променена е %d настройка."
 msgstr[1] "Променени са %d настройки."
 
-#: app/Admin/Help_Page.php:257
+#: app/Admin/Help_Page.php:262
 msgid "Recommended settings"
 msgstr "Препоръчителни настройки"
 
-#: app/Admin/Help_Page.php:258
+#: app/Admin/Help_Page.php:263
 msgid "Settings that suit most Bulgarian stores. Tick the ones you want and apply them; nothing else changes."
 msgstr "Настройки, подходящи за повечето български магазини. Отметнете желаните и ги приложете; нищо друго не се променя."
 
-#: app/Admin/Help_Page.php:263
+#: app/Admin/Help_Page.php:268
 msgid "Setting"
 msgstr "Настройка"
 
-#: app/Admin/Help_Page.php:264 app/Plugin.php:263
+#: app/Admin/Help_Page.php:269 app/Plugin.php:269
 msgid "Now"
 msgstr "Сега"
 
-#: app/Admin/Help_Page.php:265
+#: app/Admin/Help_Page.php:270
 msgid "Recommended"
 msgstr "Препоръчано"
 
-#: app/Admin/Help_Page.php:266
+#: app/Admin/Help_Page.php:271
 msgid "Why"
 msgstr "Защо"
 
-#: app/Admin/Help_Page.php:279
+#: app/Admin/Help_Page.php:284
 msgid "Already set"
 msgstr "Вече е зададено"
 
-#: app/Admin/Help_Page.php:296
+#: app/Admin/Help_Page.php:301
 msgid "Apply recommended settings"
 msgstr "Прилагане на препоръчителните настройки"
 
-#: app/Admin/Help_Page.php:298
+#: app/Admin/Help_Page.php:303
 msgid "All recommended settings are in place."
 msgstr "Всички препоръчителни настройки са приложени."
 
@@ -2225,7 +2241,7 @@ msgstr "До автомат"
 msgid "Up to (kg)"
 msgstr "До (кг)"
 
-#: app/Admin/Settings_Page.php:615 app/Admin/Settings_Page.php:709 app/Plugin.php:259
+#: app/Admin/Settings_Page.php:615 app/Admin/Settings_Page.php:709 app/Plugin.php:265
 msgid "Remove row"
 msgstr "Премахване на реда"
 
@@ -4087,7 +4103,7 @@ msgstr "Показване във формата (собствен шаблон)
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr "Кратка форма за купувачи, които не искат да минават през количката. Купувачът изпраща име, телефон и имейл, а поръчката чака вашето потвърждение. Наличността не се резервира, докато не потвърдите. Сменете статуса на поръчката на „Очаква плащане“, за да изпратите линк за плащане."
 
-#: app/Admin/Tabs/Settings_Tab.php:8 app/Plugin.php:77 app/Plugin.php:207
+#: app/Admin/Tabs/Settings_Tab.php:8 app/Plugin.php:77 app/Plugin.php:213
 msgid "Settings"
 msgstr "Настройки"
 
@@ -5060,7 +5076,7 @@ msgstr "политиката за поверителност"
 msgid "Leave your details and we will contact you to confirm the order."
 msgstr "Оставете данните си и ще се свържем с вас, за да потвърдим поръчката."
 
-#: app/Front_End/Quick_Order.php:403 app/Plugin.php:264
+#: app/Front_End/Quick_Order.php:403 app/Plugin.php:270
 msgid "Website"
 msgstr "Сайт"
 
@@ -5446,31 +5462,31 @@ msgstr "Фактурата е издадена на основание чл. 113
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr "Нашенски Комерс: прегледайте настройките и ги запазете отново от „%s“."
 
-#: app/Plugin.php:257
+#: app/Plugin.php:263
 msgid "The file was downloaded."
 msgstr "Файлът е изтеглен."
 
-#: app/Plugin.php:260
+#: app/Plugin.php:266
 msgid "Built-in prices restored. Save to keep them."
 msgstr "Вградените цени са възстановени. Запазете, за да ги задържите."
 
-#: app/Plugin.php:261
+#: app/Plugin.php:267
 msgid "Your prices match the courier website."
 msgstr "Цените ви съвпадат със сайта на куриера."
 
-#: app/Plugin.php:262
+#: app/Plugin.php:268
 msgid "The courier website has different prices:"
 msgstr "Сайтът на куриера има различни цени:"
 
-#: app/Plugin.php:265
+#: app/Plugin.php:271
 msgid "Use these prices"
 msgstr "Използване на тези цени"
 
-#: app/Plugin.php:266
+#: app/Plugin.php:272
 msgid "New prices filled in. Check them and save."
 msgstr "Новите цени са попълнени. Проверете ги и запазете."
 
-#: app/Plugin.php:299
+#: app/Plugin.php:305
 msgid "The request failed. Reload the page and try again."
 msgstr "Заявката не успя. Презаредете страницата и опитайте отново."
 

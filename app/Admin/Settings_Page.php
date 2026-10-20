@@ -267,7 +267,7 @@ class Settings_Page extends \WC_Settings_Page {
 	/**
 	 * Map one of our field objects to a WooCommerce settings array (same option name).
 	 */
-	private static function to_wc_setting( $group, $field ) {
+	public static function to_wc_setting( $group, $field ) {
 		$setting = array(
 			'id' => 'nashenski_settings_' . $group . '_' . $field->get_name(),
 			'title' => $field->get_title(),

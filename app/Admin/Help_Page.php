@@ -176,6 +176,11 @@ class Help_Page {
 					esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods and, from the N-18 plugin, the company details and document numbers. Then the old plugin is switched off. Its own data stays in the database.', 'nashenski-commerce' ),
 					esc_html__( 'Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import.', 'nashenski-commerce' ),
 				),
+				__( 'Command line (WP-CLI)', 'nashenski-commerce' ) => array(
+					esc_html__( 'Settings can be read and changed with WP-CLI: wp nashenski setting list, get, set and reset. The names are the option names without "nashenski_settings_", for example apis_enable_econt.', 'nashenski-commerce' ),
+					esc_html__( 'Save a password from standard input so it stays out of the shell history: echo "$PASSWORD" | wp nashenski setting set econt_password -', 'nashenski-commerce' ),
+					esc_html__( 'wp nashenski courier reload and check do the "Reload offices and cities" button and the login check of a courier.', 'nashenski-commerce' ),
+				),
 				__( 'Updates', 'nashenski-commerce' ) => array(
 					esc_html__( 'New versions show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too.', 'nashenski-commerce' ),
 				),
