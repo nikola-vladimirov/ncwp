@@ -157,6 +157,7 @@ class Help_Page {
 					/* translators: %s: link to the Checkout section */
 					sprintf( esc_html__( 'Turn it on in %s > EU withdrawal function. A "Withdraw from contract here" link appears at the bottom of every page, on each order in My Account and in the order emails.', 'nashenski-commerce' ), $checkout ),
 					esc_html__( 'Place the link yourself with the shortcode [nashenski_withdrawal_link] (button="yes" makes it a button).', 'nashenski-commerce' ),
+					esc_html__( 'The links are not shown inside page-builder editors (Bricks, Oxygen, Breakdance, Elementor, Etch and others), only on the live site. A shortcode you place yourself still shows there.', 'nashenski-commerce' ),
 					esc_html__( 'Requests show in the orders list ("Withdrawal" column) and on the order, with everything the customer submitted.', 'nashenski-commerce' ),
 				),
 				__( 'Customer checks', 'nashenski-commerce' ) => array(

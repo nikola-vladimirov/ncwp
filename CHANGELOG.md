@@ -1,5 +1,10 @@
 # Nashenski Commerce changelog
 
+## 0.16.9 (2026-10-21)
+
+### EU withdrawal function
+- The "Withdraw from contract here" link no longer shows inside page-builder editors and their canvas (Bricks, Oxygen, Breakdance, Elementor, Etch, Beaver Builder, Divi, WPBakery, Brizy, Thrive and the Customizer preview). It still shows on the live site. A shortcode you place yourself still shows in the builder, so you can see where it sits.
+
 ## 0.16.8 (2026-10-20)
 
 ### Command line

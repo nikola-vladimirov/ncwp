@@ -96,6 +96,26 @@ class Withdrawal {
 		return ! $completed || time() <= $completed->getTimestamp() + $days * DAY_IN_SECONDS;
 	}
 
+	/**
+	 * A page builder's editor or canvas (Bricks, Oxygen, Breakdance, Elementor, Etch, Beaver Builder, Divi,
+	 * WPBakery, Brizy, Thrive) or the Customizer preview. The links Nashenski adds on its own stay out of
+	 * them; a shortcode placed by hand still shows. Other builders: the filter.
+	 */
+	public static function in_builder() {
+		$in = ( function_exists( 'bricks_is_builder' ) && bricks_is_builder() )
+			|| ( function_exists( 'bricks_is_builder_call' ) && bricks_is_builder_call() )
+			|| ( defined( 'SHOW_CT_BUILDER' ) && SHOW_CT_BUILDER )
+			|| is_customize_preview()
+			|| ( class_exists( '\Elementor\Plugin' ) && isset( \Elementor\Plugin::$instance->editor, \Elementor\Plugin::$instance->preview ) && ( \Elementor\Plugin::$instance->editor->is_edit_mode() || \Elementor\Plugin::$instance->preview->is_preview_mode() ) );
+
+		// Each builder opens its editor and canvas with one of these addresses.
+		foreach ( array( 'bricks', 'brickspreview', 'ct_builder', 'oxygen_iframe', 'breakdance', 'breakdance_iframe', 'elementor-preview', 'fl_builder', 'et_fb', 'vc_editable', 'brizy-edit', 'brizy-edit-iframe', 'tve', 'etch' ) as $key ) {
+			$in = $in || null !== nashenski_query_arg( $key, null );
+		}
+
+		return (bool) apply_filters( 'nashenski/withdrawal/in_builder', $in );
+	}
+
 	public static function link( $url, $button = false ) {
 		self::style();
 
@@ -121,7 +141,7 @@ class Withdrawal {
 	 * The link at the bottom of every page, so it is on view whatever the theme or builder.
 	 */
 	public static function footer_link() {
-		if ( 'none' !== nashenski_get_option( self::GROUP, 'placement' ) ) {
+		if ( 'none' !== nashenski_get_option( self::GROUP, 'placement' ) && ! self::in_builder() ) {
 			echo '<p class="nashenski-withdrawal-bar">' . self::link( self::url() ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in link().
 		}
 	}
@@ -145,7 +165,7 @@ class Withdrawal {
 	 * under the login form, WooCommerce's own or a builder's login form element.
 	 */
 	public static function login_link() {
-		if ( is_account_page() && ! is_user_logged_in() ) {
+		if ( is_account_page() && ! is_user_logged_in() && ! self::in_builder() ) {
 			echo '<p class="nashenski-withdrawal-account">' . esc_html__( 'Ordered without an account?', 'nashenski-commerce' ) . ' ' . self::link( self::url(), true ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in link().
 		}
 	}
@@ -154,7 +174,7 @@ class Withdrawal {
 	 * Order view and order received pages.
 	 */
 	public static function order_link( $order ) {
-		if ( self::in_period( $order ) ) {
+		if ( self::in_period( $order ) && ! self::in_builder() ) {
 			echo '<p class="nashenski-withdrawal-order">' . self::link( self::url( $order ), true ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in link().
 		}
 	}
