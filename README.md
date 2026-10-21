@@ -140,8 +140,7 @@ Help and press "Import now". The old plugin is switched off; its data stays in t
 - **What changed:** [CHANGELOG.md](CHANGELOG.md), also shown on the Plugins screen ("Changelog") and
   in "View version details".
 - **WordPress.org page:** [readme.txt](readme.txt), with the list of external services.
-- **Plans and legal sources:** [docs/plans](docs/plans) and [docs/legal](docs/legal) (repository
-  only, not in the zip).
+- **Plans:** [docs/plans](docs/plans) (repository only, not in the zip).
 
 ## Troubleshooting
 
