@@ -86,6 +86,18 @@ In WooCommerce > Settings > Nashenski Commerce.
 
 No. Your site talks directly to the couriers and services you turn on. The NRA XML file is built on your site.
 
+= Do I need a courier account? =
+
+No. Without an account, shipping prices come from the courier's public price list. With your account, the prices are live.
+
+= Does it work with the block checkout and page builders? =
+
+Yes. It works with the classic checkout, the block checkout and checkout pages built in a page builder, including multi-step checkouts.
+
+= Can I move from Bulgarisation? =
+
+Yes. Activate Nashenski Commerce, then press "Review and import" in WooCommerce > Settings > Nashenski Commerce > Help. Your settings, shipping zones and order data come along, and Bulgarisation is switched off.
+
 == Screenshots ==
 
 1. Couriers: each courier's login, sender address, and offices and cities, refreshed from the courier.
