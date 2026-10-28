@@ -100,12 +100,12 @@ Yes. Activate Nashenski Commerce, then press "Review and import" in WooCommerce 
 
 == Screenshots ==
 
-1. Couriers: each courier's login, sender address, and offices and cities, refreshed from the courier.
+1. Overview: turn on the couriers you work with and the documents you need. Each one adds its own settings.
 2. Checkout: countries, courier logos, address transliteration and the company invoice fields.
 3. Documents: company details for invoices and the NRA audit file, VAT group and refund method.
-4. Customer checks: reports from nekorekten.com, Connectix and NepoStop, with cash on delivery held back when a report is found.
+4. Customer checks: choose the checks from nekorekten.com, Connectix and NepoStop, and when cash on delivery is held back.
 5. Quick order: a short form for shoppers who do not want to check out. The order waits for your confirmation.
-6. Order screen: the customer's history on the order, with a warning when the customer has reports.
+6. Order screen: the courier line on the order, with the customer's history and checks beside it.
 
 == External services ==
 
