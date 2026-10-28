@@ -18,6 +18,7 @@ class Admin_Menus {
 		add_filter( 'woocommerce_get_settings_pages', array( __CLASS__, 'add_settings_page' ) );
 		// WordPress refuses unknown admin pages before admin_init, so redirect just before that.
 		add_action( 'admin_page_access_denied', array( __CLASS__, 'redirect_old_page' ) );
+		add_action( 'admin_init', array( __CLASS__, 'redirect_wrong_tab' ) );
 		add_filter( 'upload_mimes', array( __CLASS__, 'allow_upload_xml' ) );
 		add_filter( 'admin_footer_text', array( __CLASS__, 'admin_footer_text' ), 99 );
 	}
@@ -34,6 +35,22 @@ class Admin_Menus {
 	/**
 	 * The settings used to have their own page (admin.php?page=nashenski). Send old links to the new tab.
 	 */
+	/**
+	 * WooCommerce prints a PHP warning for an unknown settings tab. Send the wrong slug to the real one before that.
+	 */
+	public static function redirect_wrong_tab() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only redirect.
+		if ( ! isset( $_GET['page'], $_GET['tab'] ) || 'wc-settings' !== $_GET['page'] || 'nashenski_commerce' !== $_GET['tab'] ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : '';
+
+		wp_safe_redirect( Settings::url( $section ) );
+		exit;
+	}
+
 	public static function redirect_old_page() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only redirect.
 		if ( ! isset( $_GET['page'] ) || 'nashenski' !== $_GET['page'] ) {

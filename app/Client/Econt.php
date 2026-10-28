@@ -36,8 +36,8 @@ class Econt {
 		$is_public = 0 === strpos( $endpoint, 'Nomenclatures/' );
 
 		if ( ! $is_public && ( empty( $this->get_user() ) || empty( $this->get_password() ) ) ) {
-	        return;
-	    }
+			return array( 'success' => false );
+		}
 
 		$headers = array( 'content-type' => 'application/json' );
 
@@ -51,7 +51,14 @@ class Econt {
 			'timeout' => 60,
 		) );
 
-		return json_decode( wp_remote_retrieve_body( $request ), 1 );
+		// Always an array, so callers never get null. Econt's own error body (type, message) is kept for validate_access().
+		if ( is_wp_error( $request ) ) {
+			return array( 'success' => false, 'error' => $request->get_error_message() );
+		}
+
+		$data = json_decode( wp_remote_retrieve_body( $request ), true );
+
+		return is_array( $data ) ? $data : array( 'success' => false, 'error' => 'HTTP ' . wp_remote_retrieve_response_code( $request ) );
 	}
 
 	public function label_request( $type, $request_body, $destination = array() ) {
