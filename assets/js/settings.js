@@ -175,6 +175,12 @@
 		}
 
 		out.textContent = text;
+
+		// An open panel drives the dropdown itself (collect()); a closed one follows the saved rule.
+		if ( cell.querySelector( '.nashenski-when__panel' ).hidden ) {
+			cell.querySelector( '.nashenski-when__rule' ).value = set.length ? ( data.hide ? 'hide' : 'show' ) : '';
+			cell.querySelector( '.nashenski-when__open' ).hidden = ! set.length;
+		}
 	}
 
 	function refreshSummaries() {
@@ -202,6 +208,7 @@
 			return one.length;
 		} );
 		cell.querySelector( '.nashenski-when__json' ).value = data.sets.length ? JSON.stringify( data ) : '';
+		cell.querySelector( '.nashenski-when__rule' ).value = data.hide ? 'hide' : 'show';
 		summary( cell );
 	}
 
@@ -308,6 +315,31 @@
 		refreshSummaries();
 	}
 
+	// "Always shown" clears the rule; "Show when..." and "Hide when..." open the panel to fill it in.
+	function ruleChosen( cell, mode ) {
+		var data = readWhen( cell );
+		var panel = cell.querySelector( '.nashenski-when__panel' );
+
+		if ( ! mode ) {
+			cell.querySelector( '.nashenski-when__json' ).value = '';
+			panel.hidden = true;
+			panel.textContent = '';
+			cell.querySelector( '.nashenski-when__open' ).setAttribute( 'aria-expanded', 'false' );
+			refreshSummaries();
+			return;
+		}
+
+		if ( panel.hidden ) {
+			data.hide = 'hide' === mode;
+			cell.querySelector( '.nashenski-when__json' ).value = data.sets.length ? JSON.stringify( data ) : '';
+			openPanel( cell );
+		}
+
+		panel.querySelector( '.nashenski-when__mode' ).value = mode;
+		collect( cell );
+		cell.querySelector( '.nashenski-when__open' ).hidden = false;
+	}
+
 	document.addEventListener( 'click', function ( event ) {
 		var button = event.target.closest( '.nashenski-when__open, .nashenski-when__add, .nashenski-when__del, .nashenski-when__close' );
 		var cell = button && button.closest( '.nashenski-when' );
@@ -344,6 +376,11 @@
 
 		if ( ! cell ) {
 			refreshSummaries();
+			return;
+		}
+
+		if ( target.matches( '.nashenski-when__rule' ) ) {
+			ruleChosen( cell, target.value );
 			return;
 		}
 

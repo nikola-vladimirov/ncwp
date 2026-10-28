@@ -727,8 +727,10 @@ class Field_Editor {
 			$rule = self::rule( $row['key'] );
 		}
 
+		$mode = empty( $row['when'] ) ? '' : ( ! empty( $row['when']['hide'] ) ? 'hide' : 'show' );
+
 		return sprintf(
-			'<tr class="nashenski-layout__row%1$s"><td class="nashenski-layout__move"><button type="button" class="button-link nashenski-layout__up" aria-label="%2$s">&uarr;</button><button type="button" class="button-link nashenski-layout__down" aria-label="%3$s">&darr;</button></td><td>%4$s<input type="hidden" name="%5$s" value="%6$s"></td><td>%7$s</td><td>%8$s</td><td class="nashenski-when"><button type="button" class="button-link nashenski-when__open" aria-expanded="false">%10$s</button><span class="nashenski-when__summary"></span><input type="hidden" class="nashenski-when__json" name="%11$s" value="%12$s"><div class="nashenski-when__panel" hidden></div></td><td>%9$s</td></tr>',
+			'<tr class="nashenski-layout__row%1$s"><td class="nashenski-layout__move"><button type="button" class="button-link nashenski-layout__up" aria-label="%2$s">&uarr;</button><button type="button" class="button-link nashenski-layout__down" aria-label="%3$s">&darr;</button></td><td>%4$s<input type="hidden" name="%5$s" value="%6$s"></td><td>%7$s</td><td>%8$s</td><td class="nashenski-when"><select class="nashenski-when__rule" aria-label="%10$s"><option value=""%13$s>%14$s</option><option value="show"%15$s>%16$s</option><option value="hide"%17$s>%18$s</option></select> <button type="button" class="button-link nashenski-when__open" aria-expanded="false"%19$s>%20$s</button><span class="nashenski-when__summary"></span><input type="hidden" class="nashenski-when__json" name="%11$s" value="%12$s"><div class="nashenski-when__panel" hidden></div></td><td>%9$s</td></tr>',
 			$custom ? ' nashenski-layout__row--custom' . ( 'select' === ( $row['type'] ?? '' ) ? ' is-select' : '' ) : '',
 			esc_attr__( 'Move up', 'nashenski-commerce' ),
 			esc_attr__( 'Move down', 'nashenski-commerce' ),
@@ -738,9 +740,17 @@ class Field_Editor {
 			self::select( $base . '[rule]', $rules, $rule ),
 			self::select( $base . '[width]', array( 'full' => __( 'Full width', 'nashenski-commerce' ), 'half' => __( 'Half width', 'nashenski-commerce' ) ), $row['width'] ?? 'full' ),
 			$custom ? '<button type="button" class="button-link button-link-delete nashenski-layout__remove">' . esc_html__( 'Remove', 'nashenski-commerce' ) . '</button>' : '',
-			esc_html__( 'Condition', 'nashenski-commerce' ),
+			esc_attr__( 'Condition', 'nashenski-commerce' ),
 			esc_attr( $base . '[when]' ),
-			esc_attr( empty( $row['when'] ) ? '' : wp_json_encode( $row['when'], JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_APOS ) )
+			esc_attr( empty( $row['when'] ) ? '' : wp_json_encode( $row['when'], JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_APOS ) ),
+			$mode ? '' : ' selected',
+			esc_html__( 'Always shown', 'nashenski-commerce' ),
+			'show' === $mode ? ' selected' : '',
+			esc_html__( 'Show when...', 'nashenski-commerce' ),
+			'hide' === $mode ? ' selected' : '',
+			esc_html__( 'Hide when...', 'nashenski-commerce' ),
+			$mode ? '' : ' hidden',
+			esc_html__( 'Edit condition', 'nashenski-commerce' )
 		);
 	}
 

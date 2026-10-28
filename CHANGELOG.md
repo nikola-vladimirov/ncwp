@@ -1,5 +1,11 @@
 # Nashenski Commerce changelog
 
+## 0.19.0 (2026-10-28)
+
+### Checkout
+- Field conditions: every row of the Checkout fields table has a Condition dropdown ("Always shown", "Show when...", "Hide when...") next to Required and Width. Pick a rule and add conditions on the value of other fields; pick "Always shown" to remove it. When you choose a field in a condition, a list or checkbox field offers its choices.
+- The classic checkout follows every condition. The block checkout follows conditions on your own fields that read your own fields (not "greater" or "less").
+
 ## 0.18.0 (2026-10-28)
 
 ### Checkout
