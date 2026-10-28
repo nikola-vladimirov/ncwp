@@ -233,7 +233,11 @@
 			el.value = value;
 		}
 
-		if ( trigger && 'checkbox' === trigger.type ) {
+		if ( ! node.querySelector( '.nashenski-when__field' ).value ) {
+			// No field chosen yet: a locked list, so the value is never an empty box with nothing to pick.
+			choose( [ [ '', strings.pick ] ] );
+			el.disabled = true;
+		} else if ( trigger && 'checkbox' === trigger.type ) {
 			value = '1' === value ? '1' : '';
 			choose( [ [ '1', strings.yes ], [ '', strings.no ] ] );
 		} else if ( trigger && trigger.choices.length ) {
