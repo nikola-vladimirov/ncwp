@@ -86,7 +86,8 @@ order open the courier box, check the details and press "Generate label".
 - The NRA audit XML file (Annex 38) for any period, checked against the NRA schema, and optionally
   emailed to your accountant on the 1st of every month.
 - Invoice archive and Microinvest Delta exports, and an export builder for orders, products sold or
-  documents (CSV, Excel, JSON, XML).
+  documents (CSV, Excel, JSON, XML; documents are picked by their own date). Export files are deleted
+  after 7 days; documents and export files never show in the Media Library.
 - Company invoice fields at checkout and the EU VAT number check (VIES).
 - Import the checkout fields and rules of WooCommerce Checkout Field Editor (free or Pro) in one click.
 - Optional clean-up of order documents (not invoices) of older orders.
@@ -120,7 +121,8 @@ order page and in the order emails during the withdrawal period, and a shortcode
 nekorekten.com, Connectix and NepoStop look up a phone number's history of refused parcels. The
 order shows a warning, and cash on delivery can be hidden for such customers. In the NepoStop and
 nekorekten.com settings you can also tick payment methods to hide for a flagged customer. From an order
-you can send a report to nekorekten.com, then edit or delete it.
+you can send a report to nekorekten.com, then edit or delete it. Each visitor address gets at most 20
+checks an hour; over that, the check is skipped and the checkout goes on.
 
 ### Prices with VAT
 

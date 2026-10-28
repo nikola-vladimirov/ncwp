@@ -31,7 +31,7 @@ Nashenski Commerce ("нашенски" means "ours, done the local way") adds wh
 * The order document is made for every order, also with invoices turned off.
 * Invoices made automatically, or by hand from the order screen with your own invoice number.
 * The standardised audit XML file (Annex 38 of Ordinance N-18) for any number of orders, checked against the NRA schema.
-* Invoice archive and Microinvest Delta export for a chosen month.
+* Invoice archive and Microinvest Delta export for a chosen month. Export files are deleted after 7 days, and documents never show in the Media Library.
 * The NRA audit file of the month before, emailed to your accountant on the 1st of every month (optional).
 * Custom export builder: orders, products sold or documents, with your filters, columns, order and file format (CSV, Excel, JSON, XML). Save exports to run them again.
 * Checkout field editor: order, one or two columns, required, optional or hidden for each field, and your own extra fields, in the classic, block and page builder checkouts.
@@ -53,7 +53,7 @@ Nashenski Commerce ("нашенски" means "ours, done the local way") adds wh
 
 **Customer checks**
 
-* Optional checks with nekorekten.com, Connectix and NepoStop before allowing cash on delivery.
+* Optional checks with nekorekten.com, Connectix and NepoStop before allowing cash on delivery, at most 20 an hour from one visitor address.
 
 **Languages**
 
