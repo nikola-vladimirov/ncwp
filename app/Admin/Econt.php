@@ -330,8 +330,14 @@ class Econt {
 			'shipmentNumbers' => [ $shipment_status['label']['shipmentNumber'] ]
 		) );
 
-		$status = array_shift( $response );
-		$status = array_shift( $status );
+		// An error reply has no statuses; send it back as an error instead of a fatal from array_shift().
+		$status = is_array( $response ) ? array_shift( $response ) : null;
+		$status = is_array( $status ) ? array_shift( $status ) : null;
+
+		if ( empty( $status['status'] ) ) {
+			wp_send_json_error( $response );
+		}
+
 		$data['shipmentStatus'] = $status['status'];
 		$order_shipment_status['label'] = $data['shipmentStatus'];
 		
