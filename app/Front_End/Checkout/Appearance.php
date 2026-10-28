@@ -200,7 +200,7 @@ class Appearance {
 		<tr valign="top">
 			<th scope="row" class="titledesc"><label for="<?php echo esc_attr( $value['id'] ); ?>"><?php echo esc_html( $value['title'] ); ?></label></th>
 			<td class="forminp forminp-text">
-				<input type="text" class="nashenski-style-input" id="<?php echo esc_attr( $value['id'] ); ?>" name="<?php echo esc_attr( $value['id'] ); ?>" value="<?php echo esc_attr( $current ); ?>" placeholder="<?php echo esc_attr( $value['placeholder'] ); ?>" list="<?php echo esc_attr( $list ); ?>" style="min-width: 350px;" spellcheck="false" autocomplete="off">
+				<input type="text" class="nashenski-style-input" id="<?php echo esc_attr( $value['id'] ); ?>" name="<?php echo esc_attr( $value['id'] ); ?>" value="<?php echo esc_attr( $current ); ?>" placeholder="<?php echo esc_attr( $value['placeholder'] ); ?>" list="<?php echo esc_attr( $list ); ?>" spellcheck="false" autocomplete="off">
 				<datalist id="<?php echo esc_attr( $list ); ?>">
 					<?php foreach ( self::suggestions() as $token ) : ?>
 						<option value="<?php echo esc_attr( $token ); ?>"></option>

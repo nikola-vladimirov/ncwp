@@ -757,3 +757,11 @@ body.woocommerce_page_wc-settings #mainform .nashenski-courier-nav {
 	cursor: pointer;
 	font-weight: 600;
 }
+
+/* Colour and size fields on the Checkout screen: fit a narrow screen. */
+.woocommerce .nashenski-style-input {
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	max-width: 25em;
+}

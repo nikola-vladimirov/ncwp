@@ -54,6 +54,18 @@ class Plugin {
 			'nashenski_settings_apis_enable_multi_currency'
 		) );
 
+		// 0.17.0: the CVC courier was removed; its settings, schedule and cached offices go.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time cleanup of options by name on upgrade.
+		$wpdb->query( $wpdb->prepare(
+			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+			$wpdb->esc_like( 'nashenski_settings_' ) . '%cvc%'
+		) );
+		wp_clear_scheduled_hook( 'nashenski/cvc/clear_cache_folder' );
+		foreach ( glob( File::CACHE_FOLDER . 'cvc' . DIRECTORY_SEPARATOR . '*' ) ?: array() as $cvc_file ) {
+			wp_delete_file( $cvc_file );
+		}
+		@rmdir( File::CACHE_FOLDER . 'cvc' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- the folder may be missing or not empty.
+
 		update_option( 'nashenski_version', self::VERSION );
 	}
 
