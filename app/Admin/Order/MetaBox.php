@@ -58,10 +58,12 @@ class MetaBox {
 			?: nashenski_get_option( 'invoice', 'next_invoice_separate_number' )
 			?: $order->get_meta( 'nashenski_order_number' )
 			?: nashenski_get_option( 'invoice', 'next_invoice_number' );
+		// Own invoicing program: the number comes from that program, so no website number is suggested.
+		$value = Documents::own_numbering() ? '' : max( 1, (int) $next );
 		?>
 		<p class="nashenski-make-invoice">
 			<label for="nashenski_invoice_number"><?php esc_html_e( 'Invoice number', 'nashenski-commerce' ); ?></label>
-			<input type="text" id="nashenski_invoice_number" name="nashenski_invoice_number" value="<?php echo esc_attr( max( 1, (int) $next ) ); ?>" inputmode="numeric" pattern="[0-9]{1,10}" maxlength="10" class="short">
+			<input type="text" id="nashenski_invoice_number" name="nashenski_invoice_number" value="<?php echo esc_attr( $value ); ?>" inputmode="numeric" pattern="[0-9]{1,10}" maxlength="10" class="short">
 			<?php wp_nonce_field( 'nashenski_make_invoice', 'nashenski_make_invoice_nonce' ); ?>
 			<input type="hidden" name="nashenski_make_invoice" value="">
 			<?php // Not a submit button: Enter in any order field would press the first submit button of the form. ?>

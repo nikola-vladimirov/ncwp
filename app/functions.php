@@ -602,7 +602,6 @@ function nashenski_couriers() {
 		__( 'Speedy', 'nashenski-commerce' ),
 		__( 'BOX NOW', 'nashenski-commerce' ),
 		__( 'Pigeon Express', 'nashenski-commerce' ),
-		__( 'CVC', 'nashenski-commerce' ),
 	) );
 }
 
@@ -742,16 +741,6 @@ function nashenski_get_order_label( $order_id ) {
 					];
 				}
 				break;
-			case 'nashenski_cvc':
-				$shipment_status = $order->get_meta( 'nashenski_cvc_shipment_status' );
-				if ( $shipment_status && !empty( $shipment_status['pdf'] ) ) {
-					$data = [
-						'number' => $label_data['wb'],
-						'link' => $shipment_status['pdf'],
-					];
-				}
-
-				break;
 			case 'nashenski_boxnow':
 				$parcels = isset( $label_data['parcels'] ) && is_array( $label_data['parcels'] ) ? $label_data['parcels'] : array();
 				$other_labels = $order->get_meta( 'nashenski_boxnow_other_labels_data' );
@@ -799,14 +788,13 @@ function nashenski_get_order_label( $order_id ) {
 }
 
 /**
- * The saved label of an order's shipping line: the label data of Speedy, Econt and CVC, the
+ * The saved label of an order's shipping line: the label data of Speedy and Econt, the
  * shipment status of BOX NOW and Pigeon Express. Null when there is none.
  */
 function nashenski_get_label_data_for_shipping_method( $shipping ) {
 	$meta_keys = array(
 		'nashenski_speedy' => 'nashenski_speedy_label',
 		'nashenski_econt' => 'nashenski_econt_label',
-		'nashenski_cvc' => 'nashenski_cvc_label',
 		'nashenski_boxnow' => 'nashenski_boxnow_shipment_status',
 		'nashenski_pigeon' => 'nashenski_pigeon_shipment_status',
 	);

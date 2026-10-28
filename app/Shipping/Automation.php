@@ -31,7 +31,7 @@ class Automation {
 	);
 
 	/** Couriers whose shipment status can be read. Pigeon Express does not publish its status values. */
-	const FOLLOWED = array( 'econt', 'speedy', 'boxnow', 'cvc' );
+	const FOLLOWED = array( 'econt', 'speedy', 'boxnow' );
 
 	/** Couriers whose API takes a courier request. The others collect with the waybill itself. */
 	const PICKUP = array( 'econt', 'speedy' );
@@ -89,7 +89,7 @@ class Automation {
 				'id' => 'nashenski_settings_' . self::GROUP . '_order_number',
 				'type' => 'checkbox',
 				'title' => __( 'Order number on the waybill', 'nashenski-commerce' ),
-				'desc' => __( 'Econt and Speedy get it in their reference field, BOX NOW on the label, Pigeon Express in the note for the courier and CVC in front of the contents.', 'nashenski-commerce' ),
+				'desc' => __( 'Econt and Speedy get it in their reference field, BOX NOW on the label and Pigeon Express in the note for the courier.', 'nashenski-commerce' ),
 				'default' => 'no',
 			),
 			array(
@@ -103,7 +103,7 @@ class Automation {
 				'id' => 'nashenski_settings_' . self::GROUP . '_returned',
 				'type' => 'select',
 				'title' => __( 'When the parcel goes back to you', 'nashenski-commerce' ),
-				'desc' => __( 'Refused by the customer or returned. Orders that are processing or on hold and have an Econt, Speedy, BOX NOW or CVC waybill are checked every hour, and each change is noted on the order. Pigeon Express does not publish its statuses yet.', 'nashenski-commerce' ),
+				'desc' => __( 'Refused by the customer or returned. Orders that are processing or on hold and have an Econt, Speedy or BOX NOW waybill are checked every hour, and each change is noted on the order. Pigeon Express does not publish its statuses yet.', 'nashenski-commerce' ),
 				'options' => $statuses,
 				'default' => '',
 			),
@@ -137,9 +137,6 @@ class Automation {
 				break;
 			case 'pigeon':
 				$label['note'] = empty( $label['note'] ) ? $text : $text . '. ' . $label['note'];
-				break;
-			case 'cvc':
-				$label['description'] = empty( $label['description'] ) ? $text : $text . ': ' . $label['description'];
 				break;
 		}
 
@@ -236,7 +233,7 @@ class Automation {
 		}
 
 		if ( ! in_array( $courier, self::FOLLOWED, true ) || ! Pickers::connected( $courier ) ) {
-			return __( 'The shipment status can only be read for Econt, Speedy, BOX NOW and CVC, with their login.', 'nashenski-commerce' );
+			return __( 'The shipment status can only be read for Econt, Speedy and BOX NOW, with their login.', 'nashenski-commerce' );
 		}
 
 		$state = self::state( $courier, $numbers[0] );
@@ -286,12 +283,6 @@ class Automation {
 				$response = $c[ Client::BOXNOW ]->api_call( '/api/v1/parcels', array( 'parcelId' => $number ), 'GET' );
 
 				return self::first_match( array( $response['data'][0]['state'] ?? '' ), array( 'delivered' ), array( 'returned', 'expired-return' ) );
-			case 'cvc':
-				$response = $c[ Client::CVC ]->api_call( $c[ Client::CVC ]::ACTIONS_ENDPOINT, array( 'wb' => $number ), 'GET' );
-				$codes = array_map( 'intval', wp_list_pluck( (array) ( $response['history'] ?? array() ), 'status_num' ) );
-
-				// 90 delivered, 160 returned.
-				return self::first_match( $codes, array( 90 ), array( 160 ) );
 		}
 
 		return '';

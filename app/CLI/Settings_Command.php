@@ -24,7 +24,6 @@ class Settings_Command {
 		'Speedy_Tab',
 		'BoxNow_Tab',
 		'Pigeon_Tab',
-		'CVC_Tab',
 		'Connectix_Tab',
 		'NepoStop_Tab',
 		'Nekorekten_Tab',
@@ -44,7 +43,7 @@ class Settings_Command {
 	 * ## OPTIONS
 	 *
 	 * [--tab=<tab>]
-	 * : Only one settings tab, for example econt, speedy, boxnow, pigeon, cvc, checkout, documents, checks.
+	 * : Only one settings tab, for example econt, speedy, boxnow, pigeon, checkout, documents, checks.
 	 *
 	 * [--format=<format>]
 	 * : Output format.

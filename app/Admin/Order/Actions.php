@@ -176,6 +176,15 @@ class Actions {
 		}
 
 		$order->update_meta_data( 'nashenski_order_invoice_number', $padded );
+
+		if ( Documents::own_numbering() ) {
+			$order->update_meta_data( 'nashenski_invoice_own_program', 'yes' );
+			$order->save();
+
+			// The number belongs to the shop's own program, so the website sequence stays as it is.
+			return '';
+		}
+
 		$order->save();
 
 		// The next automatic number continues after the typed one.

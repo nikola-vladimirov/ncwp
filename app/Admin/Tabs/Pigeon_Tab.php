@@ -113,6 +113,7 @@ class Pigeon_Tab extends Base_Tab {
 			),
 			'pigeon_send_from' => array(
 				'title' => __( 'Where you send from', 'nashenski-commerce' ),
+				'desc' => __( 'The sender details on your labels and the place you send parcels from.', 'nashenski-commerce' ),
 			),
 			'pigeon_services' => array(
 				'title' => __( 'Extra services on labels', 'nashenski-commerce' ),

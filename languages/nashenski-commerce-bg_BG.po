@@ -6148,3 +6148,23 @@ msgstr "WooCommerce за България: доставка с Еконт, Сп�
 #: nashenski-commerce.php
 msgid "PristaDigital"
 msgstr "PristaDigital"
+
+#: app/Admin/Tabs/Fields_Tab.php
+msgid "Invoice numbering"
+msgstr ""
+
+#: app/Admin/Tabs/Fields_Tab.php
+msgid "Website invoices: in the NRA audit file"
+msgstr ""
+
+#: app/Admin/Tabs/Fields_Tab.php
+msgid "Own invoicing program: custom number, not in the NRA audit file"
+msgstr ""
+
+#: app/Admin/Tabs/Fields_Tab.php
+msgid "Own invoicing program: no invoice is made automatically. Type the number from your program on the order screen and press \"Make invoice\". Those orders stay out of the NRA audit file and the monthly audit email."
+msgstr ""
+
+#: app/Admin/Setting_Help.php
+msgid "Changing it later does not move invoices already made in or out of the NRA audit file. Ask your accountant which one fits your shop."
+msgstr ""

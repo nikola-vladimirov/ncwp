@@ -5,11 +5,11 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.16.9
+Stable tag: 0.17.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-WooCommerce for Bulgaria: Econt, Speedy, BOX NOW, CVC and Pigeon shipping, invoices and Ordinance N-18 documents.
+WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shipping, invoices and Ordinance N-18 documents.
 
 == Description ==
 
@@ -17,7 +17,7 @@ Nashenski Commerce ("нашенски" means "ours, done the local way") adds wh
 
 **Shipping**
 
-* Econt, Speedy, BOX NOW, Pigeon Express and CVC shipping methods: to an office, a locker or an address.
+* Econt, Speedy, BOX NOW and Pigeon Express shipping methods: to an office, a locker or an address.
 * Waybills for many orders at once, courier requests for Econt and Speedy (holidays skipped), the order number on the waybill, a tracking link on the customer's order page, and order statuses that follow the shipment (delivered or returned).
 * Live shipping prices at checkout with your courier account, or from the courier's public price list when you have no account yet. The price lists are built in, editable and can be checked against the courier website.
 * Labels from the order screen, label printing and shipment status updates.
@@ -111,14 +111,13 @@ Yes. Activate Nashenski Commerce, then press "Review and import" in WooCommerce 
 
 The plugin only contacts a service after you turn it on and enter your own account details for it.
 
-* Courier websites (public price lists, only when you press "Check the courier website" and once a week): admin-ee.econt.com (Econt tariff PDF), services.speedy.bg/pricelist, pigeonexpress.com/prices-and-taxes, cvc.bg/tarifa. Nothing is sent except a normal page request.
+* Courier websites (public price lists, only when you press "Check the courier website" and once a week): admin-ee.econt.com (Econt tariff PDF), services.speedy.bg/pricelist, pigeonexpress.com/prices-and-taxes. Nothing is sent except a normal page request.
 * Econt (shipping): prices, labels, offices, cities, shipment status and courier requests. Sends the receiver's name, phone, address or office, the parcel details and the cash on delivery amount when prices or labels are made. Hosts: ee.econt.com, demo.econt.com. Terms: https://www.econt.com/econt-express/terms-of-use
 * Econt office map: shown at checkout only when the customer presses "Choose on the map". The map page loads from officelocator.econt.com with the customer's town and the store address. Terms: https://www.econt.com/econt-express/terms-of-use
 * Speedy office map: shown at checkout only when the customer presses "Choose on the map". The map page loads from services.speedy.bg (it uses Google Maps). Only the Speedy town number is sent. Website: https://www.speedy.bg/
 * Speedy (shipping): same purpose and data. Hosts: api.speedy.bg, services.speedy.bg. Terms: https://api.speedy.bg/api/docs/#href-terms
 * BOX NOW (locker shipping): lockers, labels and status. Hosts: api-production.boxnow.bg, api-stage.boxnow.bg, locationapi-production.boxnow.bg, locationapi-stage.boxnow.bg (public locker list), map.boxnow.bg. Website: https://boxnow.bg/ Terms: https://boxnow.bg/terms-of-use-for-shipping-services Privacy policy: https://boxnow.bg/personal-data-processing-notice
 * Pigeon Express (shipping): offices, lockers, prices, labels and status. Hosts: api.pigeonexpress.com, api-demo.pigeonexpress.com. Without a Pigeon login, the checkout loads the public list of offices and lockers from pigeonexpress.com/api/locations (a normal page request, nothing about the customer is sent). Website: https://pigeonexpress.com/ Terms: https://pigeonexpress.com/terms Privacy policy: https://pigeonexpress.com/privacy
-* CVC (shipping): offices, prices, labels and status. Host: lox.e-cvc.bg. Website: https://cvc.bg/ Terms: https://cvc.bg/obshti-usloviq/ Privacy policy: https://cvc.bg/politika-za-lichni-danni/
 * nekorekten.com (customer check): sends the customer phone number to look up reports about it, and, only when the store owner clicks "Send report" on an order, the report text with the name, phone number and email of that order (and edits or deletes a report sent from an order when the owner asks). Host: api.nekorekten.com. Terms: https://nekorekten.com/terms
 * Connectix (customer check): sends the customer's phone number to check their delivery record, and shipment data when tracking is on. Hosts: api.connectix.bg, api-sandbox.connectix.bg. Website: https://connectix.bg/ Terms: https://connectix.bg/bg/terms Privacy policy: https://connectix.bg/bg/privacy
 * NepoStop (customer check): sends the customer's phone number, and labels when that option is on. Host: nepostop.com. Website: https://nepostop.com/ Terms: https://nepostop.com/terms Privacy policy: https://nepostop.com/gdpr
@@ -129,6 +128,14 @@ The plugin only contacts a service after you turn it on and enter your own accou
 The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf php-font-lib (LGPL-2.1 or later) and php-svg-lib (LGPL-3.0 or later), which make the PDF documents; and Pimple, Masterminds HTML5, sabberworm PHP-CSS-Parser, setasign FPDI, chillerlan php-qrcode and php-settings-container, clegginabox PDF merger, ddeboer VATIN and PSR container (all MIT). Their licences are in each library's folder.
 
 == Changelog ==
+
+= 0.17.0 =
+* CVC courier removed. Its settings, labels, shipping method and cron jobs are gone.
+* Courier pages are shorter: less used options sit under "More options", and the account and "Where you send from" sit side by side.
+* "Public prices" shows only when "Use public prices" is ticked.
+* Checkout settings regrouped into clear sections.
+* New "Invoice numbering" for company invoices: "Own invoicing program" keeps the invoice out of the NRA audit file.
+* The "Alternative shipping options layout" option is removed. It did not work in the block checkout.
 
 = 0.16.9 =
 * The "Withdraw from contract here" link no longer shows inside page-builder editors (Bricks, Oxygen, Breakdance, Elementor, Etch and others).

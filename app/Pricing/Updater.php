@@ -4,7 +4,7 @@ namespace Nashenski\Pricing;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Reads a courier's published price list (Econt PDF tariff, Pigeon Express and CVC price pages)
+ * Reads a courier's published price list (Econt PDF tariff and Pigeon Express price page)
  * and turns it into a price list. Nothing is saved here: the settings page shows the changes and
  * the shop owner decides. A weekly check only records that new prices were found.
  *
@@ -76,9 +76,6 @@ class Updater {
 				break;
 			case 'pigeon':
 				$list = self::parse_pigeon( self::html_text( $body ), self::html_tables( $body ) );
-				break;
-			case 'cvc':
-				$list = self::parse_cvc( self::html_text( $body ), self::html_tables( $body ) );
 				break;
 			default:
 				$list = null;
@@ -368,51 +365,6 @@ class Updater {
 
 		if ( preg_match( '/Актуална такса гориво\s*-\s*(\p{L}+)\s+(\d{4})/u', $text, $m ) && isset( $months[ mb_strtolower( $m[1] ) ] ) ) {
 			$list['valid_from'] = sprintf( '%04d-%02d-01', $m[2], $months[ mb_strtolower( $m[1] ) ] );
-		}
-
-		return $list;
-	}
-
-	/**
-	 * CVC price list page: weight | leva / euro (address to address, without VAT).
-	 */
-	public static function parse_cvc( $lines, $tables = array() ) {
-		$bands = array();
-		$over = null;
-		$text = implode( "\n", $lines );
-
-		foreach ( $tables as $rows ) {
-			foreach ( $rows as $cells ) {
-				$row = implode( ' | ', $cells );
-
-				if ( 2 === count( $cells ) && preg_match( '/^до\s*(\d+(?:[.,]\d+)?)\s*кг/u', $cells[0], $m ) && preg_match( '/[\d.,]+\s*\/\s*([\d.,]+)/', $cells[1], $p ) ) {
-					$price = (float) str_replace( ',', '.', $p[1] );
-					$bands[] = array( 'to' => (float) str_replace( ',', '.', $m[1] ), 'office' => $price, 'locker' => $price, 'address' => $price );
-				} elseif ( $bands && ! $over && preg_match( '/над 20 кг.*?\+\s*([\d.,]+)\s*евро/u', $row, $m ) ) {
-					$last = end( $bands );
-					$per_kg = (float) str_replace( ',', '.', $m[1] );
-					$over = array(
-						'base' => array( 'office' => $last['address'], 'locker' => $last['address'], 'address' => $last['address'] ),
-						'per_kg' => array( 'office' => $per_kg, 'locker' => $per_kg, 'address' => $per_kg ),
-					);
-				}
-			}
-
-			if ( $bands && $over ) {
-				break;
-			}
-
-			$bands = $over ? $bands : array();
-		}
-
-		if ( count( $bands ) < 5 || ! $over ) {
-			return null;
-		}
-
-		$list = array( 'vat_included' => false, 'surcharge' => 0, 'bands' => $bands, 'over' => $over, 'cod' => array( 'percent' => 1.2, 'min' => 0.61 ) );
-
-		if ( preg_match( '/Валидна от:\s*(\d{2}\.\d{2}\.\d{4})/u', $text, $m ) ) {
-			$list['valid_from'] = self::valid_from( $m[1] );
 		}
 
 		return $list;

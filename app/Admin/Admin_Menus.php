@@ -123,7 +123,6 @@ class Admin_Menus {
 			array( 'apis', 'enable_speedy', Tabs\Speedy_Tab::class ),
 			array( 'apis', 'enable_boxnow', Tabs\BoxNow_Tab::class ),
 			array( 'apis', 'enable_pigeon', Tabs\Pigeon_Tab::class ),
-			array( 'apis', 'enable_cvc', Tabs\CVC_Tab::class ),
 			array( 'reports', 'enable_connectix', Tabs\Connectix_Tab::class ),
 			array( 'reports', 'enable_nepostop', Tabs\NepoStop_Tab::class ),
 			array( 'reports', 'enable_nekorekten', Tabs\Nekorekten_Tab::class ),

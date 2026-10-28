@@ -53,6 +53,38 @@
 	.nashenski-boxes .nashenski-box:has(.nashenski-layout, .nashenski-price-list, .nashenski-rows) .form-table > tbody > tr > th {
 		width: 200px;
 	}
+
+	/* Checkout: one column, read top to bottom. */
+	.nashenski-boxes--stack {
+		columns: auto;
+	}
+
+	.nashenski-boxes--stack .nashenski-box .form-table > tbody > tr > th {
+		width: 200px;
+	}
+}
+
+/* Courier account and "Where you send from" side by side; stacked under 900px. */
+.nashenski-cols {
+	column-span: all;
+	margin-bottom: 20px;
+}
+
+@media (min-width: 900px) {
+	.nashenski-cols {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 20px;
+		align-items: start;
+	}
+
+	.nashenski-cols .nashenski-box {
+		margin-bottom: 0;
+	}
+
+	.nashenski-cols .form-table > tbody > tr > th {
+		width: 30%;
+	}
 }
 
 .nashenski-box h2 {
@@ -714,4 +746,14 @@ body.woocommerce_page_wc-settings #mainform .nashenski-courier-nav {
 .nashenski-builder__note {
 	max-width: 760px;
 	color: #646970;
+}
+
+/* "More options" on the courier screens: closed until opened. */
+.nashenski-more {
+	margin: 12px 0;
+}
+
+.nashenski-more > summary {
+	cursor: pointer;
+	font-weight: 600;
 }

@@ -91,6 +91,22 @@
 		}
 	} );
 
+	// The public price list (and its options) shows only while "Use public prices" is ticked.
+	function syncPublicPrices() {
+		Array.prototype.forEach.call( document.querySelectorAll( 'td.nashenski-price-list' ), function ( cell ) {
+			var box = document.getElementById( 'nashenski_settings_prices_use_public_' + cell.getAttribute( 'data-courier' ) );
+			if ( box ) {
+				cell.closest( 'tr' ).style.display = box.checked ? '' : 'none';
+			}
+		} );
+	}
+	document.addEventListener( 'change', function ( event ) {
+		if ( 0 === ( event.target.id || '' ).indexOf( 'nashenski_settings_prices_use_public_' ) ) {
+			syncPublicPrices();
+		}
+	} );
+	syncPublicPrices();
+
 	/* Public price lists ---------------------------------------------------- */
 
 	var KINDS = [ 'office', 'locker', 'address' ];

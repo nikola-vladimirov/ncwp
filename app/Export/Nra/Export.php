@@ -1,6 +1,8 @@
 <?php
 namespace Nashenski\Export\Nra;
 
+use Nashenski\Admin\Order\Documents;
+
 defined( 'ABSPATH' ) || exit;
 
 class Export {
@@ -34,7 +36,7 @@ class Export {
 				is_a( $order, 'WC_Order_Refund' )
 			) {
 				return;
-			} else {
+			} elseif ( ! Documents::own_invoice( $order ) ) {
 				$this->completed_orders_ids[] = $order->get_id();
 			}
 		} );
@@ -48,6 +50,11 @@ class Export {
 					$parent_order = wc_get_order( $order->get_parent_id() );
 				} else {
 					$parent_order = $order;
+				}
+
+				// Invoiced in the shop's own program: left out of the NRA audit file (setting Invoice numbering).
+				if ( ! $parent_order || Documents::own_invoice( $parent_order ) ) {
+					return;
 				}
 
 				$this->refunded_orders_ids[] = $parent_order->get_id();

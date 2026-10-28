@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Setting_Help {
 	public function __construct() {
-		foreach ( array( 'econt', 'speedy', 'boxnow', 'pigeon', 'cvc' ) as $courier ) {
+		foreach ( array( 'econt', 'speedy', 'boxnow', 'pigeon' ) as $courier ) {
 			add_filter( 'woocommerce_shipping_instance_form_fields_nashenski_' . $courier, array( __CLASS__, 'apply_to_method' ) );
 		}
 	}
@@ -33,15 +33,14 @@ class Setting_Help {
 			'nashenski_settings_speedy_password' => array( __( 'The password that goes with the Speedy username.', 'nashenski-commerce' ), __( 'Stored on your site and sent only to Speedy.', 'nashenski-commerce' ) ),
 			'/^nashenski_settings_boxnow_client_(id|secret)$/' => array( __( 'From the email BOX NOW sends with your contract.', 'nashenski-commerce' ), __( 'Demo and live have different keys. Choose the environment that matches them.', 'nashenski-commerce' ) ),
 			'/^nashenski_settings_pigeon_api_(key|secret)$/' => array( __( 'Given by Pigeon Express for your account.', 'nashenski-commerce' ), __( 'Without them customers still choose Pigeon offices and lockers from Pigeon\'s public list, but waybills need them.', 'nashenski-commerce' ) ),
-			'nashenski_settings_cvc_token' => array( __( 'Given by CVC for your account.', 'nashenski-commerce' ), __( 'Without it, CVC offices are not offered at checkout and waybills cannot be made.', 'nashenski-commerce' ) ),
 			'/^nashenski_settings_prices_use_public_/' => array( '', __( 'When the courier cannot price an order (no login, or no answer), the price comes from the list below. Off: the option shows no price then.', 'nashenski-commerce' ) ),
-			'/^nashenski_settings_prices_(econt|speedy|pigeon|cvc)$/' => array( __( 'The courier\'s published prices by weight for each delivery type.', 'nashenski-commerce' ), __( 'Edit them, or press "Check the courier website" to compare with the latest published prices.', 'nashenski-commerce' ) ),
+			'/^nashenski_settings_prices_(econt|speedy|pigeon)$/' => array( __( 'The courier\'s published prices by weight for each delivery type.', 'nashenski-commerce' ), __( 'Edit them, or press "Check the courier website" to compare with the latest published prices.', 'nashenski-commerce' ) ),
 
 			// Courier settings that appear once the login works.
 			'/_profile_key$/' => array( '', __( 'An account can have several sender profiles. Waybills are made with the one you choose.', 'nashenski-commerce' ) ),
-			'/^nashenski_settings_(econt|speedy|boxnow_send_from|cvc_sender)_name$/' => array( __( 'Sender contact on the waybill.', 'nashenski-commerce' ), __( 'The courier contacts this person about pickups and problems with a parcel.', 'nashenski-commerce' ) ),
-			'/^nashenski_settings_(econt|speedy|boxnow_send_from|cvc_sender)_phone$/' => array( __( 'Sender phone on the waybill.', 'nashenski-commerce' ), __( 'The courier calls this number about pickups and problems with a parcel.', 'nashenski-commerce' ) ),
-			'/^nashenski_settings_(boxnow_send_from|cvc_sender)_email$/' => array( __( 'Sender email on the waybill.', 'nashenski-commerce' ), __( 'The courier writes to this address about your parcels.', 'nashenski-commerce' ) ),
+			'/^nashenski_settings_(econt|speedy|boxnow_send_from)_name$/' => array( __( 'Sender contact on the waybill.', 'nashenski-commerce' ), __( 'The courier contacts this person about pickups and problems with a parcel.', 'nashenski-commerce' ) ),
+			'/^nashenski_settings_(econt|speedy|boxnow_send_from)_phone$/' => array( __( 'Sender phone on the waybill.', 'nashenski-commerce' ), __( 'The courier calls this number about pickups and problems with a parcel.', 'nashenski-commerce' ) ),
+			'/^nashenski_settings_boxnow_send_from_email$/' => array( __( 'Sender email on the waybill.', 'nashenski-commerce' ), __( 'The courier writes to this address about your parcels.', 'nashenski-commerce' ) ),
 			'/_force_variations_in_desc$/' => array( '', __( 'Use it only when the waybill contents miss sizes or colours of the products.', 'nashenski-commerce' ) ),
 			'/_label_after_checkout$/' => array( '', __( 'The waybill is made as soon as the order is placed and its number goes into the order emails. Leave it off if you check orders before shipping.', 'nashenski-commerce' ) ),
 			'/_declared_value$/' => array( '', __( 'Insures the parcel for the order value. The courier charges a little extra for it.', 'nashenski-commerce' ) ),
@@ -50,12 +49,10 @@ class Setting_Help {
 			'nashenski_settings_econt_sender_payment_type' => array( '', __( 'How you pay Econt for the shipments you send.', 'nashenski-commerce' ) ),
 			'nashenski_settings_econt_invoice_or_packing_list' => array( '', __( 'Econt shows the customer either your invoice number or a packing list of the products.', 'nashenski-commerce' ) ),
 			'/_send_from$/' => array( '', __( 'Address: the courier comes to you. Office: you take the parcels to a courier office, which is often cheaper. Save to see the next fields.', 'nashenski-commerce' ) ),
-			'/_send_from_(address|office|city|office_city)$|^nashenski_settings_cvc_sender_(address|office|city)$/' => array( '', __( 'Where your parcels start. Prices are calculated from here.', 'nashenski-commerce' ) ),
+			'/_send_from_(address|office|city|office_city)$/' => array( '', __( 'Where your parcels start. Prices are calculated from here.', 'nashenski-commerce' ) ),
 			'nashenski_settings_speedy_ppp' => array( '', __( 'Speedy pays the collected money back by postal money transfer. Needs that agreement with Speedy and cannot be combined with ordinary cash on delivery.', 'nashenski-commerce' ) ),
 			'nashenski_settings_speedy_kb' => array( '', __( 'Speedy issues the cash receipt for the collected amount on your behalf. Needs that agreement with Speedy.', 'nashenski-commerce' ) ),
 			'nashenski_settings_speedy_administrative_fee' => array( '', __( 'Adds the administrative fee from your Speedy contract to the price, when the customer pays for delivery.', 'nashenski-commerce' ) ),
-			'nashenski_settings_cvc_ppp' => array( '', __( 'CVC pays the collected money back by postal money transfer. Needs that agreement with CVC.', 'nashenski-commerce' ) ),
-			'nashenski_settings_cvc_contract_pay' => array( '', __( 'Turn on if your CVC contract says you pay for the shipments.', 'nashenski-commerce' ) ),
 			'nashenski_settings_boxnow_send_from_location' => array( '', __( 'The warehouse or locker BOX NOW collects your parcels from.', 'nashenski-commerce' ) ),
 			'nashenski_settings_boxnow_send_from_allow_return' => array( '', __( 'The customer can return the parcel at a BOX NOW locker.', 'nashenski-commerce' ) ),
 			'nashenski_settings_boxnow_price_price_type' => array( '', __( 'BOX NOW has no price calculation in its API, so you set the prices here. Save after choosing to see the right table.', 'nashenski-commerce' ) ),
@@ -66,16 +63,15 @@ class Setting_Help {
 			'/^nashenski_settings_pigeon_services_/' => array( '', __( 'An extra Pigeon Express service. It may cost extra and must be in your contract.', 'nashenski-commerce' ) ),
 
 			// Checkout.
-			'nashenski_settings_checkout_countries' => array( '', __( 'Bulgaria only also hides the country field. "WooCommerce settings" keeps the countries of WooCommerce > Settings > General.', 'nashenski-commerce' ) ),
+			'nashenski_settings_checkout_countries' => array( '', __( '"As set in WooCommerce" keeps the countries of WooCommerce > Settings > General.', 'nashenski-commerce' ) ),
 			'nashenski_settings_checkout_courier_logos' => array( '', __( 'Customers recognise the courier at a glance.', 'nashenski-commerce' ) ),
-			'nashenski_settings_checkout_transliteration' => array( '', __( 'Couriers search addresses in Cyrillic. Addresses typed in Latin letters are converted, so the parcel still finds the customer.', 'nashenski-commerce' ) ),
+			'nashenski_settings_checkout_transliteration' => array( '', __( 'Couriers search addresses in Cyrillic, so Latin addresses are converted. Each order also has a "Transliterate addresses" action.', 'nashenski-commerce' ) ),
 			'nashenski_settings_checkout_transliterate_names' => array( '', __( 'Names on the waybill then match the customer\'s ID card.', 'nashenski-commerce' ) ),
-			'nashenski_settings_checkout_alternative_shipping_table' => array( '', __( 'For themes with a narrow order summary: the shipping options take the full width.', 'nashenski-commerce' ) ),
-			'nashenski_settings_company_fields' => array( '', __( 'The company details go on the invoice and into the NRA audit file.', 'nashenski-commerce' ) ),
+			'nashenski_settings_company_fields' => array( '', __( 'The details go on the invoice and into the NRA audit file. In a builder checkout of single field elements, the fields come after the billing fields unless you place them.', 'nashenski-commerce' ) ),
+			'nashenski_settings_company_invoice_numbering' => array( '', __( 'Changing it later does not move invoices already made in or out of the NRA audit file. Ask your accountant which one fits your shop.', 'nashenski-commerce' ) ),
 			'nashenski_settings_fields_classic_order_comments' => array( '', __( 'Hidden: customers cannot leave a note with the order.', 'nashenski-commerce' ) ),
-			'nashenski_settings_fields_layout' => array( __( 'Order, visibility and width of every checkout field, and your own fields.', 'nashenski-commerce' ), __( 'The notes above the table say which checkouts follow which part.', 'nashenski-commerce' ) ),
 			'nashenski_settings_appearance_layout' => array( __( 'Cards with a border, or the plain list of your theme.', 'nashenski-commerce' ), __( 'Cards make the chosen courier stand out.', 'nashenski-commerce' ) ),
-			'nashenski_settings_appearance_show_type' => array( '', __( 'Shows "To an office", "To a parcel locker" or "To an address" under each option.', 'nashenski-commerce' ) ),
+			'nashenski_settings_appearance_show_type' => array( '', __( 'Shows "To an office", "To a parcel locker" or "To your address" under each option.', 'nashenski-commerce' ) ),
 			'/^nashenski_settings_appearance_(accent|selected_bg|border|muted|field_border|field_bg)$/' => array( __( 'Empty: the colour of your design tokens or theme.', 'nashenski-commerce' ), __( 'Any CSS colour, for example #1a7f37 or var(--primary).', 'nashenski-commerce' ) ),
 			'/^nashenski_settings_appearance_(radius|field_radius|gap|logo_height)$/' => array( __( 'Empty: the size of your design tokens or theme.', 'nashenski-commerce' ), __( 'Any CSS size, for example 8px, 0.5rem or var(--space-s).', 'nashenski-commerce' ) ),
 			'woocommerce_feature_order_withdrawal_enabled' => array( '', __( 'Required by EU law from 19 June 2026 for shops with online checkout.', 'nashenski-commerce' ) ),

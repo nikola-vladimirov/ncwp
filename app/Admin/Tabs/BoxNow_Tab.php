@@ -173,6 +173,7 @@ class BoxNow_Tab extends Base_Tab {
 			),
 			'boxnow_send_from' => array(
 				'title' => __( 'Where you hand over parcels', 'nashenski-commerce' ),
+				'desc' => __( 'The sender details on your labels and the place you send parcels from.', 'nashenski-commerce' ),
 			),
 			'boxnow_price' => array(
 				'title' => __( 'What customers pay', 'nashenski-commerce' ),

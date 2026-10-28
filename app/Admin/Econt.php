@@ -233,7 +233,7 @@ class Econt {
 		}
 
 		$states = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
-		$state = $states[ $state ];
+		$state = $states[ $state ] ?? null; // An order with no region has no key here.
 		$cities_data = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $city, $state, $country );
 
 		if ( $cities_data['city_key'] !== false ) {
@@ -258,7 +258,7 @@ class Econt {
 		}
 
 		$states = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
-		$state = $states[ $state ];
+		$state = $states[ $state ] ?? null; // An order with no region has no key here.
 
 		$cities_data = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $city, $state, $country );
 

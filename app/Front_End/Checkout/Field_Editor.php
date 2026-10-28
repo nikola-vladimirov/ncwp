@@ -545,7 +545,7 @@ class Field_Editor {
 				'type' => 'title',
 				'id' => 'nashenski_field_layout',
 				'title' => __( 'Checkout fields', 'nashenski-commerce' ),
-				'desc' => __( 'Order, width and visibility of the billing fields, and your own fields. Show, require and hide apply to the billing and the shipping address in every checkout. The order and the width also apply to the address in the block checkout, where the email always comes first and your own fields appear under it. The place of the email applies to the classic checkout and page builder checkouts that show WooCommerce\'s billing fields; builder checkouts made of single field elements follow the order you placed them in. When the town or the region is hidden, the courier fields ask for the town (with Econt switched on, from Econt\'s public list of towns).', 'nashenski-commerce' ),
+				'desc' => __( 'Show, require or hide each field, set its width and order, and add your own fields.', 'nashenski-commerce' ),
 			),
 			array(
 				'type' => 'nashenski_field_layout',
@@ -645,6 +645,10 @@ class Field_Editor {
 				<template class="nashenski-layout__template"><?php echo self::row_html( $name, '__uid__', array( 'key' => '', 'type' => 'text', 'rule' => 'optional', 'width' => 'full' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in row_html(). ?></template>
 				<p><button type="button" class="button nashenski-layout__add"><?php esc_html_e( 'Add your own field', 'nashenski-commerce' ); ?></button></p>
 				<p class="description"><?php esc_html_e( 'Use the arrows to change the order. Two half-width fields next to each other share a line. With company invoice fields on, the company name belongs to them.', 'nashenski-commerce' ); ?></p>
+				<details class="nashenski-more">
+					<summary><?php esc_html_e( 'Which checkouts follow what', 'nashenski-commerce' ); ?></summary>
+					<p class="description"><?php esc_html_e( 'Show, required and hidden apply to the billing and shipping address in every checkout. Order and width also apply to the address in the block checkout, where the email always comes first and your own fields come after it. The place of the email applies to the classic checkout and to builder checkouts that show WooCommerce\'s billing fields. Builder checkouts made of single field elements keep the order you placed them in. When the town or region is hidden, the courier fields ask for the town (from Econt\'s list of towns when Econt is on).', 'nashenski-commerce' ); ?></p>
+				</details>
 			</td>
 		</tr>
 		<?php

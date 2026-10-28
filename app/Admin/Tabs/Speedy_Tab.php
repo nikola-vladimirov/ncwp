@@ -102,6 +102,7 @@ class Speedy_Tab extends Base_Tab {
 			),
 			'speedy_send_from' => array(
 				'title' => __( 'Where you send from', 'nashenski-commerce' ),
+				'desc' => __( 'The sender details on your labels and the place you send parcels from.', 'nashenski-commerce' ),
 			),
 		) );
 

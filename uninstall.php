@@ -9,7 +9,6 @@ defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 foreach ( array(
 	'nashenski/boxnow/clear_cache_folder',
-	'nashenski/cvc/clear_cache_folder',
 	'nashenski/econt/clear_cache_folder',
 	'nashenski/pigeon/clear_cache_folder',
 	'nashenski/speedy/clear_cache_folder',

@@ -91,12 +91,14 @@ class Help_Page {
 					/* translators: %s: link to the Couriers section */
 					sprintf( esc_html__( 'Enter the login in %s. Demo logins only reach the courier\'s test system, where nothing is really shipped. If the courier refuses a login, the courier page says so.', 'nashenski-commerce' ), $couriers ),
 					esc_html__( 'On the courier page, fill in "Where you send from" and the sender details. They stay greyed out until the courier accepts the login.', 'nashenski-commerce' ),
-					esc_html__( 'Without a login, customers can still choose: Econt offices and lockers from Econt\'s list, Speedy offices on Speedy\'s map, Pigeon Express offices and lockers and BOX NOW lockers from the lists they publish. CVC offices need a login. Waybills always need one.', 'nashenski-commerce' ),
+					esc_html__( 'Without a login, customers can still choose: Econt offices and lockers from Econt\'s list, Speedy offices on Speedy\'s map, Pigeon Express offices and lockers and BOX NOW lockers from the lists they publish. Waybills always need one.', 'nashenski-commerce' ),
 					esc_html__( 'Cities, offices and lockers are kept on your site and refreshed once a week. "Reload offices and cities" on a courier page refreshes them at once.', 'nashenski-commerce' ),
+					esc_html__( 'On each courier page, the account and "Where you send from" sit side by side. Less used options are under "More options", closed by default.', 'nashenski-commerce' ),
 				),
 				__( 'Shipping prices', 'nashenski-commerce' ) => array(
 					esc_html__( 'With a login, the courier calculates each price with your contract. Without one, or when the courier does not answer, the courier\'s public price list is used. You can edit it on the courier page and compare it with the courier website.', 'nashenski-commerce' ),
 					esc_html__( 'To compare, open the courier page and press "Check the courier website" in "Public prices". You see what changed, and new prices are filled in only when you choose. It also checks once a week by itself.', 'nashenski-commerce' ),
+					esc_html__( '"Public prices" shows only when "Use public prices" is ticked on the courier page.', 'nashenski-commerce' ),
 					esc_html__( 'Each shipping method in a zone can have a free shipping amount and a fixed price.', 'nashenski-commerce' ),
 					esc_html__( 'When a courier publishes new prices, a notice says so. Save that courier\'s prices or press Dismiss.', 'nashenski-commerce' ),
 				),
@@ -106,7 +108,8 @@ class Help_Page {
 					/* translators: %s: link to the Checkout section */
 					sprintf( esc_html__( 'In %s > Checkout fields you set the order, Required, Optional or Hidden and the width of every field, and add your own fields.', 'nashenski-commerce' ), $checkout ),
 					esc_html__( '"Company invoice fields" adds "I want an invoice for a company" with company name, EIK, VAT number, MOL, town and address.', 'nashenski-commerce' ),
-					esc_html__( '"Shipping options look" sets cards or the plain look of your theme, colours, borders, corners and spacing. Empty settings follow your design tokens or theme.', 'nashenski-commerce' ),
+					esc_html__( '"Invoice numbering": "Website invoices" go into the NRA audit file. "Own invoicing program" keeps the invoice out of it; you type that program\'s number on the order.', 'nashenski-commerce' ),
+					esc_html__( '"Shipping options look" sets cards or the plain look of your theme. "Colours and sizes" holds the colours, borders, corners and spacing. Empty settings follow your design tokens or theme.', 'nashenski-commerce' ),
 				),
 				__( 'Waybills, couriers and order statuses', 'nashenski-commerce' ) => array(
 					esc_html__( 'Open an order to create, update, print or cancel its waybill in the courier box.', 'nashenski-commerce' ),

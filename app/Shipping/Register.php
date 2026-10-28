@@ -13,7 +13,6 @@ class Register {
 		'speedy' => array( 'Speedy', array( 'Address', 'Office' ), 'speedy', 200 ),
 		'boxnow' => array( 'BoxNow', array( 'Apm' ), 'boxnow_send_from', 200 ),
 		'pigeon' => array( 'Pigeon', array( 'Address', 'Office', 'Locker', 'APSBoxes', 'PackageBoxes' ), 'pigeon', 200 ),
-		'cvc' => array( 'CVC', array( 'Address', 'Office' ), 'cvc_sender', 20 ),
 	);
 
 	public function __construct( $container ) {

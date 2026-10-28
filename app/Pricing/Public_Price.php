@@ -29,7 +29,7 @@ class Public_Price {
 	/**
 	 * Price with VAT for one parcel, or null when the list has no price for it.
 	 *
-	 * @param string $courier     econt, speedy, pigeon or cvc.
+	 * @param string $courier     econt, speedy or pigeon.
 	 * @param string $kind        office, locker or address.
 	 * @param float  $weight      Weight in kg.
 	 * @param float  $cod_amount  Amount collected on delivery (0 when not cash on delivery).
@@ -48,7 +48,7 @@ class Public_Price {
 			if ( $weight <= $band['to'] ) {
 				$price = $band[ $kind ] ?? null;
 
-				// A column left empty falls back to the address price (for example CVC offices).
+				// A column left empty falls back to the address price.
 				if ( null === $price ) {
 					$price = $band['address'] ?? null;
 				}
@@ -113,7 +113,7 @@ class Public_Price {
 	/**
 	 * Use the public price when the courier gave none.
 	 *
-	 * @param string $courier      econt, speedy, pigeon or cvc.
+	 * @param string $courier      econt, speedy or pigeon.
 	 * @param array  $request_data What the method got from the courier: array( 'price' => ... ) or array( 'errors' => ... ).
 	 * @param object $method       The shipping method (delivery_type, package, cookie_data).
 	 * @return array The same shape, with 'price' and 'public_price' => true when the list was used.

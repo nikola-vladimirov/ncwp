@@ -4,7 +4,6 @@ namespace Nashenski\Admin\Order;
 use Nashenski\Admin\Speedy;
 use Nashenski\Admin\Econt;
 use Nashenski\Admin\Pigeon;
-use Nashenski\Admin\CVC;
 use Nashenski\Admin\BoxNow;
 use Nashenski\Admin\Admin_Menus;
 
@@ -27,10 +26,6 @@ class Labels {
 				break;
 			case 'nashenski_econt':
 				$result = Econt::generate_label_after_order_generated( $order_id );
-
-				break;
-			case 'nashenski_cvc':
-				$result = CVC::generate_label_after_order_generated( $order_id );
 
 				break;
 			case 'nashenski_boxnow':

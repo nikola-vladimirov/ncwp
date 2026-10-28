@@ -155,7 +155,7 @@ class Appearance {
 				'type' => 'title',
 				'id' => 'nashenski_appearance',
 				'title' => __( 'Shipping options look', 'nashenski-commerce' ),
-				'desc' => $source . ' ' . __( 'Any CSS value works: a colour (#1d4ed8), a size (8px) or a token (var(--primary)).', 'nashenski-commerce' ),
+				'desc' => __( 'How the courier options look at checkout.', 'nashenski-commerce' ) . ' ' . $source,
 			),
 			array(
 				'type' => 'select',

@@ -1,5 +1,23 @@
 # Nashenski Commerce changelog
 
+## 0.17.0 (2026-10-28)
+
+### Couriers
+- CVC is removed. Its settings, labels, shipping method and cron jobs are gone. Stored CVC settings stay in the database until you delete them.
+- Each courier page is shorter. Less used options are under "More options", closed by default.
+- The courier account and "Where you send from" sit side by side on wide screens.
+- "Public prices" shows only when "Use public prices" is ticked.
+
+### Checkout
+- The Checkout settings are regrouped into six sections, in the order a shop owner reads them.
+- The "Alternative shipping options layout" option is removed. It did not work in the block checkout.
+
+### Invoices and the NRA audit file
+- New "Invoice numbering" for company invoices. "Own invoicing program" lets you type an invoice number from your own program. Those orders are left out of the NRA audit file and the monthly audit email.
+
+### Fixes
+- An Econt order with no region no longer shows a PHP warning on the order screen.
+
 ## 0.16.9 (2026-10-21)
 
 ### EU withdrawal function

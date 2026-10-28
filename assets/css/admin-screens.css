@@ -253,7 +253,6 @@ p.form-field.nashenski-impossible-price-anchor:after {
 
 /* Courier label boxes (assets/js/label-<courier>.js). */
 #nashenski_boxnow #order_data,
-#nashenski_cvc #order_data,
 #nashenski_econt #order_data,
 #nashenski_pigeon #order_data,
 #nashenski_speedy #order_data {

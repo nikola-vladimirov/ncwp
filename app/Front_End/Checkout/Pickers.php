@@ -24,7 +24,6 @@ class Pickers {
 		'speedy' => array( 'user', 'password' ),
 		'boxnow' => array( 'client_id', 'client_secret' ),
 		'pigeon' => array( 'api_key', 'api_secret' ),
-		'cvc' => array( 'token' ),
 	);
 
 	public function __construct() {

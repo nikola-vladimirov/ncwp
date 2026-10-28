@@ -445,7 +445,7 @@ class Withdrawal {
 	 * Checkout > EU withdrawal function.
 	 */
 	public static function settings() {
-		$desc = __( 'Customers can withdraw from an order online, as Directive 2011/83/EU (Article 11a) asks from 19 June 2026: WooCommerce\'s withdrawal form with a "confirm withdrawal" step, a dated acknowledgement email to the customer and an email to you. Its look follows your site; the emails follow WooCommerce > Settings > Emails. Mention the withdrawal function in your terms.', 'nashenski-commerce' );
+		$desc = __( 'Lets customers withdraw from an order online, as EU law asks from 19 June 2026 (Directive 2011/83/EU, Article 11a). The customer gets a dated email and so do you. Mention it in your terms.', 'nashenski-commerce' );
 
 		if ( ! self::available() ) {
 			return array(

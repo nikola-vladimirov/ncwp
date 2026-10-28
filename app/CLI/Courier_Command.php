@@ -16,7 +16,7 @@ class Courier_Command {
 	 * ## OPTIONS
 	 *
 	 * <courier>
-	 * : econt, speedy, boxnow, pigeon or cvc.
+	 * : econt, speedy, boxnow or pigeon.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -41,7 +41,7 @@ class Courier_Command {
 	 * ## OPTIONS
 	 *
 	 * <courier>
-	 * : econt, speedy, boxnow, pigeon or cvc.
+	 * : econt, speedy, boxnow or pigeon.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -75,7 +75,6 @@ class Courier_Command {
 			'speedy' => 'Speedy_Tab',
 			'boxnow' => 'BoxNow_Tab',
 			'pigeon' => 'Pigeon_Tab',
-			'cvc'    => 'CVC_Tab',
 		);
 
 		return $map[ $courier ];

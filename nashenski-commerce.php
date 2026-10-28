@@ -2,11 +2,11 @@
 /*
 Plugin Name:  Nashenski Commerce
 Plugin URI:   https://pristadigital.com/
-Description:  WooCommerce for Bulgaria: Econt, Speedy, BOX NOW, CVC and Pigeon shipping, invoices and Ordinance N-18 documents.
+Description:  WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shipping, invoices and Ordinance N-18 documents.
 Requires Plugins: woocommerce
 Author:       PristaDigital
 Author URI:   https://pristadigital.com/
-Version:      0.16.9
+Version:      0.17.0
 Requires at least: 6.5
 Requires PHP: 7.4
 WC requires at least: 9.4.0
@@ -31,7 +31,6 @@ define( 'NASHENSKI_WP_MINIMUM_VERSION', '6.5' );
 register_deactivation_hook( __FILE__, function () {
 	foreach ( array(
 		'nashenski/boxnow/clear_cache_folder',
-		'nashenski/cvc/clear_cache_folder',
 		'nashenski/econt/clear_cache_folder',
 		'nashenski/pigeon/clear_cache_folder',
 		'nashenski/speedy/clear_cache_folder',

@@ -1,7 +1,7 @@
 # Nashenski Commerce
 
 Everything a WooCommerce store needs to sell in Bulgaria, in one free plugin: Econt, Speedy, BOX NOW,
-CVC and Pigeon Express shipping, invoices and Ordinance N-18 documents, the NRA audit file, quick
+Pigeon Express shipping, invoices and Ordinance N-18 documents, the NRA audit file, quick
 orders, abandoned carts, the EU withdrawal function and customer checks. English and Bulgarian.
 
 Everything runs on the store's own site. Data goes only to the services the store owner turns on
@@ -64,7 +64,7 @@ plugin's own scheduled jobs (documents, abandoned cart reminders, shipment statu
 
 ## Features and how to use them
 
-### Shipping: Econt, Speedy, BOX NOW, CVC, Pigeon Express
+### Shipping: Econt, Speedy, BOX NOW, Pigeon Express
 
 - Delivery to an office, a locker or an address, with search pickers at checkout and the courier's
   map for Econt and Speedy. Works with the classic checkout, the block checkout and page builder

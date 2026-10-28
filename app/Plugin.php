@@ -4,12 +4,12 @@ namespace Nashenski;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin {
-	const VERSION = '0.16.9';
+	const VERSION = '0.17.0';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
 	 */
-	const COURIERS = array( 'econt', 'speedy', 'boxnow', 'pigeon', 'cvc' );
+	const COURIERS = array( 'econt', 'speedy', 'boxnow', 'pigeon' );
 
 	protected static $_instance;
 
@@ -70,8 +70,6 @@ class Plugin {
 				nashenski_set_option( 'invoice', 'nra_n18', 'no' );
 			}
 
-			nashenski_set_option( 'checkout', 'alternative_shipping_table', nashenski_get_option( 'nap', 'alternative_shipping_table' ) );
-
 			add_action( 'admin_notices', function() {
 				/* translators: %s: link to the settings */
 				$message = sprintf( __( 'Nashenski Commerce - Please review the options and save them again from "%s".', 'nashenski-commerce' ), sprintf( '<a href="%s">%s</a>', \Nashenski\Admin\Settings::url(), __( 'Settings', 'nashenski-commerce' ) ) );
@@ -91,7 +89,6 @@ class Plugin {
 		if ( !nashenski_get_option( 'shippings', 'nashenski_econt_is_courier' ) ) {
 			nashenski_set_option( 'shippings', 'nashenski_econt_is_courier', 'yes' );
 			nashenski_set_option( 'shippings', 'nashenski_speedy_is_courier', 'yes' );
-			nashenski_set_option( 'shippings', 'nashenski_cvc_is_courier', 'yes' );
 			nashenski_set_option( 'shippings', 'nashenski_boxnow_is_courier', 'yes' );
 		}
 

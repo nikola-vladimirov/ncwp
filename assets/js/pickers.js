@@ -63,14 +63,6 @@
 				return 'locker' === type ? { selectedLocker: item ? item.id : null } : { selectedOffice: item ? item.id : null };
 			},
 		},
-		cvc: {
-			cookie: 'nashenski--cvc-address',
-			lists: { office: [ 'nashenski_cvc_load_offices', 'offices' ] },
-			streets: [ 'nashenski_cvc_load_streets', 'list' ],
-			pick: function ( item ) {
-				return { selectedOffice: item ? item.id : null };
-			},
-		},
 		boxnow: {
 			cookie: 'nashenski--boxnow-apm',
 			lists: { apm: [ 'nashenski_boxnow_load_apms', 'apms' ] },
@@ -503,10 +495,6 @@
 				? Object.assign( { payment: data.payment || '' }, courier.pick( selected, props.type ) )
 				: Object.assign( baseCookie( data, props.type ), courier.pick( selected, props.type ) );
 
-			if ( 'cvc' === props.courier ) {
-				value.state = '';
-				value.city = '';
-			}
 
 			value.selectedLabel = describe( selected );
 			props.onChoice( describe( selected ) );

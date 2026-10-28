@@ -16,14 +16,13 @@ defined( 'ABSPATH' ) || exit;
  * The defaults are the couriers' published prices for shops that hand parcels in at an office.
  */
 class Price_Lists {
-	const COURIERS = array( 'econt', 'speedy', 'pigeon', 'cvc' );
+	const COURIERS = array( 'econt', 'speedy', 'pigeon' );
 
 	public static function sources() {
 		return array(
 			'econt' => 'https://admin-ee.econt.com/doc_templates/tariffs/courier-bg-bg.pdf',
 			'speedy' => 'https://services.speedy.bg/pricelist/',
 			'pigeon' => 'https://pigeonexpress.com/prices-and-taxes/',
-			'cvc' => 'https://cvc.bg/tarifa/',
 		);
 	}
 
@@ -94,26 +93,6 @@ class Price_Lists {
 					'per_kg' => array( 'office' => 0.30, 'locker' => 0.30, 'address' => 0.30 ),
 				),
 				'cod' => array( 'percent' => 1.5, 'min' => 0.40 ),
-			),
-			// CVC tariff valid from 01.09.2025: address to address, without VAT and without the
-			// "toll, fuel and inflation" fee (enter it as surcharge); COD 1.2%, at least 0.61.
-			'cvc' => array(
-				'valid_from' => '2025-09-01',
-				'vat_included' => false,
-				'surcharge' => 0,
-				'bands' => array(
-					array( 'to' => 1, 'office' => 4.14, 'locker' => 4.14, 'address' => 4.14 ),
-					array( 'to' => 3, 'office' => 4.27, 'locker' => 4.27, 'address' => 4.27 ),
-					array( 'to' => 5, 'office' => 6.67, 'locker' => 6.67, 'address' => 6.67 ),
-					array( 'to' => 10, 'office' => 8.90, 'locker' => 8.90, 'address' => 8.90 ),
-					array( 'to' => 15, 'office' => 13.81, 'locker' => 13.81, 'address' => 13.81 ),
-					array( 'to' => 20, 'office' => 17.20, 'locker' => 17.20, 'address' => 17.20 ),
-				),
-				'over' => array(
-					'base' => array( 'office' => 17.20, 'locker' => 17.20, 'address' => 17.20 ),
-					'per_kg' => array( 'office' => 0.37, 'locker' => 0.37, 'address' => 0.37 ),
-				),
-				'cod' => array( 'percent' => 1.2, 'min' => 0.61 ),
 			),
 		);
 

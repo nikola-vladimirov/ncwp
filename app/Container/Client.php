@@ -28,15 +28,6 @@ class Client implements ServiceProviderInterface {
 	const BOXNOW_ORIGINS      = 'client.boxnow.origins';
 	const BOXNOW_DESTINATIONS = 'client.boxnow.destinations';
 
-	const CVC              = 'client.cvc';
-	const CVC_PROFILE      = 'client.cvc.profile';
-	const CVC_CITIES       = 'client.cvc.cities';
-	const CVC_COUNTRIES    = 'client.cvc.countries';
-	const CVC_STREETS      = 'client.cvc.streets';
-	const CVC_QUARTERS     = 'client.cvc.quarters';
-	const CVC_OFFICES      = 'client.cvc.offices';
-	const CVC_HUBS         = 'client.cvc.hubs';
-
 	const CONNECTIX        = 'client.connectix';
 
 	const NEPOSTOP         = 'client.nepostop';
@@ -68,14 +59,6 @@ class Client implements ServiceProviderInterface {
 		self::BOXNOW => Api\BoxNow::class,
 		self::BOXNOW_ORIGINS => Api\BoxNow\Origins::class,
 		self::BOXNOW_DESTINATIONS => Api\BoxNow\Destinations::class,
-		self::CVC => Api\CVC::class,
-		self::CVC_PROFILE => Api\CVC\Profile::class,
-		self::CVC_CITIES => Api\CVC\Cities::class,
-		self::CVC_COUNTRIES => Api\CVC\Countries::class,
-		self::CVC_STREETS => Api\CVC\Streets::class,
-		self::CVC_QUARTERS => Api\CVC\Quarters::class,
-		self::CVC_OFFICES => Api\CVC\Offices::class,
-		self::CVC_HUBS => Api\CVC\Hubs::class,
 		self::CONNECTIX => Api\Connectix::class,
 		self::NEPOSTOP => Api\NepoStop::class,
 		self::PIGEON => Api\Pigeon::class,

@@ -18,6 +18,22 @@ class Settings_Page extends \WC_Settings_Page {
 	/** @var Tabs\Base_Tab[]|null Old tab objects keyed by their slug. */
 	private $tabs = null;
 
+	/**
+	 * Courier options shown under "More options" (closed), by settings group. Names and values are unchanged.
+	 */
+	const MORE_OPTIONS = array(
+		'econt' => array( 'force_variations_in_desc', 'label_after_checkout', 'declared_value', 'auto_size', 'pay_options', 'sender_payment_type', 'invoice_or_packing_list' ),
+		'speedy' => array( 'ppp', 'kb', 'administrative_fee', 'force_variations_in_desc', 'label_after_checkout', 'declared_value', 'auto_size' ),
+		'boxnow_send_from' => array( 'allow_return', 'label_after_checkout' ),
+		'pigeon' => array( 'label_after_checkout', 'auto_size' ),
+		'pigeon_services' => array( 'pay_with_pos', 'declared_value', 'paper_return_receipt', 'return_receipt', 'service_return_documents', 'id_verification_and_document_signature', 'cod_card_fee' ),
+	);
+
+	/**
+	 * Sender details stored in the courier account group; shown in the "Where you send from" box (option names unchanged).
+	 */
+	const SENDER_FIELDS = array( 'name', 'phone', 'email', 'send_from' );
+
 	public function __construct() {
 		$this->id = self::TAB;
 		$this->label = __( 'Nashenski Commerce', 'nashenski-commerce' );
@@ -25,6 +41,8 @@ class Settings_Page extends \WC_Settings_Page {
 		parent::__construct();
 
 		add_action( 'woocommerce_admin_field_nashenski_box', array( __CLASS__, 'output_box' ) );
+		add_action( 'woocommerce_admin_field_nashenski_cols', array( __CLASS__, 'output_cols' ) );
+		add_action( 'woocommerce_admin_field_nashenski_more', array( __CLASS__, 'output_more' ) );
 		add_action( 'woocommerce_admin_field_nashenski_rows', array( __CLASS__, 'output_rows_field' ) );
 		add_action( 'woocommerce_admin_field_nashenski_methods', array( __CLASS__, 'output_methods_field' ) );
 		add_filter( 'woocommerce_admin_settings_sanitize_option', array( __CLASS__, 'sanitize_rows_field' ), 10, 3 );
@@ -171,6 +189,11 @@ class Settings_Page extends \WC_Settings_Page {
 		foreach ( $section['parts'] as $part ) {
 			$tab = $this->tab( $part[0] );
 
+			// Checkout reads top to bottom: countries, the field table, then company invoice and order notes.
+			if ( 'checkout' === $section_id && 'fields' === $part[0] ) {
+				$settings = array_merge( $settings, \Nashenski\Front_End\Checkout\Field_Editor::settings() );
+			}
+
 			if ( ! $tab || ! method_exists( $tab, 'load_fields' ) ) {
 				continue;
 			}
@@ -181,9 +204,41 @@ class Settings_Page extends \WC_Settings_Page {
 			$locked = method_exists( $tab, 'connected' ) && ! $tab->connected();
 			$login = array_merge( array( 'env' ), \Nashenski\Front_End\Checkout\Pickers::LOGIN[ $part[0] ] ?? array() );
 
+			// Pairs of ( stored group, field ): a field shown in another box keeps its own option name.
+			$groups = array();
+
 			foreach ( (array) $tab->get_fields() as $group => $fields ) {
-				if ( empty( $fields ) || ( null !== $part[1] && ! in_array( $group, $part[1], true ) ) ) {
+				foreach ( (array) $fields as $field ) {
+					$groups[ $group ][] = array( $group, $field );
+				}
+			}
+
+			// Couriers: the account box holds the connection, the send-from box the sender (name, phone, email, choice).
+			$send_from = $part[0] . '_send_from';
+
+			if ( 'couriers' === $section_id && isset( $groups[ $part[0] ], $groups[ $send_from ] ) ) {
+				$sender = array();
+
+				foreach ( $groups[ $part[0] ] as $i => $pair ) {
+					if ( in_array( $pair[1]->get_name(), self::SENDER_FIELDS, true ) ) {
+						$sender[] = $pair;
+						unset( $groups[ $part[0] ][ $i ] );
+					}
+				}
+
+				$groups[ $send_from ] = array_merge( $sender, $groups[ $send_from ] );
+			}
+
+			$columns = 'couriers' === $section_id && ! empty( $groups[ $part[0] ] ) && ! empty( $groups[ $send_from ] );
+
+			foreach ( $groups as $group => $pairs ) {
+				if ( empty( $pairs ) || ( null !== $part[1] && ! in_array( $group, $part[1], true ) ) ) {
 					continue;
+				}
+
+				// Account and send-from boxes sit side by side (admin.css).
+				if ( $columns && $group === $part[0] ) {
+					$settings[] = array( 'type' => 'nashenski_cols' );
 				}
 
 				$settings[] = array(
@@ -194,19 +249,36 @@ class Settings_Page extends \WC_Settings_Page {
 					'desc' => trim( ( isset( $part[2] ) ? '' : ( $titles[ $group ]['desc'] ?? '' ) ) . ( $locked && $group !== $part[0] ? ' ' . __( 'Available once the courier login works.', 'nashenski-commerce' ) : '' ) ),
 				);
 
-				foreach ( $fields as $field ) {
+				$more = array();
+
+				foreach ( $pairs as list( $from, $field ) ) {
 					if ( isset( $part[2] ) && ! in_array( $field->get_name(), $part[2], true ) ) {
 						continue;
 					}
 
-					$setting = self::to_wc_setting( $group, $field );
-					$settings[] = $locked && ! ( $group === $part[0] && in_array( $field->get_name(), $login, true ) ) ? self::lock( $setting ) : $setting;
+					$setting = self::to_wc_setting( $from, $field );
+					$setting = $locked && ! ( $from === $part[0] && in_array( $field->get_name(), $login, true ) ) ? self::lock( $setting ) : $setting;
+
+					if ( 'couriers' === $section_id && in_array( $field->get_name(), self::MORE_OPTIONS[ $from ] ?? array(), true ) ) {
+						$more[] = $setting;
+					} else {
+						$settings[] = $setting;
+					}
+				}
+
+				// The rarer courier options sit in one closed group below the main fields.
+				if ( $more ) {
+					$settings = array_merge( $settings, array( array( 'type' => 'nashenski_more' ) ), $more, array( array( 'type' => 'nashenski_more', 'end' => true ) ) );
 				}
 
 				$settings[] = array(
 					'type' => 'sectionend',
 					'id' => 'nashenski_' . $group,
 				);
+
+				if ( $columns && $group === $send_from ) {
+					$settings[] = array( 'type' => 'nashenski_cols', 'end' => true );
+				}
 			}
 		}
 
@@ -219,7 +291,16 @@ class Settings_Page extends \WC_Settings_Page {
 		}
 
 		if ( 'checkout' === $section_id ) {
-			$settings = array_merge( $settings, \Nashenski\Front_End\Checkout\Field_Editor::settings(), \Nashenski\Front_End\Checkout\Appearance::settings(), \Nashenski\Front_End\Withdrawal::settings() );
+			$look = \Nashenski\Front_End\Checkout\Appearance::settings();
+			// The colour and size fields (one run of rows) sit in a closed group under layout and delivery type.
+			$styles = array_keys( wp_list_pluck( $look, 'type' ), 'nashenski_style', true );
+
+			if ( $styles ) {
+				array_splice( $look, end( $styles ) + 1, 0, array( array( 'type' => 'nashenski_more', 'end' => true ) ) );
+				array_splice( $look, $styles[0], 0, array( array( 'type' => 'nashenski_more', 'title' => __( 'Colours and sizes', 'nashenski-commerce' ) ) ) );
+			}
+
+			$settings = array_merge( $settings, $look, \Nashenski\Front_End\Withdrawal::settings() );
 		}
 
 		return self::boxes( Setting_Help::apply( $settings ) );
@@ -258,6 +339,16 @@ class Settings_Page extends \WC_Settings_Page {
 		}
 
 		return $boxed;
+	}
+
+	public static function output_more( $value ) {
+		echo empty( $value['end'] )
+			? '</table><details class="nashenski-more"><summary>' . esc_html( ! empty( $value['title'] ) ? $value['title'] : __( 'More options', 'nashenski-commerce' ) ) . '</summary><table class="form-table">'
+			: '</table></details><table class="form-table">';
+	}
+
+	public static function output_cols( $value ) {
+		echo empty( $value['end'] ) ? '<div class="nashenski-cols">' : '</div>';
 	}
 
 	public static function output_box( $value ) {
@@ -390,7 +481,8 @@ class Settings_Page extends \WC_Settings_Page {
 			$this->output_tab_notes( $slug, $tab );
 		}
 
-		echo '<div class="nashenski-boxes">';
+		// Checkout boxes stack in one column so the screen reads top to bottom (admin.css).
+		echo '<div class="nashenski-boxes' . ( 'checkout' === $id ? ' nashenski-boxes--stack' : '' ) . '">';
 		parent::output();
 		echo '</div>';
 	}

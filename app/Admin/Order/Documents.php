@@ -13,6 +13,22 @@ class Documents {
 		return 'yes' === nashenski_get_option( 'apis', 'enable_documents' );
 	}
 
+	/**
+	 * Checkout > Company invoice > Invoice numbering is "Own invoicing program": invoices get the
+	 * number typed in on the order screen and stay out of the NRA audit file.
+	 */
+	public static function own_numbering() {
+		return 'own' === nashenski_get_option( 'company', 'invoice_numbering' );
+	}
+
+	/**
+	 * Per order, so switching the setting later does not move invoices made before in or out of
+	 * the NRA audit file.
+	 */
+	public static function own_invoice( $order ) {
+		return 'yes' === $order->get_meta( 'nashenski_invoice_own_program' );
+	}
+
 	public static function generate_documents( $order_id ) {
 		$order = wc_get_order( $order_id );
 
@@ -46,10 +62,13 @@ class Documents {
 	public static function maybe_generate_invoice( $order ) {
 		$invoice_generation = nashenski_get_option( 'invoice', 'invoices' );
 
-		$generate_invoice = ( 
+		$generate_invoice = (
 			$order->get_meta( 'nashenski_invoice_document' ) ||
-			$invoice_generation === 'always' ||
-			( $invoice_generation === 'only_for_company' && $order->get_meta('_billing_to_company') )
+			// Own invoicing program: no automatic invoice, the shop makes it on the order screen with its own number.
+			( ! self::own_numbering() && (
+				$invoice_generation === 'always' ||
+				( $invoice_generation === 'only_for_company' && $order->get_meta('_billing_to_company') )
+			) )
 		);
 
 		return apply_filters( 'nashenski/admin/order/maybe_generate_invoice', $generate_invoice, $order );
