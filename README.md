@@ -88,6 +88,7 @@ order open the courier box, check the details and press "Generate label".
 - Invoice archive and Microinvest Delta exports, and an export builder for orders, products sold or
   documents (CSV, Excel, JSON, XML).
 - Company invoice fields at checkout and the EU VAT number check (VIES).
+- Import the checkout fields and rules of WooCommerce Checkout Field Editor (free or Pro) in one click.
 - Optional clean-up of order documents (not invoices) of older orders.
 
 How to use: turn on "Invoices and N-18" in the Overview, fill in your company details in Documents

@@ -1,5 +1,10 @@
 # Nashenski Commerce changelog
 
+## 0.18.0 (2026-10-28)
+
+### Checkout
+- "Import fields from Checkout Field Editor" on the Checkout fields table copies the fields of WooCommerce Checkout Field Editor (free or Pro): show, required and hidden for the address fields and email, widths, order and extra fields. It replaces the table. Company invoice fields are left out, and the Pro conditions are not copied.
+
 ## 0.17.3 (2026-10-28)
 
 ### Orders
