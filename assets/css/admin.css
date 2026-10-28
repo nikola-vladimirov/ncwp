@@ -765,3 +765,49 @@ body.woocommerce_page_wc-settings #mainform .nashenski-courier-nav {
 	min-width: 0;
 	max-width: 25em;
 }
+
+/* Checkout field conditions. */
+.nashenski-when {
+	min-width: 150px;
+}
+
+.nashenski-when__summary {
+	display: block;
+	margin-top: 4px;
+	color: #50575e;
+	font-size: 12px;
+}
+
+.nashenski-when__panel {
+	min-width: 280px;
+	margin-top: 8px;
+	padding: 10px;
+	border: 1px solid #c3c4c7;
+	background: #fff;
+}
+
+.nashenski-when__panel[hidden] {
+	display: none;
+}
+
+.nashenski-when__cond {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 8px;
+}
+
+.woocommerce table.form-table .nashenski-when__cond select,
+.woocommerce table.form-table .nashenski-when__panel select {
+	width: auto;
+	max-width: 100%;
+}
+
+.nashenski-when__value input[type="text"] {
+	width: 10em;
+}
+
+.nashenski-when__note {
+	flex-basis: 100%;
+}

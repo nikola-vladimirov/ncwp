@@ -91,6 +91,287 @@
 		}
 	} );
 
+	/* Checkout field conditions (one set, all conditions must hold) ---------- */
+
+	var whenTemplate = document.querySelector( '.nashenski-when__template' );
+
+	function each( list, callback ) {
+		Array.prototype.forEach.call( list, callback );
+	}
+
+	// The same plain rule as Conditions::clean_text() on the server.
+	function cleanText( text ) {
+		return String( text ).replace( /[ \t\r\n]+/g, ' ' ).replace( /^ | $/g, '' );
+	}
+
+	function readWhen( cell ) {
+		var raw = cell.querySelector( '.nashenski-when__json' ).value;
+		var data = null;
+
+		try {
+			data = raw ? JSON.parse( raw ) : null;
+		} catch ( e ) {
+			data = null;
+		}
+
+		return data && Array.isArray( data.sets ) ? data : { hide: false, sets: [] };
+	}
+
+	function triggers( row ) {
+		var list = [];
+
+		each( row.parentNode.children, function ( tr ) {
+			var keyInput = tr.querySelector( 'input[name$="[key]"]' );
+			// A new row gets this key when the table is saved (sanitize_layout_field()), so it can already be a trigger.
+			var key = keyInput.value || 'custom_' + keyInput.name.replace( /^.*\[([^\]]+)\]\[key\]$/, '$1' ).toLowerCase().replace( /[^a-z0-9_-]/g, '' );
+			var label = tr.querySelector( 'input[name$="[label]"]' );
+			var strong = tr.querySelector( 'strong' );
+			var type = tr.querySelector( 'select[name$="[type]"]' );
+			var options = tr.querySelector( 'textarea[name$="[options]"]' );
+			var rule = tr.querySelector( 'select[name$="[rule]"]' );
+
+			if ( tr === row || ! key ) {
+				return;
+			}
+
+			list.push( {
+				key: key,
+				label: strong ? strong.textContent : ( label && label.value ) || key,
+				type: type ? type.value : 'text',
+				choices: options && type && 'select' === type.value ? options.value.split( '\n' ).map( cleanText ).filter( Boolean ) : [],
+				hidden: !! rule && 'hidden' === rule.value
+			} );
+		} );
+
+		return list;
+	}
+
+	function findTrigger( list, key ) {
+		return list.filter( function ( item ) {
+			return item.key === key;
+		} )[ 0 ];
+	}
+
+	function summary( cell ) {
+		var data = readWhen( cell );
+		var set = data.sets[ 0 ] || [];
+		var out = cell.querySelector( '.nashenski-when__summary' );
+		var strings = whenTemplate ? whenTemplate.dataset : {};
+		var list = triggers( cell.closest( 'tr' ) );
+		var text = '';
+
+		if ( set.length > 1 ) {
+			text = data.hide ? strings.hiddenAll : strings.shownAll;
+		} else if ( 1 === set.length ) {
+			var trigger = findTrigger( list, set[ 0 ].field );
+			var op = whenTemplate.content.querySelector( '.nashenski-when__op option[value="' + set[ 0 ].operator + '"]' );
+			var value = set[ 0 ].value;
+
+			if ( trigger && 'checkbox' === trigger.type ) {
+				value = '1' === value ? strings.yes : strings.no;
+			}
+
+			text = ( data.hide ? strings.hidden : strings.shown ).replace( '%s', ( trigger ? trigger.label : set[ 0 ].field ) + ' ' + ( op ? op.textContent : '' ) + ( /^(empty|not_empty)$/.test( set[ 0 ].operator ) || '' === value ? '' : ' ' + value ) );
+		}
+
+		out.textContent = text;
+	}
+
+	function refreshSummaries() {
+		each( document.querySelectorAll( '.nashenski-layout .nashenski-when' ), summary );
+	}
+
+	// Writes the first condition set from the panel; other alternatives of an imported rule stay as they were.
+	function collect( cell ) {
+		var panel = cell.querySelector( '.nashenski-when__panel' );
+		var data = readWhen( cell );
+		var set = [];
+
+		each( panel.querySelectorAll( '.nashenski-when__cond' ), function ( node ) {
+			var field = node.querySelector( '.nashenski-when__field' ).value;
+			var operator = node.querySelector( '.nashenski-when__op' ).value;
+			var input = node.querySelector( '.nashenski-when__value input, .nashenski-when__value select' );
+
+			if ( field ) {
+				set.push( { field: field, operator: operator, value: input && ! /^(empty|not_empty)$/.test( operator ) ? input.value : '' } );
+			}
+		} );
+
+		data.hide = 'hide' === panel.querySelector( '.nashenski-when__mode' ).value;
+		data.sets = [ set ].concat( panel.rest || [] ).filter( function ( one ) {
+			return one.length;
+		} );
+		cell.querySelector( '.nashenski-when__json' ).value = data.sets.length ? JSON.stringify( data ) : '';
+		summary( cell );
+	}
+
+	// The value control follows the trigger: a list for a list, ticked or not for a checkbox, text otherwise.
+	function valueControl( node, trigger, value ) {
+		var box = node.querySelector( '.nashenski-when__value' );
+		var operator = node.querySelector( '.nashenski-when__op' ).value;
+		var strings = whenTemplate.dataset;
+		var el;
+
+		box.textContent = '';
+
+		if ( /^(empty|not_empty)$/.test( operator ) ) {
+			return;
+		}
+
+		function choose( pairs ) {
+			el = document.createElement( 'select' );
+			pairs.forEach( function ( pair ) {
+				el.appendChild( new Option( pair[ 1 ], pair[ 0 ] ) );
+			} );
+			el.value = value;
+		}
+
+		if ( trigger && 'checkbox' === trigger.type ) {
+			value = '1' === value ? '1' : '';
+			choose( [ [ '1', strings.yes ], [ '', strings.no ] ] );
+		} else if ( trigger && trigger.choices.length ) {
+			choose( trigger.choices.concat( value && -1 === trigger.choices.indexOf( value ) ? [ value ] : [] ).map( function ( choice ) {
+				return [ choice, choice ];
+			} ) );
+			el.value = value || trigger.choices[ 0 ];
+		} else {
+			el = document.createElement( 'input' );
+			el.type = 'text';
+			el.value = value;
+		}
+
+		box.appendChild( el );
+	}
+
+	function condNote( node, trigger, key ) {
+		var strings = whenTemplate.dataset;
+		var note = node.querySelector( '.nashenski-when__note' );
+
+		if ( ! key ) {
+			note.textContent = '';
+		} else if ( ! trigger ) {
+			note.textContent = strings.missing.replace( '%s', key );
+		} else {
+			note.textContent = trigger.hidden ? strings.isHidden.replace( '%s', trigger.label ) : '';
+		}
+	}
+
+	function addCond( cell, cond ) {
+		var row = cell.closest( 'tr' );
+		var list = triggers( row );
+		var node = whenTemplate.content.querySelector( '.nashenski-when__cond' ).cloneNode( true );
+		var select = node.querySelector( '.nashenski-when__field' );
+		var trigger = findTrigger( list, cond.field );
+
+		select.appendChild( new Option( whenTemplate.dataset.pick, '' ) );
+		list.forEach( function ( item ) {
+			select.appendChild( new Option( item.label, item.key ) );
+		} );
+
+		if ( cond.field && ! trigger ) {
+			select.appendChild( new Option( cond.field, cond.field ) );
+		}
+
+		select.value = cond.field || '';
+		node.querySelector( '.nashenski-when__op' ).value = cond.operator || 'value_eq';
+		valueControl( node, trigger, cond.value || '' );
+		condNote( node, trigger, cond.field );
+		cell.querySelector( '.nashenski-when__list' ).appendChild( node );
+	}
+
+	function openPanel( cell ) {
+		var panel = cell.querySelector( '.nashenski-when__panel' );
+		var data = readWhen( cell );
+		var set = data.sets[ 0 ] || [];
+
+		panel.textContent = '';
+		panel.appendChild( whenTemplate.content.querySelector( '.nashenski-when__body' ).cloneNode( true ) );
+		panel.rest = data.sets.slice( 1 );
+		panel.querySelector( '.nashenski-when__mode' ).value = data.hide ? 'hide' : 'show';
+		panel.querySelector( '.nashenski-when__other' ).hidden = ! panel.rest.length;
+		cell.querySelector( '.nashenski-when__list' ).textContent = '';
+		set.forEach( function ( cond ) {
+			addCond( cell, cond );
+		} );
+
+		if ( ! set.length ) {
+			addCond( cell, {} );
+		}
+
+		panel.hidden = false;
+		cell.querySelector( '.nashenski-when__open' ).setAttribute( 'aria-expanded', 'true' );
+	}
+
+	function closePanel( cell ) {
+		cell.querySelector( '.nashenski-when__panel' ).hidden = true;
+		cell.querySelector( '.nashenski-when__open' ).setAttribute( 'aria-expanded', 'false' );
+		refreshSummaries();
+	}
+
+	document.addEventListener( 'click', function ( event ) {
+		var button = event.target.closest( '.nashenski-when__open, .nashenski-when__add, .nashenski-when__del, .nashenski-when__close' );
+		var cell = button && button.closest( '.nashenski-when' );
+
+		if ( ! cell || ! whenTemplate ) {
+			return;
+		}
+
+		if ( button.classList.contains( 'nashenski-when__open' ) ) {
+			if ( cell.querySelector( '.nashenski-when__panel' ).hidden ) {
+				openPanel( cell );
+			} else {
+				closePanel( cell );
+			}
+		} else if ( button.classList.contains( 'nashenski-when__add' ) ) {
+			addCond( cell, {} );
+		} else if ( button.classList.contains( 'nashenski-when__del' ) ) {
+			button.closest( '.nashenski-when__cond' ).remove();
+			collect( cell );
+		} else {
+			closePanel( cell );
+		}
+	} );
+
+	document.addEventListener( 'change', function ( event ) {
+		var target = event.target;
+		var cell = target.closest( '.nashenski-when' );
+		var node = target.closest( '.nashenski-when__cond' );
+		var trigger;
+
+		if ( ! whenTemplate || ! target.closest( '.nashenski-layout' ) ) {
+			return;
+		}
+
+		if ( ! cell ) {
+			refreshSummaries();
+			return;
+		}
+
+		if ( node && target.matches( '.nashenski-when__field, .nashenski-when__op' ) ) {
+			trigger = findTrigger( triggers( cell.closest( 'tr' ) ), node.querySelector( '.nashenski-when__field' ).value );
+			valueControl( node, trigger, '' );
+			condNote( node, trigger, node.querySelector( '.nashenski-when__field' ).value );
+		}
+
+		if ( target.closest( '.nashenski-when__panel' ) ) {
+			collect( cell );
+		}
+	} );
+
+	document.addEventListener( 'input', function ( event ) {
+		var cell = event.target.closest( '.nashenski-when' );
+
+		if ( whenTemplate && cell && event.target.closest( '.nashenski-when__value' ) ) {
+			collect( cell );
+		} else if ( whenTemplate && event.target.closest( '.nashenski-layout' ) && ! cell ) {
+			refreshSummaries();
+		}
+	} );
+
+	if ( whenTemplate ) {
+		refreshSummaries();
+	}
+
 	// The public price list (and its options) shows only while "Use public prices" is ticked.
 	function syncPublicPrices() {
 		Array.prototype.forEach.call( document.querySelectorAll( 'td.nashenski-price-list' ), function ( cell ) {

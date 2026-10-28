@@ -70,6 +70,44 @@ class Field_Editor {
 		// Page builders can place single fields by key and render them even when the field
 		// was removed (Bricks does), so hidden fields also render as nothing.
 		add_filter( 'woocommerce_form_field', array( __CLASS__, 'hide_rendered_field' ), PHP_INT_MAX, 2 );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_conditions' ) );
+	}
+
+	/**
+	 * Classic checkout: the script shows and hides the rows with a field-value rule as the customer
+	 * fills in the form. The rules also apply when the form is submitted (checkout_fields()).
+	 */
+	public static function enqueue_conditions() {
+		if ( ! is_checkout() || Pickers::is_block_checkout() ) {
+			return;
+		}
+
+		$targets = array();
+		$names = array();
+
+		foreach ( self::layout() as $row ) {
+			$names[ $row['key'] ] = self::field_name( 'billing', $row['key'] );
+
+			if ( empty( $row['when'] ) ) {
+				continue;
+			}
+
+			$types = in_array( $row['key'], self::KEYS, true ) ? array( 'billing', 'shipping' ) : array( 'billing' );
+
+			foreach ( $types as $type ) {
+				$targets[] = array( 'name' => self::field_name( $type, $row['key'] ), 'when' => $row['when'] );
+			}
+		}
+
+		if ( ! $targets ) {
+			return;
+		}
+
+		$url = nashenski()->plugin_dir_url() . 'assets/';
+		$file = nashenski()->plugin_dir_path() . 'assets/js/checkout-conditions.js';
+
+		wp_enqueue_script( 'nashenski-checkout-conditions', $url . 'js/checkout-conditions.js', array( 'jquery' ), \Nashenski\Plugin::VERSION . '-' . filemtime( $file ), true );
+		wp_add_inline_script( 'nashenski-checkout-conditions', 'window.nashenskiConditions = ' . wp_json_encode( array( 'names' => $names, 'targets' => $targets ), JSON_HEX_TAG | JSON_HEX_AMP ) . ';', 'before' );
 	}
 
 	public static function hide_rendered_field( $html, $key ) {
@@ -171,7 +209,7 @@ class Field_Editor {
 	/**
 	 * Checkout field name of a row: billing_email, shipping_city, billing_nashenski_<slug>.
 	 */
-	private static function field_name( $type, $key ) {
+	public static function field_name( $type, $key ) {
 		return 0 === strpos( $key, 'custom_' ) ? 'billing_nashenski_' . substr( $key, 7 ) : $type . '_' . $key;
 	}
 
@@ -323,6 +361,8 @@ class Field_Editor {
 			if ( self::layout() ) {
 				$fields[ $type ] = self::arrange( $fields[ $type ], $type );
 			}
+
+			$fields[ $type ] = self::remove_unshown( $fields[ $type ], $type );
 		}
 
 		$fields['billing'] = self::billing_fields( $fields['billing'] ?? array() );
@@ -332,6 +372,68 @@ class Field_Editor {
 		}
 
 		return $fields;
+	}
+
+	/**
+	 * On submit, a field whose rule is not met is removed: it is not checked and not saved. The page
+	 * itself keeps the field and the script hides it, so nothing is removed when the form is shown.
+	 */
+	private static function remove_unshown( $section, $type ) {
+		// Only the checkout submit removes fields. Another POST (a failed login, a cart update) keeps the form as it is.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only tells which request this is; WooCommerce checks the nonce.
+		$ajax = isset( $_GET['wc-ajax'] ) ? sanitize_key( wp_unslash( $_GET['wc-ajax'] ) ) : '';
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- the nonce is verified on the next line.
+		$nonce = sanitize_text_field( wp_unslash( $_POST['woocommerce-process-checkout-nonce'] ?? '' ) );
+
+		if ( ! wp_verify_nonce( $nonce, 'woocommerce-process_checkout' ) || ( '' !== $ajax && 'checkout' !== $ajax ) ) {
+			return $section;
+		}
+
+		$values = array();
+
+		foreach ( self::layout() as $row ) {
+			$name = self::field_name( 'billing', $row['key'] );
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checks the checkout nonce before it reads the fields.
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read only to compare with the rule; never output or saved, and not stripped, so it matches the script.
+			$posted = wp_unslash( $_POST[ $name ] ?? '' );
+			$values[ $row['key'] ] = Conditions::clean_text( is_scalar( $posted ) ? $posted : '' );
+		}
+
+		// A hidden field counts as empty for the rules that read it, as in the script; a few passes settle the chains.
+		$rules = array_filter( self::layout(), function ( $row ) {
+			return ! empty( $row['when'] );
+		} );
+		$hidden = array();
+
+		for ( $pass = 0; $pass <= count( $rules ); $pass++ ) {
+			$changed = false;
+
+			foreach ( $rules as $row ) {
+				$now = ! Conditions::shown( $row['when'], $values );
+				$changed = $changed || ( $hidden[ $row['key'] ] ?? null ) !== $now;
+				$hidden[ $row['key'] ] = $now;
+
+				if ( $now && '' !== $values[ $row['key'] ] ) {
+					$values[ $row['key'] ] = '';
+					$changed = true;
+				}
+			}
+
+			if ( ! $changed ) {
+				break;
+			}
+		}
+
+		foreach ( $rules as $row ) {
+			$name = self::field_name( $type, $row['key'] );
+
+			if ( $hidden[ $row['key'] ] && isset( $section[ $name ] ) ) {
+				unset( $section[ $name ] );
+			}
+		}
+
+		return $section;
 	}
 
 	/**
@@ -440,7 +542,7 @@ class Field_Editor {
 	}
 
 	private static function choices( $row ) {
-		return array_values( array_filter( array_map( 'trim', explode( "\n", (string) ( $row['options'] ?? '' ) ) ), 'strlen' ) );
+		return array_values( array_filter( array_map( array( Conditions::class, 'clean_text' ), explode( "\n", (string) ( $row['options'] ?? '' ) ) ), 'strlen' ) );
 	}
 
 	/**
@@ -449,6 +551,19 @@ class Field_Editor {
 	public static function register_block_fields() {
 		if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
 			return;
+		}
+
+		$types = array();
+
+		$derived = array();
+
+		foreach ( self::custom_rows() as $row ) {
+			$types[ $row['key'] ] = $row['type'];
+
+			// A field its own rule can hide keeps its value in the block checkout, so a rule that reads it stays classic only.
+			if ( ! empty( $row['when'] ) ) {
+				$derived[] = $row['key'];
+			}
 		}
 
 		foreach ( self::custom_rows() as $row ) {
@@ -460,6 +575,17 @@ class Field_Editor {
 				'type' => self::TYPES[ $row['type'] ] ?? 'text',
 				'required' => 'required' === $row['rule'],
 			);
+
+			// A field-value rule the block checkout can express: "required" and "hidden" as JSON Schema (as Company_Fields).
+			$rule = Conditions::block_rule( $row['when'] ?? null, $types, 'required' === $row['rule'], $derived );
+
+			if ( $rule ) {
+				$args['required'] = $rule['required'];
+				$args['hidden'] = $rule['hidden'];
+			} elseif ( ! empty( $row['when'] ) ) {
+				// A rule the block checkout cannot write: the field stays visible, but is not required by its own setting.
+				$args['required'] = false;
+			}
 
 			if ( 'select' === $args['type'] ) {
 				$args['options'] = array_map( function ( $choice ) {
@@ -602,7 +728,7 @@ class Field_Editor {
 		}
 
 		return sprintf(
-			'<tr class="nashenski-layout__row%1$s"><td class="nashenski-layout__move"><button type="button" class="button-link nashenski-layout__up" aria-label="%2$s">&uarr;</button><button type="button" class="button-link nashenski-layout__down" aria-label="%3$s">&darr;</button></td><td>%4$s<input type="hidden" name="%5$s" value="%6$s"></td><td>%7$s</td><td>%8$s</td><td>%9$s</td></tr>',
+			'<tr class="nashenski-layout__row%1$s"><td class="nashenski-layout__move"><button type="button" class="button-link nashenski-layout__up" aria-label="%2$s">&uarr;</button><button type="button" class="button-link nashenski-layout__down" aria-label="%3$s">&darr;</button></td><td>%4$s<input type="hidden" name="%5$s" value="%6$s"></td><td>%7$s</td><td>%8$s</td><td class="nashenski-when"><button type="button" class="button-link nashenski-when__open" aria-expanded="false">%10$s</button><span class="nashenski-when__summary"></span><input type="hidden" class="nashenski-when__json" name="%11$s" value="%12$s"><div class="nashenski-when__panel" hidden></div></td><td>%9$s</td></tr>',
 			$custom ? ' nashenski-layout__row--custom' . ( 'select' === ( $row['type'] ?? '' ) ? ' is-select' : '' ) : '',
 			esc_attr__( 'Move up', 'nashenski-commerce' ),
 			esc_attr__( 'Move down', 'nashenski-commerce' ),
@@ -611,7 +737,10 @@ class Field_Editor {
 			esc_attr( $row['key'] ),
 			self::select( $base . '[rule]', $rules, $rule ),
 			self::select( $base . '[width]', array( 'full' => __( 'Full width', 'nashenski-commerce' ), 'half' => __( 'Half width', 'nashenski-commerce' ) ), $row['width'] ?? 'full' ),
-			$custom ? '<button type="button" class="button-link button-link-delete nashenski-layout__remove">' . esc_html__( 'Remove', 'nashenski-commerce' ) . '</button>' : ''
+			$custom ? '<button type="button" class="button-link button-link-delete nashenski-layout__remove">' . esc_html__( 'Remove', 'nashenski-commerce' ) . '</button>' : '',
+			esc_html__( 'Condition', 'nashenski-commerce' ),
+			esc_attr( $base . '[when]' ),
+			esc_attr( empty( $row['when'] ) ? '' : wp_json_encode( $row['when'], JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_APOS ) )
 		);
 	}
 
@@ -631,6 +760,7 @@ class Field_Editor {
 							<th><?php esc_html_e( 'Field', 'nashenski-commerce' ); ?></th>
 							<th><?php esc_html_e( 'Show', 'nashenski-commerce' ); ?></th>
 							<th><?php esc_html_e( 'Width', 'nashenski-commerce' ); ?></th>
+							<th><?php esc_html_e( 'Condition', 'nashenski-commerce' ); ?></th>
 							<th><span class="screen-reader-text"><?php esc_html_e( 'Remove', 'nashenski-commerce' ); ?></span></th>
 						</tr>
 					</thead>
@@ -643,13 +773,61 @@ class Field_Editor {
 					</tbody>
 				</table>
 				<template class="nashenski-layout__template"><?php echo self::row_html( $name, '__uid__', array( 'key' => '', 'type' => 'text', 'rule' => 'optional', 'width' => 'full' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in row_html(). ?></template>
-				<p><button type="button" class="button nashenski-layout__add"><?php esc_html_e( 'Add your own field', 'nashenski-commerce' ); ?></button></p>
+				<template class="nashenski-when__template"
+						data-shown="<?php
+						/* translators: %s: the field, the operator and the value */
+						echo esc_attr__( 'Shown when: %s', 'nashenski-commerce' );
+						?>"
+						data-hidden="<?php
+						/* translators: %s: the field, the operator and the value */
+						echo esc_attr__( 'Hidden when: %s', 'nashenski-commerce' );
+						?>"
+						data-shown-all="<?php echo esc_attr__( 'Shown when all of these are true', 'nashenski-commerce' ); ?>"
+						data-hidden-all="<?php echo esc_attr__( 'Hidden when all of these are true', 'nashenski-commerce' ); ?>"
+						data-is-hidden="<?php
+						/* translators: %s: field label */
+						echo esc_attr__( '%s is hidden, so its value always counts as empty.', 'nashenski-commerce' );
+						?>"
+						data-missing="<?php
+						/* translators: %s: field key */
+						echo esc_attr__( '%s is not in the table any more. The condition is dropped on save.', 'nashenski-commerce' );
+						?>"
+						data-yes="<?php echo esc_attr__( 'ticked', 'nashenski-commerce' ); ?>"
+						data-no="<?php echo esc_attr__( 'not ticked', 'nashenski-commerce' ); ?>"
+						data-pick="<?php echo esc_attr__( 'Choose a field', 'nashenski-commerce' ); ?>"
+					>
+						<div class="nashenski-when__body">
+							<p><select class="nashenski-when__mode">
+								<option value="show"><?php esc_html_e( 'Show this field when all of these are true', 'nashenski-commerce' ); ?></option>
+								<option value="hide"><?php esc_html_e( 'Hide this field when all of these are true', 'nashenski-commerce' ); ?></option>
+							</select></p>
+							<div class="nashenski-when__list"></div>
+							<p><button type="button" class="button nashenski-when__add"><?php esc_html_e( 'Add condition', 'nashenski-commerce' ); ?></button> <button type="button" class="button-link nashenski-when__close"><?php esc_html_e( 'Close', 'nashenski-commerce' ); ?></button></p>
+							<p class="description nashenski-when__other" hidden><?php esc_html_e( 'This rule also has alternatives (or). They are kept as they are.', 'nashenski-commerce' ); ?></p>
+						</div>
+						<div class="nashenski-when__cond">
+							<select class="nashenski-when__field"></select>
+							<select class="nashenski-when__op">
+								<option value="value_eq"><?php esc_html_e( 'is', 'nashenski-commerce' ); ?></option>
+								<option value="value_ne"><?php esc_html_e( 'is not', 'nashenski-commerce' ); ?></option>
+								<option value="value_gt"><?php esc_html_e( 'is greater than', 'nashenski-commerce' ); ?></option>
+								<option value="value_le"><?php esc_html_e( 'is less than', 'nashenski-commerce' ); ?></option>
+								<option value="empty"><?php esc_html_e( 'is empty', 'nashenski-commerce' ); ?></option>
+								<option value="not_empty"><?php esc_html_e( 'is not empty', 'nashenski-commerce' ); ?></option>
+							</select>
+							<span class="nashenski-when__value"></span>
+							<button type="button" class="button-link button-link-delete nashenski-when__del"><?php esc_html_e( 'Remove', 'nashenski-commerce' ); ?></button>
+							<span class="description nashenski-when__note"></span>
+						</div>
+					</template>
+					<p><button type="button" class="button nashenski-layout__add"><?php esc_html_e( 'Add your own field', 'nashenski-commerce' ); ?></button></p>
 				<p class="description"><?php esc_html_e( 'Use the arrows to change the order. Two half-width fields next to each other share a line. With company invoice fields on, the company name belongs to them.', 'nashenski-commerce' ); ?></p>
 				<?php echo \Nashenski\Admin\Checkout_Fields_Import::html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in html(). ?>
 				<details class="nashenski-more">
 					<summary><?php esc_html_e( 'Which checkouts follow what', 'nashenski-commerce' ); ?></summary>
 					<p class="description"><?php esc_html_e( 'Show, required and hidden apply to the billing and shipping address in every checkout. Order and width also apply to the address in the block checkout, where the email always comes first and your own fields come after it. The place of the email applies to the classic checkout and to builder checkouts that show WooCommerce\'s billing fields. Builder checkouts made of single field elements keep the order you placed them in. When the town or region is hidden, the courier fields ask for the town (from Econt\'s list of towns when Econt is on).', 'nashenski-commerce' ); ?></p>
-				</details>
+				<p class="description"><?php esc_html_e( 'Conditions: the classic checkout follows all of them. The block checkout follows conditions on your own fields that read your own fields, and not "greater" or "less"; other conditions are ignored there.', 'nashenski-commerce' ); ?></p>
+					</details>
 			</td>
 		</tr>
 		<?php
@@ -666,15 +844,23 @@ class Field_Editor {
 
 		$rows = array();
 		$standard = array_merge( array( 'email' ), self::KEYS );
+		$saved = array();
+
+		foreach ( self::layout() as $row ) {
+			$saved[ $row['key'] ] = $row['when'] ?? null;
+		}
 
 		foreach ( (array) $raw_value as $uid => $raw ) {
 			$key = sanitize_key( $raw['key'] ?? '' );
 			$rule = in_array( $raw['rule'] ?? '', array( 'default', 'required', 'optional', 'hidden' ), true ) ? $raw['rule'] : 'default';
 			$width = 'half' === ( $raw['width'] ?? '' ) ? 'half' : 'full';
+			// The table does not post the rules of a row, so a saved table keeps the ones the row had.
+			$when = is_array( $raw ) && array_key_exists( 'when', $raw ) ? $raw['when'] : ( $saved[ $key ] ?? null );
+			$when = self::clean_when( is_string( $when ) ? json_decode( $when, true ) : $when );
 
 			if ( in_array( $key, $standard, true ) ) {
 				nashenski_set_option( 'email' === $key ? self::GROUP_CLASSIC : self::GROUP, $key, $rule );
-				$rows[] = array( 'key' => $key, 'width' => $width );
+				$rows[] = array( 'key' => $key, 'width' => $width, 'when' => $when );
 				continue;
 			}
 
@@ -688,12 +874,131 @@ class Field_Editor {
 				'key' => '' !== $key ? $key : 'custom_' . sanitize_key( $uid ),
 				'label' => $label,
 				'type' => isset( self::TYPES[ $raw['type'] ?? '' ] ) ? $raw['type'] : 'text',
-				'options' => sanitize_textarea_field( $raw['options'] ?? '' ),
+				'options' => implode( "\n", array_filter( array_map( array( Conditions::class, 'clean_value' ), explode( "\n", (string) ( $raw['options'] ?? '' ) ) ), 'strlen' ) ),
 				'rule' => 'default' === $rule ? 'optional' : $rule,
 				'width' => $width,
+				'when' => $when,
 			);
 		}
 
+		return self::check_rules( $rows );
+	}
+
+	/**
+	 * The rules against the rows that are saved: a condition that reads a row no longer in the table is
+	 * dropped (the others stay), a rule that reads its own row is dropped, and so are rules that read each
+	 * other in a loop (A reads B and B reads A), directly or through other rows.
+	 */
+	private static function check_rules( $rows ) {
+		$keys = wp_list_pluck( $rows, 'key' );
+		$deps = array();
+
+		foreach ( $rows as $i => $row ) {
+			if ( ! $row['when'] ) {
+				continue;
+			}
+
+			$sets = array();
+
+			foreach ( $row['when']['sets'] as $set ) {
+				$set = array_values( array_filter( $set, function ( $condition ) use ( $keys ) {
+					return in_array( $condition['field'], $keys, true );
+				} ) );
+
+				if ( $set ) {
+					$sets[] = $set;
+				}
+			}
+
+			$rows[ $i ]['when'] = $sets ? array( 'hide' => $row['when']['hide'], 'sets' => $sets ) : null;
+
+			if ( $rows[ $i ]['when'] ) {
+				$deps[ $row['key'] ] = array_unique( self::when_fields( $rows[ $i ]['when'] ) );
+			}
+		}
+
+		$loops = array();
+
+		foreach ( $deps as $key => $reads ) {
+			$seen = array();
+
+			while ( $reads ) {
+				$field = array_pop( $reads );
+
+				if ( $field === $key ) {
+					$loops[] = $key;
+					break;
+				}
+
+				if ( ! isset( $seen[ $field ] ) ) {
+					$seen[ $field ] = true;
+					$reads = array_merge( $reads, $deps[ $field ] ?? array() );
+				}
+			}
+		}
+
+		foreach ( $rows as $i => $row ) {
+			if ( in_array( $row['key'], $loops, true ) ) {
+				$rows[ $i ]['when'] = null;
+			}
+		}
+
 		return $rows;
+	}
+
+	/**
+	 * A field-value rule as saved: only the known operators, keys and texts. Null when it has none.
+	 */
+	private static function clean_when( $when ) {
+		if ( ! is_array( $when ) || empty( $when['sets'] ) ) {
+			return null;
+		}
+
+		$sets = array();
+
+		// A rule is read on every checkout page view: at most 20 alternatives of 20 conditions. A longer one is dropped whole, as a cut one would show the field in more cases than it allows.
+		if ( count( (array) $when['sets'] ) > 20 ) {
+			return null;
+		}
+
+		foreach ( (array) $when['sets'] as $set ) {
+			$conditions = array();
+
+			if ( count( (array) $set ) > 20 ) {
+				return null;
+			}
+
+			foreach ( (array) $set as $condition ) {
+				$operator = is_array( $condition ) ? ( $condition['operator'] ?? '' ) : '';
+				$field = is_array( $condition ) ? sanitize_key( $condition['field'] ?? '' ) : '';
+
+				if ( ! in_array( $operator, Conditions::OPERATORS, true ) || '' === $field ) {
+					return null;
+				}
+
+				$conditions[] = array( 'field' => $field, 'operator' => $operator, 'value' => Conditions::clean_value( is_scalar( $condition['value'] ?? '' ) ? $condition['value'] : '' ) );
+			}
+
+			if ( $conditions ) {
+				$sets[] = $conditions;
+			}
+		}
+
+		return $sets ? array( 'hide' => ! empty( $when['hide'] ), 'sets' => $sets ) : null;
+	}
+
+	/**
+	 * The row keys a rule reads.
+	 */
+	private static function when_fields( $when ) {
+		$fields = array();
+
+		foreach ( $when['sets'] as $set ) {
+			foreach ( $set as $condition ) {
+				$fields[] = $condition['field'];
+			}
+		}
+
+		return $fields;
 	}
 }
