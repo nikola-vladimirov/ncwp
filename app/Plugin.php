@@ -4,7 +4,7 @@ namespace Nashenski;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin {
-	const VERSION = '0.19.1';
+	const VERSION = '0.19.2';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).

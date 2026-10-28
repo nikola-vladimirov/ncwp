@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.19.1
+Stable tag: 0.19.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -128,6 +128,9 @@ The plugin only contacts a service after you turn it on and enter your own accou
 The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf php-font-lib (LGPL-2.1 or later) and php-svg-lib (LGPL-3.0 or later), which make the PDF documents; and Pimple, Masterminds HTML5, sabberworm PHP-CSS-Parser, setasign FPDI, chillerlan php-qrcode and php-settings-container, clegginabox PDF merger, ddeboer VATIN and PSR container (all MIT). Their licences are in each library's folder.
 
 == Changelog ==
+
+= 0.19.2 =
+* Fixes: a line discounted to zero keeps its VAT rate on the invoice and in the NRA export, so the NRA order total matches the payment; product names with & no longer show as &amp;amp; in the NRA file.
 
 = 0.19.1 =
 * Fixes: invoice lines show the price before discount (the discount is in the totals), the NRA export keeps fully discounted lines, the documents export filters on the document date, a limit on paid phone checks per visitor, export files and documents kept out of the Media Library and export files deleted after 7 days.

@@ -261,6 +261,11 @@ function nashenski_get_order_item_vat_rate( $item, $order, $show_group = false, 
 		foreach ( $order_taxes as $tax_item ) {
 			$tax_item_id       = $tax_item->get_rate_id();
 			$tax_item_total    = isset( $tax_data['total'][ $tax_item_id ] ) ? $tax_data['total'][ $tax_item_id ] : '';
+
+			// A line discounted to zero has no tax after discount; its rate is in the tax before discount.
+			if ( ! ( $tax_item_total > 0 ) && ! empty( $tax_data['subtotal'][ $tax_item_id ] ) ) {
+				$tax_item_total = $tax_data['subtotal'][ $tax_item_id ];
+			}
 				
 			if ( '' !== $tax_item_total && $tax_item_total > 0 ) {
 				$rate = $tax_item->get_rate_percent();

@@ -108,7 +108,7 @@ class XmlBuilder {
 			$vat += $line['vat_after_discount'];
 
 			$xml->startElement( 'artenum' );
-			$xml->writeElement( 'art_name', (string) $item['name'] );
+			$xml->writeElement( 'art_name', html_entity_decode( (string) $item['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ); // Product names are stored HTML-encoded; XMLWriter escapes again.
 			$xml->writeElement( 'art_quant', self::format( $item['qty'] ) );
 			$xml->writeElement( 'art_price', self::format( $line['unit_net'] ) );
 			$xml->writeElement( 'art_vat_rate', (string) (int) $item['vat_rate'] );

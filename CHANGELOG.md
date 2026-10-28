@@ -1,5 +1,11 @@
 # Nashenski Commerce changelog
 
+## 0.19.2 (2026-10-29)
+
+### Fixes
+- A product line discounted to zero (a 100% coupon) keeps its VAT rate (for example 20%) on the invoice and in the NRA export. Before, it showed 0%, and the NRA file's order total came out higher than the payment.
+- NRA export: product names with "&" or quotes are written once, not as "&amp;amp;".
+
 ## 0.19.1 (2026-10-29)
 
 ### Fixes
