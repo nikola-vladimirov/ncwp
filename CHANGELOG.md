@@ -1,5 +1,14 @@
 # Nashenski Commerce changelog
 
+## 0.19.1 (2026-10-29)
+
+### Fixes
+- Invoices: each product line shows its price before discount, so the lines add up to the subtotal; the discount and the total stay in the totals block. Fees show their own amount.
+- NRA export: a product line with a 100% discount is no longer left out of the file.
+- Export builder: the "Documents" source picks documents by their own date (invoice date, credit note date), not the order date.
+- Customer checks: at most 20 paid phone checks an hour from one visitor address, so the checkout cannot be used to test other people's numbers. Over the limit the check is skipped and the checkout goes on.
+- Order documents and export files no longer show in the Media Library. Export files (NRA XML, Delta) are deleted 7 days after they are made.
+
 ## 0.19.0 (2026-10-28)
 
 ### Checkout

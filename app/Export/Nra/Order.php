@@ -63,10 +63,11 @@ class Order {
 		$order_items = array_merge( $this->woo_order->get_items(), $this->woo_order->get_items('fee') );
 
 		foreach ( $order_items as $key => $item ) {
-			if ( ! $item->get_total() ) {
+			// Product lines print the undiscounted subtotal, so a fully discounted line still counts.
+			if ( ! ( is_a( $item, 'WC_Order_Item_Fee' ) ? $item->get_total() : $item->get_subtotal() ) ) {
 				continue;
 			}
-			
+
 			$item_vat_rate = apply_filters( 
 				'nashenski/admin/export/item_vat', 
 				nashenski_get_order_item_vat_rate( $item, $this->woo_order ), 

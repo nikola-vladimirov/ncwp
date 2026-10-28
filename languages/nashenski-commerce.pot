@@ -2,10 +2,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.19.0\n"
+"Project-Id-Version: Nashenski Commerce 0.19.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-28 22:46+0000\n"
-"PO-Revision-Date: 2026-10-28 22:46+0000\n"
+"POT-Creation-Date: 2026-10-28 22:57+0000\n"
+"PO-Revision-Date: 2026-10-28 22:57+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -160,7 +160,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: app/Admin/Abandoned_Carts_Page.php:250 app/Admin/Help_Page.php:273
+#: app/Admin/Abandoned_Carts_Page.php:250 app/Admin/Help_Page.php:275
 msgid "Apply"
 msgstr ""
 
@@ -1285,202 +1285,210 @@ msgid "Choose the month and press \"Create XML file\" for the NRA, \"Download ar
 msgstr ""
 
 #: app/Admin/Help_Page.php:155
+msgid "The created files are kept for 7 days, then deleted. Download them when you create them."
+msgstr ""
+
+#: app/Admin/Help_Page.php:156
 msgid "The custom export takes orders, products sold or documents, with your filters, columns and order, as CSV, Excel, JSON or XML. Save an export to run it again next month."
 msgstr ""
 
-#: app/Admin/Help_Page.php:157
+#: app/Admin/Help_Page.php:158
 msgid "EU VAT number check"
 msgstr ""
 
-#: app/Admin/Help_Page.php:158
+#: app/Admin/Help_Page.php:159
 msgid "Turn on \"Enable VIES validation\" in Documents > Invoices and documents. A company customer's VAT number is then checked with the European VIES system when the order is placed."
 msgstr ""
 
-#: app/Admin/Help_Page.php:159
+#: app/Admin/Help_Page.php:160
 msgid "An error shows only when the number is not valid or when the check itself fails. The option needs the PHP SOAP extension on your server."
 msgstr ""
 
-#: app/Admin/Help_Page.php:161 app/Front_End/Withdrawal.php:455 app/Front_End/Withdrawal.php:469
+#: app/Admin/Help_Page.php:162 app/Front_End/Withdrawal.php:455 app/Front_End/Withdrawal.php:469
 msgid "EU withdrawal function"
 msgstr ""
 
 #. translators: %s: link to the Checkout section
-#: app/Admin/Help_Page.php:163
+#: app/Admin/Help_Page.php:164
 #, php-format
 msgid "Turn it on in %s > EU withdrawal function. A \"Withdraw from contract here\" link appears at the bottom of every page, on each order in My Account and in the order emails."
 msgstr ""
 
-#: app/Admin/Help_Page.php:164
+#: app/Admin/Help_Page.php:165
 msgid "Place the link yourself with the shortcode [nashenski_withdrawal_link] (button=\"yes\" makes it a button)."
 msgstr ""
 
-#: app/Admin/Help_Page.php:165
+#: app/Admin/Help_Page.php:166
 msgid "The links are not shown inside page-builder editors (Bricks, Oxygen, Breakdance, Elementor, Etch and others), only on the live site. A shortcode you place yourself still shows there."
 msgstr ""
 
-#: app/Admin/Help_Page.php:166
+#: app/Admin/Help_Page.php:167
 msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
 msgstr ""
 
-#: app/Admin/Help_Page.php:168 app/Admin/Settings_Page.php:127 app/Admin/Tabs/Settings_Tab.php:43 app/Reports/Reports.php:129
+#: app/Admin/Help_Page.php:169 app/Admin/Settings_Page.php:127 app/Admin/Tabs/Settings_Tab.php:43 app/Reports/Reports.php:130
 msgid "Customer checks"
 msgstr ""
 
-#: app/Admin/Help_Page.php:169
+#: app/Admin/Help_Page.php:170
 msgid "nekorekten.com, Connectix and NepoStop tell you whether a phone number has a history of refused parcels. Nashenski Commerce can show a warning on the order and hide cash on delivery for such customers."
 msgstr ""
 
-#: app/Admin/Help_Page.php:170
+#: app/Admin/Help_Page.php:171
 msgid "In NepoStop and nekorekten.com you can also tick the payment methods to hide under \"Hide these payment methods\". When the service flags the customer at its level of warning, those payment methods are not offered at checkout."
 msgstr ""
 
-#: app/Admin/Help_Page.php:171
-msgid "Turn a service on in Overview, save, then enter its API key or token in Customer checks. A service without a key is not asked."
-msgstr ""
-
 #: app/Admin/Help_Page.php:172
-msgid "On the order, the Reports box shows the answers. Press \"Refresh data\" to ask again."
+msgid "Each visitor address gets at most 20 phone checks an hour. Over that, the check is skipped and the checkout goes on."
 msgstr ""
 
 #: app/Admin/Help_Page.php:173
-msgid "For nekorekten.com you can report a customer yourself: write what happened and press \"Send report\". The report carries the name, phone and email of the order. Change the text and press \"Save report\", or press \"Delete report\" to remove it from nekorekten.com."
+msgid "Turn a service on in Overview, save, then enter its API key or token in Customer checks. A service without a key is not asked."
 msgstr ""
 
 #: app/Admin/Help_Page.php:174
+msgid "On the order, the Reports box shows the answers. Press \"Refresh data\" to ask again."
+msgstr ""
+
+#: app/Admin/Help_Page.php:175
+msgid "For nekorekten.com you can report a customer yourself: write what happened and press \"Send report\". The report carries the name, phone and email of the order. Change the text and press \"Save report\", or press \"Delete report\" to remove it from nekorekten.com."
+msgstr ""
+
+#: app/Admin/Help_Page.php:176
 msgid "Connectix and NepoStop can also get tracking information or labels from your orders. Both are optional."
 msgstr ""
 
-#: app/Admin/Help_Page.php:176 app/Admin/ImpossibleVatPrice.php:26 app/Admin/ImpossibleVatPrice.php:27 app/Admin/ImpossibleVatPrice.php:102
+#: app/Admin/Help_Page.php:178 app/Admin/ImpossibleVatPrice.php:26 app/Admin/ImpossibleVatPrice.php:27 app/Admin/ImpossibleVatPrice.php:102
 msgid "Mathematically impossible prices"
 msgstr ""
 
-#: app/Admin/Help_Page.php:177
+#: app/Admin/Help_Page.php:179
 msgid "Open Products > Mathematically impossible prices and press \"Scan products\". It lists the prices that cannot be split into a price without VAT and the VAT without rounding."
 msgstr ""
 
-#: app/Admin/Help_Page.php:178
+#: app/Admin/Help_Page.php:180
 msgid "Press \"Fix all\" to correct them. The check matters most when your prices are entered including tax."
 msgstr ""
 
-#: app/Admin/Help_Page.php:180 app/Admin/Help_Page.php:220
+#: app/Admin/Help_Page.php:182 app/Admin/Help_Page.php:222
 msgid "Moving from another plugin"
 msgstr ""
 
-#: app/Admin/Help_Page.php:181
+#: app/Admin/Help_Page.php:183
 msgid "Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping."
 msgstr ""
 
-#: app/Admin/Help_Page.php:182
+#: app/Admin/Help_Page.php:184
 msgid "It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods and, from the N-18 plugin, the company details and document numbers. Then the old plugin is switched off. Its own data stays in the database."
 msgstr ""
 
-#: app/Admin/Help_Page.php:183
+#: app/Admin/Help_Page.php:185
 msgid "Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import."
 msgstr ""
 
-#: app/Admin/Help_Page.php:185
+#: app/Admin/Help_Page.php:187
 msgid "Command line (WP-CLI)"
 msgstr ""
 
-#: app/Admin/Help_Page.php:186
+#: app/Admin/Help_Page.php:188
 msgid "Settings can be read and changed with WP-CLI: wp nashenski setting list, get, set and reset. The names are the option names without \"nashenski_settings_\", for example apis_enable_econt."
 msgstr ""
 
-#: app/Admin/Help_Page.php:187
+#: app/Admin/Help_Page.php:189
 msgid "Save a password from standard input so it stays out of the shell history: echo \"$PASSWORD\" | wp nashenski setting set econt_password -"
 msgstr ""
 
-#: app/Admin/Help_Page.php:188
+#: app/Admin/Help_Page.php:190
 msgid "wp nashenski courier reload and check do the \"Reload offices and cities\" button and the login check of a courier."
 msgstr ""
 
-#: app/Admin/Help_Page.php:190
+#: app/Admin/Help_Page.php:192
 msgid "Updates"
 msgstr ""
 
-#: app/Admin/Help_Page.php:191
+#: app/Admin/Help_Page.php:193
 msgid "New versions show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too."
 msgstr ""
 
-#: app/Admin/Help_Page.php:193
+#: app/Admin/Help_Page.php:195
 msgid "When something does not work"
 msgstr ""
 
-#: app/Admin/Help_Page.php:194
+#: app/Admin/Help_Page.php:196
 msgid "\"Nothing found\" under a courier: check the login on the courier page. In BOX NOW demo mode there are only two test lockers, both in Sofia."
 msgstr ""
 
-#: app/Admin/Help_Page.php:195
+#: app/Admin/Help_Page.php:197
 msgid "No courier options at checkout: add the methods to the shipping zone of the customer's address and give your products a weight."
 msgstr ""
 
-#: app/Admin/Help_Page.php:196
+#: app/Admin/Help_Page.php:198
 msgid "\"Complete the fields to calculate\" does not go away: the customer has not chosen an office, a locker or an address yet."
 msgstr ""
 
-#: app/Admin/Help_Page.php:197
+#: app/Admin/Help_Page.php:199
 msgid "No documents: turn on \"Invoices and N-18\" in Overview and check \"When to generate documents?\" in Documents."
 msgstr ""
 
-#: app/Admin/Help_Page.php:209 app/Admin/Import_Sources.php:181
+#: app/Admin/Help_Page.php:211 app/Admin/Import_Sources.php:181
 msgid "Bulgarisation for WooCommerce"
 msgstr ""
 
-#: app/Admin/Help_Page.php:221
+#: app/Admin/Help_Page.php:223
 msgid "These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use and switches the plugin off."
 msgstr ""
 
 #. translators: %s: date
-#: app/Admin/Help_Page.php:231
+#: app/Admin/Help_Page.php:233
 #, php-format
 msgid "Imported on %s"
 msgstr ""
 
-#: app/Admin/Help_Page.php:234
+#: app/Admin/Help_Page.php:236
 msgid "Import and switch off"
 msgstr ""
 
 #. translators: %d: number of settings
-#: app/Admin/Help_Page.php:255
+#: app/Admin/Help_Page.php:257
 #, php-format
 msgid "%d setting changed."
 msgid_plural "%d settings changed."
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Admin/Help_Page.php:268
+#: app/Admin/Help_Page.php:270
 msgid "Recommended settings"
 msgstr ""
 
-#: app/Admin/Help_Page.php:269
+#: app/Admin/Help_Page.php:271
 msgid "Settings that suit most Bulgarian stores. Tick the ones you want and apply them; nothing else changes."
 msgstr ""
 
-#: app/Admin/Help_Page.php:274
+#: app/Admin/Help_Page.php:276
 msgid "Setting"
 msgstr ""
 
-#: app/Admin/Help_Page.php:275 app/Plugin.php:282
+#: app/Admin/Help_Page.php:277 app/Plugin.php:282
 msgid "Now"
 msgstr ""
 
-#: app/Admin/Help_Page.php:276
+#: app/Admin/Help_Page.php:278
 msgid "Recommended"
 msgstr ""
 
-#: app/Admin/Help_Page.php:277
+#: app/Admin/Help_Page.php:279
 msgid "Why"
 msgstr ""
 
-#: app/Admin/Help_Page.php:290
+#: app/Admin/Help_Page.php:292
 msgid "Already set"
 msgstr ""
 
-#: app/Admin/Help_Page.php:307
+#: app/Admin/Help_Page.php:309
 msgid "Apply recommended settings"
 msgstr ""
 
-#: app/Admin/Help_Page.php:309
+#: app/Admin/Help_Page.php:311
 msgid "All recommended settings are in place."
 msgstr ""
 
@@ -1978,7 +1986,7 @@ msgstr ""
 msgid "Delivery set on the order screen: %1$s, %2$s. The price comes with the label."
 msgstr ""
 
-#: app/Admin/Order/Documents.php:144 app/Export/Builder/Fields.php:34 app/Reports/Reports.php:116
+#: app/Admin/Order/Documents.php:144 app/Export/Builder/Fields.php:34 app/Reports/Reports.php:117
 msgid "Order"
 msgstr ""
 
@@ -4360,15 +4368,15 @@ msgstr ""
 msgid "Speedy is not connected."
 msgstr ""
 
-#: app/Document_Storage.php:115
+#: app/Document_Storage.php:173
 msgid "You cannot do this."
 msgstr ""
 
-#: app/Document_Storage.php:137
+#: app/Document_Storage.php:195
 msgid "Order documents are being deleted in the background."
 msgstr ""
 
-#: app/Document_Storage.php:278
+#: app/Document_Storage.php:344
 msgid "The document was not found or you do not have access to it."
 msgstr ""
 
@@ -4651,7 +4659,7 @@ msgid "The audit file (Ordinance N-18) of %2$s for %1$s is attached. It was made
 msgstr ""
 
 #. translators: %s: shipping method name
-#: app/Export/Nra/Order.php:121 app/Invoice/Order/Order.php:125
+#: app/Export/Nra/Order.php:122 app/Invoice/Order/Order.php:125
 #, php-format
 msgid "Shipping: %s"
 msgstr ""
@@ -5797,45 +5805,45 @@ msgstr ""
 msgid "Undelivered shipments: %1$s ( %2$s%% )"
 msgstr ""
 
-#: app/Reports/Reports.php:99 app/Reports/Reports.php:228
+#: app/Reports/Reports.php:100 app/Reports/Reports.php:229
 msgid "Reports"
 msgstr ""
 
-#: app/Reports/Reports.php:120
+#: app/Reports/Reports.php:121
 msgid "Refresh data"
 msgstr ""
 
 #. translators: %s: link to the Customer checks settings
-#: app/Reports/Reports.php:128
+#: app/Reports/Reports.php:129
 #, php-format
 msgid "Not checked: turned on without an API key or token. Add it in %s, or turn the service off there."
 msgstr ""
 
-#: app/Reports/Reports.php:163
+#: app/Reports/Reports.php:164
 msgid "Customer has reports for refused parcels. See the Reports box."
 msgstr ""
 
-#: app/Reports/Reports.php:164
+#: app/Reports/Reports.php:165
 msgid "No reports for this customer."
 msgstr ""
 
-#: app/Reports/Reports.php:177
+#: app/Reports/Reports.php:178
 msgid "Not checked"
 msgstr ""
 
-#: app/Reports/Reports.php:181
+#: app/Reports/Reports.php:182
 msgid "No reports"
 msgstr ""
 
 #. translators: %d: number of reports
-#: app/Reports/Reports.php:185
+#: app/Reports/Reports.php:186
 #, php-format
 msgid "%d report"
 msgid_plural "%d reports"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Reports/Reports.php:295
+#: app/Reports/Reports.php:296
 msgid "Cash on delivery is not available for this order. Please choose another payment method."
 msgstr ""
 

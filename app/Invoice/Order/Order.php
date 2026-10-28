@@ -73,7 +73,7 @@ class Order {
 			foreach ( $order_items as $key => $item ) {
 				$qty = ( abs( $item->get_quantity() ) ) ? abs( $item->get_quantity() ) : 1;
 
-				$subtotal = ( method_exists( $item, 'subtotal' ) ) ? $item->get_subtotal() : $item->get_total();
+				$subtotal = ( method_exists( $item, 'get_subtotal' ) ) ? $item->get_subtotal() : $item->get_total();
 				
 				$items[] = apply_filters( 'nashenski/invoice/order/item', array(
 					'name' => apply_filters( 'nashenski/invoice/order/item_name', $item->get_name(), $item ),

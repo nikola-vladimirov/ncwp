@@ -20,6 +20,9 @@ class Document_Storage {
 	const CLEANUP_OPTION = 'nashenski_settings_invoice_delete_receipts_days';
 	const CLEANUP_BATCH = 100;
 	const RECEIPT_DELETED_META = '_nashenski_order_document_deleted';
+	const EXPORT_UNTIL_META = '_nashenski_export_until';
+	const EXPORT_CLEANUP_HOOK = 'nashenski_delete_export_files';
+	const EXPORT_DAYS = 7;
 
 	/**
 	 * The folder documents were public in before 0.11.1.
@@ -32,10 +35,65 @@ class Document_Storage {
 		add_action( self::MIGRATE_HOOK, array( __CLASS__, 'migrate_batch' ) );
 		add_action( 'init', array( __CLASS__, 'schedule_migration' ), 20 );
 		add_action( self::CLEANUP_HOOK, array( __CLASS__, 'delete_receipts' ) );
+		add_action( self::EXPORT_CLEANUP_HOOK, array( __CLASS__, 'delete_export_files' ) );
+		add_action( 'init', array( __CLASS__, 'schedule_export_cleanup' ) );
+		add_action( 'pre_get_posts', array( __CLASS__, 'hide_from_media_library' ) );
+		add_filter( 'ajax_query_attachments_args', array( __CLASS__, 'hide_from_media_grid' ) );
+		add_filter( 'posts_where', array( __CLASS__, 'hide_documents_where' ), 10, 2 );
 		add_action( 'admin_post_' . self::CLEANUP_HOOK, array( __CLASS__, 'delete_receipts_now' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'receipts_deleted_notice' ) );
 		add_action( 'add_option_' . self::CLEANUP_OPTION, array( __CLASS__, 'schedule_receipt_cleanup' ) );
 		add_action( 'update_option_' . self::CLEANUP_OPTION, array( __CLASS__, 'schedule_receipt_cleanup' ) );
+	}
+
+	/**
+	 * Export files (XML, text) are downloaded once; a daily job deletes them after EXPORT_DAYS.
+	 */
+	public static function schedule_export_cleanup() {
+		if ( ! wp_next_scheduled( self::EXPORT_CLEANUP_HOOK ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', self::EXPORT_CLEANUP_HOOK );
+		}
+	}
+
+	public static function delete_export_files() {
+		$ids = get_posts( array(
+			'post_type' => 'attachment',
+			'post_status' => 'any',
+			'fields' => 'ids',
+			'posts_per_page' => self::CLEANUP_BATCH,
+			'meta_query' => array( array( 'key' => self::EXPORT_UNTIL_META, 'value' => time(), 'compare' => '<', 'type' => 'NUMERIC' ) ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- daily background job.
+		) );
+
+		foreach ( $ids as $id ) {
+			wp_delete_attachment( $id, true );
+		}
+	}
+
+	/**
+	 * Keep the private documents out of the Media Library (list and grid): they are for the order screens.
+	 */
+	public static function hide_from_media_library( $query ) {
+		global $pagenow;
+
+		if ( is_admin() && 'upload.php' === $pagenow && $query->is_main_query() ) {
+			$query->set( 'nashenski_hide_documents', 1 );
+		}
+	}
+
+	public static function hide_from_media_grid( $args ) {
+		$args['nashenski_hide_documents'] = 1;
+
+		return $args;
+	}
+
+	public static function hide_documents_where( $where, $query ) {
+		global $wpdb;
+
+		if ( $query->get( 'nashenski_hide_documents' ) ) {
+			$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID NOT IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND meta_value LIKE %s )", 'nashenski-documents-%' );
+		}
+
+		return $where;
 	}
 
 	/**
@@ -210,7 +268,15 @@ class Document_Storage {
 			'post_status' => 'private',
 		), $file['file'] );
 
-		return is_wp_error( $attach_id ) ? 0 : (int) $attach_id;
+		if ( is_wp_error( $attach_id ) ) {
+			return 0;
+		}
+
+		if ( 'pdf' !== $extension ) {
+			update_post_meta( $attach_id, self::EXPORT_UNTIL_META, time() + self::EXPORT_DAYS * DAY_IN_SECONDS );
+		}
+
+		return (int) $attach_id;
 	}
 
 	/**

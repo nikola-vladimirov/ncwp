@@ -157,8 +157,14 @@ class Builder {
 			'orderby' => 'date',
 			'order' => 'ASC',
 			'type' => 'documents' === $config['source'] ? array( 'shop_order', 'shop_order_refund' ) : 'shop_order',
-			'date_' . $config['date_field'] => $from . '...' . $to,
 		);
+
+		// Documents are filtered on their own date in rows(); a document is never dated before its order.
+		if ( 'documents' === $config['source'] ) {
+			$args['date_created'] = '<=' . $to;
+		} else {
+			$args['date_' . $config['date_field']] = $from . '...' . $to;
+		}
 
 		if ( $config['statuses'] && 'documents' !== $config['source'] ) {
 			$args['status'] = $config['statuses'];
@@ -203,6 +209,8 @@ class Builder {
 	public static function rows( $config, $limit = 0 ) {
 		$rows = array();
 		$count = 0;
+		$from = strtotime( $config['from'] . ' 00:00:00 ' . wp_timezone_string() );
+		$to = strtotime( $config['to'] . ' 23:59:59 ' . wp_timezone_string() );
 
 		foreach ( self::query_ids( $config ) as $index => $id ) {
 			$object = wc_get_order( $id );
@@ -225,6 +233,12 @@ class Builder {
 				}
 			} elseif ( 'documents' === $config['source'] ) {
 				foreach ( Fields::documents( $object ) as $doc ) {
+					$doc_time = $doc[2] instanceof \WC_DateTime ? $doc[2]->getTimestamp() : strtotime( (string) $doc[2] );
+
+					if ( $doc_time && ( $doc_time < $from || $doc_time > $to ) ) {
+						continue;
+					}
+
 					if ( ! $config['doc_types'] || in_array( $doc[0], $config['doc_types'], true ) ) {
 						$records[] = array( 'order' => $order, 'object' => $object, 'item' => null, 'doc' => $doc );
 					}

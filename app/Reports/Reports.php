@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 class Reports {
 	const CHECKOUT_SESSION_NAME = 'nashenski_reports_found';
+	const LOOKUPS_PER_HOUR = 20;
     protected $providers = [];
 
 	public function __construct() {
@@ -320,11 +321,33 @@ class Reports {
 		$class = get_class( $provider );
 
 		if ( ! isset( $cache[ $phone_key ][ $class ] ) ) {
+			if ( ! self::allow_lookup() ) {
+				return array();
+			}
+
 			$cache[ $phone_key ][ $class ] = (array) $provider::check_for_reports_on_checkout( $phone );
 			WC()->session->set( self::CHECKOUT_SESSION_NAME, $cache );
 		}
 
 		return $cache[ $phone_key ][ $class ];
+	}
+
+	/**
+	 * Paid lookups per visitor address: at most LOOKUPS_PER_HOUR an hour, so the checkout cannot be used to
+	 * test other people's phone numbers. Over the limit the lookup is skipped and the checkout goes on.
+	 * shortcut: a transient per IP, not atomic under parallel requests, upgrade if abused.
+	 */
+	private static function allow_lookup() {
+		$key = 'nashenski_lookups_' . md5( \WC_Geolocation::get_ip_address() );
+		$used = (int) get_transient( $key );
+
+		if ( $used >= self::LOOKUPS_PER_HOUR ) {
+			return false;
+		}
+
+		set_transient( $key, $used + 1, HOUR_IN_SECONDS );
+
+		return true;
 	}
 
 	/**

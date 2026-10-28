@@ -152,6 +152,7 @@ class Help_Page {
 					/* translators: %s: link to the Exports section */
 					sprintf( esc_html__( '%s has the NRA audit file (Ordinance N-18), the invoice archive and the Microinvest Delta file for a chosen month. The audit file is checked against the NRA schema and has no order limit.', 'nashenski-commerce' ), $exports ),
 					esc_html__( 'Choose the month and press "Create XML file" for the NRA, "Download archive" for the invoices or "Create file" for Delta.', 'nashenski-commerce' ),
+					esc_html__( 'The created files are kept for 7 days, then deleted. Download them when you create them.', 'nashenski-commerce' ),
 					esc_html__( 'The custom export takes orders, products sold or documents, with your filters, columns and order, as CSV, Excel, JSON or XML. Save an export to run it again next month.', 'nashenski-commerce' ),
 				),
 				__( 'EU VAT number check', 'nashenski-commerce' ) => array(
@@ -168,6 +169,7 @@ class Help_Page {
 				__( 'Customer checks', 'nashenski-commerce' ) => array(
 					esc_html__( 'nekorekten.com, Connectix and NepoStop tell you whether a phone number has a history of refused parcels. Nashenski Commerce can show a warning on the order and hide cash on delivery for such customers.', 'nashenski-commerce' ),
 					esc_html__( 'In NepoStop and nekorekten.com you can also tick the payment methods to hide under "Hide these payment methods". When the service flags the customer at its level of warning, those payment methods are not offered at checkout.', 'nashenski-commerce' ),
+					esc_html__( 'Each visitor address gets at most 20 phone checks an hour. Over that, the check is skipped and the checkout goes on.', 'nashenski-commerce' ),
 					esc_html__( 'Turn a service on in Overview, save, then enter its API key or token in Customer checks. A service without a key is not asked.', 'nashenski-commerce' ),
 					esc_html__( 'On the order, the Reports box shows the answers. Press "Refresh data" to ask again.', 'nashenski-commerce' ),
 					esc_html__( 'For nekorekten.com you can report a customer yourself: write what happened and press "Send report". The report carries the name, phone and email of the order. Change the text and press "Save report", or press "Delete report" to remove it from nekorekten.com.', 'nashenski-commerce' ),
