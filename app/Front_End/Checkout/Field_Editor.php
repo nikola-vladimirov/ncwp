@@ -377,6 +377,10 @@ class Field_Editor {
 	/**
 	 * On submit, a field whose rule is not met is removed: it is not checked and not saved. The page
 	 * itself keeps the field and the script hides it, so nothing is removed when the form is shown.
+	 *
+	 * @param array  $section The fields of the section.
+	 * @param string $type    'billing' or 'shipping'.
+	 * @return array The fields without the ones whose rule is not met.
 	 */
 	private static function remove_unshown( $section, $type ) {
 		// Only the checkout submit removes fields. Another POST (a failed login, a cart update) keeps the form as it is.
@@ -405,8 +409,9 @@ class Field_Editor {
 			return ! empty( $row['when'] );
 		} );
 		$hidden = array();
+		$passes = count( $rules );
 
-		for ( $pass = 0; $pass <= count( $rules ); $pass++ ) {
+		for ( $pass = 0; $pass <= $passes; $pass++ ) {
 			$changed = false;
 
 			foreach ( $rules as $row ) {
@@ -903,6 +908,9 @@ class Field_Editor {
 	 * The rules against the rows that are saved: a condition that reads a row no longer in the table is
 	 * dropped (the others stay), a rule that reads its own row is dropped, and so are rules that read each
 	 * other in a loop (A reads B and B reads A), directly or through other rows.
+	 *
+	 * @param array $rows The rows as saved.
+	 * @return array The rows with the rules cleaned.
 	 */
 	private static function check_rules( $rows ) {
 		$keys = wp_list_pluck( $rows, 'key' );
@@ -963,6 +971,9 @@ class Field_Editor {
 
 	/**
 	 * A field-value rule as saved: only the known operators, keys and texts. Null when it has none.
+	 *
+	 * @param mixed $when The rule as sent.
+	 * @return array|null The cleaned rule.
 	 */
 	private static function clean_when( $when ) {
 		if ( ! is_array( $when ) || empty( $when['sets'] ) ) {
@@ -1004,6 +1015,9 @@ class Field_Editor {
 
 	/**
 	 * The row keys a rule reads.
+	 *
+	 * @param array $when A cleaned rule.
+	 * @return array The keys.
 	 */
 	private static function when_fields( $when ) {
 		$fields = array();
