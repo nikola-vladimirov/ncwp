@@ -1,5 +1,13 @@
 # Nashenski Commerce changelog
 
+## 0.17.1 (2026-10-28)
+
+### Upgrade
+- Upgrading removes the stored settings of the removed CVC courier, its scheduled job and its cached offices.
+
+### Checkout
+- The colour and size fields on the Checkout screen fit a phone-width screen.
+
 ## 0.17.0 (2026-10-28)
 
 ### Couriers
