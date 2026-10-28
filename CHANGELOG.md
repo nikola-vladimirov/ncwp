@@ -1,5 +1,14 @@
 # Nashenski Commerce changelog
 
+## 0.19.3 (2026-10-29)
+
+### Fixes
+- Import from Bulgarisation for WooCommerce: its order documents and invoices (in the public `uploads/bulgarisation` or `uploads/woo-bg` folder) could not be opened from the order (page not found). They now move into the private documents folder after the import and open as before. Sites that imported earlier get the move once after the update.
+- Documents left in the old public folder from before 0.11.1 are moved into the private folder again. A change in 0.19.0 had stopped this.
+- Checkout fields import: when the field table cannot be saved, the standard field rules go back to what they were, and the notice says nothing was changed.
+- Checkout fields: a condition that reads a field no longer in the table now drops the whole rule on save, as the import does. Before, only that condition was dropped, which showed or hid the field in more cases than the rule allowed.
+- Checkout fields import: an extra field whose title is only HTML is kept, with its key as the label, instead of being left out without a count.
+
 ## 0.19.2 (2026-10-29)
 
 ### Fixes

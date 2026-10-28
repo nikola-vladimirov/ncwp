@@ -29,6 +29,14 @@ class Document_Storage {
 	 */
 	const LEGACY_SUBDIR = 'nashenski';
 
+	/**
+	 * Public folders documents were in: ours before 0.11.1, and Bulgarisation's (4.x and 5.x), whose
+	 * documents the import takes over.
+	 */
+	const LEGACY_SUBDIRS = array( 'nashenski', 'woo-bg', 'bulgarisation' );
+	const MIGRATE_VERSION_OPTION = 'nashenski_documents_migration_version';
+	const MIGRATE_VERSION = 2;
+
 	public function __construct() {
 		add_action( 'admin_post_' . self::ACTION, array( __CLASS__, 'download' ) );
 		add_action( 'admin_post_nopriv_' . self::ACTION, array( __CLASS__, 'download' ) );
@@ -403,7 +411,7 @@ class Document_Storage {
 		$base = wp_normalize_path( trailingslashit( $uploads['basedir'] ) );
 		$path = wp_normalize_path( $path );
 
-		foreach ( array( self::subdir(), self::LEGACY_SUBDIR ) as $subdir ) {
+		foreach ( array_merge( array( self::subdir() ), self::LEGACY_SUBDIRS ) as $subdir ) {
 			if ( 0 === strpos( $path, $base . $subdir . '/' ) && false === strpos( $path, '..' ) ) {
 				return true;
 			}
@@ -413,10 +421,11 @@ class Document_Storage {
 	}
 
 	/**
-	 * Start moving documents out of the old public folder, once per site.
+	 * Start moving documents out of the old public folders, once per site and MIGRATE_VERSION
+	 * (version 2 added Bulgarisation's folders), and again after an import ($again).
 	 */
-	public static function schedule_migration() {
-		if ( get_option( self::MIGRATE_OPTION ) || ! function_exists( 'as_enqueue_async_action' ) ) {
+	public static function schedule_migration( $again = false ) {
+		if ( ( ! $again && (int) get_option( self::MIGRATE_VERSION_OPTION ) >= self::MIGRATE_VERSION ) || ! function_exists( 'as_enqueue_async_action' ) ) {
 			return;
 		}
 
@@ -424,7 +433,11 @@ class Document_Storage {
 			as_enqueue_async_action( self::MIGRATE_HOOK, array(), 'nashenski' );
 		}
 
-		update_option( self::MIGRATE_OPTION, 'scheduled', false );
+		if ( ! get_option( self::MIGRATE_OPTION ) ) {
+			update_option( self::MIGRATE_OPTION, 'scheduled', false );
+		}
+
+		update_option( self::MIGRATE_VERSION_OPTION, self::MIGRATE_VERSION, false );
 	}
 
 	/**
@@ -444,22 +457,20 @@ class Document_Storage {
 			INNER JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_wp_attached_file'
 			WHERE p.post_type = 'attachment' AND p.post_status = 'inherit' AND p.ID > %d
 			AND p.post_mime_type IN ( 'application/pdf', 'application/xml', 'text/xml', 'text/plain' )
-			AND m.meta_value LIKE %s
+			AND ( m.meta_value LIKE %s OR m.meta_value LIKE %s OR m.meta_value LIKE %s )
 			ORDER BY p.ID ASC
 			LIMIT %d",
 			absint( $after ),
-			$wpdb->esc_like( self::LEGACY_SUBDIR . '/' ) . '%',
+			$wpdb->esc_like( self::LEGACY_SUBDIRS[0] . '/' ) . '%',
+			$wpdb->esc_like( self::LEGACY_SUBDIRS[1] . '/' ) . '%',
+			$wpdb->esc_like( self::LEGACY_SUBDIRS[2] . '/' ) . '%',
 			self::MIGRATE_BATCH
 		) ) );
 
 		$failed = array();
 
 		foreach ( $ids as $id ) {
-			$order = wc_get_order( $id );
-
-			if ( ! $order ) {
-				continue;
-			}
+			$old = get_attached_file( $id );
 			$new = $private . '/' . basename( $old );
 
 			if ( $old && file_exists( $old ) && ( file_exists( $new ) || ! @rename( $old, $new ) ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename -- a failed move leaves the file where it was.

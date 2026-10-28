@@ -805,7 +805,7 @@ class Field_Editor {
 						?>"
 						data-missing="<?php
 						/* translators: %s: field key */
-						echo esc_attr__( '%s is not in the table any more. The condition is dropped on save.', 'nashenski-commerce' );
+						echo esc_attr__( '%s is not in the table any more. The rule is dropped on save.', 'nashenski-commerce' );
 						?>"
 						data-yes="<?php echo esc_attr__( 'ticked', 'nashenski-commerce' ); ?>"
 						data-no="<?php echo esc_attr__( 'not ticked', 'nashenski-commerce' ); ?>"
@@ -905,8 +905,9 @@ class Field_Editor {
 	}
 
 	/**
-	 * The rules against the rows that are saved: a condition that reads a row no longer in the table is
-	 * dropped (the others stay), a rule that reads its own row is dropped, and so are rules that read each
+	 * The rules against the rows that are saved: a rule with a condition that reads a row no longer in the
+	 * table is dropped whole (a cut rule would show the field in cases it did not allow, as the import does),
+	 * a rule that reads its own row is dropped, and so are rules that read each
 	 * other in a loop (A reads B and B reads A), directly or through other rows.
 	 *
 	 * @param array $rows The rows as saved.
@@ -921,19 +922,7 @@ class Field_Editor {
 				continue;
 			}
 
-			$sets = array();
-
-			foreach ( $row['when']['sets'] as $set ) {
-				$set = array_values( array_filter( $set, function ( $condition ) use ( $keys ) {
-					return in_array( $condition['field'], $keys, true );
-				} ) );
-
-				if ( $set ) {
-					$sets[] = $set;
-				}
-			}
-
-			$rows[ $i ]['when'] = $sets ? array( 'hide' => $row['when']['hide'], 'sets' => $sets ) : null;
+			$rows[ $i ]['when'] = array_diff( self::when_fields( $row['when'] ), $keys ) ? null : $row['when'];
 
 			if ( $rows[ $i ]['when'] ) {
 				$deps[ $row['key'] ] = array_unique( self::when_fields( $rows[ $i ]['when'] ) );

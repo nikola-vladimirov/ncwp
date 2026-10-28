@@ -133,7 +133,8 @@ A scan finds prices that cannot come from a whole net price plus VAT and offers 
 The plugin imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW
 Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy
 Shipping: courier logins, sender details, waybill numbers, shipping zone methods and, from the N-18
-plugin, company details and document numbers. Go to WooCommerce > Settings > Nashenski Commerce >
+plugin, company details and document numbers. Bulgarisation's order documents and invoices move into
+the private documents folder and still open from the order. Go to WooCommerce > Settings > Nashenski Commerce >
 Help and press "Import now". The old plugin is switched off; its data stays in the database.
 
 ## Documentation

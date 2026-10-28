@@ -63,6 +63,10 @@ class Checkout_Fields_Import {
 			$html .= '<div class="notice notice-error inline"><p>' . esc_html__( 'The fields of Checkout Field Editor could not be read. Activate that plugin and import again.', 'nashenski-commerce' ) . '</p></div>';
 		}
 
+		if ( nashenski_query_arg( 'nashenski_import_not_saved' ) ) {
+			$html .= '<div class="notice notice-error inline"><p>' . esc_html__( 'The imported fields could not be saved, so nothing was changed. Try again.', 'nashenski-commerce' ) . '</p></div>';
+		}
+
 		if ( is_array( get_option( self::SOURCE ) ) ) {
 			$url = wp_nonce_url( admin_url( 'admin-post.php?action=' . self::ACTION ), self::ACTION );
 			$html .= '<p><a class="button" href="' . esc_url( $url ) . '">' . esc_html__( 'Import fields from Checkout Field Editor', 'nashenski-commerce' ) . '</a></p>';
@@ -89,7 +93,14 @@ class Checkout_Fields_Import {
 		}
 
 		if ( is_array( $sections ) ) {
-			update_option( self::DONE_OPTION, self::run( $sections ), false );
+			$report = self::run( $sections );
+
+			if ( null === $report ) {
+				wp_safe_redirect( add_query_arg( 'nashenski_import_not_saved', 1, $back ) );
+				exit;
+			}
+
+			update_option( self::DONE_OPTION, $report, false );
 		}
 
 		wp_safe_redirect( add_query_arg( 'nashenski_imported_fields', 1, $back ) );
@@ -125,7 +136,16 @@ class Checkout_Fields_Import {
 	public static function run( $sections ) {
 		$converted = self::convert( $sections );
 		$standard = array_merge( array( 'email' ), Field_Editor::KEYS );
+		$group = function ( $field ) {
+			return 'email' === $field ? Field_Editor::GROUP_CLASSIC : Field_Editor::GROUP;
+		};
+		$rules_before = array();
 
+		foreach ( $standard as $field ) {
+			$rules_before[ $field ] = nashenski_get_option( $group( $field ), $field );
+		}
+
+		// Cleaning the rows also saves the standard field rules (Field_Editor::sanitize_layout_field()).
 		$rows = Field_Editor::sanitize_layout_field( $converted['rows'], array( 'type' => 'nashenski_field_layout' ), $converted['rows'] );
 
 		// The save path drops rules that read a missing row, their own field or loop back; those are not taken over (counted once).
@@ -156,7 +176,15 @@ class Checkout_Fields_Import {
 			}
 		}
 
-		// Every option write comes last, once the conversion has worked.
+		// The table goes first: when it cannot be saved, the standard field rules go back to what they were.
+		if ( ! update_option( Field_Editor::LAYOUT_OPTION, $rows, false ) && get_option( Field_Editor::LAYOUT_OPTION ) != $rows ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual -- the stored copy comes back with string values.
+			foreach ( $rules_before as $field => $rule ) {
+				nashenski_set_option( $group( $field ), $field, $rule );
+			}
+
+			return null;
+		}
+
 		foreach ( array_diff( $standard, array_keys( $converted['rules'] ) ) as $field ) {
 			// Standard fields the other plugin does not have go back to the default.
 			nashenski_set_option( 'email' === $field ? Field_Editor::GROUP_CLASSIC : Field_Editor::GROUP, $field, 'default' );
@@ -165,8 +193,6 @@ class Checkout_Fields_Import {
 		if ( null !== $converted['order_comments'] ) {
 			nashenski_set_option( Field_Editor::GROUP_CLASSIC, 'order_comments', $converted['order_comments'] );
 		}
-
-		update_option( Field_Editor::LAYOUT_OPTION, $rows, false );
 
 		return $report;
 	}
@@ -284,7 +310,7 @@ class Checkout_Fields_Import {
 
 				$rows[] = array(
 					'key' => $row_key,
-					'label' => '' !== (string) $field->title ? $field->title : ucfirst( str_replace( '_', ' ', $key ) ),
+					'label' => '' !== trim( wp_strip_all_tags( (string) $field->title ) ) ? $field->title : ucfirst( str_replace( '_', ' ', $key ) ),
 					'type' => isset( Field_Editor::TYPES[ $field->type ] ) ? $field->type : 'text',
 					'options' => implode( "\n", $texts ),
 					'rule' => $required ? 'required' : 'optional',

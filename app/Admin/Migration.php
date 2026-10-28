@@ -101,6 +101,8 @@ class Migration {
 		if ( ! get_option( self::DONE_OPTION ) ) {
 			$report = self::run();
 			$report['switched_off'] = Import_Sources::switch_off( self::plugin_files() );
+			// The old plugin's documents sit in a public folder; move them into the private one.
+			\Nashenski\Document_Storage::schedule_migration( true );
 			update_option( self::DONE_OPTION, array( 'time' => time(), 'report' => $report ), false );
 		}
 

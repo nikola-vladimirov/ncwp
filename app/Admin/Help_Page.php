@@ -181,6 +181,7 @@ class Help_Page {
 				),
 				__( 'Moving from another plugin', 'nashenski-commerce' ) => array(
 					esc_html__( 'Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping.', 'nashenski-commerce' ),
+					esc_html__( 'The order documents and invoices of Bulgarisation for WooCommerce move into the private documents folder and open from the order as before.', 'nashenski-commerce' ),
 					esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods and, from the N-18 plugin, the company details and document numbers. Then the old plugin is switched off. Its own data stays in the database.', 'nashenski-commerce' ),
 					esc_html__( 'Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import.', 'nashenski-commerce' ),
 				),
