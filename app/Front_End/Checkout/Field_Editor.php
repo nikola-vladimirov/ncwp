@@ -792,8 +792,8 @@ class Field_Editor {
 						/* translators: %s: the field, the operator and the value */
 						echo esc_attr__( 'Hidden when: %s', 'nashenski-commerce' );
 						?>"
-						data-shown-all="<?php echo esc_attr__( 'Shown when all of these are true', 'nashenski-commerce' ); ?>"
-						data-hidden-all="<?php echo esc_attr__( 'Hidden when all of these are true', 'nashenski-commerce' ); ?>"
+						data-and="<?php echo esc_attr__( 'and', 'nashenski-commerce' ); ?>"
+							data-or="<?php echo esc_attr__( 'or', 'nashenski-commerce' ); ?>"
 						data-is-hidden="<?php
 						/* translators: %s: field label */
 						echo esc_attr__( '%s is hidden, so its value always counts as empty.', 'nashenski-commerce' );
@@ -808,13 +808,18 @@ class Field_Editor {
 					>
 						<div class="nashenski-when__body">
 							<p><select class="nashenski-when__mode">
-								<option value="show"><?php esc_html_e( 'Show this field when all of these are true', 'nashenski-commerce' ); ?></option>
-								<option value="hide"><?php esc_html_e( 'Hide this field when all of these are true', 'nashenski-commerce' ); ?></option>
-							</select></p>
-							<div class="nashenski-when__list"></div>
-							<p><button type="button" class="button nashenski-when__add"><?php esc_html_e( 'Add condition', 'nashenski-commerce' ); ?></button> <button type="button" class="button-link nashenski-when__close"><?php esc_html_e( 'Close', 'nashenski-commerce' ); ?></button></p>
-							<p class="description nashenski-when__other" hidden><?php esc_html_e( 'This rule also has alternatives (or). They are kept as they are.', 'nashenski-commerce' ); ?></p>
-						</div>
+								<option value="show"><?php esc_html_e( 'Show this field when:', 'nashenski-commerce' ); ?></option>
+									<option value="hide"><?php esc_html_e( 'Hide this field when:', 'nashenski-commerce' ); ?></option>
+								</select></p>
+								<div class="nashenski-when__groups"></div>
+								<p><button type="button" class="button nashenski-when__addgroup"><?php esc_html_e( 'Add alternative (or)', 'nashenski-commerce' ); ?></button> <button type="button" class="button-link nashenski-when__close"><?php esc_html_e( 'Close', 'nashenski-commerce' ); ?></button></p>
+							</div>
+							<div class="nashenski-when__group">
+								<p class="nashenski-when__or"><strong><?php esc_html_e( 'or', 'nashenski-commerce' ); ?></strong></p>
+								<p class="description"><?php esc_html_e( 'All of these are true:', 'nashenski-commerce' ); ?></p>
+								<div class="nashenski-when__list"></div>
+								<p><button type="button" class="button nashenski-when__add"><?php esc_html_e( 'Add condition', 'nashenski-commerce' ); ?></button></p>
+							</div>
 						<div class="nashenski-when__cond">
 							<select class="nashenski-when__field"></select>
 							<select class="nashenski-when__op">

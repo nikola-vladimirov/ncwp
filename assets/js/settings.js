@@ -152,6 +152,20 @@
 		} )[ 0 ];
 	}
 
+	// "Field is value" for one condition, the same wording in the summary and the panel.
+	function condText( cond, list ) {
+		var strings = whenTemplate.dataset;
+		var trigger = findTrigger( list, cond.field );
+		var op = whenTemplate.content.querySelector( '.nashenski-when__op option[value="' + cond.operator + '"]' );
+		var value = cond.value;
+
+		if ( trigger && 'checkbox' === trigger.type ) {
+			value = '1' === value ? strings.yes : strings.no;
+		}
+
+		return ( trigger ? trigger.label : cond.field ) + ' ' + ( op ? op.textContent : '' ) + ( /^(empty|not_empty)$/.test( cond.operator ) || '' === value ? '' : ' ' + value );
+	}
+
 	function summary( cell ) {
 		var data = readWhen( cell );
 		var set = data.sets[ 0 ] || [];
@@ -160,18 +174,14 @@
 		var list = triggers( cell.closest( 'tr' ) );
 		var text = '';
 
-		if ( set.length > 1 ) {
-			text = data.hide ? strings.hiddenAll : strings.shownAll;
-		} else if ( 1 === set.length ) {
-			var trigger = findTrigger( list, set[ 0 ].field );
-			var op = whenTemplate.content.querySelector( '.nashenski-when__op option[value="' + set[ 0 ].operator + '"]' );
-			var value = set[ 0 ].value;
-
-			if ( trigger && 'checkbox' === trigger.type ) {
-				value = '1' === value ? strings.yes : strings.no;
-			}
-
-			text = ( data.hide ? strings.hidden : strings.shown ).replace( '%s', ( trigger ? trigger.label : set[ 0 ].field ) + ' ' + ( op ? op.textContent : '' ) + ( /^(empty|not_empty)$/.test( set[ 0 ].operator ) || '' === value ? '' : ' ' + value ) );
+		if ( set.length ) {
+			text = ( data.hide ? strings.hidden : strings.shown ).replace( '%s', function () {
+				return data.sets.map( function ( one ) {
+					return one.map( function ( cond ) {
+						return condText( cond, list );
+					} ).join( ' ' + strings.and + ' ' );
+				} ).join( ' ' + strings.or + ' ' );
+			} );
 		}
 
 		out.textContent = text;
@@ -187,26 +197,32 @@
 		each( document.querySelectorAll( '.nashenski-layout .nashenski-when' ), summary );
 	}
 
-	// Writes the first condition set from the panel; other alternatives of an imported rule stay as they were.
+	// Writes every group of the panel: conditions inside a group all hold (and), one group is enough (or).
 	function collect( cell ) {
 		var panel = cell.querySelector( '.nashenski-when__panel' );
 		var data = readWhen( cell );
-		var set = [];
+		var sets = [];
 
-		each( panel.querySelectorAll( '.nashenski-when__cond' ), function ( node ) {
-			var field = node.querySelector( '.nashenski-when__field' ).value;
-			var operator = node.querySelector( '.nashenski-when__op' ).value;
-			var input = node.querySelector( '.nashenski-when__value input, .nashenski-when__value select' );
+		each( panel.querySelectorAll( '.nashenski-when__group' ), function ( group ) {
+			var set = [];
 
-			if ( field ) {
-				set.push( { field: field, operator: operator, value: input && ! /^(empty|not_empty)$/.test( operator ) ? input.value : '' } );
+			each( group.querySelectorAll( '.nashenski-when__cond' ), function ( node ) {
+				var field = node.querySelector( '.nashenski-when__field' ).value;
+				var operator = node.querySelector( '.nashenski-when__op' ).value;
+				var input = node.querySelector( '.nashenski-when__value input, .nashenski-when__value select' );
+
+				if ( field ) {
+					set.push( { field: field, operator: operator, value: input && ! /^(empty|not_empty)$/.test( operator ) ? input.value : '' } );
+				}
+			} );
+
+			if ( set.length ) {
+				sets.push( set );
 			}
 		} );
 
 		data.hide = 'hide' === panel.querySelector( '.nashenski-when__mode' ).value;
-		data.sets = [ set ].concat( panel.rest || [] ).filter( function ( one ) {
-			return one.length;
-		} );
+		data.sets = sets;
 		cell.querySelector( '.nashenski-when__json' ).value = data.sets.length ? JSON.stringify( data ) : '';
 		cell.querySelector( '.nashenski-when__rule' ).value = data.hide ? 'hide' : 'show';
 		summary( cell );
@@ -267,7 +283,7 @@
 		}
 	}
 
-	function addCond( cell, cond ) {
+	function addCond( cell, group, cond ) {
 		var row = cell.closest( 'tr' );
 		var list = triggers( row );
 		var node = whenTemplate.content.querySelector( '.nashenski-when__cond' ).cloneNode( true );
@@ -287,26 +303,45 @@
 		node.querySelector( '.nashenski-when__op' ).value = cond.operator || 'value_eq';
 		valueControl( node, trigger, cond.value || '' );
 		condNote( node, trigger, cond.field );
-		cell.querySelector( '.nashenski-when__list' ).appendChild( node );
+		group.querySelector( '.nashenski-when__list' ).appendChild( node );
+	}
+
+	// One group of conditions (and); the groups of a rule are alternatives (or).
+	function addGroup( cell, set ) {
+		var group = whenTemplate.content.querySelector( '.nashenski-when__group' ).cloneNode( true );
+
+		cell.querySelector( '.nashenski-when__groups' ).appendChild( group );
+		set.forEach( function ( cond ) {
+			addCond( cell, group, cond );
+		} );
+
+		if ( ! set.length ) {
+			addCond( cell, group, {} );
+		}
+
+		markOr( cell );
+	}
+
+	// The "or" line shows between groups, not above the first.
+	function markOr( cell ) {
+		each( cell.querySelectorAll( '.nashenski-when__group' ), function ( group, index ) {
+			group.querySelector( '.nashenski-when__or' ).hidden = 0 === index;
+		} );
 	}
 
 	function openPanel( cell ) {
 		var panel = cell.querySelector( '.nashenski-when__panel' );
 		var data = readWhen( cell );
-		var set = data.sets[ 0 ] || [];
 
 		panel.textContent = '';
 		panel.appendChild( whenTemplate.content.querySelector( '.nashenski-when__body' ).cloneNode( true ) );
-		panel.rest = data.sets.slice( 1 );
 		panel.querySelector( '.nashenski-when__mode' ).value = data.hide ? 'hide' : 'show';
-		panel.querySelector( '.nashenski-when__other' ).hidden = ! panel.rest.length;
-		cell.querySelector( '.nashenski-when__list' ).textContent = '';
-		set.forEach( function ( cond ) {
-			addCond( cell, cond );
+		data.sets.forEach( function ( set ) {
+			addGroup( cell, set );
 		} );
 
-		if ( ! set.length ) {
-			addCond( cell, {} );
+		if ( ! data.sets.length ) {
+			addGroup( cell, [] );
 		}
 
 		panel.hidden = false;
@@ -345,7 +380,7 @@
 	}
 
 	document.addEventListener( 'click', function ( event ) {
-		var button = event.target.closest( '.nashenski-when__open, .nashenski-when__add, .nashenski-when__del, .nashenski-when__close' );
+		var button = event.target.closest( '.nashenski-when__open, .nashenski-when__add, .nashenski-when__addgroup, .nashenski-when__del, .nashenski-when__close' );
 		var cell = button && button.closest( '.nashenski-when' );
 
 		if ( ! cell || ! whenTemplate ) {
@@ -359,9 +394,19 @@
 				closePanel( cell );
 			}
 		} else if ( button.classList.contains( 'nashenski-when__add' ) ) {
-			addCond( cell, {} );
+			addCond( cell, button.closest( '.nashenski-when__group' ), {} );
+		} else if ( button.classList.contains( 'nashenski-when__addgroup' ) ) {
+			addGroup( cell, [] );
 		} else if ( button.classList.contains( 'nashenski-when__del' ) ) {
+			var group = button.closest( '.nashenski-when__group' );
+
 			button.closest( '.nashenski-when__cond' ).remove();
+
+			if ( ! group.querySelector( '.nashenski-when__cond' ) && cell.querySelectorAll( '.nashenski-when__group' ).length > 1 ) {
+				group.remove();
+				markOr( cell );
+			}
+
 			collect( cell );
 		} else {
 			closePanel( cell );

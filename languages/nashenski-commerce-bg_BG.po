@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.19.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-28 21:58+0000\n"
-"PO-Revision-Date: 2026-10-28 21:58+0000\n"
+"POT-Creation-Date: 2026-10-28 22:07+0000\n"
+"PO-Revision-Date: 2026-10-28 22:07+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1142,8 +1142,8 @@ msgid "In %s > Checkout fields you set the order, Required, Optional or Hidden a
 msgstr "В %s > Полета при плащане задавате реда, задължително, незадължително или скрито и ширината на всяко поле, и добавяте свои полета."
 
 #: app/Admin/Help_Page.php:110
-msgid "The Condition dropdown of a field shows or hides it by the value of other fields (is, is not, greater, less, empty, not empty), all conditions together. Example: for a \"Company\" field pick \"Show when...\", then \"Invoice for a company\" \"is\" \"Yes\". \"Always shown\" removes the rule. The classic checkout follows every condition; the block checkout follows conditions on your own fields that read your own fields (not greater or less)."
-msgstr "Падащото меню „Условие“ на поле го показва или скрива според стойността на други полета (е, не е, по-голямо, по-малко, празно, не е празно), като всички условия важат заедно. Пример: за поле „Фирма“ изберете „Показвай, когато...“, после „Фактура за фирма“ „е“ „Да“. „Винаги се показва“ маха правилото. Класическото плащане следва всяко условие; блоковото плащане следва условията на вашите полета, които четат ваши полета (не „по-голямо“ и „по-малко“)."
+msgid "The Condition dropdown of a field shows or hides it by the value of other fields (is, is not, greater, less, empty, not empty). Conditions in one group all have to be true (and); \"Add alternative (or)\" adds another group, and one true group is enough (or). Example: for a \"Company\" field pick \"Show when...\", then \"Invoice for a company\" \"is\" \"Yes\". \"Always shown\" removes the rule. The classic checkout follows every condition; the block checkout follows conditions on your own fields that read your own fields (not greater or less)."
+msgstr "Падащото меню „Условие“ на поле го показва или скрива според стойността на други полета (е, не е, по-голямо, по-малко, празно, не е празно). Условията в една група трябва да са верни едновременно (и); „Добави алтернатива (или)“ добавя нова група, а една вярна група е достатъчна (или). Пример: за поле „Фирма“ изберете „Показвай, когато...“, после „Фактура за фирма“ „е“ „Да“. „Винаги се показва“ маха правилото. Класическото плащане следва всяко условие; блоковото плащане следва условията на вашите полета, които четат ваши полета (не „по-голямо“ и „по-малко“)."
 
 #: app/Admin/Help_Page.php:111
 msgid "Using WooCommerce Checkout Field Editor (free or Pro) before? \"Import fields from Checkout Field Editor\" copies its fields, rules and field conditions. Cart, product and repeat rules are left out and counted in the notice. Company invoice fields stay with Nashenski. The block checkout applies field conditions to the extra fields only, and not the \"greater\" and \"less\" ones."
@@ -3137,7 +3137,7 @@ msgstr " до "
 msgid "+ Add new row"
 msgstr "+ Добавяне на ред"
 
-#: app/Admin/Tabs/BoxNow_Tab.php:124
+#: app/Admin/Tabs/BoxNow_Tab.php:124 app/Front_End/Checkout/Field_Editor.php:795
 msgid "and"
 msgstr "и"
 
@@ -4905,13 +4905,9 @@ msgstr "Показва се, когато: %s"
 msgid "Hidden when: %s"
 msgstr "Скрива се, когато: %s"
 
-#: app/Front_End/Checkout/Field_Editor.php:795
-msgid "Shown when all of these are true"
-msgstr "Показва се, когато всички тези са верни"
-
-#: app/Front_End/Checkout/Field_Editor.php:796
-msgid "Hidden when all of these are true"
-msgstr "Скрива се, когато всички тези са верни"
+#: app/Front_End/Checkout/Field_Editor.php:796 app/Front_End/Checkout/Field_Editor.php:818
+msgid "or"
+msgstr "или"
 
 #. translators: %s: field label
 #: app/Front_End/Checkout/Field_Editor.php:799
@@ -4938,66 +4934,70 @@ msgid "Choose a field"
 msgstr "Изберете поле"
 
 #: app/Front_End/Checkout/Field_Editor.php:811
-msgid "Show this field when all of these are true"
-msgstr "Показвай това поле, когато всички тези са верни"
+msgid "Show this field when:"
+msgstr "Показвай полето, когато:"
 
 #: app/Front_End/Checkout/Field_Editor.php:812
-msgid "Hide this field when all of these are true"
-msgstr "Скривай това поле, когато всички тези са верни"
+msgid "Hide this field when:"
+msgstr "Скривай полето, когато:"
 
 #: app/Front_End/Checkout/Field_Editor.php:815
-msgid "Add condition"
-msgstr "Добавяне на условие"
+msgid "Add alternative (or)"
+msgstr "Добави алтернатива (или)"
 
 #: app/Front_End/Checkout/Field_Editor.php:815 app/Front_End/Checkout/Pickers.php:367 app/Front_End/Quick_Order.php:288
 msgid "Close"
 msgstr "Затваряне"
 
-#: app/Front_End/Checkout/Field_Editor.php:816
-msgid "This rule also has alternatives (or). They are kept as they are."
-msgstr "Това правило има и алтернативи (или). Те се запазват непроменени."
+#: app/Front_End/Checkout/Field_Editor.php:819
+msgid "All of these are true:"
+msgstr "Всички тези са верни:"
 
 #: app/Front_End/Checkout/Field_Editor.php:821
+msgid "Add condition"
+msgstr "Добавяне на условие"
+
+#: app/Front_End/Checkout/Field_Editor.php:826
 msgid "is"
 msgstr "е"
 
-#: app/Front_End/Checkout/Field_Editor.php:822
+#: app/Front_End/Checkout/Field_Editor.php:827
 msgid "is not"
 msgstr "не е"
 
-#: app/Front_End/Checkout/Field_Editor.php:823
+#: app/Front_End/Checkout/Field_Editor.php:828
 msgid "is greater than"
 msgstr "е по-голямо от"
 
-#: app/Front_End/Checkout/Field_Editor.php:824
+#: app/Front_End/Checkout/Field_Editor.php:829
 msgid "is less than"
 msgstr "е по-малко от"
 
-#: app/Front_End/Checkout/Field_Editor.php:825
+#: app/Front_End/Checkout/Field_Editor.php:830
 msgid "is empty"
 msgstr "е празно"
 
-#: app/Front_End/Checkout/Field_Editor.php:826
+#: app/Front_End/Checkout/Field_Editor.php:831
 msgid "is not empty"
 msgstr "не е празно"
 
-#: app/Front_End/Checkout/Field_Editor.php:833
+#: app/Front_End/Checkout/Field_Editor.php:838
 msgid "Add your own field"
 msgstr "Добавяне на собствено поле"
 
-#: app/Front_End/Checkout/Field_Editor.php:834
+#: app/Front_End/Checkout/Field_Editor.php:839
 msgid "Use the arrows to change the order. Two half-width fields next to each other share a line. With company invoice fields on, the company name belongs to them."
 msgstr "Сменете реда със стрелките. Две съседни полета с половин ширина са на един ред. Когато полетата за фактура на фирма са включени, името на фирмата е част от тях."
 
-#: app/Front_End/Checkout/Field_Editor.php:837
+#: app/Front_End/Checkout/Field_Editor.php:842
 msgid "Which checkouts follow what"
 msgstr "Кои касови процеси какво следват"
 
-#: app/Front_End/Checkout/Field_Editor.php:838
+#: app/Front_End/Checkout/Field_Editor.php:843
 msgid "Show, required and hidden apply to the billing and shipping address in every checkout. Order and width also apply to the address in the block checkout, where the email always comes first and your own fields come after it. The place of the email applies to the classic checkout and to builder checkouts that show WooCommerce's billing fields. Builder checkouts made of single field elements keep the order you placed them in. When the town or region is hidden, the courier fields ask for the town (from Econt's list of towns when Econt is on)."
 msgstr "Показване, задължителност и скриване важат за адреса за фактуриране и за адреса за доставка във всеки касов процес. Редът и ширината важат и за адреса в блоковия касов процес, където имейлът винаги е първи, а вашите полета са след него. Мястото на имейла важи за класическия касов процес и за конструираните касови процеси, които показват полетата за фактуриране на WooCommerce. Конструираните касови процеси от отделни полета запазват реда, в който сте ги поставили. Когато градът или областта са скрити, полетата на куриера искат град (от списъка на градовете на Econt, когато Econt е включен)."
 
-#: app/Front_End/Checkout/Field_Editor.php:839
+#: app/Front_End/Checkout/Field_Editor.php:844
 msgid "Conditions: the classic checkout follows all of them. The block checkout follows conditions on your own fields that read your own fields, and not \"greater\" or \"less\"; other conditions are ignored there."
 msgstr "Условия: класическото плащане следва всички. Блоковото плащане следва условията на вашите полета, които четат ваши полета, но не „по-голямо“ и „по-малко“; другите условия там се пренебрегват."
 

@@ -4,6 +4,7 @@
 
 ### Checkout
 - Field conditions: every row of the Checkout fields table has a Condition dropdown ("Always shown", "Show when...", "Hide when...") next to Required and Width. Pick a rule and add conditions on the value of other fields; pick "Always shown" to remove it. When you choose a field in a condition, a list or checkbox field offers its choices.
+- Conditions in one group must all be true (and); "Add alternative (or)" adds another group, and one true group is enough (or). Imported rules with alternatives are edited in full.
 - The classic checkout follows every condition. The block checkout follows conditions on your own fields that read your own fields (not "greater" or "less").
 
 ## 0.18.0 (2026-10-28)
