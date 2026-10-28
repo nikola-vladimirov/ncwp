@@ -1,5 +1,22 @@
 # Nashenski Commerce changelog
 
+## 0.17.3 (2026-10-28)
+
+### Orders
+- The shipment status check for Econt shows an error instead of breaking the order screen when Econt returns an error.
+
+### Couriers
+- Econt courier calls report an error instead of an empty answer when Econt cannot be reached.
+
+### Import
+- Importing settings from Bulgarisation for WooCommerce 5.x works, as well as from 4.x.
+
+### Translation
+- Bulgarian translations show again: a stale translation cache file was removed.
+
+### Settings
+- A settings link with the wrong tab name now goes to the Nashenski Commerce tab without a PHP warning.
+
 ## 0.17.2 (2026-10-28)
 
 ### Orders
