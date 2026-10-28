@@ -107,6 +107,7 @@ class Help_Page {
 					esc_html__( 'When the customer picks a courier, they choose an office, a locker or an address right under it, from a list or on the courier\'s map. Until then the option says "Complete the fields to calculate".', 'nashenski-commerce' ),
 					/* translators: %s: link to the Checkout section */
 					sprintf( esc_html__( 'In %s > Checkout fields you set the order, Required, Optional or Hidden and the width of every field, and add your own fields.', 'nashenski-commerce' ), $checkout ),
+					esc_html__( 'Using WooCommerce Checkout Field Editor (free or Pro) before? "Import fields from Checkout Field Editor" copies its fields and rules into that table. Conditions are not copied, and the company invoice fields stay with Nashenski.', 'nashenski-commerce' ),
 					esc_html__( '"Company invoice fields" adds "I want an invoice for a company" with company name, EIK, VAT number, MOL, town and address.', 'nashenski-commerce' ),
 					esc_html__( '"Invoice numbering": "Website invoices" go into the NRA audit file. "Own invoicing program" keeps the invoice out of it; you type that program\'s number on the order.', 'nashenski-commerce' ),
 					esc_html__( '"Shipping options look" sets cards or the plain look of your theme. "Colours and sizes" holds the colours, borders, corners and spacing. Empty settings follow your design tokens or theme.', 'nashenski-commerce' ),

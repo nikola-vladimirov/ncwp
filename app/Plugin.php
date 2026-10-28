@@ -120,6 +120,7 @@ class Plugin {
 		if ( is_admin() ) {
 			new Admin\Migration();
 			new Admin\Import_Sources();
+			new Admin\Checkout_Fields_Import();
 			new Admin\Setting_Help();
 			new Admin\Changelog();
 			new Admin\Abandoned_Carts_Page();
