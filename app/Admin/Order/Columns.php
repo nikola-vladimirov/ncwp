@@ -61,7 +61,8 @@ class Columns {
 				$order = wc_get_order( $post_id );
 				$data = nashenski_get_order_label( $post_id );
 
-				if ( !empty( $data ) && strpos( $data['method'], 'nashenski' ) !== false ) {
+				// Only couriers that still exist: an order on a removed courier (CVC) has no courier name.
+				if ( !empty( $data['courier'] ) && strpos( $data['method'], 'nashenski' ) !== false ) {
 					Admin_Menus::render_fragment( 'label-column', [ 
 						'data' => $data,
 						'order' => $order,
