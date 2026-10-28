@@ -1,5 +1,13 @@
 # Nashenski Commerce changelog
 
+## 0.17.2 (2026-10-28)
+
+### Orders
+- The orders list no longer shows a PHP warning for an order on the removed CVC courier.
+
+### Translation
+- Bulgarian translations for the texts added in 0.17.0 and 0.17.1: the courier pages, the checkout sections and invoice numbering.
+
 ## 0.17.1 (2026-10-28)
 
 ### Upgrade

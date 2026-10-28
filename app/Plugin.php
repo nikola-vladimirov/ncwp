@@ -4,7 +4,7 @@ namespace Nashenski;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin {
-	const VERSION = '0.17.1';
+	const VERSION = '0.17.2';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
@@ -64,7 +64,10 @@ class Plugin {
 		foreach ( glob( File::CACHE_FOLDER . 'cvc' . DIRECTORY_SEPARATOR . '*' ) ?: array() as $cvc_file ) {
 			wp_delete_file( $cvc_file );
 		}
-		@rmdir( File::CACHE_FOLDER . 'cvc' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- the folder may be missing or not empty.
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		WP_Filesystem();
+		global $wp_filesystem;
+		$wp_filesystem->rmdir( File::CACHE_FOLDER . 'cvc', true ); // A missing folder is fine.
 
 		update_option( 'nashenski_version', self::VERSION );
 	}
