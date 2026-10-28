@@ -29,13 +29,29 @@ class Cities {
 		} else {
 			$cities_file = $this->container[ Client::SPEEDY ]::CACHE_FOLDER . 'cities-' . $country_id . '.csv';
 
+			$failed_key = 'nashenski_speedy_cities_failed_' . $country_id;
+
 			if ( ! is_file( $cities_file ) || ! filesize( $cities_file ) ) {
-				File::put_to_file( $cities_file, $this->container[ Client::SPEEDY ]->api_call( self::CITIES_ENDPOINT . $country_id, array(), 1 ) );
+				// A recent failed fetch is not retried on every request.
+				if ( get_transient( $failed_key ) ) {
+					return [];
+				}
+
+				$body = $this->container[ Client::SPEEDY ]->api_call( self::CITIES_ENDPOINT . $country_id, array(), 1 );
+
+				if ( is_string( $body ) && '' !== trim( $body ) ) {
+					File::put_to_file( $cities_file, $body );
+				}
+
 				clearstatcache();
 			}
 
 			if ( ! is_file( $cities_file ) || ! filesize( $cities_file ) ) {
-				$this->container[ Client::SPEEDY ]::clear_cache_folder();
+				if ( is_file( $cities_file ) ) {
+					wp_delete_file( $cities_file );
+				}
+
+				set_transient( $failed_key, 1, 5 * MINUTE_IN_SECONDS );
 
 				return [];
 			}

@@ -7,6 +7,14 @@
 - Conditions in one group must all be true (and); "Add alternative (or)" adds another group, and one true group is enough (or). Imported rules with alternatives are edited in full.
 - The classic checkout follows every condition. The block checkout follows conditions on your own fields that read your own fields (not "greater" or "less").
 
+### Fixes and hardening
+- Invoice date uses the shop's time zone, not UTC. Two invoices made at the same moment can no longer get the same number.
+- The NRA export keeps every shipping line of an order, and refunds fall in the right month.
+- The accountant export shows the credit note number, and the Delta export cleans separators out of the customer text.
+- Running the import from another plugin twice no longer overwrites your invoice numbers.
+- Courier connections: a slow or wrong login no longer slows the checkout on every page (failed logins and empty answers are remembered for 5 minutes); BOX NOW keeps its login token; the courier town and street lists are no longer saved half-finished; a typed street or town search is cut to 64 characters; a failed NepoStop or Connectix check shows as failed.
+- The quick order confirmation email leaves links out of the name, and shops behind a proxy can pass the real visitor address with the `nashenski/quick_order/client_ip` filter.
+
 ## 0.18.0 (2026-10-28)
 
 ### Checkout

@@ -20,43 +20,43 @@ class Streets {
 			wp_mkdir_p( $this->container[ Client::PIGEON ]::CACHE_FOLDER );
 		}
 
+		$query = mb_substr( (string) $query, 0, 64 );
 		$hash = md5( $query );
 		$streets_file = $this->container[ Client::PIGEON ]::CACHE_FOLDER . 'streets-' . $city_id . '-' . $hash . '.json';
 		$streets = File::get_file( $streets_file );
 
-		if ( !$streets ) {
-			$page = 1;
+		$miss_key = 'nashenski_miss_' . md5( $streets_file );
+
+		// An empty answer is remembered for 5 minutes, so the same lookup does not call the courier again.
+		if ( !$streets && !get_transient( $miss_key ) ) {
 			$all_streets = [];
-			$data = $this->get_page( $city_id, $page, $query );
-			
-			if ( isset( $data['success'] ) && $data['success'] && isset( $data['data'] ) && is_array( $data['data'] ) ) {
-				foreach ( $data['data'] as $street ) {
-					$all_streets[] = $street;
+			$complete = false;
+
+			// Cap the pages; cache only when every page answered.
+			for ( $page = 1; $page <= 200; $page++ ) {
+				$data = $this->get_page( $city_id, $page, $query );
+
+				if ( empty( $data['success'] ) || ! isset( $data['data'] ) || ! is_array( $data['data'] ) ) {
+					break;
 				}
-				$current_page = $data['meta']['current_page'];
-				$total_pages = $data['meta']['last_page'];
 
-				while ( $current_page < $total_pages ) {
-					$page++;
-					$data = $this->get_page( $city_id, $page, $query );
+				$all_streets = array_merge( $all_streets, $data['data'] );
 
-					if ( isset( $data['success'] ) && $data['success'] && isset( $data['data'] ) && is_array( $data['data'] ) ) {
-						foreach ( $data['data'] as $street ) {
-							$all_streets[] = $street;
-						}
-						$current_page = $data['meta']['current_page'];
-						$total_pages = $data['meta']['last_page'];
-					} else {
-						break;
-					}
+				if ( $page >= (int) ( $data['meta']['last_page'] ?? 1 ) ) {
+					$complete = true;
+					break;
 				}
 			}
 
 			if ( !empty( $all_streets ) ) {
 				$streets = wp_json_encode( $all_streets );
 				
-				File::put_to_file( $streets_file, $streets );
+				if ( $complete ) {
+					File::put_to_file( $streets_file, $streets );
+				}
 				unset( $all_streets, $data );
+			} else {
+				set_transient( $miss_key, 1, 5 * MINUTE_IN_SECONDS );
 			}
 		}
 
@@ -83,6 +83,7 @@ class Streets {
 	}
 
 	public function get_streets_by_city( $city_id, $query ) {
+		$query = mb_substr( (string) $query, 0, 64 );
 		$hash = md5( $query );
 
 		if ( empty( $this->streets[ $city_id ][ $hash ] ) ) {

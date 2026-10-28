@@ -29,37 +29,31 @@ class Lockers {
 				'type' => 'locker',
 			), $city_id, $country_code );
 			
-			$page = 1;
 			$all_lockers = [];
-			$data = $this->get_page( $page, $args );
-			
-			if ( isset( $data['success'] ) && $data['success'] && isset( $data['data'] ) && is_array( $data['data'] ) ) {
-				foreach ( $data['data'] as $locker ) {
-					$all_lockers[] = $locker;
+			$complete = false;
+
+			// Cap the pages; cache only when every page answered.
+			for ( $page = 1; $page <= 200; $page++ ) {
+				$data = $this->get_page( $page, $args );
+
+				if ( empty( $data['success'] ) || ! isset( $data['data'] ) || ! is_array( $data['data'] ) ) {
+					break;
 				}
-				$current_page = $data['meta']['current_page'];
-				$total_pages = $data['meta']['last_page'];
 
-				while ( $current_page < $total_pages ) {
-					$page++;
-					$data = $this->get_page( $page, $args );
+				$all_lockers = array_merge( $all_lockers, $data['data'] );
 
-					if ( isset( $data['success'] ) && $data['success'] && isset( $data['data'] ) && is_array( $data['data'] ) ) {
-						foreach ( $data['data'] as $locker ) {
-							$all_lockers[] = $locker;
-						}
-						$current_page = $data['meta']['current_page'];
-						$total_pages = $data['meta']['last_page'];
-					} else {
-						break;
-					}
+				if ( $page >= (int) ( $data['meta']['last_page'] ?? 1 ) ) {
+					$complete = true;
+					break;
 				}
 			}
 
 			if ( !empty( $all_lockers ) ) {
 				$lockers = wp_json_encode( $all_lockers );
 				
-				File::put_to_file( $lockers_file, $lockers );
+				if ( $complete ) {
+					File::put_to_file( $lockers_file, $lockers );
+				}
 				unset( $all_lockers, $data );
 			}
 		}

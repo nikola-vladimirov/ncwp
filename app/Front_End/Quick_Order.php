@@ -705,14 +705,17 @@ document.addEventListener("submit",function(e){
 			sprintf(
 				/* translators: %s: shopper name */
 				__( "Hello %s,\n\nThank you. We have your quick order and will contact you to confirm it.\n\nNo payment is needed now.", 'nashenski-commerce' ),
-				$order->get_billing_first_name()
+				trim( preg_replace( '~(?:https?://|www\.)\S*~i', '', $order->get_billing_first_name() ) )
 			)
 		);
 	}
 
 	private static function client_ip() {
 		// Not WC_Geolocation: it trusts X-Forwarded-For, which a bot can spoof to dodge the limit.
-		return sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
+		$ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
+
+		// Shops behind a proxy can return the real address here.
+		return (string) apply_filters( 'nashenski/quick_order/client_ip', $ip );
 	}
 
 	private static function too_many_requests() {

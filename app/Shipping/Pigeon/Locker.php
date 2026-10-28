@@ -29,7 +29,7 @@ class Locker {
 		$args = [];
 		$raw_state = nashenski_picker_request( 'state' );
 		$states = self::$container[ Client::PIGEON_CITIES ]->get_regions();
-		$state = $states[ $raw_state ];
+		$state = $states[ $raw_state ] ?? '';
 		$raw_city = Transliteration::latin2cyrillic( nashenski_picker_request( 'city' ) );
 		$cities_data = self::$container[ Client::PIGEON_CITIES ]->get_filtered_cities( $raw_city, $raw_state );
 

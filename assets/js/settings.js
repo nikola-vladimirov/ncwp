@@ -677,6 +677,7 @@
 
 	/* Exports -------------------------------------------------------------- */
 
+	// html is trusted: the export handlers escape every text they send (esc_html, esc_url).
 	function show( form, html, type ) {
 		var box = form.querySelector( '.nashenski-export__result' );
 

@@ -13,7 +13,7 @@ class NepoStop extends Provider_Base {
     public static function get_all_reports( $order, $force = false ) {
         $container = nashenski()->container();
         $phone = ( $order->get_shipping_phone() ) ? $order->get_shipping_phone() : $order->get_billing_phone();
-        $meta_key = 'nashenski_reports-nepostop_phone_' . $phone;
+        $meta_key = 'nashenski_reports-nepostop_phone_' . md5( $phone );
 		$meta = $order->get_meta( $meta_key );
         $treshold = nashenski_get_option( 'nepostop', 'level_of_warning' );
 
@@ -42,7 +42,7 @@ class NepoStop extends Provider_Base {
 
     public static function get_all_reports_from_meta( $order ) {
         $phone = ( $order->get_shipping_phone() ) ? $order->get_shipping_phone() : $order->get_billing_phone();
-        $meta_key = 'nashenski_reports-nepostop_phone_' . $phone;
+        $meta_key = 'nashenski_reports-nepostop_phone_' . md5( $phone );
         $args = [ 'reports' => [] ];
         $result = $order->get_meta( $meta_key );
         $treshold = nashenski_get_option( 'nepostop', 'level_of_warning' );

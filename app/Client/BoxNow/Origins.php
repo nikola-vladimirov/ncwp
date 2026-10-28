@@ -23,16 +23,19 @@ class Origins {
 		$origins_file = $this->container[ Client::BOXNOW ]::CACHE_FOLDER . 'origins.json';
 		$origins = File::get_file( $origins_file );
 
-		if ( !$origins ) {
+		$failed_key = 'nashenski_boxnow_origins_failed';
+
+		// A recent failed fetch is not retried on every request.
+		if ( !$origins && !get_transient( $failed_key ) ) {
 			$api_call = $this->container[ Client::BOXNOW ]->api_call( self::ORIGINS_ENDPOINT, [], 'GET' );
 
-			if ( is_array( $api_call ) ) {
-				if ( !empty( $api_call['data'] ) ) {
-					$origins = wp_json_encode( $api_call['data'] );
-					
-					File::put_to_file( $origins_file, $origins );
-					unset( $api_call );
-				}
+			if ( is_array( $api_call ) && !empty( $api_call['data'] ) ) {
+				$origins = wp_json_encode( $api_call['data'] );
+
+				File::put_to_file( $origins_file, $origins );
+				unset( $api_call );
+			} else {
+				set_transient( $failed_key, 1, 5 * MINUTE_IN_SECONDS );
 			}
 		}
 
@@ -63,10 +66,10 @@ class Origins {
 
 		if ( !empty( $origins ) ) {
 			foreach ( $origins as $origin ) {
-				$address_line_2 = ( $origin['addressLine2'] ) ? str_replace( ' ', '', $origin['addressLine2'] ) : '';
+				$address_line_2 = ! empty( $origin['addressLine2'] ) ? str_replace( ' ', '', $origin['addressLine2'] ) : '';
 				$data[ 'originID-' . $origin['id'] ] = [
 					'id' => 'originID-' . $origin['id'],
-					'type' => $origin['type'],
+					'type' => $origin['type'] ?? '',
 					'label' => $origin['name'] . ' (' . $address_line_2 . ' ' . $origin['addressLine1'] . ')',
 				];
 			}

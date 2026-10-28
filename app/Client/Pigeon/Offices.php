@@ -29,37 +29,31 @@ class Offices {
 				'type' => 'office',
 			), $city_id, $country_code );
 			
-			$page = 1;
 			$all_offices = [];
-			$data = $this->get_page( $page, $args );
-			
-			if ( isset( $data['success'] ) && $data['success'] && isset( $data['data'] ) && is_array( $data['data'] ) ) {
-				foreach ( $data['data'] as $office ) {
-					$all_offices[] = $office;
+			$complete = false;
+
+			// Cap the pages; cache only when every page answered.
+			for ( $page = 1; $page <= 200; $page++ ) {
+				$data = $this->get_page( $page, $args );
+
+				if ( empty( $data['success'] ) || ! isset( $data['data'] ) || ! is_array( $data['data'] ) ) {
+					break;
 				}
-				$current_page = $data['meta']['current_page'];
-				$total_pages = $data['meta']['last_page'];
 
-				while ( $current_page < $total_pages ) {
-					$page++;
-					$data = $this->get_page( $page, $args );
+				$all_offices = array_merge( $all_offices, $data['data'] );
 
-					if ( isset( $data['success'] ) && $data['success'] && isset( $data['data'] ) && is_array( $data['data'] ) ) {
-						foreach ( $data['data'] as $office ) {
-							$all_offices[] = $office;
-						}
-						$current_page = $data['meta']['current_page'];
-						$total_pages = $data['meta']['last_page'];
-					} else {
-						break;
-					}
+				if ( $page >= (int) ( $data['meta']['last_page'] ?? 1 ) ) {
+					$complete = true;
+					break;
 				}
 			}
 
 			if ( !empty( $all_offices ) ) {
 				$offices = wp_json_encode( $all_offices );
 				
-				File::put_to_file( $offices_file, $offices );
+				if ( $complete ) {
+					File::put_to_file( $offices_file, $offices );
+				}
 				unset( $all_offices, $data );
 			}
 		}

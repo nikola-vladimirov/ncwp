@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.19.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-10-28 22:07+0000\n"
-"PO-Revision-Date: 2026-10-28 22:07+0000\n"
+"POT-Creation-Date: 2026-10-28 22:46+0000\n"
+"PO-Revision-Date: 2026-10-28 22:46+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -237,7 +237,7 @@ msgstr "%d колички"
 msgid "Edit cart #%d"
 msgstr "Редакция на количка #%d"
 
-#: app/Admin/Abandoned_Carts_Page.php:368 app/Export/Builder/Fields.php:50 app/Front_End/Checkout/Field_Editor.php:713 app/Front_End/Quick_Order.php:413
+#: app/Admin/Abandoned_Carts_Page.php:368 app/Export/Builder/Fields.php:50 app/Front_End/Checkout/Field_Editor.php:718 app/Front_End/Quick_Order.php:413
 msgid "Email"
 msgstr "Имейл"
 
@@ -351,7 +351,7 @@ msgstr "Създаване на товарителница"
 msgid "Delete label"
 msgstr "Изтриване на товарителницата"
 
-#: app/Admin/BoxNow.php:91 app/Admin/Econt.php:94 app/Admin/Order/Columns.php:27 app/Admin/Pigeon.php:194 app/Admin/Speedy.php:145 app/Front_End/Checkout/Field_Editor.php:721
+#: app/Admin/BoxNow.php:91 app/Admin/Econt.php:94 app/Admin/Order/Columns.php:27 app/Admin/Pigeon.php:194 app/Admin/Speedy.php:145 app/Front_End/Checkout/Field_Editor.php:726
 msgid "Label"
 msgstr "Товарителница"
 
@@ -615,7 +615,7 @@ msgstr "Частична доставка"
 msgid "Length"
 msgstr "Дължина"
 
-#: app/Admin/Econt.php:134 app/Admin/Pigeon.php:229 app/Admin/Speedy.php:187 app/Front_End/Checkout/Field_Editor.php:772
+#: app/Admin/Econt.php:134 app/Admin/Pigeon.php:229 app/Admin/Speedy.php:187 app/Front_End/Checkout/Field_Editor.php:777
 msgid "Width"
 msgstr "Ширина"
 
@@ -723,15 +723,15 @@ msgstr "Запазени експорти"
 msgid "Add"
 msgstr "Добавяне"
 
-#: app/Admin/Export_Builder.php:141 app/Admin/Settings_Page.php:697 app/Admin/Settings_Page.php:811 app/Admin/Settings_Page.php:916 app/Front_End/Checkout/Field_Editor.php:742 app/Front_End/Checkout/Field_Editor.php:774
+#: app/Admin/Export_Builder.php:141 app/Admin/Settings_Page.php:697 app/Admin/Settings_Page.php:811 app/Admin/Settings_Page.php:916 app/Front_End/Checkout/Field_Editor.php:747 app/Front_End/Checkout/Field_Editor.php:779
 msgid "Remove"
 msgstr "Премахване"
 
-#: app/Admin/Export_Builder.php:142 app/Front_End/Checkout/Field_Editor.php:735
+#: app/Admin/Export_Builder.php:142 app/Front_End/Checkout/Field_Editor.php:740
 msgid "Move up"
 msgstr "Нагоре"
 
-#: app/Admin/Export_Builder.php:143 app/Front_End/Checkout/Field_Editor.php:736
+#: app/Admin/Export_Builder.php:143 app/Front_End/Checkout/Field_Editor.php:741
 msgid "Move down"
 msgstr "Надолу"
 
@@ -1617,15 +1617,15 @@ msgstr "От предишни плъгини"
 msgid "What the earlier plugins saved on this order, kept when their data was imported."
 msgstr "Това, което предишните плъгини са записали в тази поръчка, запазено при внасянето на данните им."
 
-#: app/Admin/Import_Sources.php:572 app/Export/Builder/Fields.php:234
+#: app/Admin/Import_Sources.php:572 app/Export/Builder/Fields.php:238
 msgid "Order document"
 msgstr "Документ за продажба"
 
-#: app/Admin/Import_Sources.php:573 app/Admin/Order/Documents.php:145 app/Export/Builder/Fields.php:235
+#: app/Admin/Import_Sources.php:573 app/Admin/Order/Documents.php:145 app/Export/Builder/Fields.php:239
 msgid "Invoice"
 msgstr "Фактура"
 
-#: app/Admin/Import_Sources.php:574 app/Export/Builder/Fields.php:236
+#: app/Admin/Import_Sources.php:574 app/Export/Builder/Fields.php:240
 msgid "Credit note"
 msgstr "Кредитно известие"
 
@@ -1803,7 +1803,7 @@ msgstr "Вид"
 msgid "SKU"
 msgstr "Код (SKU)"
 
-#: app/Admin/ImpossibleVatPrice.php:142 app/Front_End/Checkout/Field_Editor.php:770
+#: app/Admin/ImpossibleVatPrice.php:142 app/Front_End/Checkout/Field_Editor.php:775
 msgid "Field"
 msgstr "Поле"
 
@@ -2063,15 +2063,15 @@ msgstr "Включено"
 msgid "Off"
 msgstr "Изключено"
 
-#: app/Admin/Recommended_Settings.php:24 app/Front_End/Checkout/Field_Editor.php:704
+#: app/Admin/Recommended_Settings.php:24 app/Front_End/Checkout/Field_Editor.php:709
 msgid "Required"
 msgstr "Задължително"
 
-#: app/Admin/Recommended_Settings.php:25 app/Front_End/Checkout/Field_Editor.php:705
+#: app/Admin/Recommended_Settings.php:25 app/Front_End/Checkout/Field_Editor.php:710
 msgid "Optional"
 msgstr "Незадължително"
 
-#: app/Admin/Recommended_Settings.php:26 app/Admin/Tabs/Fields_Tab.php:38 app/Front_End/Checkout/Field_Editor.php:706
+#: app/Admin/Recommended_Settings.php:26 app/Admin/Tabs/Fields_Tab.php:38 app/Front_End/Checkout/Field_Editor.php:711
 msgid "Hidden"
 msgstr "Скрито"
 
@@ -2195,11 +2195,11 @@ msgstr "Цени, въведени с данък"
 msgid "Prices in Bulgaria are shown and entered with VAT included."
 msgstr "В България цените се показват и въвеждат с включен ДДС."
 
-#: app/Admin/Recommended_Settings.php:106 app/Front_End/Checkout/Field_Editor.php:624 app/Shipping/Econt/Method.php:200 app/Shipping/Pigeon/Method.php:184
+#: app/Admin/Recommended_Settings.php:106 app/Front_End/Checkout/Field_Editor.php:629 app/Shipping/Econt/Method.php:200 app/Shipping/Pigeon/Method.php:184
 msgid "Yes"
 msgstr "Да"
 
-#: app/Admin/Recommended_Settings.php:106 app/Front_End/Checkout/Field_Editor.php:624 app/functions.php:221 app/Shipping/Econt/Method.php:199 app/Shipping/Pigeon/Method.php:183
+#: app/Admin/Recommended_Settings.php:106 app/Front_End/Checkout/Field_Editor.php:629 app/functions.php:221 app/Shipping/Econt/Method.php:199 app/Shipping/Pigeon/Method.php:183
 msgid "No"
 msgstr "Не"
 
@@ -3137,7 +3137,7 @@ msgstr " до "
 msgid "+ Add new row"
 msgstr "+ Добавяне на ред"
 
-#: app/Admin/Tabs/BoxNow_Tab.php:124 app/Front_End/Checkout/Field_Editor.php:795
+#: app/Admin/Tabs/BoxNow_Tab.php:124 app/Front_End/Checkout/Field_Editor.php:800
 msgid "and"
 msgstr "и"
 
@@ -3205,19 +3205,19 @@ msgstr "Токен"
 msgid "Enter the provided token from connectix.bg."
 msgstr "Въведете токена, получен от connectix.bg."
 
-#: app/Admin/Tabs/Connectix_Tab.php:35 app/Client/Connectix.php:112
+#: app/Admin/Tabs/Connectix_Tab.php:35 app/Client/Connectix.php:117
 msgid "Low"
 msgstr "Ниско"
 
-#: app/Admin/Tabs/Connectix_Tab.php:39 app/Admin/Tabs/Nra_Tab.php:120 app/Client/Connectix.php:116
+#: app/Admin/Tabs/Connectix_Tab.php:39 app/Admin/Tabs/Nra_Tab.php:120 app/Client/Connectix.php:121
 msgid "Medium"
 msgstr "Средно"
 
-#: app/Admin/Tabs/Connectix_Tab.php:43 app/Client/Connectix.php:120
+#: app/Admin/Tabs/Connectix_Tab.php:43 app/Client/Connectix.php:125
 msgid "High"
 msgstr "Високо"
 
-#: app/Admin/Tabs/Connectix_Tab.php:47 app/Client/Connectix.php:124
+#: app/Admin/Tabs/Connectix_Tab.php:47 app/Client/Connectix.php:129
 msgid "Ultra high"
 msgstr "Много високо"
 
@@ -3399,7 +3399,7 @@ msgstr "Открити грешки във файла:"
 msgid "File generated successfully! <a href=\"%s\" download target=\"_blank\">Download</a>"
 msgstr "Файлът е създаден! <a href=\"%s\" download target=\"_blank\">Изтегляне</a>"
 
-#: app/Admin/Tabs/Fields_Tab.php:14 app/Front_End/Checkout/Field_Editor.php:673
+#: app/Admin/Tabs/Fields_Tab.php:14 app/Front_End/Checkout/Field_Editor.php:678
 msgid "Checkout fields"
 msgstr "Полета при плащане"
 
@@ -3427,7 +3427,7 @@ msgstr "Номериране на фактури"
 msgid "Own invoicing program: no invoice is made automatically. Type the number from your program on the order screen and press \"Make invoice\". Those orders stay out of the NRA audit file and the monthly audit email."
 msgstr "Собствена програма за фактуриране: фактурата не се създава автоматично. Въведете номера от програмата си на екрана на поръчката и натиснете \"Създай фактура\". Тези поръчки остават извън одитния файл на НАП и месечния одитен имейл."
 
-#: app/Admin/Tabs/Fields_Tab.php:37 app/Front_End/Checkout/Field_Editor.php:703
+#: app/Admin/Tabs/Fields_Tab.php:37 app/Front_End/Checkout/Field_Editor.php:708
 msgid "Default (as WooCommerce shows it)"
 msgstr "По подразбиране (както го показва WooCommerce)"
 
@@ -4347,7 +4347,7 @@ msgstr "BOX NOW не приема нови товарителници, защо�
 msgid "BOX NOW could not reach the locker. Try again later."
 msgstr "BOX NOW не успя да се свърже с автомата. Опитайте отново по-късно."
 
-#: app/Client/Connectix.php:108
+#: app/Client/Connectix.php:113
 msgid "No Info"
 msgstr "Няма информация"
 
@@ -4365,15 +4365,15 @@ msgstr "nekorekten.com върна грешка %d."
 msgid "Speedy is not connected."
 msgstr "Спиди не е свързан."
 
-#: app/Document_Storage.php:111
+#: app/Document_Storage.php:115
 msgid "You cannot do this."
 msgstr "Нямате права за това."
 
-#: app/Document_Storage.php:133
+#: app/Document_Storage.php:137
 msgid "Order documents are being deleted in the background."
 msgstr "Документите за продажба се изтриват във фонов режим."
 
-#: app/Document_Storage.php:274
+#: app/Document_Storage.php:278
 msgid "The document was not found or you do not have access to it."
 msgstr "Документът не е намерен или нямате достъп до него."
 
@@ -4617,19 +4617,19 @@ msgstr "ДДС за реда"
 msgid "VAT rate %"
 msgstr "Ставка ДДС %"
 
-#: app/Export/Builder/Fields.php:237
+#: app/Export/Builder/Fields.php:241
 msgid "Refund document"
 msgstr "Документ за възстановяване"
 
-#: app/Export/Builder/Fields.php:293 app/Export/Builder/Fields.php:331
+#: app/Export/Builder/Fields.php:297 app/Export/Builder/Fields.php:335
 msgid "yes"
 msgstr "да"
 
-#: app/Export/Builder/Fields.php:293 app/Export/Builder/Fields.php:331
+#: app/Export/Builder/Fields.php:297 app/Export/Builder/Fields.php:335
 msgid "no"
 msgstr "не"
 
-#: app/Export/Builder/Fields.php:317 app/Export/Builder/Fields.php:318 app/Front_End/Checkout/Pickers.php:360 app/Front_End/Checkout/Pickers.php:361 app/Front_End/Checkout/Pickers.php:362
+#: app/Export/Builder/Fields.php:321 app/Export/Builder/Fields.php:322 app/Front_End/Checkout/Pickers.php:360 app/Front_End/Checkout/Pickers.php:361 app/Front_End/Checkout/Pickers.php:362
 msgid "Parcel locker"
 msgstr "Автомат за пратки"
 
@@ -4765,7 +4765,7 @@ msgstr "Искате ли фактура на фирма?"
 msgid "Company"
 msgstr "Фирма"
 
-#: app/Front_End/Checkout/Company_Fields.php:114 app/Front_End/Checkout/Field_Editor.php:573
+#: app/Front_End/Checkout/Company_Fields.php:114 app/Front_End/Checkout/Field_Editor.php:578
 msgid "(optional)"
 msgstr "(незадължително)"
 
@@ -4813,191 +4813,191 @@ msgstr "Област"
 msgid "Postcode"
 msgstr "Пощенски код"
 
-#: app/Front_End/Checkout/Field_Editor.php:510
+#: app/Front_End/Checkout/Field_Editor.php:515
 msgid "Choose an option"
 msgstr "Изберете"
 
-#: app/Front_End/Checkout/Field_Editor.php:674
+#: app/Front_End/Checkout/Field_Editor.php:679
 msgid "Show, require or hide each field, set its width and order, and add your own fields."
 msgstr "Показвайте, задължавайте или скривайте всяко поле, задавайте ширината и реда му и добавяйте свои полета."
 
-#: app/Front_End/Checkout/Field_Editor.php:679
+#: app/Front_End/Checkout/Field_Editor.php:684
 msgid "Fields"
 msgstr "Полета"
 
-#: app/Front_End/Checkout/Field_Editor.php:700 app/Front_End/Withdrawal.php:406
+#: app/Front_End/Checkout/Field_Editor.php:705 app/Front_End/Withdrawal.php:406
 msgid "Email address"
 msgstr "Имейл адрес"
 
-#: app/Front_End/Checkout/Field_Editor.php:709
+#: app/Front_End/Checkout/Field_Editor.php:714
 msgid "Text"
 msgstr "Текст"
 
-#: app/Front_End/Checkout/Field_Editor.php:710
+#: app/Front_End/Checkout/Field_Editor.php:715
 msgid "Text area"
 msgstr "Текстово поле"
 
-#: app/Front_End/Checkout/Field_Editor.php:711
+#: app/Front_End/Checkout/Field_Editor.php:716
 msgid "List"
 msgstr "Списък"
 
-#: app/Front_End/Checkout/Field_Editor.php:712
+#: app/Front_End/Checkout/Field_Editor.php:717
 msgid "Checkbox"
 msgstr "Отметка"
 
-#: app/Front_End/Checkout/Field_Editor.php:715 app/Front_End/Checkout/Pickers.php:378
+#: app/Front_End/Checkout/Field_Editor.php:720 app/Front_End/Checkout/Pickers.php:378
 msgid "Number"
 msgstr "Номер"
 
-#: app/Front_End/Checkout/Field_Editor.php:716
+#: app/Front_End/Checkout/Field_Editor.php:721
 msgid "Date"
 msgstr "Дата"
 
-#: app/Front_End/Checkout/Field_Editor.php:723
+#: app/Front_End/Checkout/Field_Editor.php:728
 msgid "One choice per line"
 msgstr "По един избор на ред"
 
-#: app/Front_End/Checkout/Field_Editor.php:741
+#: app/Front_End/Checkout/Field_Editor.php:746
 msgid "Full width"
 msgstr "Цяла ширина"
 
-#: app/Front_End/Checkout/Field_Editor.php:741
+#: app/Front_End/Checkout/Field_Editor.php:746
 msgid "Half width"
 msgstr "Половин ширина"
 
-#: app/Front_End/Checkout/Field_Editor.php:743 app/Front_End/Checkout/Field_Editor.php:773
+#: app/Front_End/Checkout/Field_Editor.php:748 app/Front_End/Checkout/Field_Editor.php:778
 msgid "Condition"
 msgstr "Условие"
 
-#: app/Front_End/Checkout/Field_Editor.php:747
+#: app/Front_End/Checkout/Field_Editor.php:752
 msgid "Always shown"
 msgstr "Винаги се показва"
 
-#: app/Front_End/Checkout/Field_Editor.php:749
+#: app/Front_End/Checkout/Field_Editor.php:754
 msgid "Show when..."
 msgstr "Показвай, когато..."
 
-#: app/Front_End/Checkout/Field_Editor.php:751
+#: app/Front_End/Checkout/Field_Editor.php:756
 msgid "Hide when..."
 msgstr "Скривай, когато..."
 
-#: app/Front_End/Checkout/Field_Editor.php:753
+#: app/Front_End/Checkout/Field_Editor.php:758
 msgid "Edit condition"
 msgstr "Промени условието"
 
-#: app/Front_End/Checkout/Field_Editor.php:769
+#: app/Front_End/Checkout/Field_Editor.php:774
 msgid "Position"
 msgstr "Позиция"
 
-#: app/Front_End/Checkout/Field_Editor.php:771
+#: app/Front_End/Checkout/Field_Editor.php:776
 msgid "Show"
 msgstr "Показване"
 
 #. translators: %s: the field, the operator and the value
-#: app/Front_End/Checkout/Field_Editor.php:789
+#: app/Front_End/Checkout/Field_Editor.php:794
 #, php-format
 msgid "Shown when: %s"
 msgstr "Показва се, когато: %s"
 
 #. translators: %s: the field, the operator and the value
-#: app/Front_End/Checkout/Field_Editor.php:793
+#: app/Front_End/Checkout/Field_Editor.php:798
 #, php-format
 msgid "Hidden when: %s"
 msgstr "Скрива се, когато: %s"
 
-#: app/Front_End/Checkout/Field_Editor.php:796 app/Front_End/Checkout/Field_Editor.php:818
+#: app/Front_End/Checkout/Field_Editor.php:801 app/Front_End/Checkout/Field_Editor.php:823
 msgid "or"
 msgstr "или"
 
 #. translators: %s: field label
-#: app/Front_End/Checkout/Field_Editor.php:799
+#: app/Front_End/Checkout/Field_Editor.php:804
 #, php-format
 msgid "%s is hidden, so its value always counts as empty."
 msgstr "%s е скрито, затова стойността му винаги се счита за празна."
 
 #. translators: %s: field key
-#: app/Front_End/Checkout/Field_Editor.php:803
+#: app/Front_End/Checkout/Field_Editor.php:808
 #, php-format
 msgid "%s is not in the table any more. The condition is dropped on save."
 msgstr "%s вече го няма в таблицата. Условието се отхвърля при запис."
 
-#: app/Front_End/Checkout/Field_Editor.php:805
+#: app/Front_End/Checkout/Field_Editor.php:810
 msgid "ticked"
 msgstr "отметнато"
 
-#: app/Front_End/Checkout/Field_Editor.php:806
+#: app/Front_End/Checkout/Field_Editor.php:811
 msgid "not ticked"
 msgstr "неотметнато"
 
-#: app/Front_End/Checkout/Field_Editor.php:807
+#: app/Front_End/Checkout/Field_Editor.php:812
 msgid "Choose a field"
 msgstr "Изберете поле"
 
-#: app/Front_End/Checkout/Field_Editor.php:811
+#: app/Front_End/Checkout/Field_Editor.php:816
 msgid "Show this field when:"
 msgstr "Показвай полето, когато:"
 
-#: app/Front_End/Checkout/Field_Editor.php:812
+#: app/Front_End/Checkout/Field_Editor.php:817
 msgid "Hide this field when:"
 msgstr "Скривай полето, когато:"
 
-#: app/Front_End/Checkout/Field_Editor.php:815
+#: app/Front_End/Checkout/Field_Editor.php:820
 msgid "Add alternative (or)"
 msgstr "Добави алтернатива (или)"
 
-#: app/Front_End/Checkout/Field_Editor.php:815 app/Front_End/Checkout/Pickers.php:367 app/Front_End/Quick_Order.php:288
+#: app/Front_End/Checkout/Field_Editor.php:820 app/Front_End/Checkout/Pickers.php:367 app/Front_End/Quick_Order.php:288
 msgid "Close"
 msgstr "Затваряне"
 
-#: app/Front_End/Checkout/Field_Editor.php:819
+#: app/Front_End/Checkout/Field_Editor.php:824
 msgid "All of these are true:"
 msgstr "Всички тези са верни:"
 
-#: app/Front_End/Checkout/Field_Editor.php:821
+#: app/Front_End/Checkout/Field_Editor.php:826
 msgid "Add condition"
 msgstr "Добавяне на условие"
 
-#: app/Front_End/Checkout/Field_Editor.php:826
+#: app/Front_End/Checkout/Field_Editor.php:831
 msgid "is"
 msgstr "е"
 
-#: app/Front_End/Checkout/Field_Editor.php:827
+#: app/Front_End/Checkout/Field_Editor.php:832
 msgid "is not"
 msgstr "не е"
 
-#: app/Front_End/Checkout/Field_Editor.php:828
+#: app/Front_End/Checkout/Field_Editor.php:833
 msgid "is greater than"
 msgstr "е по-голямо от"
 
-#: app/Front_End/Checkout/Field_Editor.php:829
+#: app/Front_End/Checkout/Field_Editor.php:834
 msgid "is less than"
 msgstr "е по-малко от"
 
-#: app/Front_End/Checkout/Field_Editor.php:830
+#: app/Front_End/Checkout/Field_Editor.php:835
 msgid "is empty"
 msgstr "е празно"
 
-#: app/Front_End/Checkout/Field_Editor.php:831
+#: app/Front_End/Checkout/Field_Editor.php:836
 msgid "is not empty"
 msgstr "не е празно"
 
-#: app/Front_End/Checkout/Field_Editor.php:838
+#: app/Front_End/Checkout/Field_Editor.php:843
 msgid "Add your own field"
 msgstr "Добавяне на собствено поле"
 
-#: app/Front_End/Checkout/Field_Editor.php:839
+#: app/Front_End/Checkout/Field_Editor.php:844
 msgid "Use the arrows to change the order. Two half-width fields next to each other share a line. With company invoice fields on, the company name belongs to them."
 msgstr "Сменете реда със стрелките. Две съседни полета с половин ширина са на един ред. Когато полетата за фактура на фирма са включени, името на фирмата е част от тях."
 
-#: app/Front_End/Checkout/Field_Editor.php:842
+#: app/Front_End/Checkout/Field_Editor.php:847
 msgid "Which checkouts follow what"
 msgstr "Кои касови процеси какво следват"
 
-#: app/Front_End/Checkout/Field_Editor.php:843
+#: app/Front_End/Checkout/Field_Editor.php:848
 msgid "Show, required and hidden apply to the billing and shipping address in every checkout. Order and width also apply to the address in the block checkout, where the email always comes first and your own fields come after it. The place of the email applies to the classic checkout and to builder checkouts that show WooCommerce's billing fields. Builder checkouts made of single field elements keep the order you placed them in. When the town or region is hidden, the courier fields ask for the town (from Econt's list of towns when Econt is on)."
 msgstr "Показване, задължителност и скриване важат за адреса за фактуриране и за адреса за доставка във всеки касов процес. Редът и ширината важат и за адреса в блоковия касов процес, където имейлът винаги е първи, а вашите полета са след него. Мястото на имейла важи за класическия касов процес и за конструираните касови процеси, които показват полетата за фактуриране на WooCommerce. Конструираните касови процеси от отделни полета запазват реда, в който сте ги поставили. Когато градът или областта са скрити, полетата на куриера искат град (от списъка на градовете на Econt, когато Econt е включен)."
 
-#: app/Front_End/Checkout/Field_Editor.php:844
+#: app/Front_End/Checkout/Field_Editor.php:849
 msgid "Conditions: the classic checkout follows all of them. The block checkout follows conditions on your own fields that read your own fields, and not \"greater\" or \"less\"; other conditions are ignored there."
 msgstr "Условия: класическото плащане следва всички. Блоковото плащане следва условията на вашите полета, които четат ваши полета, но не „по-голямо“ и „по-малко“; другите условия там се пренебрегват."
 

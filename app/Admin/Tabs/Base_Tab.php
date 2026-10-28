@@ -28,7 +28,7 @@ abstract class Base_Tab {
 	}
 
 	public function set_tab_slug( $slug ) {
-		return $this->tab_slug = urlencode( $slug );
+		return $this->tab_slug = rawurlencode( $slug );
 	}
 
 	public function set_fields( $fields ) {

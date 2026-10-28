@@ -59,7 +59,7 @@ class Export {
 
 				$this->refunded_orders_ids[] = $parent_order->get_id();
 
-				if ( $parent_order->get_date_paid() && date_i18n( 'Y-m', strtotime( $parent_order->get_date_paid()->__toString() ) ) === $this->date  ) {
+				if ( $parent_order->get_date_paid() && wp_date( 'Y-m', $parent_order->get_date_paid()->getTimestamp() ) === $this->date  ) {
 					$this->completed_orders_ids[] = $parent_order->get_id();
 				}
 			}

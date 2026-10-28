@@ -82,6 +82,10 @@ class Document_Storage {
 		foreach ( $ids as $id ) {
 			$order = wc_get_order( $id );
 
+			if ( ! $order ) {
+				continue;
+			}
+
 			foreach ( array( 'nashenski_order_document', 'nashenski_order_document_en' ) as $meta ) {
 				$attach_id = (int) $order->get_meta( $meta );
 
@@ -385,7 +389,11 @@ class Document_Storage {
 		$failed = array();
 
 		foreach ( $ids as $id ) {
-			$old = get_attached_file( $id );
+			$order = wc_get_order( $id );
+
+			if ( ! $order ) {
+				continue;
+			}
 			$new = $private . '/' . basename( $old );
 
 			if ( $old && file_exists( $old ) && ( file_exists( $new ) || ! @rename( $old, $new ) ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename -- a failed move leaves the file where it was.

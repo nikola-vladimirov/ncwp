@@ -13,7 +13,7 @@ class Connectix extends Provider_Base {
     public static function get_all_reports( $order, $force = false ) {
         $container = nashenski()->container();
         $phone = ( $order->get_shipping_phone() ) ? $order->get_shipping_phone() : $order->get_billing_phone();
-        $meta_key = 'nashenski_reports-connectix_phone_' . $phone;
+        $meta_key = 'nashenski_reports-connectix_phone_' . md5( $phone );
 		$meta = $order->get_meta( $meta_key );
         $levels = $container[ Client::CONNECTIX ]::get_levels_of_probability();
         $args = [
@@ -36,7 +36,7 @@ class Connectix extends Provider_Base {
         if ( $result_index !== false)  {
             $option_index = array_search( nashenski_get_option( 'connectix', 'level_of_warning' ), array_column( $levels, 'key' ), true );
 
-            if ( $result_index >= $option_index ) {
+            if ( false !== $option_index && $result_index >= $option_index ) {
                 /* translators: %s: level, for example High */
                 $args['reports'] = [ sprintf( __('Possibility that the shipment will not be picked up: %s', 'nashenski-commerce'), $levels[ $result_index ]['label'] ), ];
             }
@@ -61,7 +61,7 @@ class Connectix extends Provider_Base {
         $container = nashenski()->container();
         $levels = $container[ Client::CONNECTIX ]::get_levels_of_probability();
         $phone = ( $order->get_shipping_phone() ) ? $order->get_shipping_phone() : $order->get_billing_phone();
-        $meta_key = 'nashenski_reports-connectix_phone_' . $phone;
+        $meta_key = 'nashenski_reports-connectix_phone_' . md5( $phone );
         $args = [ 'reports' => [] ];
         $result = $order->get_meta( $meta_key );
         $result_index = array_search( $result, array_column( $levels, 'key' ), true );
@@ -69,7 +69,7 @@ class Connectix extends Provider_Base {
         if ( $result_index !== false)  {
             $option_index = array_search( nashenski_get_option( 'connectix', 'level_of_warning' ), array_column( $levels, 'key' ), true );
 
-            if ( $result_index >= $option_index ) {
+            if ( false !== $option_index && $result_index >= $option_index ) {
                 /* translators: %s: level, for example High */
                 $args['reports'] = [ sprintf( __('Possibility that the shipment will not be picked up: %s', 'nashenski-commerce'), $levels[ $result_index ]['label'] ), ];
             }
@@ -105,7 +105,7 @@ class Connectix extends Provider_Base {
         if ( $result_index !== false)  {
             $option_index = array_search( nashenski_get_option( 'connectix', 'level_of_warning' ), array_column( $levels, 'key' ), true );
 
-            if ( $result_index >= $option_index ) {
+            if ( false !== $option_index && $result_index >= $option_index ) {
                 /* translators: %s: level, for example High */
                 $reports[] = sprintf( __('Possibility that the shipment will not be picked up: %s', 'nashenski-commerce'), $levels[ $result_index ]['label'] );
             }

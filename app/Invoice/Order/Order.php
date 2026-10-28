@@ -54,7 +54,7 @@ class Order {
 		if ( empty( $order_items ) ) {
 			$parent_order = wc_get_order( $this->woo_order->get_parent_id() );
 
-			if ( abs( $parent_order->get_total() ) === abs( $this->woo_order->get_total() ) ) {
+			if ( $parent_order && abs( $parent_order->get_total() ) === abs( $this->woo_order->get_total() ) ) {
 				$this->woo_order = $parent_order;
 				$order_items = array_merge( $parent_order->get_items(), $parent_order->get_items('fee') );
 				$this->order_taxes = $this->woo_order->get_taxes();

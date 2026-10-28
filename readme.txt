@@ -131,6 +131,7 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 
 = 0.19.0 =
 * Checkout fields: a Condition dropdown in every row ("Always shown", "Show when...", "Hide when...") shows or hides a field by the value of other fields, with and/or groups. The classic checkout follows every condition; the block checkout follows conditions on your own fields that read your own fields.
+* Fixes: invoice date in the shop time zone, no duplicate invoice numbers, NRA export keeps all shipping lines, calmer courier connections, safer export fields.
 
 = 0.18.0 =
 * Checkout fields: "Import fields from Checkout Field Editor" copies the fields, rules, widths and order of WooCommerce Checkout Field Editor (free or Pro). Company invoice fields stay with Nashenski; the Pro conditions are not copied.

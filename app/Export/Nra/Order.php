@@ -51,9 +51,9 @@ class Order {
 				$this->payment_method_type = nashenski_get_choice( $gateway, 'payment_type', nashenski_get_payment_types() );
 			}
 		} else {
-			$this->pos_number = $this->payment_method['pos_number'];
-			$this->identifier = $this->payment_method['identifier'];
-			$this->payment_method_type = $this->payment_method['type'];
+			$this->pos_number = $this->payment_method['pos_number'] ?? null;
+			$this->identifier = $this->payment_method['identifier'] ?? null;
+			$this->payment_method_type = $this->payment_method['type'] ?? null;
 		}
 	}
 
@@ -105,7 +105,7 @@ class Order {
 			}
 
 			$price = $item->get_total() + $item->get_total_tax();
-			$item_vat = $this->vat_groups[ $this->vat_group ];
+			$item_vat = $this->vat_groups[ $this->vat_group ] ?? 0;
 
 			if ( wc_tax_enabled() ) {
 				if ( $item->get_total_tax() ) {
@@ -167,7 +167,6 @@ class Order {
 				}
 				
 				$this->woo_order->add_item( $item );
-				break;
 			}
 
 			$this->woo_order->calculate_totals();

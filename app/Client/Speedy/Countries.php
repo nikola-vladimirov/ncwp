@@ -22,13 +22,29 @@ class Countries {
 
         $countries_file = $this->container[Client::SPEEDY]::CACHE_FOLDER . 'countries.csv';
 
+        $failed_key = 'nashenski_speedy_countries_failed';
+
         if ( ! is_file( $countries_file ) || ! filesize( $countries_file ) ) {
-            File::put_to_file( $countries_file, $this->container[Client::SPEEDY]->api_call( self::COUNTRIES_ENDPOINT, array(), 1 ) );
+            // A recent failed fetch is not retried on every request.
+            if ( get_transient( $failed_key ) ) {
+                return [];
+            }
+
+            $body = $this->container[Client::SPEEDY]->api_call( self::COUNTRIES_ENDPOINT, array(), 1 );
+
+            if ( is_string( $body ) && '' !== trim( $body ) ) {
+                File::put_to_file( $countries_file, $body );
+            }
+
             clearstatcache();
         }
 
         if ( ! is_file( $countries_file ) || ! filesize( $countries_file ) ) {
-            $this->container[Client::SPEEDY]::clear_cache_folder();
+            if ( is_file( $countries_file ) ) {
+                wp_delete_file( $countries_file );
+            }
+
+            set_transient( $failed_key, 1, 5 * MINUTE_IN_SECONDS );
 
             return [];
         }

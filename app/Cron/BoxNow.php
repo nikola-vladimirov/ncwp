@@ -12,7 +12,7 @@ class BoxNow {
 
 	public static function cron_schedule() {
 		if ( ! wp_next_scheduled( 'nashenski/boxnow/clear_cache_folder' ) ) {
-			wp_schedule_event( current_time( 'timestamp' ), 'weekly', 'nashenski/boxnow/clear_cache_folder' );
+			wp_schedule_event( time(), 'weekly', 'nashenski/boxnow/clear_cache_folder' );
 		}
 	}
 

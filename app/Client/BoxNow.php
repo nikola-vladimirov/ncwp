@@ -110,8 +110,17 @@ class BoxNow {
 			$this->load_client_secret();
 		}
 
+		$token_key = 'nashenski_boxnow_token_' . md5( $this->get_base_endpoint() . $this->get_client_id() . $this->get_client_secret() );
+		$cached = get_transient( $token_key );
+
+		if ( $cached ) {
+			$this->set_access_token( $cached );
+			return;
+		}
+
 		$request = wp_remote_post( $this->get_base_endpoint() . self::AUTH_ENDPOINT, array(
-			'headers' => array( 
+			'timeout' => 15,
+			'headers' => array(
 				'Content-Type' => 'application/json',
 			),
 			'body' => wp_json_encode( array(
@@ -127,7 +136,12 @@ class BoxNow {
 		}
 
 		$response = json_decode( wp_remote_retrieve_body( $request ), true );
-		$this->set_access_token( $response[ 'access_token' ] );
+		$token = $response['access_token'] ?? null;
+		$this->set_access_token( $token );
+
+		if ( $token ) {
+			set_transient( $token_key, $token, max( 60, (int) ( $response['expires_in'] ?? 0 ) - 60 ) );
+		}
 	}
 
 	//Loaders

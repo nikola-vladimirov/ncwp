@@ -12,7 +12,7 @@ class Econt {
 
 	public static function cron_schedule() {
 		if ( ! wp_next_scheduled( 'nashenski/econt/clear_cache_folder' ) ) {
-			wp_schedule_event( current_time( 'timestamp' ), 'weekly', 'nashenski/econt/clear_cache_folder' );
+			wp_schedule_event( time(), 'weekly', 'nashenski/econt/clear_cache_folder' );
 		}
 	}
 

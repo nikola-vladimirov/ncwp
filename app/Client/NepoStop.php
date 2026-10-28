@@ -26,7 +26,12 @@ class NepoStop {
 				'X-API-Key' => $this->get_api_key(),
 			),
 			'body' => wp_json_encode( $args ),
+			'timeout' => 15,
 		) );
+
+		if ( is_wp_error( $request ) ) {
+			return array( 'success' => false, 'found' => false, 'error' => $request->get_error_message() );
+		}
 
 		return json_decode( wp_remote_retrieve_body( $request ), 1 );
 	}
@@ -41,9 +46,10 @@ class NepoStop {
 				'X-API-Key' => $this->get_api_key(),
 			),
 			'body' => wp_json_encode( [ 'phone_number' => '0888000001' ] ),
+			'timeout' => 15,
 		) );
 
-        if ( wp_remote_retrieve_response_code( $request ) !== 401 ) {
+        if ( 200 === (int) wp_remote_retrieve_response_code( $request ) ) {
             $has_access = true;
         }
 

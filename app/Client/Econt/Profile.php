@@ -35,6 +35,7 @@ class Profile {
 
 		if ( $this->container[ Client::ECONT ]->validate_access( $profile_data ) ) {
 			nashenski_set_option( 'econt', 'profile_data', $profile_data );
+			delete_transient( 'nashenski_econt_profile_failed' );
 		}
 
 		return $profile_data;
@@ -61,8 +62,13 @@ class Profile {
 	private function set_profile_data() {
 		$this->profile_data = nashenski_get_option( 'econt', 'profile_data' );
 
-		if ( ! $this->profile_data ) {
+		if ( ! $this->profile_data && ! get_transient( 'nashenski_econt_profile_failed' ) ) {
 			$this->profile_data = $this->fetch_profile_data();
+
+			// Not saved means the login failed; do not call the courier again on every request.
+			if ( ! nashenski_get_option( 'econt', 'profile_data' ) ) {
+				set_transient( 'nashenski_econt_profile_failed', 1, 5 * MINUTE_IN_SECONDS );
+			}
 		}
 	}
 
@@ -101,7 +107,7 @@ class Profile {
 				$profile_id = $selected_id;
 			}
 
-			return $this->profile_data[ 'profiles' ][ $profile_id ];
+			return $this->profile_data['profiles'][ $profile_id ] ?? reset( $this->profile_data['profiles'] );
 		}
 
 		return;

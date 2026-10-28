@@ -12,7 +12,7 @@ class Pigeon {
 
 	public static function cron_schedule() {
 		if ( ! wp_next_scheduled( 'nashenski/pigeon/clear_cache_folder' ) ) {
-			wp_schedule_event( current_time( 'timestamp' ), 'weekly', 'nashenski/pigeon/clear_cache_folder' );
+			wp_schedule_event( time(), 'weekly', 'nashenski/pigeon/clear_cache_folder' );
 		}
 	}
 

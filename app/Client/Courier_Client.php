@@ -15,7 +15,7 @@ trait Courier_Client {
 	public static function add_error_message( $error ) {
 		$message = [];
 
-		if ( $error['message'] && $error['message'] !== ' ' ) {
+		if ( ! empty( $error['message'] ) && $error['message'] !== ' ' ) {
 			$message[] = $error['message'];
 		}
 

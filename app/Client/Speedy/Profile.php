@@ -53,18 +53,21 @@ class Profile {
 			} else {
 				$profile_client = $this->container[ Client::SPEEDY ]->api_call( self::CLIENT_ENDPOINT, array() );
 
-				if ( !empty( $profile_client ) ) {
+				if ( ! empty( $profile_client['clientId'] ) ) {
 					$client = $this->get_client( $profile_client['clientId'] );
 
-					$clients[ $profile_client['clientId'] ] = $client[ 'client' ];
+					if ( isset( $client['client'] ) ) {
+						$clients[ $profile_client['clientId'] ] = $client['client'];
 
-					$profile_data = [
-						'clients' => [ $client[ 'client' ] ],
-					];
+						$profile_data = [
+							'clients' => [ $client['client'] ],
+						];
+					}
 				}
 			} 
 
 			nashenski_set_option( 'speedy', 'profile_data', $profile_data );
+			delete_transient( 'nashenski_speedy_profile_failed' );
 				
 			if ( !empty( $clients ) ) {
 				nashenski_set_option( 'speedy', 'clients', $clients );
@@ -99,8 +102,13 @@ class Profile {
 	private function set_profile_data() {
 		$this->profile_data = nashenski_get_option( 'speedy', 'profile_data' );
 
-		if ( ! $this->profile_data ) {
+		if ( ! $this->profile_data && ! get_transient( 'nashenski_speedy_profile_failed' ) ) {
 			$this->profile_data = $this->fetch_profile_data();
+
+			// Not saved means the login failed; do not call the courier again on every request.
+			if ( ! nashenski_get_option( 'speedy', 'profile_data' ) ) {
+				set_transient( 'nashenski_speedy_profile_failed', 1, 5 * MINUTE_IN_SECONDS );
+			}
 		}
 	}
 
@@ -112,7 +120,7 @@ class Profile {
 				$profile_id = $selected_id;
 			}
 
-			return $this->profile_data[ 'clients' ][ $profile_id ];
+			return $this->profile_data['clients'][ $profile_id ] ?? reset( $this->profile_data['clients'] );
 		}
 
 		return;

@@ -55,14 +55,15 @@ class Cities {
 		$cities = $this->container[ Client::ECONT_CITIES ]->get_cities( $country_code );
 		$formatted = [];
 
-		foreach ( $cities['cities'] as $city ) {
-			$label = $city['name'];
+		foreach ( $cities['cities'] ?? array() as $city ) {
+			$label = $city['name'] ?? '';
+			$region_name = $city['regionName'] ?? '';
 
-			if ( $city['regionName'] && $city['regionName'] !== $city['name'] ) {
-				$label = $city['regionName'] . " - " . $label;
+			if ( $region_name && $region_name !== $label ) {
+				$label = $region_name . " - " . $label;
 			}
 
-			if ( $city['name'] && $city['regionName'] ) {
+			if ( ! empty( $city['name'] ) && $region_name ) {
 				$formatted[ 'cityID-' . $city['id'] ] = array(
 					'id' => 'cityID-' . $city['id'],
 					'label' => $label,
@@ -103,7 +104,7 @@ class Cities {
 		
 		$cities = array_filter( $cities['cities'], function( $city ) use ( $region ) {
 			if ( 
-				mb_strtolower( $city['regionName'] ) === mb_strtolower( $region ) || 
+				mb_strtolower( $city['regionName'] ?? '' ) === mb_strtolower( $region ) || 
 				mb_strtolower( $city['regionNameEn'] ) === mb_strtolower( $region )
 			) {
 				return true;

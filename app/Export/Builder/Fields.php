@@ -191,6 +191,10 @@ class Fields {
 	}
 
 	private static function document_number( $object, $kind ) {
+		if ( 'refund_document' === $kind && $object->get_meta( 'nashenski_refunded_order_number' ) ) {
+			return $object->get_meta( 'nashenski_refunded_order_number' );
+		}
+
 		if ( in_array( $kind, array( 'invoice', 'credit_note' ), true ) && $object->get_meta( 'nashenski_order_invoice_number' ) ) {
 			return $object->get_meta( 'nashenski_order_invoice_number' );
 		}

@@ -43,6 +43,10 @@ class Export {
 
 			if ( is_a( $order, 'Automattic\WooCommerce\Admin\Overrides\OrderRefund' ) || is_a( $order, 'WC_Order_Refund' ) ) {
 				$temp_order = wc_get_order( $order->get_parent_id() );
+
+				if ( ! $temp_order ) {
+					continue;
+				}
 			}
 
 			if ( $temp_order->get_meta('_billing_to_company') === '1' ) {
@@ -121,6 +125,13 @@ class Export {
 		return $this->upload_file();
 	}
 
+	/**
+	 * A field of the pipe and newline separated file: the separators become spaces.
+	 */
+	protected static function clean( $value ) {
+		return str_replace( array( '|', "\r", "\n" ), ' ', (string) $value );
+	}
+
 	protected function upload_file() {
 		$name = uniqid( wp_rand(), true );
 		$content = '';
@@ -130,7 +141,7 @@ class Export {
 				$content .= "\n";
 			}
 
-			$content .= implode( '|', $document );
+			$content .= implode( '|', array_map( array( __CLASS__, 'clean' ), $document ) );
 		}
 
 		$attach_id = \Nashenski\Document_Storage::save( $name, 'txt', $content );

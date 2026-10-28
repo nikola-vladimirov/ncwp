@@ -27,7 +27,7 @@ class Invoice extends BaseDocument {
 		$date = $this->woo_order->get_meta( 'nashenski_invoice_document_date' );
 
 		if ( !$date ) {
-			$date = date_i18n( 'd-m-Y', strtotime( 'today' ) );
+			$date = current_time( 'd-m-Y' );
 			$this->woo_order->update_meta_data( 'nashenski_invoice_document_date', $date );
 		}
 

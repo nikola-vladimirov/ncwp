@@ -97,9 +97,12 @@ class Migration {
 
 		check_admin_referer( self::ACTION );
 
-		$report = self::run();
-		$report['switched_off'] = Import_Sources::switch_off( self::plugin_files() );
-		update_option( self::DONE_OPTION, array( 'time' => time(), 'report' => $report ), false );
+		// A second run would overwrite options such as the next invoice numbers.
+		if ( ! get_option( self::DONE_OPTION ) ) {
+			$report = self::run();
+			$report['switched_off'] = Import_Sources::switch_off( self::plugin_files() );
+			update_option( self::DONE_OPTION, array( 'time' => time(), 'report' => $report ), false );
+		}
 
 		$back = wp_get_referer() ? wp_get_referer() : Settings::url();
 		wp_safe_redirect( add_query_arg( 'nashenski_imported', 1, $back ) );

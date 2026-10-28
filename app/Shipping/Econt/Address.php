@@ -68,7 +68,7 @@ class Address {
 		$country = nashenski_picker_request( 'country' );
 		$query = self::normalize_search_text( nashenski_picker_request( 'query' ), $country === 'BG' );
 		$states = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
-		$state = $states[ $raw_state ];
+		$state = $states[ $raw_state ] ?? '';
 		$raw_city = nashenski_picker_request( 'city' );
 		$cities_data = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $raw_city, $state, $country );
 
@@ -103,7 +103,7 @@ class Address {
 		$raw_state = nashenski_picker_request( 'state' );
 		$country = nashenski_picker_request( 'country' );
 		$states = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
-		$state = $states[ $raw_state ];
+		$state = $states[ $raw_state ] ?? '';
 
 		$raw_city = nashenski_picker_request( 'city' );
 		$cities_data = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $raw_city, $state, $country );

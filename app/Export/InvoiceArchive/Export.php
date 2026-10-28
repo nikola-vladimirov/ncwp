@@ -79,7 +79,8 @@ class Export {
 			if ( ! empty( $document['path'] ) && is_readable( $document['path'] ) ) {
 				$zip->addFile( $document['path'], $document['file_name'] );
 			} else if ( ! empty( $document['file'] ) ) {
-				$file_contents = file_get_contents( $document['file'] );
+				$response = wp_remote_get( $document['file'], array( 'timeout' => 30 ) );
+				$file_contents = ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ? wp_remote_retrieve_body( $response ) : false;
 
 				if ( false !== $file_contents ) {
 					$zip->addFromString( $document['file_name'], $file_contents );

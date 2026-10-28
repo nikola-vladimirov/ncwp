@@ -39,7 +39,7 @@ class Nekorekten extends Provider_Base {
 	}
 
 	private static function to_reports( $result ) {
-		if ( ! is_array( $result ) || $result['count'] < self::threshold() ) {
+		if ( ! is_array( $result ) || ( $result['count'] ?? 0 ) < self::threshold() ) {
 			return array();
 		}
 
@@ -79,7 +79,7 @@ class Nekorekten extends Provider_Base {
 		<div class="order_data_column_container">
 			<?php if ( ! is_array( $result ) ) : ?>
 				<h4><?php esc_html_e( 'nekorekten.com did not answer. Check the API key in the settings.', 'nashenski-commerce' ); ?></h4>
-			<?php elseif ( 0 === (int) $result['count'] ) : ?>
+			<?php elseif ( 0 === (int) ( $result['count'] ?? 0 ) ) : ?>
 				<h4><?php esc_html_e( 'No reports were found for this phone number.', 'nashenski-commerce' ); ?></h4>
 			<?php else : ?>
 				<h4>
@@ -89,7 +89,7 @@ class Nekorekten extends Provider_Base {
 					?>
 				</h4>
 				<ul>
-					<?php foreach ( array_slice( $result['items'], 0, 5 ) as $item ) : ?>
+					<?php foreach ( array_slice( $result['items'] ?? array(), 0, 5 ) as $item ) : ?>
 						<li>
 							<?php if ( $item['date'] ) : ?>
 								<strong><?php echo esc_html( mysql2date( get_option( 'date_format' ), $item['date'] ) ); ?>:</strong>

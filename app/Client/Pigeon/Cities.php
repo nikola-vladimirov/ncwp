@@ -25,37 +25,31 @@ class Cities {
 		$cities = File::get_file( $cities_file );
 
 		if ( !$cities ) {
-			$page = 1;
 			$all_cities = [];
-			$data = $this->get_page( $page );
+			$complete = false;
 
-			if ( is_array( $data ) && $data['success'] && isset( $data['data'] ) && is_array( $data['data'] ) ) {
-				foreach ( $data['data'] as $city ) {
-					$all_cities[] = $city;
+			// Cap the pages; cache only when every page answered.
+			for ( $page = 1; $page <= 200; $page++ ) {
+				$data = $this->get_page( $page );
+
+				if ( empty( $data['success'] ) || ! isset( $data['data'] ) || ! is_array( $data['data'] ) ) {
+					break;
 				}
-				$current_page = $data['meta']['current_page'];
-				$total_pages = $data['meta']['last_page'];
 
-				while ( $current_page < $total_pages ) {
-					$page++;
-					$data = $this->get_page( $page );
+				$all_cities = array_merge( $all_cities, $data['data'] );
 
-					if ( is_array( $data ) && $data['success'] && isset( $data['data'] ) && is_array( $data['data'] ) ) {
-						foreach ( $data['data'] as $city ) {
-							$all_cities[] = $city;
-						}
-						$current_page = $data['meta']['current_page'];
-						$total_pages = $data['meta']['last_page'];
-					} else {
-						break;
-					}
+				if ( $page >= (int) ( $data['meta']['last_page'] ?? 1 ) ) {
+					$complete = true;
+					break;
 				}
 			}
 
 			if ( !empty( $all_cities ) ) {
 				$cities = wp_json_encode( [ 'cities' => $all_cities ] );
 				
-				File::put_to_file( $cities_file, $cities );
+				if ( $complete ) {
+					File::put_to_file( $cities_file, $cities );
+				}
 				unset( $all_cities, $data );
 			}
 		}
@@ -76,21 +70,27 @@ class Cities {
 	public function find_city( $query ) {
 		$city_search = null;
 
+		$query = mb_substr( (string) $query, 0, 64 );
 		$hash = md5( $query );
 		$city_file = $this->container[ Client::PIGEON ]::CACHE_FOLDER . 'city-search-' . $hash . '.json';
 		$city_search = File::get_file( $city_file );
 
-		if ( !$city_search ) {
+		$miss_key = 'nashenski_miss_' . md5( $city_file );
+
+		// An empty answer is remembered for 5 minutes, so the same lookup does not call the courier again.
+		if ( !$city_search && !get_transient( $miss_key ) ) {
 			$request = $this->container[ Client::PIGEON ]->api_call( self::CITIES_ENDPOINT, [
 				'page' => 1,
 				'name' => $query,
 			] );
 
-			if ( isset( $request['success'] ) && $request['success'] && isset( $request['data'] ) && is_array( $request['data'] ) ) {
+			if ( ! empty( $request['success'] ) && ! empty( $request['data'] ) && is_array( $request['data'] ) ) {
 				$city_search = wp_json_encode( $request['data'] );
 
 				File::put_to_file( $city_file, $city_search );
-			}	
+			} else {
+				set_transient( $miss_key, 1, 5 * MINUTE_IN_SECONDS );
+			}
 		}
 		
 		$city_search = json_decode( $city_search, 1 );
@@ -104,13 +104,14 @@ class Cities {
 
 		if ( is_array( $cities ) && isset( $cities['cities'] ) && is_array( $cities['cities'] ) ) {
 			foreach ( $cities['cities'] as $city ) {
-				$label = $city['name'];
+				$label = $city['name'] ?? '';
+				$district = $city['district'] ?? '';
 	
-				if ( $city['district'] && $city['district'] !== $city['name'] ) {
-					$label = $city['district'] . " - " . $label;
+				if ( $district && $district !== $label ) {
+					$label = $district . " - " . $label;
 				}
 	
-				if ( $city['name'] && $city['district'] ) {
+				if ( ! empty( $city['name'] ) && $district ) {
 					$formatted[ 'cityID-' . $city['id'] ] = array(
 						'id' => 'cityID-' . $city['id'],
 						'label' => $label,

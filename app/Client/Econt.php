@@ -42,7 +42,7 @@ class Econt {
 		$headers = array( 'content-type' => 'application/json' );
 
 		if ( ! $is_public ) {
-			$headers['Authorization'] = 'Basic ' . base64_encode( $this->get_user() . ':' . $this->get_password() );
+			$headers['Authorization'] = 'Basic ' . base64_encode( $this->get_user() . ':' . $this->get_password() ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- HTTP Basic login header.
 		}
 
 		$request = wp_remote_post( $this->get_base_endpoint() . $endpoint, array(

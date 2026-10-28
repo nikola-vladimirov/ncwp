@@ -52,7 +52,7 @@ class Pdf_Text {
 		$data = rtrim( $m[1], "\r\n" );
 
 		if ( false !== strpos( $body, '/FlateDecode' ) ) {
-			$inflated = @gzuncompress( $data ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- try both zlib formats.
+			$inflated = @gzuncompress( $data, 20 * 1024 * 1024 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- try both zlib formats.
 
 			if ( false === $inflated ) {
 				$inflated = @gzinflate( $data ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged

@@ -32,7 +32,12 @@ class Connectix {
 				'Authorization' => $this->get_token(),
 			),
 			'body' => wp_json_encode( $args ),
+			'timeout' => 15,
 		) );
+
+		if ( is_wp_error( $request ) ) {
+			return array( 'success' => false, 'error' => $request->get_error_message() );
+		}
 
 		return json_decode( wp_remote_retrieve_body( $request ), 1 );
 	}
@@ -94,8 +99,8 @@ class Connectix {
         $secret = nashenski_get_option( 'connectix', 'secret' );
         
         if ( !$secret ) {
-            $secret = md5( uniqid( ( string ) wp_rand(), true) );
-            $secret = nashenski_set_option( 'connectix', 'secret', $secret );
+            $secret = wp_generate_password( 32, false );
+            nashenski_set_option( 'connectix', 'secret', $secret );
         }
 
         return $secret;

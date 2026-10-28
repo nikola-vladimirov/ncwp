@@ -13,10 +13,11 @@ class RefundedOrder {
 
 	public function get_order_data() {
 		$total = 0;
+		$refund_date = '';
 		$refunds = $this->woo_order->get_refunds();
 
 		foreach ( $refunds as $refund ) {
-			if ( date_i18n( 'Y-m', strtotime( $refund->get_date_created()->__toString() ) ) === $this->export_date  ) {
+			if ( wp_date( 'Y-m', $refund->get_date_created()->getTimestamp() ) === $this->export_date  ) {
 				$refund_date = $refund->get_date_created()->format('Y-m-d');
 				$total += apply_filters( 'nashenski/admin/export/refunded_total', $refund->get_amount(), $refund );
 			}
