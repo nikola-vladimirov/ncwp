@@ -79,7 +79,7 @@ class EU_Vat {
 	public static function vat_number_field( $fields ) {
 		$fields['billing']['billing_vat_number'] = array(
 			'label'    => __( 'VAT number', 'nashenski-commerce' ),
-			'required' => ( nashenski_get_option('nap', 'dds_number_required' ) !== 'no' ),
+			'required' => ( nashenski_get_option('nap', 'dds_number_required' ) === 'yes' ),
 			'class'    => array(
 				'form-row-first',
 				'nashenski-company-info',
@@ -130,17 +130,20 @@ class EU_Vat {
 	public static function vat_number_is_valid( $vat_number, $country ) {
 		$required_number = nashenski_get_option('nap', 'dds_number_required' );
 		
-		if ( $required_number == 'no' && !$vat_number ) {
+		if ( 'yes' !== $required_number && !$vat_number ) {
 			return true;
 		}
 
 		$vat_prefix = self::get_vat_number_prefix( $country );
 		$vat_number = str_replace( array( ' ', '.', '-', ',', ', ' ), '', trim( $vat_number ) );
 		$vat_number = str_replace( $vat_prefix, '', $vat_number );
-		$transient_name = 'nashenski_vat_number_' . $vat_prefix . $vat_number;
+		// VIES needs the soap extension; without it only the number pattern is checked.
+		$maybe_vies_validation = ( nashenski_get_option( 'invoice', 'enable_vies' ) === 'yes' ) && extension_loaded( 'soap' );
+		// The mode is in the key, so a pattern-only answer is not reused once VIES is on.
+		$transient_name = 'nashenski_vat_number_' . md5( ( $maybe_vies_validation ? 'vies' : 'local' ) . '|' . $vat_prefix . $vat_number );
 		$cached_result  = get_transient( $transient_name );
 
-		if ( ! empty( $cached_result ) ) {
+		if ( false !== $cached_result ) {
 			return 'yes' === $cached_result;
 		}
 
@@ -151,14 +154,12 @@ class EU_Vat {
 		}
 
 		try {
-			$maybe_vies_validation = ( nashenski_get_option( 'invoice', 'enable_vies' ) === 'yes' ); 
-			
 			$is_valid = $vies->isValid( $vat_prefix . $vat_number, $maybe_vies_validation );
 
 			set_transient( $transient_name, $is_valid ? 'yes' : 'no', 7 * DAY_IN_SECONDS );
 
 			return $is_valid;
-		} catch( SoapFault $e ) {
+		} catch ( \Exception $e ) { // ViesException wraps \SoapFault; both extend \Exception.
 			return new \WP_Error( 'api', __( 'Error communicating with the VAT validation server - please try again', 'nashenski-commerce' ) );
 		}
 

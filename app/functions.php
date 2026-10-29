@@ -328,8 +328,14 @@ function nashenski_maybe_remove_shipping( $order ) {
 		$order = wc_get_order( $order->get_parent_id() );
 	}
 
-	if ( !empty( $order->get_shipping_methods() ) ) {
-		$shipping_method = @array_shift( $order->get_shipping_methods() );
+	if ( ! $order ) {
+		return $remove_shipping;
+	}
+
+	$shipping_methods = $order->get_shipping_methods();
+
+	if ( ! empty( $shipping_methods ) ) {
+		$shipping_method = reset( $shipping_methods );
 		$shipping_method_id = $shipping_method['method_id'];
 
 		if ( $order->get_payment_method() === 'cod' && nashenski_get_option('shippings', $shipping_method_id . '_is_courier' ) === 'yes' ) {
@@ -863,10 +869,13 @@ function nashenski_get_next_document_number( $meta_field ) {
 		'limit' => 1,
 	) );
 
-	$latest_order = wc_get_order( $orders[0] );
-	$largest_number = $latest_order->get_meta( $meta_field );
+	$latest_order = empty( $orders ) ? false : wc_get_order( $orders[0] );
 
-	return $largest_number + 1;
+	if ( ! $latest_order ) {
+		return 1;
+	}
+
+	return (int) $latest_order->get_meta( $meta_field ) + 1;
 }
 
 function nashenski_strip_street_prefix( $street ) {

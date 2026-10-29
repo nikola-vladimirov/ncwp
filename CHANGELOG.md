@@ -1,5 +1,21 @@
 # Nashenski Commerce changelog
 
+## 0.19.4 (2026-10-29)
+
+### Changed
+- Checkout: the VAT number of a company is required only when "VAT number required on checkout?" is ticked (the Documents tab). Before, a store that never saved this setting asked for it although the box showed as off. If you want the VAT number required, tick the box and save.
+
+### Fixes
+- Checkout: when the EU VAT check (VIES) cannot be reached, the customer sees "please try again" instead of a site error. Without the PHP SOAP extension only the number format is checked.
+- Checkout: a VAT number checked by format only, while VIES was off, is checked again with VIES once you turn VIES on.
+- Order emails: emails that are not about an order keep the files other plugins attach to them. The pro forma is attached once, not twice, to the "on hold" email.
+- Article 113(9) stores: the pro forma and the separate invoice copy no longer show a VAT column, like the invoice. The copy also has the Article 113(9) text.
+- Invoice PDF: on documents longer than one page the product table header repeats on each page, a row is not split across pages, and the footer with the page number shows on every page (it showed only on the last page, with the page number twice).
+- Econt: creating a label for an order whose product was deleted no longer fails. The invoice reference for cash on delivery uses the store's date, not UTC, and the order number. A declared value must be a positive number; a decimal comma is accepted.
+- Speedy: a login without a client contract no longer saves an empty profile or shows as working.
+- NepoStop: a reply without statistics no longer causes PHP warnings.
+- Small guards against errors: invoices for a refund whose order is gone, and the first document number when no order has one yet.
+
 ## 0.19.3 (2026-10-29)
 
 ### Fixes

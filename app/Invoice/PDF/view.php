@@ -6,7 +6,6 @@ $nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product
 <html>
 <head>
 	<title><?php echo esc_html( $this->document->title ) ?></title>
-</head>
 <style type="text/css">
 	h1 { font-size:20px; }
 	.va-top { vertical-align:top; }
@@ -54,11 +53,15 @@ $nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product
 	footer p { display: inline-block; }
 	.page-number:before { content: counter(page); }
 	.page-count { float:right }
+	/* Long invoices: the product table header repeats on each page and a row is not split. */
+	thead { display: table-header-group; }
+	tr { page-break-inside: avoid; }
 
 	<?php echo \Nashenski\Invoice\PDF\Style::css(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- validated hex colours and a fixed font list. ?>
 
 	<?php do_action( 'nashenski/invoice/pdf/default_template/additional_css', $this ) ?>
 </style>
+</head>
 <body>
 	<div class="add-detail">
 		<div class="w-45 float-left logo">
@@ -82,6 +85,15 @@ $nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product
 		<div style="clear: both;"></div>
 	</div>
 
+	<?php // dompdf draws a fixed footer only from the page it is declared on, so it stays on page 1; after the clear, which would also clear its floated page count. ?>
+	<footer>
+		<?php echo esc_html( get_bloginfo( 'name' ) ) ?>
+
+		<span class="page-count text-right">
+			<?php /* translators: 1: page number, 2: number of pages */ printf( esc_html__('Page %1$s of %2$s', 'nashenski-commerce'), '<span class="page-number"></span>', '%PC%' ) ?>
+		</span>
+	</footer>
+
 	<div class="w-100 mt-10">
 		<table class="w-100 mt-10">
 			<tr>
@@ -104,12 +116,15 @@ $nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product
 	<table class="w-100 mt-10">
 		<?php $nashenski_headers = $this->document->get_cart_headers(); ?>
 
+		<thead>
 		<tr>
 			<?php foreach ( $nashenski_headers as $nashenski_item ): ?>
 				<th class="<?php echo esc_attr( $nashenski_item['class'] ) ?>"><?php echo wp_kses_post( $nashenski_item['label'] ) ?></th>
 			<?php endforeach ?>
 		</tr>
+		</thead>
 
+		<tbody>
 		<?php foreach ( $this->document->order->get_items() as $nashenski_item ): ?>
 			<tr>
 				<?php foreach ( $nashenski_item as $nashenski_key => $nashenski_col ): ?>
@@ -117,6 +132,7 @@ $nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product
 				<?php endforeach ?>
 			</tr>
 		<?php endforeach ?>
+		</tbody>
 	</table>
 
 	<div class="w-100">
@@ -158,12 +174,5 @@ $nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product
 		echo wp_kses_post( wpautop( '<span class="gray-color fz-12">' . $this->document->footer_text . '</span>' ) );
 	}
 	?>
-
-	<footer>
-		<?php echo esc_html( get_bloginfo( 'name' ) ) ?>
-
-		<span class="page-count text-right">
-			<?php /* translators: 1: page number, 2: number of pages */ printf( esc_html__('Page %1$s of %2$s', 'nashenski-commerce'), '<span class="page-number"></span>', '%PC%' ) ?>
-		</span>
-	</footer>
+</body>
 </html>

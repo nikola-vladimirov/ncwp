@@ -97,7 +97,7 @@ class Company_Fields {
 			'type' => 'checkbox',
 		) );
 
-		$vat_required = 'no' !== nashenski_get_option( 'nap', 'dds_number_required' );
+		$vat_required = 'yes' === nashenski_get_option( 'nap', 'dds_number_required' );
 		$fields = array(
 			'nashenski/company-name' => array( __( 'Company name', 'nashenski-commerce' ), true ),
 			'nashenski/company-eik' => array( __( 'EIK', 'nashenski-commerce' ), true ),

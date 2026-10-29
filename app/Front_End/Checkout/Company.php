@@ -15,7 +15,7 @@ class Company {
 
 	public static function vat_number_field( $fields ) {
 		if ( class_exists( 'WC_EU_VAT_Number_Init' ) && isset( $fields['billing']['billing_vat_number'] ) ) {
-			$fields['billing']['billing_vat_number']['required'] = ( nashenski_get_option('nap', 'dds_number_required' ) !== 'no' );
+			$fields['billing']['billing_vat_number']['required'] = ( nashenski_get_option('nap', 'dds_number_required' ) === 'yes' );
 			$fields['billing']['billing_vat_number']['class'][] = 'nashenski-company-info form-row-first';
 		}
 
@@ -173,8 +173,3 @@ class Company {
 		return $fields;
 	}
 }
-
-add_action( 'woocommerce_after_checkout_validation', function( $data, $errors ) {
-	unset( $errors->errors[ 'billing_vat_number'] );
-	unset( $errors->error_data[ 'billing_vat_number'] );
-}, 5, 2 );

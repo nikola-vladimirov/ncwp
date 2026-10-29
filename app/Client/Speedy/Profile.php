@@ -30,7 +30,7 @@ class Profile {
 	}
 
 	public function get_clients() {
-		return $this->clients;
+		return is_array( $this->clients ) ? $this->clients : array();
 	}
 
 	public function fetch_profile_data() {
@@ -66,11 +66,11 @@ class Profile {
 				}
 			} 
 
-			nashenski_set_option( 'speedy', 'profile_data', $profile_data );
-			delete_transient( 'nashenski_speedy_profile_failed' );
-				
+			// A login with no client (empty contract) is not a usable profile: save nothing.
 			if ( !empty( $clients ) ) {
+				nashenski_set_option( 'speedy', 'profile_data', $profile_data );
 				nashenski_set_option( 'speedy', 'clients', $clients );
+				delete_transient( 'nashenski_speedy_profile_failed' );
 			}
 		}
 
@@ -80,7 +80,7 @@ class Profile {
 	public function check_credentials() {
 		$profile_data = $this->fetch_profile_data();
 
-		return $this->container[ Client::SPEEDY ]::validate_access( $profile_data );
+		return $this->container[ Client::SPEEDY ]::validate_access( $profile_data ) && ! empty( $profile_data['clients'] );
 	}
 
 	public function is_valid_profile( $forced = false ) {
@@ -130,9 +130,15 @@ class Profile {
 		$all_profiles = nashenski_get_option( 'speedy', 'profile_data' );
 		$options = array();
 
+		$clients = $this->get_clients();
+
 		if ( !empty( $all_profiles['clients'] ) ) {
 			foreach ( $all_profiles['clients'] as $key => $profile ) {
-				$client = $this->clients[ $profile['clientId'] ];
+				if ( ! isset( $profile['clientId'], $clients[ $profile['clientId'] ] ) ) {
+					continue;
+				}
+
+				$client = $clients[ $profile['clientId'] ];
 				$label = ( isset( $client['objectName'] ) && $client['objectName'] ) ? $client['objectName'] : $client['clientName'];
 
 				$options[ $key ] = array(

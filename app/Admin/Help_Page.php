@@ -158,6 +158,7 @@ class Help_Page {
 				__( 'EU VAT number check', 'nashenski-commerce' ) => array(
 					esc_html__( 'Turn on "Enable VIES validation" in Documents > Invoices and documents. A company customer\'s VAT number is then checked with the European VIES system when the order is placed.', 'nashenski-commerce' ),
 					esc_html__( 'An error shows only when the number is not valid or when the check itself fails. The option needs the PHP SOAP extension on your server.', 'nashenski-commerce' ),
+					esc_html__( 'The VAT number is optional at checkout. Tick "VAT number required on checkout?" in Documents to make company customers enter it.', 'nashenski-commerce' ),
 				),
 				__( 'EU withdrawal function', 'nashenski-commerce' ) => array(
 					/* translators: %s: link to the Checkout section */

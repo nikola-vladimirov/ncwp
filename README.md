@@ -88,7 +88,10 @@ order open the courier box, check the details and press "Generate label".
 - Invoice archive and Microinvest Delta exports, and an export builder for orders, products sold or
   documents (CSV, Excel, JSON, XML; documents are picked by their own date). Export files are deleted
   after 7 days; documents and export files never show in the Media Library.
-- Company invoice fields at checkout and the EU VAT number check (VIES).
+- Company invoice fields at checkout and the EU VAT number check (VIES). The VAT number is required
+  only when "VAT number required on checkout?" is ticked in Documents.
+- Article 113(9) stores (not VAT registered): the invoice, its copy and the pro forma print without
+  a VAT column.
 - Import the checkout fields and rules of WooCommerce Checkout Field Editor (free or Pro) in one click.
 - Optional clean-up of order documents (not invoices) of older orders.
 

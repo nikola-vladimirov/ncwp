@@ -19,7 +19,7 @@ class Emails {
 
 	public static function attach_invoice_to_mail( $attachments, $email_id, $order, $email ) {
 		if ( !is_object( $order ) || !is_a( $order, 'WC_Order' ) ) {
-			return;
+			return $attachments;
 		}
 
 		$order = wc_get_order( $order->get_id() );
@@ -55,7 +55,7 @@ class Emails {
 
 	public static function attach_refund_pdfs_to_mail( $attachments, $email_id, $order, $email ) {
 		if ( !is_object( $order ) || !is_a( $order, 'WC_Order' ) ) {
-			return;
+			return $attachments;
 		}
 		
 		$order = wc_get_order( $order->get_id() );
@@ -88,7 +88,7 @@ class Emails {
 
 	public static function attach_proform_to_mail( $attachments, $email_id, $order, $email ) {
 		if ( !is_object( $order ) || !is_a( $order, 'WC_Order' ) ) {
-			return;
+			return $attachments;
 		}
 
 		$email_ids = array( 'customer_on_hold_order' );
@@ -97,7 +97,8 @@ class Emails {
 			$order = wc_get_order( $order->get_id() );
 			$proform_id = $order->get_meta( 'nashenski_proform_document' );
 
-			if ( $proform_id ) {
+			// attach_invoice_to_mail() may have added the same proforma already.
+			if ( $proform_id && ! in_array( get_attached_file( $proform_id ), $attachments, true ) ) {
 				$attachments[] = get_attached_file( $proform_id );
 			}
 		}

@@ -665,7 +665,8 @@ class Econt {
 						/ When you have discount with more than 1 quantity, the label cannot be generated because of differences in the cents.
 						*/
 						
-						$item_weight = ( $item->get_product()->get_weight() ) ? wc_get_weight( $item->get_product()->get_weight(), 'kg' ) * $item['quantity'] : 0.100;
+						$product = $item->get_product(); // false when the product was deleted
+						$item_weight = ( $product && $product->get_weight() ) ? wc_get_weight( $product->get_weight(), 'kg' ) * $item['quantity'] : 0.100;
 
 						$label["packingList"][] = [
 							'inventoryNum' => $key,
@@ -722,10 +723,13 @@ class Econt {
 							$document_number = $order->get_meta( 'nashenski_order_number' );
 
 							if ( !$document_number ) {
-								$document_number = str_pad( $order->get_id(), 10, '0', STR_PAD_LEFT );
+								$order_number = $order->get_order_number();
+								$document_number = str_pad( ctype_digit( (string) $order_number ) ? $order_number : $order->get_id(), 10, '0', STR_PAD_LEFT );
 							}
 
-							$invoice_num = $document_number . '/' . gmdate( 'd.m.y', strtotime( $order->get_date_created() ) );
+							// WC_DateTime::date() uses the store timezone, so a late-night order keeps its own date.
+							$created = $order->get_date_created();
+							$invoice_num = $document_number . '/' . ( $created ? $created->date( 'd.m.y' ) : wp_date( 'd.m.y' ) );
 						}
 					}
 				}
@@ -776,6 +780,7 @@ class Econt {
 
 	protected static function update_test_options( $label ) {
 		$payment_by = nashenski_label_request( 'testOption', array() );
+		$payment_by_id = isset( $payment_by['id'] ) ? $payment_by['id'] : '';
 		$label['payAfterAccept'] = false;
 		$label['payAfterTest'] = false;
 
@@ -783,9 +788,9 @@ class Econt {
 			unset( $label['partialDelivery'] );
 		}
 
-		if ( $payment_by['id'] == 'review' ) {
+		if ( $payment_by_id == 'review' ) {
 			$label['payAfterAccept'] = true;
-		} else if ( $payment_by['id'] == 'test' ) {
+		} else if ( $payment_by_id == 'test' ) {
 			$label['payAfterAccept'] = true;
 			$label['payAfterTest'] = true;
 
@@ -860,8 +865,11 @@ class Econt {
 			unset( $label[ 'services' ]['declaredValueCurrency'] );
 		}
 
-		if ( nashenski_label_request( 'declaredValue' ) ) {
-			$label[ 'services' ]['declaredValueAmount'] = nashenski_label_request( 'declaredValue' );
+		// Only a positive number is sent; a decimal comma is accepted.
+		$declared_value = str_replace( ',', '.', (string) nashenski_label_request( 'declaredValue' ) );
+
+		if ( is_numeric( $declared_value ) && (float) $declared_value > 0 ) {
+			$label[ 'services' ]['declaredValueAmount'] = (float) $declared_value;
 			$label[ 'services' ]['declaredValueCurrency'] = get_woocommerce_currency();
 		}
 

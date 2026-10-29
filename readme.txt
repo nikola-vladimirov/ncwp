@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.19.3
+Stable tag: 0.19.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -128,6 +128,10 @@ The plugin only contacts a service after you turn it on and enter your own accou
 The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf php-font-lib (LGPL-2.1 or later) and php-svg-lib (LGPL-3.0 or later), which make the PDF documents; and Pimple, Masterminds HTML5, sabberworm PHP-CSS-Parser, setasign FPDI, chillerlan php-qrcode and php-settings-container, clegginabox PDF merger, ddeboer VATIN and PSR container (all MIT). Their licences are in each library's folder.
 
 == Changelog ==
+
+= 0.19.4 =
+* Changed: the company VAT number at checkout is required only when its setting is ticked.
+* Fixes: no site error at checkout when VIES is down, other plugins' email attachments are kept, no VAT column on the pro forma and invoice copy for Article 113(9) stores, long invoices repeat the table header and show the footer on every page, Econt labels for deleted products and the cash on delivery invoice date, Speedy logins without a contract, NepoStop replies without statistics.
 
 = 0.19.3 =
 * Fixes: documents imported from Bulgarisation for WooCommerce open again and move into the private folder, the old public documents folder is moved again (broken in 0.19.0), the checkout fields import changes nothing when it cannot save, a condition on a removed field drops the whole rule, and an extra field whose title is only HTML is kept.

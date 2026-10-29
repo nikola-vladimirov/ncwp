@@ -32,7 +32,7 @@ class NepoStop extends Provider_Base {
         
         $args['result'] = $result;
 
-        if ( isset($result['found'] ) && ( $result['stats']['undelivered_percentage'] >= $treshold ) )  {
+        if ( isset( $result['found'], $result['stats']['undelivered_percentage'] ) && ( (float) $result['stats']['undelivered_percentage'] >= (float) $treshold ) )  {
             /* translators: %s: percentage */
             $args['reports'] = [ sprintf( __('This client has %s%% undelivered shipments.', 'nashenski-commerce'), $result['stats']['undelivered_percentage'] ) ];
         }
@@ -47,7 +47,7 @@ class NepoStop extends Provider_Base {
         $result = $order->get_meta( $meta_key );
         $treshold = nashenski_get_option( 'nepostop', 'level_of_warning' );
 
-        if ( !empty($result) && isset( $result['found'] ) && $result['found'] && ( $result['stats']['undelivered_percentage'] >= $treshold ) )  {
+        if ( !empty($result) && isset( $result['found'], $result['stats']['undelivered_percentage'] ) && $result['found'] && ( (float) $result['stats']['undelivered_percentage'] >= (float) $treshold ) )  {
             /* translators: %s: percentage */
             $args['reports'] = [ sprintf( __('This client has %s%% undelivered shipments.', 'nashenski-commerce'), $result['stats']['undelivered_percentage'] ) ];
         }
@@ -60,17 +60,17 @@ class NepoStop extends Provider_Base {
         $description = '';
         $treshold = nashenski_get_option( 'nepostop', 'level_of_warning' );
 
-        if ( isset($reports['result']['found'] ) && ( $reports['result']['stats']['undelivered_percentage'] >= $treshold ) )  {
+        if ( isset( $reports['result']['found'], $reports['result']['stats']['undelivered_percentage'] ) && ( (float) $reports['result']['stats']['undelivered_percentage'] >= (float) $treshold ) )  {
             /* translators: %s: percentage */
             $title = sprintf( __('This client has %s%% undelivered shipments.', 'nashenski-commerce'), $reports['result']['stats']['undelivered_percentage'] );
-        }  elseif ( !isset($reports['result']['found'] ) || !$reports['result']['found'] ) {
+        }  elseif ( !isset($reports['result']['found'], $reports['result']['stats']['undelivered_percentage'] ) || !$reports['result']['found'] ) {
             $title = __( 'No data found for this phone number.', 'nashenski-commerce' );
         } else {
             /* translators: %s: percentage */
             $title = sprintf( __('This client has %s%% undelivered shipments, which is below the set threshold.', 'nashenski-commerce'), $reports['result']['stats']['undelivered_percentage'] );
         }
 
-        if ( isset( $reports['result']['found'] ) ) {
+        if ( isset( $reports['result']['found'], $reports['result']['stats']['total'] ) ) {
             /* translators: %s: number of shipments */
             $description = sprintf( __('Total shipments: %s', 'nashenski-commerce'), $reports['result']['stats']['total'] );
             /* translators: 1: number of shipments, 2: percentage */
