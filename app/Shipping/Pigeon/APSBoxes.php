@@ -3,6 +3,8 @@ namespace Nashenski\Shipping\Pigeon;
 
 use Nashenski\Admin\Fields;
 use Nashenski\Shipping\Packer\APSPackage;
+use Nashenski\Shipping\Packer\Packing_Budget;
+use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -46,7 +48,10 @@ class APSBoxes {
 		}
 
 		try {
-			$packed_boxes = APSPackage::pack_package( $method->package, self::$box_sizes );
+			$budget = $method instanceof Method ? $method->packing_budget() : new Packing_Budget();
+			$packed_boxes = APSPackage::pack_package( $method->package, self::$box_sizes, null, $budget );
+		} catch ( Packing_Limit_Exceeded $e ) {
+			throw $e;
 		} catch ( \Throwable $e ) {
 			return $label;
 		}
@@ -60,8 +65,8 @@ class APSBoxes {
 		return $label;
 	}
 
-	public static function package_fits_largest_locker( $package ) {
-		return APSPackage::package_products_fit_largest_box( $package, self::$box_sizes );
+	public static function package_fits_largest_locker( $package, ?Packing_Budget $budget = null ) {
+		return APSPackage::package_products_fit_largest_box( $package, self::$box_sizes, $budget );
 	}
 
 	public static function package_weight_fits_locker( $package ) {
@@ -101,10 +106,17 @@ class APSBoxes {
 				continue;
 			}
 
-			$quantity = ! empty( $cart_item['quantity'] ) ? absint( $cart_item['quantity'] ) : 1;
+			$raw_quantity = $cart_item['quantity'] ?? 1;
+			if ( is_numeric( $raw_quantity ) && ! is_finite( (float) $raw_quantity ) ) {
+				throw new Packing_Limit_Exceeded( 'Shipping quantity must be finite.' );
+			}
+			$quantity = ! empty( $raw_quantity ) ? absint( $raw_quantity ) : 1;
 			$weight  += wc_get_weight( $cart_item['data']->get_weight(), 'kg' ) * $quantity;
 		}
 
+		if ( ! is_finite( (float) $weight ) ) {
+			throw new Packing_Limit_Exceeded( 'Shipping weight must be finite.' );
+		}
 		return (float) $weight;
 	}
 }

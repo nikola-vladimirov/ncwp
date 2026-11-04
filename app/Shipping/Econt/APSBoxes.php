@@ -2,6 +2,8 @@
 namespace Nashenski\Shipping\Econt;
 
 use Nashenski\Shipping\Packer\APSPackage;
+use Nashenski\Shipping\Packer\Packing_Budget;
+use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -44,7 +46,10 @@ class APSBoxes {
 		}
 
 		try {
-			$packed_boxes = APSPackage::pack_package( $method->package, self::$box_sizes );
+			$budget = $method instanceof Method ? $method->packing_budget() : new Packing_Budget();
+			$packed_boxes = APSPackage::pack_package( $method->package, self::$box_sizes, null, $budget );
+		} catch ( Packing_Limit_Exceeded $e ) {
+			throw $e;
 		} catch ( \Throwable $e ) {
 			return $request_body;
 		}
@@ -58,8 +63,8 @@ class APSBoxes {
 		return $request_body;
 	}
 
-	public static function package_fits_largest_automat( $package ) {
-		return APSPackage::package_fits_largest_box( $package, self::$box_sizes );
+	public static function package_fits_largest_automat( $package, ?Packing_Budget $budget = null ) {
+		return APSPackage::package_fits_largest_box( $package, self::$box_sizes, null, $budget );
 	}
 
 	private static function should_handle_method( $method ) {

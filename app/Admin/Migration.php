@@ -77,6 +77,14 @@ class Migration {
 						$r['order_meta'] ?? 0
 					) );
 
+					if ( ! empty( $r['skipped_numbers'] ) ) {
+						echo '<br>' . esc_html( sprintf(
+							/* translators: %d: number of document numbers */
+							_n( '%d document number skipped (conflict)', '%d document numbers skipped (conflict)', $r['skipped_numbers'], 'nashenski-commerce' ),
+							$r['skipped_numbers']
+						) );
+					}
+
 					foreach ( (array) ( $r['switched_off'] ?? array() ) as $line ) {
 						echo '<br>' . esc_html( $line );
 					}
@@ -91,7 +99,7 @@ class Migration {
 	}
 
 	public static function handle() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! current_user_can( 'activate_plugins' ) ) {
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ) );
 		}
 
@@ -168,14 +176,15 @@ class Migration {
 
 		// Order meta in both storages (HPOS table and posts, when sync is on).
 		$report['order_meta'] = 0;
+		$report['skipped_numbers'] = 0;
 		$hpos_table = $wpdb->prefix . 'wc_orders_meta';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import of the old plugin data; no WordPress API for it.
 		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $hpos_table ) ) === $hpos_table ) {
-			$report['order_meta'] += self::copy_meta( $hpos_table, 'order_id', $old );
+			$report['order_meta'] += self::copy_meta( $hpos_table, 'order_id', $old, $report['skipped_numbers'] );
 		}
 
-		$report['order_meta'] += self::copy_meta( $wpdb->postmeta, 'post_id', $old );
+		$report['order_meta'] += self::copy_meta( $wpdb->postmeta, 'post_id', $old, $report['skipped_numbers'] );
 
 		return $report;
 	}
@@ -236,10 +245,38 @@ class Migration {
 	/**
 	 * Copy "woo_bg_*" and "_woo_bg_*" meta rows to our keys, skipping rows that already exist.
 	 */
-	private static function copy_meta( $table, $id_column, $old_prefix ) {
+	private static function copy_meta( $table, $id_column, $old_prefix, &$skipped = 0 ) {
 		global $wpdb;
 
 		$count = 0;
+		$number_fields = array( 'order_number' => 'next_invoice_number', 'refunded_order_number' => 'next_invoice_number', 'order_invoice_number' => 'next_invoice_separate_number' );
+		// Numbering goes through the same lock as checkout, not the bulk metadata copy.
+		foreach ( $number_fields as $field => $option ) {
+			// Orders that already have the number are left out here, so they are not loaded.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import of the old plugin data; no WordPress API for it.
+			$rows = $wpdb->get_results( $wpdb->prepare(
+				"SELECT o.%i AS order_id, o.meta_value FROM %i o WHERE o.meta_key = %s AND NOT EXISTS ( SELECT 1 FROM %i n WHERE n.%i = o.%i AND n.meta_key = %s AND n.meta_value NOT IN ( '', '0' ) )",
+				$id_column, $table, $old_prefix . '_' . $field, $table, $id_column, $id_column, self::NEW . '_' . $field
+			) );
+			// Only the authoritative table is imported; the other one is stale or mirrored by WooCommerce.
+			if ( ! $rows || \Nashenski\Invoice\Number_Allocator::storage()[0] !== $table ) {
+				continue;
+			}
+			foreach ( $rows as $row ) {
+				$order = wc_get_order( $row->order_id );
+				if ( ! $order ) {
+					continue;
+				}
+				try {
+					if ( \Nashenski\Invoice\Number_Allocator::import_number( $order, self::NEW . '_' . $field, $row->meta_value, $option ) ) {
+						$count++;
+					}
+				} catch ( \RuntimeException $e ) {
+					// A duplicate, empty or locked number: that order stays as it is and is reported.
+					$skipped++;
+				}
+			}
+		}
 
 		foreach ( array( '', '_' ) as $lead ) {
 			$old = $lead . $old_prefix . '_';
@@ -252,12 +289,13 @@ class Migration {
 				SELECT o.%i, CONCAT( %s, SUBSTRING( o.meta_key, %d ) ), o.meta_value
 				FROM %i o
 				WHERE o.meta_key LIKE %s
+				AND o.meta_key NOT IN (%s, %s, %s)
 				AND NOT EXISTS (
 					SELECT 1 FROM %i n
 					WHERE n.%i = o.%i
 					AND n.meta_key = CONCAT( %s, SUBSTRING( o.meta_key, %d ) )
 				)',
-				$table, $id_column, $id_column, $new, strlen( $old ) + 1, $table, $wpdb->esc_like( $old ) . '%', $table, $id_column, $id_column, $new, strlen( $old ) + 1
+				$table, $id_column, $id_column, $new, strlen( $old ) + 1, $table, $wpdb->esc_like( $old ) . '%', $old_prefix . '_order_number', $old_prefix . '_refunded_order_number', $old_prefix . '_order_invoice_number', $table, $id_column, $id_column, $new, strlen( $old ) + 1
 			) );
 		}
 

@@ -6,6 +6,8 @@ use Nashenski\Shipping\Packer\Carton_Packer;
 use Nashenski\Shipping\Packer\APSPackage;
 use Nashenski\Shipping\Packer\Product;
 use Nashenski\Shipping\Packer\Size;
+use Nashenski\Shipping\Packer\Packing_Budget;
+use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,6 +18,8 @@ class Method extends \WC_Shipping_Method {
 
 	public $container, $cookie_data, $package, $delivery_type, $free_shipping_over, $fixed_price, $test, $tax_status, $free_shipping = false;
 	private $content_data = null;
+	private $packing_budget = null;
+	private $resource_rejected = false;
 	private static $aps_box_sizes = array(
 		array(
 			'name'       => 'APS',
@@ -75,8 +79,23 @@ class Method extends \WC_Shipping_Method {
 		$this->cookie_data = self::get_cookie_data();
 		$this->package = $package;
 		$this->content_data = null;
+		$this->packing_budget = new Packing_Budget();
+		$this->resource_rejected = false;
 
-		$disable_aps = ( $this->delivery_type === 'automat' && ! APSPackage::package_fits_largest_box( $this->package, self::$aps_box_sizes, self::VOLUMETRIC_WEIGHT_DIVISOR ) );
+		try {
+			$this->calculate_shipping_with_limits( $package );
+		} catch ( Packing_Limit_Exceeded $e ) {
+			$this->resource_rejected = true;
+			$this->content_data = null;
+			// A rejected quote must not leave a previously prepared label in the session.
+			WC()->session->set( 'nashenski-speedy-label', null );
+		}
+	}
+
+	private function calculate_shipping_with_limits( $package ) {
+		$this->packing_budget()->spend( count( $package['contents'] ?? array() ) );
+
+		$disable_aps = ( $this->delivery_type === 'automat' && ! APSPackage::package_fits_largest_box( $this->package, self::$aps_box_sizes, self::VOLUMETRIC_WEIGHT_DIVISOR, $this->packing_budget() ) );
 
 		if( apply_filters( 'nashenski/speedy/rate/disable_aps', $disable_aps, $this ) ) {
 			return;
@@ -154,6 +173,7 @@ class Method extends \WC_Shipping_Method {
 		$rate = apply_filters( 'nashenski/speedy/rate', $rate, $this );
 
 		// Register the rate
+		$this->packing_budget()->spend( 0 );
 		$this->add_rate( $rate );
 	}
 
@@ -239,6 +259,8 @@ class Method extends \WC_Shipping_Method {
 		);
 		
 		$request_body = apply_filters( 'nashenski/speedy/calculate_label', $this->generate_label(), $this );
+		$this->packing_budget()->spend( 0 );
+		Packing_Budget::check_parcels( count( $request_body['content']['parcels'] ?? array() ), $this->get_max_parcels() );
 		
 		WC()->session->set( 'nashenski-speedy-label' , $request_body );
 
@@ -296,6 +318,9 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	private function get_content_data() {
+		if ( $this->resource_rejected ) {
+			throw new Packing_Limit_Exceeded( 'Shipping calculation was already rejected.' );
+		}
 		if ( null === $this->content_data ) {
 			$this->content_data = $this->generate_content_data();
 		}
@@ -306,9 +331,21 @@ class Method extends \WC_Shipping_Method {
 	private function package_fits_max_parcels(): bool {
 		$content_data = $this->get_content_data();
 		$parcels = $content_data['content']['parcels'] ?? array();
-		$max_parcels = (int) apply_filters( 'nashenski/speedy/max_parcels', self::MAX_PARCELS, $this->package, $this );
+		$max_parcels = $this->get_max_parcels();
 
 		return $max_parcels <= 0 || count( $parcels ) <= $max_parcels;
+	}
+
+	public function get_max_parcels(): int {
+		return (int) apply_filters( 'nashenski/speedy/max_parcels', self::MAX_PARCELS, $this->package, $this );
+	}
+
+	public function packing_budget(): Packing_Budget {
+		if ( null === $this->packing_budget ) {
+			$this->packing_budget = new Packing_Budget();
+		}
+
+		return $this->packing_budget;
 	}
 
 	private function generate_sender_data() {
@@ -439,6 +476,7 @@ class Method extends \WC_Shipping_Method {
 		$sizes           = [];
 		$product_weights = [];
 		$auto_sizes = wc_string_to_bool( nashenski_get_option( 'speedy', 'auto_size' ) );
+		$allocated_units = 0;
 
 		foreach ( $this->package[ 'contents' ] as $key => $item ) {
 			$item_weight = 0;
@@ -459,7 +497,11 @@ class Method extends \WC_Shipping_Method {
 			$names[] = $name;
 
 			if ( $auto_sizes && $item['data']->get_length() && $item['data']->get_width() && $item['data']->get_height() ) {
+				$this->packing_budget()->check_units( ! empty( $item['quantity'] ) ? $item['quantity'] : 1 );
 				$quantity = ! empty( $item['quantity'] ) ? max( 1, (int) $item['quantity'] ) : 1;
+				$allocated_units += $quantity;
+				$this->packing_budget()->check_units( $allocated_units );
+				$this->packing_budget()->spend( $quantity );
 
 				foreach ( range( 1, $quantity ) as $i ) {
 					$sizes[] = new Product( 
@@ -490,9 +532,9 @@ class Method extends \WC_Shipping_Method {
 
 		if ( $auto_sizes && !empty( $sizes ) ) {
 			$carton_sizes = $this->delivery_type === 'automat' ? self::get_aps_box_sizes_for_packer() : array();
-			$content['parcels'] = self::generate_parcels_from_products( $sizes, $product_weights, $carton_sizes, $max_weight );
+			$content['parcels'] = self::generate_parcels_from_products( $sizes, $product_weights, $carton_sizes, $max_weight, $this->get_max_parcels(), $this->packing_budget() );
 		} else {
-			$content['parcels'] = self::generate_parcels( $weigth, $pack_sizes, $max_weight );
+			$content['parcels'] = self::generate_parcels( $weigth, $pack_sizes, $max_weight, $this->get_max_parcels() );
 		}
 
 		return array(
@@ -500,13 +542,16 @@ class Method extends \WC_Shipping_Method {
 		);
 	}
 
-	private static function generate_parcels_from_products( array $products, array $product_weights, array $carton_sizes, float $max_weight ): array {
-		$packer      = new Carton_Packer();
+	private static function generate_parcels_from_products( array $products, array $product_weights, array $carton_sizes, float $max_weight, int $max_parcels = 0, ?Packing_Budget $budget = null ): array {
+		$budget = $budget ?? new Packing_Budget();
+		$budget->check_units( count( $products ) );
+		$packer      = new Carton_Packer( $budget );
 		$groups      = array();
 		$group_items = array();
 		$group_weights = array();
 
 		foreach ( $products as $index => $product ) {
+			$budget->spend();
 			$product_weight    = isset( $product_weights[ $index ] ) ? (float) $product_weights[ $index ] : 0;
 			$candidate_items   = array_merge( $group_items, array( $product ) );
 			$candidate_weights = array_merge( $group_weights, array( $product_weight ) );
@@ -517,6 +562,7 @@ class Method extends \WC_Shipping_Method {
 				continue;
 			}
 
+			Packing_Budget::check_parcels( count( $groups ) + 1, $max_parcels );
 			$groups[] = array(
 				'products' => $group_items,
 				'weights'  => $group_weights,
@@ -527,6 +573,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		if ( ! empty( $group_items ) ) {
+			Packing_Budget::check_parcels( count( $groups ) + 1, $max_parcels );
 			$groups[] = array(
 				'products' => $group_items,
 				'weights'  => $group_weights,
@@ -540,7 +587,9 @@ class Method extends \WC_Shipping_Method {
 			$pack_sizes = self::get_pack_sizes_from_result( $result );
 			$weight     = array_sum( $group['weights'] );
 
-			foreach ( self::generate_parcels( $weight, $pack_sizes, $max_weight ) as $parcel ) {
+			$group_parcels = self::generate_parcels( $weight, $pack_sizes, $max_weight, $max_parcels );
+			Packing_Budget::check_parcels( count( $parcels ) + count( $group_parcels ), $max_parcels );
+			foreach ( $group_parcels as $parcel ) {
 				$parcels[] = $parcel;
 			}
 		}
@@ -578,16 +627,24 @@ class Method extends \WC_Shipping_Method {
 		);
 	}
 
-	private static function generate_parcels( $weight, array $pack_sizes, float $max_weight ): array {
+	private static function generate_parcels( $weight, array $pack_sizes, float $max_weight, int $max_parcels = 0 ): array {
 		$min_weight = (float) apply_filters( 'nashenski/speedy/min_parcel_weight', 0.100 );
 		$weight     = is_numeric( $weight ) ? (float) $weight : $min_weight;
+		if ( ! is_finite( $min_weight ) || $min_weight <= 0 || ! is_finite( $weight ) || ! is_finite( $max_weight ) ) {
+			throw new Packing_Limit_Exceeded( 'Shipping parcel weights must be finite.' );
+		}
 		$weight     = max( $min_weight, $weight );
 		$count_weight = max( $min_weight, self::get_parcel_count_weight( $weight, $pack_sizes ) );
+		if ( ! is_finite( $count_weight ) ) {
+			throw new Packing_Limit_Exceeded( 'Shipping volumetric weight must be finite.' );
+		}
 		$parcels    = array();
 
 		if ( $max_weight <= 0 ) {
 			return array( self::generate_parcel( 1, $weight, $pack_sizes ) );
 		}
+
+		Packing_Budget::check_parcels( ceil( $count_weight / $max_weight ), $max_parcels );
 
 		if ( abs( $count_weight - $weight ) > 0.0001 ) {
 			$parcel_count = (int) ceil( $count_weight / $max_weight );

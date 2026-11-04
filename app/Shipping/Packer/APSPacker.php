@@ -5,8 +5,10 @@ defined( 'ABSPATH' ) || exit;
 
 class APSPacker {
 	private $volumetric_weight_divisor;
+	private $budget;
 
-	public function __construct( $volumetric_weight_divisor = null ) {
+	public function __construct( $volumetric_weight_divisor = null, ?Packing_Budget $budget = null ) {
+		$this->budget = $budget;
 		$this->volumetric_weight_divisor = ( is_numeric( $volumetric_weight_divisor ) && (float) $volumetric_weight_divisor > 0 )
 			? (float) $volumetric_weight_divisor
 			: null;
@@ -92,6 +94,11 @@ class APSPacker {
 			$quantity = $this->get_quantity( $product );
 			$item     = $this->normalize_item( $product, $index, 'Product' );
 			$weight   = $this->get_weight( $product, $index );
+
+			if ( $this->budget ) {
+				$this->budget->check_units( count( $normalized ) + $quantity );
+				$this->budget->spend( $quantity );
+			}
 
 			for ( $i = 1; $i <= $quantity; $i++ ) {
 				$copy                   = $item;
@@ -184,6 +191,10 @@ class APSPacker {
 			return 1;
 		}
 
+		if ( $this->budget ) {
+			$this->budget->check_units( $quantity );
+		}
+
 		if ( ! is_numeric( $quantity ) || (int) $quantity <= 0 ) {
 			throw new \InvalidArgumentException( 'Product quantity must be a positive number.' );
 		}
@@ -262,6 +273,9 @@ class APSPacker {
 	}
 
 	private function pack_in_box( array $products, array $box ): ?array {
+		if ( $this->budget ) {
+			$this->budget->spend( count( $products ) * ( 10 + (int) ceil( log( count( $products ) + 1, 2 ) ) ) );
+		}
 		if ( $this->products_volume( $products ) > $box['volume'] ) {
 			return null;
 		}

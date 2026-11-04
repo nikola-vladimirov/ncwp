@@ -4,6 +4,8 @@ namespace Nashenski\Shipping\Pigeon;
 use Nashenski\Shipping\Packer\Carton_Packer;
 use Nashenski\Shipping\Packer\Product;
 use Nashenski\Shipping\Packer\Size;
+use Nashenski\Shipping\Packer\Packing_Budget;
+use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,8 +26,11 @@ class PackageBoxes {
 			return $label;
 		}
 
+		$budget = $method instanceof Method ? $method->packing_budget() : new Packing_Budget();
 		try {
-			$packages = self::build_packages( $method->package, $method );
+			$packages = self::build_packages( $method->package, $method, $budget );
+		} catch ( Packing_Limit_Exceeded $e ) {
+			throw $e;
 		} catch ( \Throwable $e ) {
 			$packages = self::split_weight_into_packages( self::get_package_weight( $method->package, $method ) );
 		}
@@ -34,6 +39,7 @@ class PackageBoxes {
 			return $label;
 		}
 
+		$budget->spend( 0 );
 		$label['packages'] = $packages;
 
 		return $label;
@@ -43,60 +49,87 @@ class PackageBoxes {
 		return self::get_package_weight( $package, $method ) <= self::MAX_SHIPMENT_WEIGHT;
 	}
 
+	/** Check the full expansion before allocating any unit objects. */
+	public static function validate_package( $package, ?Packing_Budget $budget = null ): void {
+		$budget = $budget ?? new Packing_Budget();
+		$budget->spend( count( $package['contents'] ?? array() ) );
+		$units = 0;
+
+		foreach ( $package['contents'] ?? array() as $item ) {
+			if ( empty( $item['data'] ) || ! is_a( $item['data'], 'WC_Product' ) ) {
+				continue;
+			}
+			$quantity = self::get_quantity( $item, $budget );
+			// Preserve range(1, 0), which the old fractional-quantity path used.
+			$units += $quantity > 0 ? $quantity : 2;
+			$budget->check_units( $units );
+		}
+	}
+
 	private static function should_handle_method( $method ) {
 		return isset( $method->delivery_type ) && $method->delivery_type !== 'locker' && ! empty( $method->package );
 	}
 
-	private static function build_packages( $package, $method ) {
-		$items = self::get_product_items( $package );
+	private static function build_packages( $package, $method, Packing_Budget $budget ) {
+		$items = self::get_product_items( $package, $budget );
 
 		if ( empty( $items ) ) {
 			return self::split_weight_into_packages( self::get_package_weight( $package, $method ) );
 		}
 
-		$packer   = new Carton_Packer();
+		// Carton search has its own work budget: a big cart that cannot be searched in time is priced by weight, not hidden.
+		$packer   = new Carton_Packer( new Packing_Budget() );
 		$groups   = array();
 		$products = array();
 		$weight   = 0;
 
-		foreach ( $items as $item ) {
-			$candidate_products = array_merge( $products, array( $item['product'] ) );
-			$candidate_weight   = $weight + $item['weight'];
+		try {
+			foreach ( $items as $item ) {
+				$candidate_products = array_merge( $products, array( $item['product'] ) );
+				$candidate_weight   = $weight + $item['weight'];
 
-			if ( self::group_fits( $packer, $candidate_products, $candidate_weight ) ) {
-				$products = $candidate_products;
-				$weight   = $candidate_weight;
-				continue;
+				if ( self::group_fits( $packer, $candidate_products, $candidate_weight ) ) {
+					$products = $candidate_products;
+					$weight   = $candidate_weight;
+					continue;
+				}
+
+				if ( empty( $products ) ) {
+					return self::split_weight_into_packages( self::get_package_weight( $package, $method ) );
+				}
+
+				Packing_Budget::check_parcels( count( $groups ) + 1 );
+				$groups[] = array(
+					'products' => $products,
+					'weight'   => $weight,
+				);
+
+				$products = array( $item['product'] );
+				$weight   = $item['weight'];
+
+				if ( ! self::group_fits( $packer, $products, $weight ) ) {
+					return self::split_weight_into_packages( self::get_package_weight( $package, $method ) );
+				}
 			}
 
-			if ( empty( $products ) ) {
-				return self::split_weight_into_packages( self::get_package_weight( $package, $method ) );
+			if ( ! empty( $products ) ) {
+				Packing_Budget::check_parcels( count( $groups ) + 1 );
+				$groups[] = array(
+					'products' => $products,
+					'weight'   => $weight,
+				);
 			}
 
-			$groups[] = array(
-				'products' => $products,
-				'weight'   => $weight,
-			);
-
-			$products = array( $item['product'] );
-			$weight   = $item['weight'];
-
-			if ( ! self::group_fits( $packer, $products, $weight ) ) {
-				return self::split_weight_into_packages( self::get_package_weight( $package, $method ) );
-			}
+			return self::groups_to_packages( $packer, $groups );
+		} catch ( Packing_Limit_Exceeded $e ) {
+			// The unit and parcel caps still apply: the weight split enforces its own.
+			return self::split_weight_into_packages( self::get_package_weight( $package, $method ) );
 		}
-
-		if ( ! empty( $products ) ) {
-			$groups[] = array(
-				'products' => $products,
-				'weight'   => $weight,
-			);
-		}
-
-		return self::groups_to_packages( $packer, $groups );
 	}
 
-	private static function get_product_items( $package ) {
+	private static function get_product_items( $package, ?Packing_Budget $budget = null ) {
+		$budget = $budget ?? new Packing_Budget();
+		self::validate_package( $package, $budget );
 		$items          = array();
 		$dimension_unit = get_option( 'woocommerce_dimension_unit' );
 
@@ -110,12 +143,16 @@ class PackageBoxes {
 			}
 
 			$product  = $cart_item['data'];
-			$quantity = ! empty( $cart_item['quantity'] ) ? absint( $cart_item['quantity'] ) : 1;
+			$quantity = self::get_quantity( $cart_item, $budget );
 			$name     = nashenski_normalize_text_for_label( $product->get_name() );
 			$length   = $product->get_length() ? wc_get_dimension( $product->get_length(), 'mm', $dimension_unit ) : wc_get_dimension( self::DEFAULT_SIZE, 'mm', 'cm' );
 			$width    = $product->get_width() ? wc_get_dimension( $product->get_width(), 'mm', $dimension_unit ) : wc_get_dimension( self::DEFAULT_SIZE, 'mm', 'cm' );
 			$height   = $product->get_height() ? wc_get_dimension( $product->get_height(), 'mm', $dimension_unit ) : wc_get_dimension( self::DEFAULT_SIZE, 'mm', 'cm' );
 			$weight   = $product->get_weight() ? wc_get_weight( $product->get_weight(), 'kg' ) : 0;
+			if ( ! is_finite( (float) $weight ) ) {
+				throw new Packing_Limit_Exceeded( 'Shipping weight must be finite.' );
+			}
+			$budget->spend( $quantity > 0 ? $quantity : 2 );
 
 			foreach ( range( 1, $quantity ) as $i ) {
 				$items[] = array(
@@ -142,6 +179,8 @@ class PackageBoxes {
 
 		try {
 			$packer->find_best_carton( $products, self::get_max_carton() );
+		} catch ( Packing_Limit_Exceeded $e ) {
+			throw $e;
 		} catch ( \Throwable $e ) {
 			return false;
 		}
@@ -151,6 +190,7 @@ class PackageBoxes {
 
 	private static function groups_to_packages( $packer, $groups ) {
 		$packages = array();
+		Packing_Budget::check_parcels( count( $groups ) );
 
 		foreach ( $groups as $group ) {
 			$result = $packer->find_best_carton( $group['products'], self::get_max_carton() );
@@ -175,8 +215,12 @@ class PackageBoxes {
 	}
 
 	private static function split_weight_into_packages( $weight ) {
+		if ( ! is_numeric( $weight ) || ! is_finite( (float) $weight ) ) {
+			throw new Packing_Limit_Exceeded( 'Shipping weight must be finite.' );
+		}
 		$packages = array();
 		$weight   = max( self::normalize_weight( $weight ), 0.100 );
+		Packing_Budget::check_parcels( ceil( $weight / self::MAX_WEIGHT ) );
 
 		while ( $weight > self::MAX_WEIGHT ) {
 			$packages[] = self::max_size_package( self::MAX_WEIGHT );
@@ -207,7 +251,7 @@ class PackageBoxes {
 				}
 
 				if ( $cart_item['data']->get_weight() ) {
-					$quantity = ! empty( $cart_item['quantity'] ) ? absint( $cart_item['quantity'] ) : 1;
+					$quantity = self::get_quantity( $cart_item );
 					$weight  += wc_get_weight( $cart_item['data']->get_weight(), 'kg' ) * $quantity;
 				}
 			}
@@ -217,7 +261,27 @@ class PackageBoxes {
 			$weight = apply_filters( 'nashenski/pigeon/label/weight', 1, $package, $method );
 		}
 
+		if ( ! is_numeric( $weight ) || ! is_finite( (float) $weight ) ) {
+			throw new Packing_Limit_Exceeded( 'Shipping weight must be finite.' );
+		}
 		return (float) $weight;
+	}
+
+	private static function get_quantity( $item, ?Packing_Budget $budget = null ): int {
+		$quantity = $item['quantity'] ?? 1;
+		if ( is_float( $quantity ) && ! is_finite( $quantity ) ) {
+			throw new Packing_Limit_Exceeded( 'Shipping quantity must be finite.' );
+		}
+		if ( empty( $quantity ) ) {
+			return 1;
+		}
+		if ( ! is_numeric( $quantity ) || ! is_finite( (float) $quantity ) ) {
+			throw new Packing_Limit_Exceeded( 'Shipping quantity must be finite.' );
+		}
+		if ( $budget ) {
+			$budget->check_units( abs( (float) $quantity ) );
+		}
+		return absint( $quantity );
 	}
 
 	private static function normalize_weight( $weight ) {

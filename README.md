@@ -139,6 +139,12 @@ Shipping: courier logins, sender details, waybill numbers, shipping zone methods
 plugin, company details and document numbers. Bulgarisation's order documents and invoices move into
 the private documents folder and still open from the order. Go to WooCommerce > Settings > Nashenski Commerce >
 Help and press "Import now". The old plugin is switched off; its data stays in the database.
+Only users who can manage plugins see the import button. If an old document number clashes with a
+number already in use, it is skipped and the summary says "N document numbers skipped (conflict)".
+
+If a document cannot be made, the refund, subscription renewal or checkout still goes through and the
+order gets the note "Some documents were not generated" with the reason. Fix the cause and make the
+document again from the order.
 
 ## Documentation
 

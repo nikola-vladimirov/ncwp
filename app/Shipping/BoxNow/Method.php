@@ -59,13 +59,15 @@ class Method extends \WC_Shipping_Method {
 		$hide_over = nashenski_get_option( 'boxnow_price', 'hide_over' );
 		
 		
-		if ( !empty( $this->cookie_data['payment'] ) && $this->cookie_data['payment'] === 'cod' && $this->has_more_than_one_box() ) {
-			return;
-		} else if ( 
-			$weight > 20 || 
+		if (
+			$weight > 20 ||
 			$apm_size['has_oversize_item'] ||
 			( $hide_over && nashenski_get_package_total() >= $hide_over )
 		) {
+			return;
+		}
+
+		if ( !empty( $this->cookie_data['payment'] ) && $this->cookie_data['payment'] === 'cod' && $this->has_more_than_one_box() ) {
 			return;
 		}
 
@@ -143,26 +145,22 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	public function has_more_than_one_box() {
-		$default_box_values = [
-			'name' => '',
-			'weight' => 0,
-			'value' => 0,
-			'compartmentSize' => 0,
-		];
-		
 		$current_volume = 0;
-
-		$items = [ $default_box_values ];
 
 		foreach ( $this->package[ 'contents' ] as $order_item ) {
-			for ( $i = 0; $i < $order_item['quantity']; $i++ ) { 
-				$order_items[] = $order_item;
+			$quantity = $order_item['quantity'] ?? 0;
+
+			if ( ! is_numeric( $quantity ) || ! is_finite( (float) $quantity ) ) {
+				return true;
 			}
-		}
 
-		$current_volume = 0;
+			if ( $quantity <= 0 ) {
+				continue;
+			}
 
-		foreach ( $order_items as $key => $order_item ) {
+			// Match the former per-unit loop for positive fractional quantities,
+			// without allocating one array entry per unit.
+			$quantity = ceil( (float) $quantity );
 			$_product = $order_item['data'];
 
 			$height = ( $_product->get_height() ) ? (float) $_product->get_height() : 7;
@@ -170,9 +168,9 @@ class Method extends \WC_Shipping_Method {
 			$length = ( $_product->get_height() ) ? (float) $_product->get_width() : 58;
 
 			$item_sizes = self::determine_item_size( $height, $width, $length );
-			$current_volume += $item_sizes['volume'];
+			$current_volume += $item_sizes['volume'] * $quantity;
 
-			if ( $item_sizes['oversize'] || $item_sizes['volume'] > 89320 || $current_volume > 89320 ) {
+			if ( ! is_finite( $current_volume ) || $item_sizes['oversize'] || $item_sizes['volume'] > 89320 || $current_volume > 89320 ) {
 				return true;
 			}
 		}

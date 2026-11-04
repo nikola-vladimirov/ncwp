@@ -651,7 +651,9 @@ function nashenski_save_checkout_label( $order_id, $courier ) {
 		}
 
 		if ( $shipping->get_meta( 'cookie_data' ) ) {
-			$order->update_meta_data( "nashenski_{$courier}_cookie_data", $shipping->get_meta( 'cookie_data' ) );
+			$cookie_data = $shipping->get_meta( 'cookie_data' );
+			if ( $courier === 'pigeon' ) { $cookie_data = \Nashenski\Shipping\Pigeon\Payment::cookie( $cookie_data ); }
+			$order->update_meta_data( "nashenski_{$courier}_cookie_data", $cookie_data );
 		}
 
 		$order->save();
@@ -745,10 +747,11 @@ function nashenski_get_order_label( $order_id ) {
 				$shipment_status = $order->get_meta( 'nashenski_econt_shipment_status' );
 
 				if ( $shipment_status && !empty( $label_data['label'] ) && !empty( $label_data['label']['shipmentNumber'] ) ) {
+					$pdf = \Nashenski\Admin\Courier_Pdf::url( $shipment_status['label']['pdfURL'] ?? null, '10x9' );
 					// Waybills imported from another plugin may have no PDF address: link to Econt's tracking page then.
 					$data = [
 						'number' => $label_data['label']['shipmentNumber'],
-						'link' => ! empty( $shipment_status['label']['pdfURL'] ) ? $shipment_status['label']['pdfURL'] . '&label=10x9' : \Nashenski\Shipping\Automation::tracking_url( 'econt', $label_data['label']['shipmentNumber'] ),
+						'link' => $pdf ?: \Nashenski\Shipping\Automation::tracking_url( 'econt', $label_data['label']['shipmentNumber'] ),
 					];
 				}
 				break;
@@ -844,38 +847,6 @@ function nashenski_is_different_shipping_address( $order ) {
     }
 
     return false;
-}
-
-function nashenski_check_if_order_with_that_doc_number_exists( $document_number, $document_number_meta ) {
-	// One lookup by an indexed order meta key per document, when a document number is made.
-	$orders = wc_get_orders( array(
-		'meta_key' => $document_number_meta, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-		'meta_value' => $document_number, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-		'meta_compare'  => '=', 
-		'return'        => 'ids',
-		'limit' => 1,
-	) );
-
-	return ( !empty( $orders ) );
-}
-
-function nashenski_get_next_document_number( $meta_field ) {
-	// The order with the highest document number: one sorted lookup by an indexed order meta key.
-	$orders = wc_get_orders( array(
-		'meta_key' => $meta_field, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-		'meta_compare'  => 'exists', 
-		'orderby' => 'meta_value',
-		'return'        => 'ids',
-		'limit' => 1,
-	) );
-
-	$latest_order = empty( $orders ) ? false : wc_get_order( $orders[0] );
-
-	if ( ! $latest_order ) {
-		return 1;
-	}
-
-	return (int) $latest_order->get_meta( $meta_field ) + 1;
 }
 
 function nashenski_strip_street_prefix( $street ) {

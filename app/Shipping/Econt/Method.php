@@ -6,12 +6,16 @@ use Nashenski\Admin\Econt as Econt_Admin;
 use Nashenski\Shipping\Packer\Carton_Packer;
 use Nashenski\Shipping\Packer\Product;
 use Nashenski\Shipping\Packer\Size;
+use Nashenski\Shipping\Packer\Packing_Budget;
+use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 
 defined( 'ABSPATH' ) || exit;
 
 class Method extends \WC_Shipping_Method {
 	const METHOD_ID = "nashenski_econt";
 	public $container, $cookie_data, $package, $delivery_type, $free_shipping_over, $fixed_price, $test, $sms, $tax_status, $free_shipping = false;
+	private $packing_budget = null;
+	private $resource_rejected = false;
 
 	public function __construct( $instance_id = 0 ) {
 		$this->container          = nashenski()->container();
@@ -62,8 +66,20 @@ class Method extends \WC_Shipping_Method {
 	public function calculate_shipping( $package = Array() ) {
 		$this->cookie_data = self::get_cookie_data();
 		$this->package = $package;
+		$this->packing_budget = new Packing_Budget();
+		$this->resource_rejected = false;
 
-		$disable_aps = ( $this->delivery_type === 'automat' && ! APSBoxes::package_fits_largest_automat( $this->package ) );
+		try {
+			$this->calculate_shipping_with_limits( $package );
+		} catch ( Packing_Limit_Exceeded $e ) {
+			$this->resource_rejected = true;
+			WC()->session->set( 'nashenski-econt-label', null );
+		}
+	}
+
+	private function calculate_shipping_with_limits( $package ) {
+		$this->packing_budget()->spend( count( $package['contents'] ?? array() ) );
+		$disable_aps = ( $this->delivery_type === 'automat' && ! APSBoxes::package_fits_largest_automat( $this->package, $this->packing_budget() ) );
 
 		if( apply_filters( 'nashenski/econt/rate/disable_aps', $disable_aps, $this ) ) {
 			return;
@@ -127,7 +143,19 @@ class Method extends \WC_Shipping_Method {
 		$rate = apply_filters( 'nashenski/econt/rate', $rate, $this );
 
 		// Register the rate
+		$this->packing_budget()->spend( 0 );
 		$this->add_rate( $rate );
+	}
+
+	public function packing_budget(): Packing_Budget {
+		if ( $this->resource_rejected ) {
+			throw new Packing_Limit_Exceeded( 'Shipping calculation was already rejected.' );
+		}
+		if ( null === $this->packing_budget ) {
+			$this->packing_budget = new Packing_Budget();
+		}
+
+		return $this->packing_budget;
 	}
 
 	private function has_address_detail() {
@@ -233,20 +261,25 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	public function calculate_shipping_price_from_api() {
+		$this->packing_budget()->spend( 0 );
 		$data = array(
 			'price' => '0',
 		);
 		
+		$label = $this->generate_label();
 		$request_body = apply_filters( 'nashenski/econt/calculate_label', array(
-			'label' => $this->generate_label(),
+			'label' => $label,
 			'mode' => 'calculate',
 		), $this );
+		$this->packing_budget()->spend( 0 );
 
 		if ( isset( $request_body['label']['senderOfficeCode'] ) ) {
 			unset( $request_body['label']['senderAddress'] );
 		}
 
-		WC()->session->set( 'nashenski-econt-label' , $request_body );
+		$prepared = $request_body;
+		$prepared[ Service_Policy::OVERRIDES ] = Service_Policy::capture_overrides( $label, $request_body['label'] );
+		WC()->session->set( 'nashenski-econt-label' , $prepared );
 
 		$request = $this->container[ Client::ECONT ]->label_request( 'calculate', $request_body, array(
 			'country_code' => $this->cookie_data['country'] ?? ( $this->package['destination']['country'] ?? '' ),
@@ -456,6 +489,7 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	private function generate_cart_data() {
+		$this->packing_budget()->spend( count( $this->package['contents'] ?? array() ) );
 		$names = array();
 		$cart = array(
 			'packCount' => 1,
@@ -466,6 +500,7 @@ class Method extends \WC_Shipping_Method {
 		$sizes = [];
 		$auto_sizes = wc_string_to_bool( nashenski_get_option( 'econt', 'auto_size' ) );
 		$is_fragile = wc_string_to_bool( nashenski_get_option( 'econt', 'declared_value' ) );
+		$allocated_units = 0;
 		
 		foreach ( $this->package[ 'contents' ] as $key => $item ) {
 			if ( $item['data']->get_weight() ) {
@@ -491,8 +526,13 @@ class Method extends \WC_Shipping_Method {
 			$name = nashenski_normalize_text_for_label( $name );
 			$names[] = $name;
 
-			if ( $auto_sizes && $item['data']->get_length() && $item['data']->get_width() && $item['data']->get_height() ) {
-				$quantity = ! empty( $item['quantity'] ) ? max( 1, (int) $item['quantity'] ) : 1;
+			if ( $auto_sizes && $this->delivery_type !== 'automat' && $item['data']->get_length() && $item['data']->get_width() && $item['data']->get_height() ) {
+				$quantity = $item['quantity'] ?? 1;
+				$this->packing_budget()->check_units( $quantity === '' ? 1 : $quantity );
+				$quantity = max( 1, (int) $quantity );
+				$allocated_units += $quantity;
+				$this->packing_budget()->check_units( $allocated_units );
+				$this->packing_budget()->spend( $quantity );
 
 				foreach ( range( 1, $quantity ) as $i ) {
 					$sizes[] = new Product( 
@@ -511,6 +551,10 @@ class Method extends \WC_Shipping_Method {
 			$cart['weight'] = apply_filters( 'nashenski/econt/label/weight', 1, $this->package, $this );
 		}
 
+		if ( ! is_numeric( $cart['weight'] ) || ! is_finite( (float) $cart['weight'] ) ) {
+			throw new Packing_Limit_Exceeded( 'Shipping weight must be finite.' );
+		}
+
 		$cart['shipmentDescription'] = nashenski_normalize_text_for_label( implode( ', ', $names ), 500 );
 		
 		if ( $auto_sizes && $this->delivery_type !== 'automat' ) {
@@ -522,7 +566,7 @@ class Method extends \WC_Shipping_Method {
 			);
 
 			if ( ! empty( $sizes ) ) {
-				$packer = new Carton_Packer();
+				$packer = new Carton_Packer( $this->packing_budget() );
 				$result = $packer->find_best_carton( $sizes );
 
 				$pack['width']  = wc_get_dimension( $result->W, 'cm', 'mm' );
@@ -556,7 +600,7 @@ class Method extends \WC_Shipping_Method {
 			}
 		}
 
-		if ( $is_fragile && empty( $this->cookie_data['selectedOfficeIsAPS'] ) ) {
+		if ( $is_fragile && ! $this->recipient_is_aps() ) {
 			$cart[ 'services' ]['declaredValueAmount'] = nashenski_get_package_total();
 			$cart[ 'services' ]['declaredValueCurrency'] = get_woocommerce_currency();
 		}
@@ -583,7 +627,7 @@ class Method extends \WC_Shipping_Method {
 	private function generate_other_data() {
 		$other_data = [];
 		
-		if ( empty( $this->cookie_data['selectedOfficeIsAPS'] ) ) {
+		if ( in_array( $this->test, array( 'review', 'test' ), true ) && ! $this->recipient_is_aps() ) {
 			if ( $this->test == 'review' ) {
 				$other_data['payAfterAccept'] = true;
 			} else if ( $this->test == 'test' ) {
@@ -593,6 +637,13 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		return $other_data;
+	}
+
+	private function recipient_is_aps() {
+		if ( ( $this->cookie_data['type'] ?? '' ) === 'address' ) {
+			return false;
+		}
+		return Service_Policy::recipient_is_aps( $this->container, $this->cookie_data['selectedOffice'] ?? '', (array) $this->cookie_data );
 	}
 	
 	private function generate_payment_by_data() {
@@ -737,7 +788,12 @@ class Method extends \WC_Shipping_Method {
 							}	
 						}
 
-						$order->update_meta_data( 'nashenski_econt_label', apply_filters( 'nashenski/econt/label_before_save', $label, $order ) );
+						$overrides = $label[ Service_Policy::OVERRIDES ] ?? array();
+						$label['label'] = Service_Policy::for_order( $label['label'], $order, nashenski()->container(), $shipping, $overrides );
+						$before_filter = $label['label'];
+						$label = apply_filters( 'nashenski/econt/label_before_save', $label, $order );
+						$label[ Service_Policy::OVERRIDES ] = Service_Policy::capture_overrides( $before_filter, $label['label'], $overrides );
+						$order->update_meta_data( 'nashenski_econt_label', $label );
 						WC()->session->__unset( 'nashenski-econt-label' );
 					}
 

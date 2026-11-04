@@ -5,6 +5,8 @@ use Nashenski\Container\Client;
 use Nashenski\Shipping\Packer\Carton_Packer;
 use Nashenski\Shipping\Packer\Product;
 use Nashenski\Shipping\Packer\Size;
+use Nashenski\Shipping\Packer\Packing_Budget;
+use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 use Nashenski\Transliteration;
 
 defined( 'ABSPATH' ) || exit;
@@ -12,6 +14,8 @@ defined( 'ABSPATH' ) || exit;
 class Method extends \WC_Shipping_Method {
 	const METHOD_ID = "nashenski_pigeon";
 	public $container, $cookie_data, $package, $delivery_type, $free_shipping_over, $fixed_price, $test, $tax_status, $free_shipping = false;
+	private $packing_budget = null;
+	private $resource_rejected = false;
 
 	public function __construct( $instance_id = 0 ) {
 		$this->container          = nashenski()->container();
@@ -61,11 +65,27 @@ class Method extends \WC_Shipping_Method {
 	public function calculate_shipping( $package = Array() ) {
 		$this->cookie_data = self::get_cookie_data();
 		$this->package = $package;
+		$this->packing_budget = new Packing_Budget();
+		$this->resource_rejected = false;
+
+		try {
+			$this->calculate_shipping_with_limits( $package );
+		} catch ( Packing_Limit_Exceeded $e ) {
+			$this->resource_rejected = true;
+			WC()->session->set( 'nashenski-pigeon-label', null );
+		}
+	}
+
+	private function calculate_shipping_with_limits( $package ) {
+		$this->packing_budget()->spend( count( $package['contents'] ?? array() ) );
+		if ( in_array( $this->delivery_type, array( 'office', 'address' ), true ) ) {
+			PackageBoxes::validate_package( $package, $this->packing_budget() );
+		}
 
 		$disable_aps = (
 			$this->delivery_type === 'locker' &&
 			(
-				! APSBoxes::package_fits_largest_locker( $this->package ) ||
+				! APSBoxes::package_fits_largest_locker( $this->package, $this->packing_budget() ) ||
 				! APSBoxes::package_weight_fits_locker( $this->package )
 			)
 		);
@@ -148,7 +168,18 @@ class Method extends \WC_Shipping_Method {
 		$rate = apply_filters( 'nashenski/pigeon/rate', $rate, $this );
 
 		// Register the rate
+		$this->packing_budget()->spend( 0 );
 		$this->add_rate( $rate );
+	}
+
+	public function packing_budget(): Packing_Budget {
+		if ( $this->resource_rejected ) {
+			throw new Packing_Limit_Exceeded( 'Shipping calculation was already rejected.' );
+		}
+		if ( null === $this->packing_budget ) {
+			$this->packing_budget = new Packing_Budget();
+		}
+		return $this->packing_budget;
 	}
 
 	/**
@@ -212,10 +243,11 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	public static function get_cookie_data() {
-		return nashenski_courier_cookie( 'nashenski--pigeon-address' );
+		return Payment::cookie( nashenski_courier_cookie( 'nashenski--pigeon-address' ) );
 	}
 
 	public function calculate_shipping_price_from_api() {
+		$this->packing_budget()->spend( 0 );
 		// No login: the public price list prices the order (Public_Price::fallback).
 		if ( ! \Nashenski\Front_End\Checkout\Pickers::connected( 'pigeon' ) ) {
 			return array( 'errors' => array( 'not_connected' ) );
@@ -226,6 +258,7 @@ class Method extends \WC_Shipping_Method {
 		);
 		
 		$request_body = apply_filters( 'nashenski/pigeon/calculate_label', $this->generate_label(), $this );
+		$this->packing_budget()->spend( 0 );
 
 		WC()->session->set( 'nashenski-pigeon-label' , $request_body );
 
@@ -337,6 +370,7 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	private function generate_cart_data() {
+		$this->packing_budget()->spend( count( $this->package['contents'] ?? array() ) );
 		$cart_data = [
 			'packages' => [
 				[
@@ -348,6 +382,7 @@ class Method extends \WC_Shipping_Method {
 		$weight = 0;
 		$sizes = [];
 		$auto_sizes = wc_string_to_bool( nashenski_get_option( 'pigeon', 'auto_size' ) );
+		$allocated_units = 0;
 
 		foreach ( $this->package[ 'contents' ] as $key => $item ) {
 			$item_weight = 0;
@@ -383,7 +418,14 @@ class Method extends \WC_Shipping_Method {
 			);
 
 			if ( $auto_sizes && $item['data']->get_length() && $item['data']->get_width() && $item['data']->get_height() ) {
-				foreach ( range( 1, $item['quantity'] ) as $i ) {
+				$quantity = $item['quantity'] ?? 1;
+				$this->packing_budget()->check_units( is_numeric( $quantity ) ? abs( (float) $quantity ) : $quantity );
+				// Numeric range() includes both ends; account for descending and fractional ranges too.
+				$units = (int) floor( abs( (float) $quantity - 1 ) ) + 1;
+				$allocated_units += $units;
+				$this->packing_budget()->check_units( $allocated_units );
+				$this->packing_budget()->spend( $units );
+				foreach ( range( 1, $quantity ) as $i ) {
 					$sizes[] = new Product( 
 						$name, 
 						new Size( 
@@ -399,6 +441,9 @@ class Method extends \WC_Shipping_Method {
 		if ( !$weight ) {
 			$weight = apply_filters( 'nashenski/pigeon/label/weight', 1, $this->package, $this );
 		}
+		if ( ! is_numeric( $weight ) || ! is_finite( (float) $weight ) ) {
+			throw new Packing_Limit_Exceeded( 'Shipping weight must be finite.' );
+		}
 
 		$cart_data['packages'][0]['weight'] = $weight;
 
@@ -407,12 +452,21 @@ class Method extends \WC_Shipping_Method {
 			$cart_data['packages'][0]['length'] = 17;
 			$cart_data['packages'][0]['height'] = 17;
 		} else if ( ( $auto_sizes || $this->cookie_data['type'] === 'locker' ) && !empty( $sizes ) ) {
-			$packer = new Carton_Packer();
-			$result = $packer->find_best_carton( $sizes );
+			// Office and address labels are sized again per parcel (PackageBoxes), so a big cart that
+			// cannot be searched in its own budget keeps the default size instead of hiding the method.
+			$locker = 'locker' === $this->delivery_type;
+			try {
+				$result = ( new Carton_Packer( $locker ? $this->packing_budget() : new Packing_Budget() ) )->find_best_carton( $sizes );
+			} catch ( Packing_Limit_Exceeded $e ) {
+				if ( $locker ) {
+					throw $e;
+				}
+				$result = null;
+			}
 
-			$cart_data['packages'][0]['width'] = wc_get_dimension( $result->W, 'cm', 'mm' );
-			$cart_data['packages'][0]['length'] = wc_get_dimension( $result->L, 'cm', 'mm' );
-			$cart_data['packages'][0]['height'] = wc_get_dimension( $result->H, 'cm', 'mm' );
+			$cart_data['packages'][0]['width'] = $result ? wc_get_dimension( $result->W, 'cm', 'mm' ) : 17;
+			$cart_data['packages'][0]['length'] = $result ? wc_get_dimension( $result->L, 'cm', 'mm' ) : 17;
+			$cart_data['packages'][0]['height'] = $result ? wc_get_dimension( $result->H, 'cm', 'mm' ) : 17;
 		} 
 
 		return $cart_data;

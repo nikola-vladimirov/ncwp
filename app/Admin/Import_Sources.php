@@ -226,7 +226,7 @@ class Import_Sources {
 	 * Import one source and switch its plugins off. Returns the lines of the report.
 	 */
 	public static function import( $slug ) {
-		$count = array( 'settings' => 0, 'waybills' => 0, 'zones' => 0, 'documents' => 0, 'kept' => 0 );
+		$count = array( 'settings' => 0, 'waybills' => 0, 'zones' => 0, 'documents' => 0, 'skipped' => 0, 'kept' => 0 );
 		$notes = array();
 		$source = self::sources()[ $slug ] ?? array( 'plugins' => array() );
 
@@ -349,6 +349,11 @@ class Import_Sources {
 			$report[] = sprintf( _n( '%d document number', '%d document numbers', $count['documents'], 'nashenski-commerce' ), $count['documents'] );
 		}
 
+		if ( $count['skipped'] ) {
+			/* translators: %d: number */
+			$report[] = sprintf( _n( '%d document number skipped (conflict)', '%d document numbers skipped (conflict)', $count['skipped'], 'nashenski-commerce' ), $count['skipped'] );
+		}
+
 		if ( $count['kept'] ) {
 			/* translators: %d: number of settings */
 			$report[] = sprintf( __( 'Already set, kept as it is: %d', 'nashenski-commerce' ), $count['kept'] );
@@ -375,6 +380,10 @@ class Import_Sources {
 	 * Switch plugins off. Returns one line per plugin that was on.
 	 */
 	public static function switch_off( $files ) {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ) );
+		}
+
 		if ( ! function_exists( 'deactivate_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
@@ -421,14 +430,28 @@ class Import_Sources {
 			$highest[ $type ] = max( $highest[ $type ], (int) $row['num'] );
 			$order = isset( $keys[ $row['type'] ] ) ? wc_get_order( $row['order_id'] ) : null;
 
-			if ( $order && ! $order->get_meta( $keys[ $row['type'] ] ) ) {
-				$order->update_meta_data( $keys[ $row['type'] ], str_pad( (int) $row['num'], 10, '0', STR_PAD_LEFT ) );
-				$order->save();
-				$count['documents']++;
+			$option = 'purchase_order' === $row['type'] ? 'next_invoice_number' : 'next_invoice_separate_number';
+			try {
+				if ( $order && \Nashenski\Invoice\Number_Allocator::import_number( $order, $keys[ $row['type'] ], $row['num'], $option ) ) {
+					$count['documents']++;
+				}
+			} catch ( \RuntimeException $e ) {
+				// A duplicate, empty or locked number: that order stays as it is and is reported.
+				$count['skipped']++;
 			}
 		}
 
+		// An empty separate counter means shared numbering: setting it would switch the shop to separate numbering,
+		// so the shared counter has to move past the imported invoice numbers instead.
+		$shared = ! nashenski_get_option( 'invoice', 'next_invoice_separate_number' );
+		if ( $shared ) {
+			$highest['purchase_order'] = max( $highest['purchase_order'], $highest['invoice'] );
+		}
+
 		foreach ( array( 'purchase_order' => 'next_invoice_number', 'invoice' => 'next_invoice_separate_number' ) as $type => $option ) {
+			if ( 'invoice' === $type && $shared ) {
+				continue;
+			}
 			if ( $highest[ $type ] && $highest[ $type ] + 1 > (int) nashenski_get_option( 'invoice', $option ) ) {
 				nashenski_set_option( 'invoice', $option, str_pad( $highest[ $type ] + 1, 10, '0', STR_PAD_LEFT ) );
 				$count['settings']++;
@@ -689,7 +712,7 @@ class Import_Sources {
 		$meta = array(
 			'econt' => array(
 				'nashenski_econt_label' => array( 'label' => array( 'shipmentNumber' => $numbers[0] ) ),
-				'nashenski_econt_shipment_status' => array( 'label' => array( 'shipmentNumber' => $numbers[0], 'pdfURL' => (string) $pdf ) ),
+				'nashenski_econt_shipment_status' => array( 'label' => array( 'shipmentNumber' => $numbers[0], 'pdfURL' => Courier_Pdf::url( $pdf ) ) ),
 			),
 			'speedy' => array(
 				'nashenski_speedy_label' => array( 'id' => $numbers[0] ),
