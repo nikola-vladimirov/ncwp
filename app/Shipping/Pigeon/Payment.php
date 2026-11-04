@@ -19,12 +19,12 @@ class Payment {
 
 	public static function amount( $value ) {
 		if ( ! ( is_string( $value ) || is_int( $value ) || is_float( $value ) ) || ! is_numeric( $value ) ) {
-			throw new \InvalidArgumentException( __( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
+			throw new \InvalidArgumentException( esc_html__( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
 		}
 		$number = (float) $value;
 		$minor = $number * pow( 10, wc_get_price_decimals() );
 		if ( ! is_finite( $number ) || $number < 0 || ! is_finite( $minor ) || $minor > min( PHP_INT_MAX, 9007199254740991 ) ) {
-			throw new \InvalidArgumentException( __( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
+			throw new \InvalidArgumentException( esc_html__( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
 		}
 		return wc_format_decimal( $number, wc_get_price_decimals() );
 	}
@@ -63,7 +63,7 @@ class Payment {
 	public static function label( $label, $order, $override = null, $staff = false ) {
 		$payer = $staff || $order->get_payment_method() === 'cod' ? ( $label['who_pays'] ?? 'receiver' ) : 'sender';
 		if ( ! in_array( $payer, array( 'sender', 'receiver' ), true ) ) {
-			throw new \InvalidArgumentException( __( 'Choose a valid shipping payer.', 'nashenski-commerce' ) );
+			throw new \InvalidArgumentException( esc_html__( 'Choose a valid shipping payer.', 'nashenski-commerce' ) );
 		}
 		$label['who_pays'] = $payer;
 		$cod = self::cod( $order, $payer, $override );
@@ -87,6 +87,7 @@ class Payment {
 			$classes = array_intersect( array_merge( array( '' ), \WC_Tax::get_tax_class_slugs() ), $order->get_items_tax_classes() );
 			$tax_class = $classes ? current( $classes ) : ( count( $order->get_items() ) === 0 ? '' : false );
 		}
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own filter, applied so the preview matches its recalculation
 		$exempt = apply_filters( 'woocommerce_order_is_vat_exempt', 'yes' === $order->get_meta( 'is_vat_exempt' ), $order );
 		$first = self::shipping_item( $order );
 		$shipping = 0;
@@ -114,28 +115,30 @@ class Payment {
 	/** Validate every monetary instruction before any order/item write. */
 	public static function request( $order ) {
 		if ( (string) nashenski_label_request( 'paymentVersion', null ) !== '1' ) {
-			throw new \InvalidArgumentException( __( 'Reload this order before generating a Pigeon label.', 'nashenski-commerce' ) );
+			throw new \InvalidArgumentException( esc_html__( 'Reload this order before generating a Pigeon label.', 'nashenski-commerce' ) );
 		}
 		$payer = nashenski_label_request( 'paymentBy', array() );
 		$mode = $payer['id'] ?? '';
 		if ( ! in_array( $mode, array( 'fixed', 'sender', 'receiver' ), true ) ) {
-			throw new \InvalidArgumentException( __( 'Choose a valid shipping payer.', 'nashenski-commerce' ) );
+			throw new \InvalidArgumentException( esc_html__( 'Choose a valid shipping payer.', 'nashenski-commerce' ) );
 		}
 		$price = null;
 		if ( $mode === 'fixed' ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- type check only; generate_label() verified the nonce, and nashenski_label_request() re-checks it
 			if ( isset( $_REQUEST['fixedPrice'] ) && ( is_bool( $_REQUEST['fixedPrice'] ) || is_array( $_REQUEST['fixedPrice'] ) || is_object( $_REQUEST['fixedPrice'] ) ) ) {
-				throw new \InvalidArgumentException( __( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
+				throw new \InvalidArgumentException( esc_html__( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
 			}
 			$price = self::amount( nashenski_label_request( 'fixedPrice', null ) );
-			if ( ! self::shipping_item( $order ) ) { throw new \InvalidArgumentException( __( 'This order has no Pigeon shipping charge.', 'nashenski-commerce' ) ); }
+			if ( ! self::shipping_item( $order ) ) { throw new \InvalidArgumentException( esc_html__( 'This order has no Pigeon shipping charge.', 'nashenski-commerce' ) ); }
 		}
 		$override = nashenski_label_request( 'codOverride', null );
 		if ( $override !== null ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- type check only, same nonce as above
 			if ( isset( $_REQUEST['codOverride'] ) && ( is_bool( $_REQUEST['codOverride'] ) || is_array( $_REQUEST['codOverride'] ) || is_object( $_REQUEST['codOverride'] ) ) ) {
-				throw new \InvalidArgumentException( __( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
+				throw new \InvalidArgumentException( esc_html__( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
 			}
 			$override = self::amount( $override );
-			if ( $order->get_payment_method() !== 'cod' ) { throw new \InvalidArgumentException( __( 'COD is available only for cash-on-delivery orders.', 'nashenski-commerce' ) ); }
+			if ( $order->get_payment_method() !== 'cod' ) { throw new \InvalidArgumentException( esc_html__( 'COD is available only for cash-on-delivery orders.', 'nashenski-commerce' ) ); }
 		}
 		self::cod( $order, $mode === 'fixed' ? 'sender' : $mode, $override );
 		if ( $mode === 'fixed' ) { self::validate_fixed_total( $order, $price, $override ); }

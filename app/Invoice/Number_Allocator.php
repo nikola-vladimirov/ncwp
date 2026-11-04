@@ -12,6 +12,8 @@ class Number_Allocator {
 	private static function locked( $callback ) {
 		global $wpdb;
 		$lock = 'nashenski_numbers_' . md5( DB_NAME . ':' . $wpdb->options );
+		// A named MySQL lock cannot be cached: it must reflect this connection right now.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( self::$issuing || '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', $lock ) ) ) {
 			throw new \RuntimeException( 'Could not lock document numbering. Please retry.' );
 		}
@@ -20,13 +22,17 @@ class Number_Allocator {
 			return $callback();
 		} finally {
 			self::$issuing = false;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- releases the uncached named lock taken above
 			$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $lock ) );
 		}
 	}
 
-	private static function value( $query ) {
+	/** $sql holds only %s, %d and %i placeholders (and IN lists of them); $args fills them. */
+	private static function value( $sql, $args ) {
 		global $wpdb;
-		$value = $wpdb->get_var( $query );
+		// Numbers must come from the database itself, never from a cache.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $sql is a literal from this class, placeholders only
+		$value = $wpdb->get_var( $wpdb->prepare( $sql, $args ) );
 		if ( $wpdb->last_error ) {
 			throw new \RuntimeException( 'Could not read document numbering.' );
 		}
@@ -36,13 +42,15 @@ class Number_Allocator {
 	private static function option( $name ) {
 		global $wpdb;
 		// get_option() can still contain a pre-lock request or persistent-cache value.
-		return self::value( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s", 'nashenski_settings_invoice_' . $name ) );
+		return self::value( 'SELECT option_value FROM %i WHERE option_name = %s', array( $wpdb->options, 'nashenski_settings_invoice_' . $name ) );
 	}
 
 	private static function advance( $name, $next ) {
 		global $wpdb;
 		$key = 'nashenski_settings_invoice_' . $name;
 		$value = str_pad( $next, 10, '0', STR_PAD_LEFT );
+		// The reservation must hit the database under the lock; there is nothing to cache.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( false === $wpdb->query( $wpdb->prepare(
 			"INSERT INTO $wpdb->options (option_name, option_value, autoload) VALUES (%s, %s, 'no') ON DUPLICATE KEY UPDATE option_value = %s",
 			$key, $value, $value
@@ -65,10 +73,12 @@ class Number_Allocator {
 		global $wpdb;
 		list( $table, $column, $id ) = self::storage();
 		// Read the authoritative store, including when HPOS metadata caching is enabled.
-		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT $id AS meta_id, meta_value FROM $table WHERE $column = %d AND meta_key = %s ORDER BY $id", $order->get_id(), $meta ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- must bypass caches
+		$rows = $wpdb->get_results( $wpdb->prepare( 'SELECT %i AS meta_id, meta_value FROM %i WHERE %i = %d AND meta_key = %s ORDER BY %i', $id, $table, $column, $order->get_id(), $meta, $id ) );
 		if ( $wpdb->last_error ) {
 			throw new \RuntimeException( 'Could not read saved document number.' );
 		}
+		// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- an empty row object, not a query
 		return $rows ? $rows[0] : (object) array( 'meta_id' => 0, 'meta_value' => '' );
 	}
 
@@ -102,10 +112,8 @@ class Number_Allocator {
 		list( $table, $column ) = self::storage();
 		$keys = self::keys( $option );
 		$placeholders = implode( ', ', array_fill( 0, count( $keys ), '%s' ) );
-		return self::value( $wpdb->prepare(
-			"SELECT $column FROM $table WHERE meta_key IN ($placeholders) AND CAST(meta_value AS UNSIGNED) = %d AND $column <> %d LIMIT 1",
-			array_merge( $keys, array( $number, $except ) )
-		) );
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a list of %s, one per key
+		return self::value( "SELECT %i FROM %i WHERE meta_key IN ($placeholders) AND CAST(meta_value AS UNSIGNED) = %d AND %i <> %d LIMIT 1", array_merge( array( $column, $table ), $keys, array( $number, $column, $except ) ) );
 	}
 
 	private static function persist( $order, $meta, $number, $row ) {
@@ -150,11 +158,11 @@ class Number_Allocator {
 			}
 			$number = max( 1, (int) self::option( $option ) );
 			if ( self::used( $number, $option ) ) {
-				global $wpdb;
 				list( $table ) = self::storage();
 				$keys = self::keys( $option );
 				$marks = implode( ', ', array_fill( 0, count( $keys ), '%s' ) );
-				$number = max( $number, (int) self::value( $wpdb->prepare( "SELECT MAX(CAST(meta_value AS UNSIGNED)) FROM $table WHERE meta_key IN ($marks)", $keys ) ) + 1 );
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $marks is a list of %s, one per key
+				$number = max( $number, (int) self::value( "SELECT MAX(CAST(meta_value AS UNSIGNED)) FROM %i WHERE meta_key IN ($marks)", array_merge( array( $table ), $keys ) ) + 1 );
 			}
 			if ( ! is_int( $number ) || $number >= PHP_INT_MAX ) {
 				throw new \RuntimeException( 'Document numbering sequence exhausted.' );
