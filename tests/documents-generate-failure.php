@@ -108,6 +108,20 @@ namespace {
 	\Nashenski\Invoice\Document\NRARefunded::$exception = 'LogicException';
 	\Nashenski\Admin\Order\Actions::create_refund_action( 7, 70 );
 	expect( 1 === count( FakeOrder::$notes ), 'A failed refund document adds an order note' );
+	// A PHP Error (not an Exception) from the document step must not be rethrown either, or WooCommerce deletes the refund.
+	foreach ( array( 'ArgumentCountError', 'TypeError' ) as $error_class ) {
+		\Nashenski\Invoice\Document\NRARefunded::$exception = $error_class;
+		$logger->lines = array();
+		FakeOrder::$notes = array();
+		try {
+			\Nashenski\Admin\Order\Actions::create_refund_action( 7, 70 );
+			$rethrown = false;
+		} catch ( \Throwable $e ) {
+			$rethrown = true;
+		}
+		expect( ! $rethrown, "A $error_class from the refund document is not rethrown" );
+		expect( 1 === count( $logger->lines ) && 1 === count( FakeOrder::$notes ) && false !== strpos( FakeOrder::$notes[0], 'Some documents were not generated' ), "A $error_class from the refund document is logged and adds the order note" );
+	}
 	// Regenerate PDF's failing leaves an order note, not only a log line.
 	\Nashenski\Invoice\Document\NRA::$fail = true;
 	FakeOrder::$notes = array();

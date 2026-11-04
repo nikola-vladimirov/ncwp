@@ -162,7 +162,7 @@ class Actions {
 		// A numbering failure must not break the refund; "Regenerate PDF's" tries again.
 		try {
 			Documents::generate_refunded_documents( $refund_id, $order_id );
-		} catch ( \Exception $e ) { // WooCommerce deletes the refund on any exception thrown here.
+		} catch ( \Throwable $e ) { // WooCommerce deletes the refund on any exception or error thrown here.
 			wc_get_logger()->error( 'Refund documents for order #' . $order_id . ' were not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
 
 			if ( $order = wc_get_order( $order_id ) ) {
