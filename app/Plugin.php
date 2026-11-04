@@ -4,7 +4,7 @@ namespace Nashenski;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin {
-	const VERSION = '0.19.5';
+	const VERSION = '0.19.6';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
@@ -169,6 +169,7 @@ class Plugin {
 
 		if ( is_admin() ) {
 			new Admin\Order\Delivery_Box();
+			new Admin\Order\Courier_Info();
 		}
 		new Abandoned_Carts\Tracker();
 		new Pricing\Updater();
