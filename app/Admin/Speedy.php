@@ -2,6 +2,8 @@
 namespace Nashenski\Admin;
 use Nashenski\Container\Client;
 use Nashenski\Shipping\Speedy\Address;
+use Nashenski\Shipping\Packer\Packing_Budget;
+use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -495,11 +497,21 @@ class Speedy {
 
 		$min_weight = (float) apply_filters( 'nashenski/speedy/min_parcel_weight', 0.100 );
 		$max_weight = self::get_max_parcel_weight( $label, $context );
+		if ( ! is_finite( $min_weight ) || $min_weight <= 0 || ! is_finite( $max_weight ) ) {
+			throw new Packing_Limit_Exceeded( 'Shipping parcel weights must be finite.' );
+		}
+		$max_parcels = $context instanceof \Nashenski\Shipping\Speedy\Method ? $context->get_max_parcels() : 0;
+		Packing_Budget::check_parcels( count( $label['content']['parcels'] ), $max_parcels );
 		$parcels    = array();
 
 		foreach ( $label['content']['parcels'] as $parcel ) {
 			$weight = isset( $parcel['weight'] ) && is_numeric( $parcel['weight'] ) ? (float) $parcel['weight'] : $min_weight;
+			if ( ! is_finite( $weight ) ) {
+				throw new Packing_Limit_Exceeded( 'Shipping parcel weights must be finite.' );
+			}
 			$weight = max( $min_weight, $weight );
+			$split_count = $max_weight > 0 ? max( 1, ceil( $weight / $max_weight ) ) : 1;
+			Packing_Budget::check_parcels( count( $parcels ) + $split_count, $max_parcels );
 
 			if ( $max_weight <= 0 ) {
 				$parcel['weight'] = round( $weight, 3 );
@@ -508,12 +520,14 @@ class Speedy {
 			}
 
 			while ( $weight > $max_weight ) {
+				Packing_Budget::check_parcels( count( $parcels ) + 1, $max_parcels );
 				$parcel['weight'] = round( $max_weight, 3 );
 				$parcels[]        = $parcel;
 				$weight          -= $max_weight;
 			}
 
 			$parcel['weight'] = round( max( $min_weight, $weight ), 3 );
+			Packing_Budget::check_parcels( count( $parcels ) + 1, $max_parcels );
 			$parcels[]        = $parcel;
 		}
 

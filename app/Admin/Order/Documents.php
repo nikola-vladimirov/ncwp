@@ -32,21 +32,33 @@ class Documents {
 	public static function generate_documents( $order_id ) {
 		$order = wc_get_order( $order_id );
 
-		( new Document\NRA( $order ) )->generate_file();
+		// A numbering failure (lock timeout, database error) must not break checkout or the order status change.
+		// The order stays without that document; "Regenerate PDF's" tries again.
+		try {
+			( new Document\NRA( $order ) )->generate_file();
 
-		if ( self::documents_on() && self::maybe_generate_invoice( $order ) ) {
-			( new Document\Invoice( $order ) )->generate_file();
-			
-			if ( $order->get_payment_method() === 'bacs' ) {
-				( new Document\Proforma( $order ) )->generate_file();
+			if ( self::documents_on() && self::maybe_generate_invoice( $order ) ) {
+				( new Document\Invoice( $order ) )->generate_file();
+
+				if ( $order->get_payment_method() === 'bacs' ) {
+					( new Document\Proforma( $order ) )->generate_file();
+				}
+
+				self::maybe_generate_invoice_copy( $order );
 			}
 
-			self::maybe_generate_invoice_copy( $order );
-		}
-
-		if ( $refunds = $order->get_refunds() ) {
-			foreach ( $refunds as $refund ) {
-				self::generate_refunded_documents( $refund->get_id(), $refund->get_parent_id() );
+			if ( $refunds = $order->get_refunds() ) {
+				foreach ( $refunds as $refund ) {
+					self::generate_refunded_documents( $refund->get_id(), $refund->get_parent_id() );
+				}
+			}
+		} catch ( \Exception $e ) {
+			wc_get_logger()->error( 'Documents for order #' . $order_id . ' were not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
+			try { // The note must not throw out of the hook either.
+				/* translators: %s: the error message */
+				$order->add_order_note( sprintf( __( 'Some documents were not generated: %s', 'nashenski-commerce' ), $e->getMessage() ) );
+			} catch ( \Throwable $note_error ) {
+				wc_get_logger()->error( 'Order note for order #' . $order_id . ' was not added: ' . $note_error->getMessage(), array( 'source' => 'nashenski' ) );
 			}
 		}
 	}
@@ -54,8 +66,19 @@ class Documents {
 	public static function generate_proforma( $order_id ) {
 		$order = wc_get_order( $order_id );
 
-		if ( self::documents_on() && self::maybe_generate_proforma( $order ) && $order->get_payment_method() === 'bacs' ) {
-			( new Document\Proforma( $order ) )->generate_file();
+		// A numbering failure must not break checkout; the order stays without the proforma.
+		try {
+			if ( self::documents_on() && self::maybe_generate_proforma( $order ) && $order->get_payment_method() === 'bacs' ) {
+				( new Document\Proforma( $order ) )->generate_file();
+			}
+		} catch ( \Exception $e ) {
+			wc_get_logger()->error( 'Proforma for order #' . $order_id . ' was not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
+			try { // The note must not throw out of the hook either.
+				/* translators: %s: the error message */
+				$order->add_order_note( sprintf( __( 'Some documents were not generated: %s', 'nashenski-commerce' ), $e->getMessage() ) );
+			} catch ( \Throwable $note_error ) {
+				wc_get_logger()->error( 'Order note for order #' . $order_id . ' was not added: ' . $note_error->getMessage(), array( 'source' => 'nashenski' ) );
+			}
 		}
 	}
 

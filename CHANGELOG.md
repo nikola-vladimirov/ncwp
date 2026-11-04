@@ -1,5 +1,22 @@
 # Nashenski Commerce changelog
 
+## 0.19.5 (2026-11-04)
+
+Security release. Please update.
+
+### Security
+- The import from other plugins and the "Import and switch off" link need the rights to manage plugins, not only to manage the shop. Users without them no longer see the link.
+- BOX NOW, Speedy, Econt and Pigeon Express refuse a cart that is too large to price instead of running out of memory. The courier is hidden for that cart and no partial price is shown.
+- Invoice, credit note and pro forma numbers are reserved safely, so two orders at the same moment cannot get the same number. This works for both the old and the high-performance order storage.
+- Invoice numbers brought in by the import can no longer collide with new ones. An old number that clashes is skipped and counted in the import summary ("N document numbers skipped (conflict)").
+- Courier PDF links (labels and waybills) are checked before they are shown.
+- Econt service rules are enforced on the server, not only in the order screen.
+- Pigeon Express: a payment amount sent by a guest is ignored, and a change made by shop staff is validated.
+
+### Fixes
+- A document that cannot be made no longer breaks a refund, a subscription renewal or the checkout. The order gets the note "Some documents were not generated" with the reason.
+- A subscription renewal no longer reuses the document number of an earlier order.
+
 ## 0.19.4 (2026-10-29)
 
 ### Changed

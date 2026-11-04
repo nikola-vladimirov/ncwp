@@ -3,6 +3,7 @@ namespace Nashenski\Admin;
 use Nashenski\Container\Client;
 use Nashenski\Shipping\Pigeon\Method;
 use Nashenski\Shipping\Pigeon\Address;
+use Nashenski\Shipping\Pigeon\Payment;
 use Nashenski\Transliteration;
 
 use function PHPSTORM_META\map;
@@ -40,8 +41,6 @@ class Pigeon {
 		if ( !empty( $theorder->get_items( 'shipping' ) ) ) {
 			foreach ( $theorder->get_items( 'shipping' ) as $shipping ) {
 				if ( $shipping['method_id'] === 'nashenski_pigeon' ) {
-					echo '<div id="nashenski--pigeon-admin"></div>';
-
 					$label_data = array();
 					$cookie_data = $theorder->get_meta( 'nashenski_pigeon_cookie_data' );
 					$shipment_status = $theorder->get_meta( 'nashenski_pigeon_shipment_status' );
@@ -61,6 +60,7 @@ class Pigeon {
 						}	
 					}
 					
+					$cookie_data = Payment::cookie( $cookie_data );
 					// City and region come from the order's address (the one the street lists use), not from the
 					// checkout data, which can be stale after the address was edited.
 					if ( is_array( $cookie_data ) ) {
@@ -69,11 +69,17 @@ class Pigeon {
 						$cookie_data['state'] = $place['state'];
 					}
 
+					try { $defaults = Payment::defaults( $theorder, $label_data ); }
+					catch ( \InvalidArgumentException $error ) { echo '<p class="notice notice-error">' . esc_html( $error->getMessage() ) . '</p>'; return; }
+					echo '<div id="nashenski--pigeon-admin"></div>';
+					$label_data = $defaults['label'];
 					wp_localize_script( 'nashenski-js-admin', 'nashenski_pigeon', array(
 						'label' => $label_data,
 						'shipmentStatus' => $shipment_status,
 						'operations' => $operations,
 						'cookie_data' => $cookie_data,
+						'fixedPrice' => $defaults['fixedPrice'],
+						'fixedPriceEnabled' => $defaults['fixedPriceEnabled'],
 						'paymentType' => $theorder->get_payment_method(),
 						'sendFrom' => self::get_send_from_data(),
 						'offices' => self::get_offices( $theorder ),
@@ -260,6 +266,7 @@ class Pigeon {
 		$label = self::update_sender( $label );
 		$label = self::update_services( $label );
 		$label = self::update_customer_note( $label, $order );
+		$label = Payment::label( $label, $order );
 
 		self::send_label_to_pigeon( $label, $order );
 	}
@@ -268,16 +275,22 @@ class Pigeon {
 		nashenski_check_admin_label_actions();
 
 		$order = wc_get_order( nashenski_label_request( 'orderId' ) );
+		try { $payment = Payment::request( $order ); }
+		catch ( \InvalidArgumentException $error ) { wp_send_json_error( array( 'message' => $error->getMessage() ) ); return; }
 		$label = nashenski_label_request( 'label_data', array() );
 
 		$label = self::update_sender( $label );
 		$label = self::update_receiver_data( $label );
 		$label = self::update_services( $label );
 		$label = self::update_items( $label, $order );
-		$label = self::update_payment_by( $label, $order );
+		$label = self::update_payment_by( $label, $order, $payment );
 		$label = self::update_customer_note( $label, $order );
 
 		$data = self::send_label_to_pigeon( $label, $order );
+		if ( isset( $data['shipmentStatus'] ) && $payment['override'] !== null ) {
+			$order->update_meta_data( Payment::COD_OVERRIDE_META, $payment['override'] );
+			$order->save();
+		}
 
 		wp_send_json_success( $data );
 		wp_die();
@@ -388,31 +401,17 @@ class Pigeon {
 		return str_replace( 'lockerID-', '', $locker['id'] );
 	}
 
-	private static function update_payment_by( $label, $order ) {
-		$payment_by = nashenski_label_request( 'paymentBy', array() );
-		$cookie_data = nashenski_label_request( 'cookie_data', array() );
-		
-		if ( $payment_by['id'] === 'fixed' ) {
-			$label['who_pays'] = 'sender';
-
-			if ( $order->get_payment_method() === 'cod' ) {
-				$label['service_codes']['cod_amount'] += number_format( $cookie_data['fixed_price'], 2, '.', '');
-			}
-
-			self::update_order_shipping_price( $cookie_data['fixed_price'], $order );
-		} else {
-			$label['who_pays'] = $payment_by['id'];
-		}
-
-		return $label;
+	private static function update_payment_by( $label, $order, $payment = null ) {
+		$payment = $payment ?? Payment::request( $order );
+		if ( $payment['mode'] === 'fixed' ) { self::update_order_shipping_price( $payment['price'], $order ); }
+		$label['who_pays'] = $payment['mode'] === 'fixed' ? 'sender' : $payment['mode'];
+		return Payment::label( $label, $order, $payment['override'], true );
 	}
 
 	private static function update_order_shipping_price( $price, $order ) {
-		foreach( $order->get_items( 'shipping' ) as $item_id => $item ) {
-			$item->set_total( $price );
-			$item->calculate_taxes();
-			$item->save();
-		}
+		$item = Payment::shipping_item( $order );
+		$item->set_total( Payment::amount( $price ) );
+		$item->save();
 
 		$order->calculate_shipping();
 		$order->calculate_totals();
@@ -541,6 +540,9 @@ class Pigeon {
 		$data = [];
 		$container = nashenski()->container();
 		$request_body = apply_filters( 'nashenski/pigeon/create_label', $label, $order );
+		if ( isset( $request_body['service_codes']['cod_amount'] ) ) {
+			$request_body['service_codes']['cod_amount'] = Payment::amount( $request_body['service_codes']['cod_amount'] );
+		}
 		$response = $container[ Client::PIGEON ]->api_call( $container[ Client::PIGEON ]::CREATE_LABEL_ENDPOINT, $request_body, 'POST' );
 		
 		if ( isset( $response['success'] ) && !$response['success'] ) {

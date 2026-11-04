@@ -45,6 +45,9 @@
 		streets: Object.values( data.streets || {} ),
 		other: '',
 		paymentBy: payers[ 0 ],
+		// Shipping price and COD come from the server, never from the guest's checkout cookie.
+		fixedPrice: undefined === data.fixedPrice ? '' : data.fixedPrice,
+		codEdited: false,
 		testOption: data.testOption,
 		returnAtMyExpense: '',
 		declaredValue: ( label.service_codes || {} ).declared_value || '',
@@ -73,7 +76,7 @@
 		} );
 	}
 
-	if ( cookie.fixed_price ) {
+	if ( data.fixedPriceEnabled ) {
 		state.paymentBy = payers[ 2 ];
 	} else if ( 'sender' === label.who_pays ) {
 		state.paymentBy = payers[ 1 ];
@@ -127,6 +130,10 @@
 			street: state.street,
 			other: state.other,
 			paymentBy: state.paymentBy,
+			fixedPrice: state.fixedPrice,
+			paymentVersion: 1,
+			// Only an explicit staff edit overrides the COD the server works out.
+			codOverride: state.codEdited ? ( label.service_codes || {} ).cod_amount : undefined,
 			testOption: state.testOption,
 			returnAtMyExpense: state.returnAtMyExpense,
 			cookie_data: cookie,
@@ -141,6 +148,7 @@
 				state.message = r.message;
 			} else {
 				state.shipmentStatus = L.copy( r.shipmentStatus ) || '';
+				state.codEdited = false;
 				label = L.copy( r.label ) || label;
 				state.frameUrl = state.shipmentStatus ? printUrl() : '';
 			}
@@ -336,10 +344,10 @@
 			'address' === type ? addressFields() : null,
 			L.el( 'div', {}, packs() ),
 			L.el( 'p', { class: 'form-field form-field-wide' }, [ L.button( i18n.addPack, 'button-secondary', addPack ) ] ),
-			codes && undefined !== codes.cod_amount && 'cod' === data.paymentType ? L.field( i18n.cd, L.input( codes, 'cod_amount', { type: 'number' } ) ) : null,
+			codes && undefined !== codes.cod_amount && 'cod' === data.paymentType ? L.field( i18n.cd, L.input( codes, 'cod_amount', { type: 'number', onInput: function () { state.codEdited = true; } } ) ) : null,
 			L.field( i18n.declaredValue, L.input( state, 'declaredValue', { type: 'number' } ) ),
 			L.field( i18n.deliveryPayedBy, L.select( payers, state.paymentBy, choose( 'paymentBy' ), { placeholder: i18n.choose } ) ),
-			'fixed' === state.paymentBy.id ? L.field( i18n.fixedPrice, L.input( cookie, 'fixed_price', { type: 'number' } ) ) : null,
+			'fixed' === state.paymentBy.id ? L.field( i18n.fixedPrice, L.input( state, 'fixedPrice', { type: 'number' } ) ) : null,
 			L.field( i18n.note, L.input( label, 'note' ) ),
 			// The old box showed "no" as checked until it was clicked; the checkbox now follows the yes/no value.
 			checkbox( i18n.reviewAndTest, 'yes' === state.testOption || true === state.testOption, function ( on ) { state.testOption = on ? 'yes' : 'no'; }, 'clear:none !important;float:left !important' ),

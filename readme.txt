@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.19.4
+Stable tag: 0.19.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -128,6 +128,10 @@ The plugin only contacts a service after you turn it on and enter your own accou
 The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf php-font-lib (LGPL-2.1 or later) and php-svg-lib (LGPL-3.0 or later), which make the PDF documents; and Pimple, Masterminds HTML5, sabberworm PHP-CSS-Parser, setasign FPDI, chillerlan php-qrcode and php-settings-container, clegginabox PDF merger, ddeboer VATIN and PSR container (all MIT). Their licences are in each library's folder.
 
 == Changelog ==
+
+= 0.19.5 =
+* Security: the import and its link need the rights to manage plugins, BOX NOW, Speedy, Econt and Pigeon Express refuse oversized carts instead of running out of memory (courier hidden, no partial price), invoice, credit note and pro forma numbers are reserved safely (old and high-performance order storage), imported numbers no longer collide with new ones, courier PDF links are checked, Econt service rules are enforced on the server, Pigeon Express ignores payment amounts from guests and validates staff edits.
+* Fixes: a document that fails no longer breaks a refund, a subscription renewal or the checkout and is noted on the order, and a renewal no longer reuses an earlier order's document number.
 
 = 0.19.4 =
 * Changed: the company VAT number at checkout is required only when its setting is ticked.

@@ -4,6 +4,12 @@ namespace Nashenski\Shipping\Packer;
 defined( 'ABSPATH' ) || exit;
 
 class Carton_Packer {
+    private $budget;
+
+    public function __construct( ?Packing_Budget $budget = null ) {
+        $this->budget = $budget;
+    }
+
     /**
      * Try multiple base candidates and return the best-volume solution.
      *
@@ -12,6 +18,10 @@ class Carton_Packer {
      * @return Pack_Result
      */
     public function find_best_carton( array $products, array $cartons = array() ): Pack_Result {
+        if ( $this->budget ) {
+            $this->budget->check_units( count( $products ) );
+            $this->budget->spend( count( $products ) );
+        }
         if ( empty( $products ) ) {
             throw new \InvalidArgumentException( 'Products list cannot be empty.' );
         }
@@ -34,12 +44,20 @@ class Carton_Packer {
         $ratios     = array( 1.0, 4 / 3, 3 / 2, 16 / 10, 2.0, 5 / 3, 3.0, 16 / 9 );
         $candidates = array();
 
-        $add_candidate = static function ( array &$set, int $L, int $W ): void {
+        $budget = $this->budget;
+        $add_candidate = static function ( array &$set, int $L, int $W ) use ( $budget ): void {
+            if ( $budget ) {
+                $budget->spend();
+            }
             // normalize orientation of base (L >= W) for dedup key
             if ( $W > $L ) {
                 list( $L, $W ) = array( $W, $L );
             }
-            $set["{$L}×{$W}"] = array( $L, $W );
+            $key = "{$L}×{$W}";
+            if ( $budget && ! isset( $set[ $key ] ) ) {
+                $budget->check_candidates( count( $set ) + 1 );
+            }
+            $set[ $key ] = array( $L, $W );
         };
 
         foreach ( $ratios as $r ) {
@@ -146,6 +164,9 @@ class Carton_Packer {
 
             for ( $columns = 1; $columns <= $product_count; $columns++ ) {
                 for ( $rows = 1; $rows <= (int) ceil( $product_count / $columns ); $rows++ ) {
+                    if ( $this->budget ) {
+                        $this->budget->spend();
+                    }
                     $layers = (int) ceil( $product_count / ( $columns * $rows ) );
                     $dims   = $this->canonical_dimensions( $columns * $x, $rows * $y, $layers * $z );
                     $L      = $dims[0];
@@ -311,6 +332,10 @@ class Carton_Packer {
      * @return array{H:int,placements:array<int,Placement>}|null
      */
     private function pack_with_base( array $products, int $L, int $W ): ?array {
+        if ( $this->budget ) {
+            // Account for sorting and the fixed orientation checks per product.
+            $this->budget->spend( count( $products ) * ( 12 + (int) ceil( log( count( $products ) + 1, 2 ) ) ) );
+        }
         // Order items: largest max-dimension first.
         $items = $products;
         usort(

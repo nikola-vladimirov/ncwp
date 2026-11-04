@@ -256,64 +256,7 @@ class BaseDocument {
 	}
 
 	public function get_document_number() {
-		$document_number = $this->woo_order->get_meta( $this->document_number_meta );
-
-		if ( !$document_number ) {
-			$locked = $this->lock_numbers();
-
-			try {
-				if ( $locked ) {
-					// Another request may have taken the number while we waited.
-					wp_cache_delete( 'nashenski_settings_invoice_' . $this->document_number_option, 'options' );
-					wp_cache_delete( 'alloptions', 'options' );
-				}
-
-				$document_number = nashenski_get_option( 'invoice', $this->document_number_option );
-
-				if ( nashenski_check_if_order_with_that_doc_number_exists( $document_number, $this->document_number_meta ) ) {
-					$document_number = nashenski_get_next_document_number( $this->document_number_meta );
-				}
-
-				// An empty "Next NRA Document Number" setting starts at 1, not 0.
-				$document_number = max( 1, (int) $document_number );
-
-				nashenski_set_option( 'invoice', $this->document_number_option, str_pad( $document_number + 1, 10, '0', STR_PAD_LEFT ) );
-				$this->woo_order->update_meta_data( $this->document_number_meta, str_pad( $document_number, 10, '0', STR_PAD_LEFT ) );
-				$this->woo_order->save();
-			} finally {
-				if ( $locked ) {
-					delete_option( 'nashenski_number_lock' );
-				}
-			}
-		}
-
-		return $document_number;
-	}
-
-	/**
-	 * Mutex for making a document number: add_option() fails when the row exists. A lock older than 30 seconds is stale.
-	 *
-	 * @return bool True when we hold the lock (after about 2 seconds without it, the old unlocked behaviour applies).
-	 */
-	private function lock_numbers() {
-		for ( $try = 0; $try < 20; $try++ ) {
-			if ( add_option( 'nashenski_number_lock', time(), '', false ) ) {
-				return true;
-			}
-
-			wp_cache_delete( 'nashenski_number_lock', 'options' );
-			wp_cache_delete( 'alloptions', 'options' );
-			$since = (int) get_option( 'nashenski_number_lock' );
-
-			if ( $since && time() - $since > 30 ) {
-				delete_option( 'nashenski_number_lock' );
-				continue;
-			}
-
-			usleep( 100000 );
-		}
-
-		return false;
+		return \Nashenski\Invoice\Number_Allocator::allocate( $this->woo_order, $this->document_number_meta, $this->document_number_option );
 	}
 
 	public function get_document_date() {

@@ -155,49 +155,24 @@ class Actions {
 			return __( 'The invoice number must be 1 to 10 digits.', 'nashenski-commerce' );
 		}
 
-		$padded = str_pad( (int) $number, 10, '0', STR_PAD_LEFT );
-		$separate = (bool) nashenski_get_option( 'invoice', 'next_invoice_separate_number' );
-		// With shared numbering, order documents and invoices use the same numbers.
-		$metas = $separate ? array( 'nashenski_order_invoice_number' ) : array( 'nashenski_order_invoice_number', 'nashenski_order_number' );
-
-		foreach ( $metas as $meta ) {
-			// Two at most: the order itself may hold the number already.
-			$used = array_diff( wc_get_orders( array(
-				'meta_key' => $meta, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_value' => $padded, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-				'return' => 'ids',
-				'limit' => 2,
-			) ), array( $order->get_id() ) );
-
-			if ( $used ) {
-				/* translators: %s: invoice number */
-				return sprintf( __( 'Number %s is already used by another order. Choose another invoice number.', 'nashenski-commerce' ), $padded );
-			}
-		}
-
-		$order->update_meta_data( 'nashenski_order_invoice_number', $padded );
-
-		if ( Documents::own_numbering() ) {
-			$order->update_meta_data( 'nashenski_invoice_own_program', 'yes' );
-			$order->save();
-
-			// The number belongs to the shop's own program, so the website sequence stays as it is.
-			return '';
-		}
-
-		$order->save();
-
-		// The next automatic number continues after the typed one.
-		$option = $separate ? 'next_invoice_separate_number' : 'next_invoice_number';
-
-		if ( (int) $number >= (int) nashenski_get_option( 'invoice', $option ) ) {
-			nashenski_set_option( 'invoice', $option, str_pad( (int) $number + 1, 10, '0', STR_PAD_LEFT ) );
-		}
-
-		return '';
+		return \Nashenski\Invoice\Number_Allocator::manual( $order, $number, Documents::own_numbering() );
 	}
 
 	public static function create_refund_action( $order_id, $refund_id ) {
-		Documents::generate_refunded_documents( $refund_id, $order_id );
+		// A numbering failure must not break the refund; "Regenerate PDF's" tries again.
+		try {
+			Documents::generate_refunded_documents( $refund_id, $order_id );
+		} catch ( \Exception $e ) { // WooCommerce deletes the refund on any exception thrown here.
+			wc_get_logger()->error( 'Refund documents for order #' . $order_id . ' were not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
+
+			if ( $order = wc_get_order( $order_id ) ) {
+				try {
+					/* translators: %s: the error message */
+					$order->add_order_note( sprintf( __( 'Some documents were not generated: %s', 'nashenski-commerce' ), $e->getMessage() ) );
+				} catch ( \Throwable $note_error ) {
+					wc_get_logger()->error( 'Order note for order #' . $order_id . ' was not added: ' . $note_error->getMessage(), array( 'source' => 'nashenski' ) );
+				}
+			}
+		}
 	}
 }

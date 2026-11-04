@@ -185,6 +185,7 @@ class Help_Page {
 					esc_html__( 'The order documents and invoices of Bulgarisation for WooCommerce move into the private documents folder and open from the order as before.', 'nashenski-commerce' ),
 					esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods and, from the N-18 plugin, the company details and document numbers. Then the old plugin is switched off. Its own data stays in the database.', 'nashenski-commerce' ),
 					esc_html__( 'Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import.', 'nashenski-commerce' ),
+					esc_html__( 'Only users who can manage plugins see the import button. If an old document number clashes with a number already in use, that number is skipped and the summary says "N document numbers skipped (conflict)".', 'nashenski-commerce' ),
 				),
 				__( 'Command line (WP-CLI)', 'nashenski-commerce' ) => array(
 					esc_html__( 'Settings can be read and changed with WP-CLI: wp nashenski setting list, get, set and reset. The names are the option names without "nashenski_settings_", for example apis_enable_econt.', 'nashenski-commerce' ),
@@ -199,6 +200,7 @@ class Help_Page {
 					esc_html__( 'No courier options at checkout: add the methods to the shipping zone of the customer\'s address and give your products a weight.', 'nashenski-commerce' ),
 					esc_html__( '"Complete the fields to calculate" does not go away: the customer has not chosen an office, a locker or an address yet.', 'nashenski-commerce' ),
 					esc_html__( 'No documents: turn on "Invoices and N-18" in Overview and check "When to generate documents?" in Documents.', 'nashenski-commerce' ),
+					esc_html__( 'The order note "Some documents were not generated" means a document failed (the note gives the reason). The refund, renewal or checkout still went through. Fix the cause and make the document again from the order.', 'nashenski-commerce' ),
 				),
 		);
 	}
@@ -208,13 +210,14 @@ class Help_Page {
 	 */
 	private static function output_import() {
 		$rows = array();
+		$can_import = current_user_can( 'manage_woocommerce' ) && current_user_can( 'activate_plugins' );
 
 		if ( Migration::has_old_data() ) {
-			$rows[] = array( __( 'Bulgarisation for WooCommerce', 'nashenski-commerce' ), get_option( Migration::DONE_OPTION ), wp_nonce_url( admin_url( 'admin-post.php?action=' . Migration::ACTION ), Migration::ACTION ) );
+			$rows[] = array( __( 'Bulgarisation for WooCommerce', 'nashenski-commerce' ), get_option( Migration::DONE_OPTION ), $can_import ? wp_nonce_url( admin_url( 'admin-post.php?action=' . Migration::ACTION ), Migration::ACTION ) : '' );
 		}
 
 		foreach ( Import_Sources::sources() as $slug => $source ) {
-			$rows[] = array( $source['name'], $source['done'], Import_Sources::url( $slug ) );
+			$rows[] = array( $source['name'], $source['done'], $can_import ? Import_Sources::url( $slug ) : '' );
 		}
 
 		if ( ! $rows ) {
@@ -234,8 +237,10 @@ class Help_Page {
 								/* translators: %s: date */
 								echo esc_html( sprintf( __( 'Imported on %s', 'nashenski-commerce' ), wp_date( get_option( 'date_format' ), (int) ( $done['time'] ?? 0 ) ) ) );
 								?>
-							<?php else : ?>
+							<?php elseif ( $url ) : ?>
 								<a class="button" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Import and switch off', 'nashenski-commerce' ); ?></a>
+							<?php else : ?>
+								<span class="description"><?php esc_html_e( 'You do not have permission to perform this action.', 'nashenski-commerce' ); ?></span>
 							<?php endif; ?>
 						</td>
 					</tr>

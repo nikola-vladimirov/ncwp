@@ -4,25 +4,27 @@ namespace Nashenski\Shipping\Packer;
 defined( 'ABSPATH' ) || exit;
 
 class APSPackage {
-	public static function pack_package( $package, array $box_sizes, $volumetric_weight_divisor = null ): array {
-		$products = self::get_products_from_package( $package );
+	public static function pack_package( $package, array $box_sizes, $volumetric_weight_divisor = null, ?Packing_Budget $budget = null ): array {
+		$products = self::get_products_from_package( $package, $budget );
 
 		if ( empty( $products ) ) {
 			return array();
 		}
 
-		return ( new APSPacker( $volumetric_weight_divisor ) )->pack( $products, $box_sizes );
+		return ( new APSPacker( $volumetric_weight_divisor, $budget ) )->pack( $products, $box_sizes );
 	}
 
-	public static function package_fits_largest_box( $package, array $box_sizes, $volumetric_weight_divisor = null ): bool {
-		$products = self::get_products_from_package( $package );
+	public static function package_fits_largest_box( $package, array $box_sizes, $volumetric_weight_divisor = null, ?Packing_Budget $budget = null ): bool {
+		$products = self::get_products_from_package( $package, $budget );
 
 		if ( empty( $products ) ) {
 			return true;
 		}
 
 		try {
-			$packed_boxes = ( new APSPacker( $volumetric_weight_divisor ) )->pack( $products, array( self::get_largest_box_size( $box_sizes ) ) );
+			$packed_boxes = ( new APSPacker( $volumetric_weight_divisor, $budget ) )->pack( $products, array( self::get_largest_box_size( $box_sizes ) ) );
+		} catch ( Packing_Limit_Exceeded $e ) {
+			throw $e;
 		} catch ( \Throwable $e ) {
 			return false;
 		}
@@ -30,7 +32,19 @@ class APSPackage {
 		return count( $packed_boxes ) === 1;
 	}
 
-	public static function package_products_fit_largest_box( $package, array $box_sizes ): bool {
+	public static function package_products_fit_largest_box( $package, array $box_sizes, ?Packing_Budget $budget = null ): bool {
+		if ( $budget ) {
+			$contents = self::get_package_contents( $package );
+			$budget->check_units( count( $contents ) );
+			$budget->spend( count( $contents ) );
+			foreach ( $contents as $item ) {
+				$quantity = $item['quantity'] ?? 1;
+				if ( is_numeric( $quantity ) && ! is_finite( (float) $quantity ) ) {
+					throw new Packing_Limit_Exceeded( 'Shipping quantity must be finite.' );
+				}
+			}
+		}
+		// This checks one of each product, not the aggregate shipment quantity.
 		$products = self::get_products_from_package( $package );
 
 		if ( empty( $products ) ) {
@@ -38,13 +52,15 @@ class APSPackage {
 		}
 
 		$largest_box = self::get_largest_box_size( $box_sizes );
-		$packer      = new APSPacker();
+		$packer      = new APSPacker( null, $budget );
 
 		foreach ( $products as $product ) {
 			$product['quantity'] = 1;
 
 			try {
 				$packed_boxes = $packer->pack( array( $product ), array( $largest_box ) );
+			} catch ( Packing_Limit_Exceeded $e ) {
+				throw $e;
 			} catch ( \Throwable $e ) {
 				return false;
 			}
@@ -72,17 +88,27 @@ class APSPackage {
 		return end( $box_sizes );
 	}
 
-	private static function get_products_from_package( $package ): array {
+	private static function get_products_from_package( $package, ?Packing_Budget $budget = null ): array {
 		$products       = array();
 		$default_weight = 0;
 		$dimension_unit = get_option( 'woocommerce_dimension_unit', 'cm' );
+		$contents       = self::get_package_contents( $package );
+		if ( $budget ) {
+			// Bound conversion itself, before constructing one descriptor per row.
+			$budget->check_units( count( $contents ) );
+			$budget->spend( count( $contents ) );
+		}
 
-		foreach ( self::get_package_contents( $package ) as $cart_item ) {
+		foreach ( $contents as $cart_item ) {
 			if ( empty( $cart_item['data'] ) || ! is_object( $cart_item['data'] ) ) {
 				return array();
 			}
 
 			$product = $cart_item['data'];
+			if ( $budget && $product->get_length() && $product->get_width() && $product->get_height() ) {
+				$raw_quantity = $cart_item['quantity'] ?? 1;
+				$budget->check_units( $raw_quantity === '' ? 1 : $raw_quantity );
+			}
 			$weight  = $product->get_weight() ? wc_get_weight( $product->get_weight(), 'kg' ) : 0;
 			$quantity = ! empty( $cart_item['quantity'] ) ? (int) $cart_item['quantity'] : 1;
 

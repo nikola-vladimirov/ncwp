@@ -41,7 +41,7 @@ class Econt {
 
 					$label_data = array();
 					$cookie_data = $theorder->get_meta( 'nashenski_econt_cookie_data' );
-					$shipment_status = $theorder->get_meta( 'nashenski_econt_shipment_status' );
+					$shipment_status = Courier_Pdf::status( 'econt', $theorder->get_meta( 'nashenski_econt_shipment_status' ) );
 
 					if ( $label = $theorder->get_meta( 'nashenski_econt_label' ) ) {
 						$label_data = $label;
@@ -338,7 +338,8 @@ class Econt {
 			wp_send_json_error( $response );
 		}
 
-		$data['shipmentStatus'] = $status['status'];
+		$safe_status = Courier_Pdf::status( 'econt', array( 'label' => $status['status'] ) );
+		$data['shipmentStatus'] = $safe_status['label'];
 		$order_shipment_status['label'] = $data['shipmentStatus'];
 		
 		$order->update_meta_data( 'nashenski_econt_shipment_status', $order_shipment_status );
@@ -374,7 +375,10 @@ class Econt {
 		$order = wc_get_order( $order_id );
 		$label = $order->get_meta( 'nashenski_econt_label' );
 
+		$service_overrides = array();
+
 		if ( !empty( $label['label'] ) ) {
+			$service_overrides = $label[ \Nashenski\Shipping\Econt\Service_Policy::OVERRIDES ] ?? array();
 			$label = $label['label'];
 		} else {
 			// A quick or admin order has no checkout draft: build it from the order and its delivery choice.
@@ -391,6 +395,9 @@ class Econt {
 		$label = self::update_weight( $label );
 		$label = self::update_label_pay_options( $label, $order_id );
 		$label = self::update_phone_and_names( $label, $order_id );
+		if ( ! $order->get_meta( 'nashenski_econt_shipment_status' ) ) {
+			$label = \Nashenski\Shipping\Econt\Service_Policy::for_order( $label, $order, nashenski()->container(), null, $service_overrides );
+		}
 
 		return self::send_label_to_econt( $label, $order_id );
 	}
@@ -418,7 +425,7 @@ class Econt {
 		$action = $order->get_meta( 'nashenski_econt_shipment_status' ) ? 'updated' : 'created';
 
 		$generated_data = self::generate_response( $label, $order_id );
-		$response = $generated_data['response'];
+		$response = Courier_Pdf::status( 'econt', $generated_data['response'] );
 		$request_body = $generated_data['request_body'];
 
 		if ( 

@@ -4,7 +4,7 @@ namespace Nashenski;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin {
-	const VERSION = '0.19.4';
+	const VERSION = '0.19.5';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
@@ -317,9 +317,13 @@ class Plugin {
 		wp_register_script( 'nashenski-label-box', nashenski()->plugin_dir_url() . 'assets/js/label-box.js', array( 'jquery', 'nashenski-js-admin' ), self::VERSION, true );
 		wp_localize_script( 'nashenski-label-box', 'nashenskiLabelBoxText', array( 'error' => __( 'The request failed. Reload the page and try again.', 'nashenski-commerce' ) ) );
 
+		wp_register_script( 'nashenski-courier-pdf', nashenski()->plugin_dir_url() . 'assets/js/courier-pdf.js', array(), self::VERSION, true );
+
 		foreach ( self::COURIERS as $courier ) {
 			if ( 'yes' === nashenski_get_option( 'apis', 'enable_' . $courier ) ) {
-				wp_enqueue_script( 'nashenski-js-' . $courier, nashenski()->plugin_dir_url() . 'assets/js/label-' . $courier . '.js', array( 'nashenski-label-box' ), self::VERSION, true );
+				// Econt opens courier PDFs through the validated preview helper.
+				$deps = 'econt' === $courier ? array( 'nashenski-label-box', 'nashenski-courier-pdf' ) : array( 'nashenski-label-box' );
+				wp_enqueue_script( 'nashenski-js-' . $courier, nashenski()->plugin_dir_url() . 'assets/js/label-' . $courier . '.js', $deps, self::VERSION, true );
 			}
 		}
 	}

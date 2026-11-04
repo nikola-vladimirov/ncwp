@@ -426,7 +426,10 @@
 	}
 
 	function pdfUrl() {
-		return String( state.shipmentStatus.label.pdfURL || '' ).replace( /^https?:/, '' ) + '&label=' + state.size;
+		// Only a validated remote courier URL may load in the preview frame (assets/js/courier-pdf.js).
+		var status = state.shipmentStatus && state.shipmentStatus.label;
+
+		return window.nashenskiCourierPdf ? window.nashenskiCourierPdf.url( status && status.pdfURL, state.size ) : '';
 	}
 
 	function pad( number ) {
