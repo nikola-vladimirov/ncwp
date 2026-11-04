@@ -74,6 +74,7 @@ plugin's own scheduled jobs (documents, abandoned cart reminders, shipment statu
 - Labels from the order screen or the order list, label printing in two sizes, shipment status,
   courier requests for Econt and Speedy, the order number on the waybill and a tracking link for the
   customer. Order statuses can follow the shipment (delivered or returned).
+- Each order screen shows the courier, the delivery type and the chosen office, locker or address.
 
 How to use: set up the courier (see Getting started), add its methods to a shipping zone, then on an
 order open the courier box, check the details and press "Generate label".

@@ -114,6 +114,7 @@ class Help_Page {
 					esc_html__( '"Shipping options look" sets cards or the plain look of your theme. "Colours and sizes" holds the colours, borders, corners and spacing. Empty settings follow your design tokens or theme.', 'nashenski-commerce' ),
 				),
 				__( 'Waybills, couriers and order statuses', 'nashenski-commerce' ) => array(
+					esc_html__( 'The "Courier choice" box on every order shows the courier, the delivery type and the chosen office, locker or address. It is only for reading.', 'nashenski-commerce' ),
 					esc_html__( 'Open an order to create, update, print or cancel its waybill in the courier box.', 'nashenski-commerce' ),
 					esc_html__( 'In the "Order actions" box of an order, and in the bulk actions of the orders list: "Create waybill" makes the waybill from the customer\'s choices, "Request a courier" books a pickup with Econt or Speedy for all the chosen waybills, "Check the shipment now" reads the status from the courier.', 'nashenski-commerce' ),
 					esc_html__( 'Print the label from the order or from the orders list. Where a courier offers several print sizes, such as A4 or A6 for Speedy, choose one first.', 'nashenski-commerce' ),

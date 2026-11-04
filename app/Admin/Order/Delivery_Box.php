@@ -61,7 +61,7 @@ class Delivery_Box {
 		$order->save();
 	}
 
-	private static function order() {
+	public static function order() {
 		global $post;
 
 		if ( isset( $GLOBALS['theorder'] ) && is_object( $GLOBALS['theorder'] ) ) {

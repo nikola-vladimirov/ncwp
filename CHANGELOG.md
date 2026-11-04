@@ -1,5 +1,10 @@
 # Nashenski Commerce changelog
 
+## 0.19.6 (2026-11-05)
+
+### Orders
+- Each order shows the courier and the delivery type.
+
 ## 0.19.5 (2026-11-04)
 
 Security release. Please update.
