@@ -154,7 +154,21 @@ class Order {
 		$shipping_items = $this->woo_order->get_items( 'shipping' );
 		$shipping_total = $this->woo_order->get_shipping_total();
 		$subtotal = abs( $this->woo_order->get_subtotal() + $shipping_total + $this->woo_order->get_total_fees() );
-		$order_total_items = $this->woo_order->get_order_item_totals();
+
+		if ( $this->woo_order instanceof \WC_Order_Refund ) {
+			// get_order_item_totals() fires a third-party filter that fatals on refunds, so build the only two rows used below, as WooCommerce does.
+			$order_total_items = array();
+
+			if ( $this->woo_order->get_total_discount() > 0 ) {
+				$order_total_items['cart_subtotal'] = array(
+					'type'  => 'subtotal',
+					'label' => __( 'Subtotal:', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+				);
+				$order_total_items['discount'] = array();
+			}
+		} else {
+			$order_total_items = $this->woo_order->get_order_item_totals();
+		}
 
 		if ( method_exists( $this->woo_order, 'get_reason' ) && $this->woo_order->get_reason() && $subtotal == 0 ) {
 			$subtotal = abs( $this->woo_order->get_total() );
