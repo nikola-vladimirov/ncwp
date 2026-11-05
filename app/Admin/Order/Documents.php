@@ -38,13 +38,21 @@ class Documents {
 			( new Document\NRA( $order ) )->generate_file();
 
 			if ( self::documents_on() && self::maybe_generate_invoice( $order ) ) {
-				( new Document\Invoice( $order ) )->generate_file();
+				// A bank transfer invoice waits for the payment (generate_invoice_when_paid); the proforma is made now.
+				$bacs = $order->get_payment_method() === 'bacs';
+				$wait = $bacs && ! $order->is_paid();
 
-				if ( $order->get_payment_method() === 'bacs' ) {
+				if ( ! $wait ) {
+					( new Document\Invoice( $order ) )->generate_file();
+				}
+
+				if ( $bacs ) {
 					( new Document\Proforma( $order ) )->generate_file();
 				}
 
-				self::maybe_generate_invoice_copy( $order );
+				if ( ! $wait ) {
+					self::maybe_generate_invoice_copy( $order );
+				}
 			}
 
 			if ( $refunds = $order->get_refunds() ) {
@@ -54,6 +62,28 @@ class Documents {
 			}
 		} catch ( \Exception $e ) {
 			wc_get_logger()->error( 'Documents for order #' . $order_id . ' were not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
+			try { // The note must not throw out of the hook either.
+				/* translators: %s: the error message */
+				$order->add_order_note( sprintf( __( 'Some documents were not generated: %s', 'nashenski-commerce' ), $e->getMessage() ) );
+			} catch ( \Throwable $note_error ) {
+				wc_get_logger()->error( 'Order note for order #' . $order_id . ' was not added: ' . $note_error->getMessage(), array( 'source' => 'nashenski' ) );
+			}
+		}
+	}
+
+	/** Bank transfer orders get the invoice once they are paid (processing, completed or payment complete). */
+	public static function generate_invoice_when_paid( $order_id ) {
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order || ! self::documents_on() || ! $order->is_paid() || $order->get_meta( 'nashenski_invoice_document' ) || ! self::maybe_generate_invoice( $order ) ) {
+			return;
+		}
+
+		try {
+			( new Document\Invoice( $order ) )->generate_file();
+			self::maybe_generate_invoice_copy( $order );
+		} catch ( \Exception $e ) {
+			wc_get_logger()->error( 'Invoice for order #' . $order_id . ' was not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
 			try { // The note must not throw out of the hook either.
 				/* translators: %s: the error message */
 				$order->add_order_note( sprintf( __( 'Some documents were not generated: %s', 'nashenski-commerce' ), $e->getMessage() ) );

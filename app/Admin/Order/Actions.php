@@ -18,6 +18,10 @@ class Actions {
 			add_action( 'woocommerce_order_status_completed_notification', array( '\Nashenski\Admin\Order\Documents', 'generate_documents' ), 5 );
 		}
 
+		foreach ( array( 'woocommerce_order_status_processing', 'woocommerce_order_status_completed', 'woocommerce_payment_complete' ) as $paid_hook ) {
+			add_action( $paid_hook, array( '\Nashenski\Admin\Order\Documents', 'generate_invoice_when_paid' ), 100, 1 );
+		}
+
 		add_action( 'woocommerce_order_actions', array( __CLASS__, 'add_order_meta_box_actions' ) );
 		add_action( 'woocommerce_order_action_nashenski_regenerate_pdfs', array( __CLASS__, 'process_order_meta_box_actions' ) );
 		add_action( 'woocommerce_order_action_nashenski_generate_invoice', array( __CLASS__, 'generate_invoice_action' ) );
