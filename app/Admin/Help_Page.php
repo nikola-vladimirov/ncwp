@@ -109,8 +109,6 @@ class Help_Page {
 					sprintf( esc_html__( 'In %s > Checkout fields you set the order, Required, Optional or Hidden and the width of every field, and add your own fields.', 'nashenski-commerce' ), $checkout ),
 					esc_html__( 'The Condition dropdown of a field shows or hides it by the value of other fields (is, is not, greater, less, empty, not empty). Conditions in one group all have to be true (and); "Add alternative (or)" adds another group, and one true group is enough (or). Example: for a "Company" field pick "Show when...", then "Invoice for a company" "is" "Yes". "Always shown" removes the rule. The classic checkout follows every condition; the block checkout follows conditions on your own fields that read your own fields (not greater or less).', 'nashenski-commerce' ),
 					esc_html__( 'Using WooCommerce Checkout Field Editor (free or Pro) before? "Import fields from Checkout Field Editor" copies its fields, rules and field conditions. Cart, product and repeat rules are left out and counted in the notice. Company invoice fields stay with Nashenski. The block checkout applies field conditions to the extra fields only, and not the "greater" and "less" ones.', 'nashenski-commerce' ),
-					esc_html__( '"Company invoice fields" adds "I want an invoice for a company" with company name, EIK, VAT number, MOL, town and address.', 'nashenski-commerce' ),
-					esc_html__( '"Invoice numbering": "Website invoices" go into the NRA audit file. "Own invoicing program" keeps the invoice out of it; you type that program\'s number on the order.', 'nashenski-commerce' ),
 					esc_html__( '"Shipping options look" sets cards or the plain look of your theme. "Colours and sizes" holds the colours, borders, corners and spacing. Empty settings follow your design tokens or theme.', 'nashenski-commerce' ),
 				),
 				__( 'Waybills, couriers and order statuses', 'nashenski-commerce' ) => array(
@@ -147,6 +145,10 @@ class Help_Page {
 					/* translators: %s: link to the Documents section */
 					sprintf( esc_html__( 'Your company details, the numbering and when documents are made are in %s > Company details and Invoices and documents.', 'nashenski-commerce' ), $documents ),
 					esc_html__( 'To save disk space, set "Delete order documents after (days)" in Documents > Invoices and documents. Only the order document PDFs of older orders are deleted; invoices, credit notes and refund documents stay. "Delete all order documents now" does it at once, after a confirmation.', 'nashenski-commerce' ),
+					/* translators: %s: link to the Documents section */
+					sprintf( esc_html__( 'In %s > Company invoice, "Company invoice fields" adds "I want an invoice for a company" with company name, EIK, VAT number, MOL, town and address.', 'nashenski-commerce' ), $documents ),
+					/* translators: %s: link to the Documents section */
+					sprintf( esc_html__( 'In %s > Company invoice, "Invoice numbering": "Website invoices" go into the NRA audit file. "Own invoicing program" keeps the invoice out of it; you type that program\'s number on the order.', 'nashenski-commerce' ), $documents ),
 					esc_html__( 'Copies can go to your accountant by email, and the monthly NRA audit file too.', 'nashenski-commerce' ),
 				),
 				__( 'NRA audit file and exports', 'nashenski-commerce' ) => array(

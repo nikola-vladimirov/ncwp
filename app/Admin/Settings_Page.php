@@ -94,7 +94,7 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 
 	/**
-	 * The sections and what each one shows. A part is array( tab slug, groups or null for all groups, optional field names ).
+	 * The sections and what each one shows. A part is array( tab slug, groups or null for all groups, optional field names, optional groups to leave out ).
 	 */
 	private function layout() {
 		$layout = array(
@@ -108,7 +108,7 @@ class Settings_Page extends \WC_Settings_Page {
 			),
 			'checkout' => array(
 				'label' => __( 'Checkout', 'nashenski-commerce' ),
-				'parts' => array( array( 'shipping', null ), array( 'fields', array( \Nashenski\Front_End\Checkout\Field_Editor::GROUP_CLASSIC ) ) ),
+				'parts' => array( array( 'shipping', null ), array( 'fields', null, null, array( \Nashenski\Front_End\Checkout\Company_Fields::GROUP ) ) ),
 			),
 			// Always in the menu: the on/off switch first, the settings once it is on.
 			'quick_order' => array(
@@ -232,7 +232,7 @@ class Settings_Page extends \WC_Settings_Page {
 			$columns = 'couriers' === $section_id && ! empty( $groups[ $part[0] ] ) && ! empty( $groups[ $send_from ] );
 
 			foreach ( $groups as $group => $pairs ) {
-				if ( empty( $pairs ) || ( null !== $part[1] && ! in_array( $group, $part[1], true ) ) ) {
+				if ( empty( $pairs ) || ( null !== $part[1] && ! in_array( $group, $part[1], true ) ) || in_array( $group, $part[3] ?? array(), true ) ) {
 					continue;
 				}
 
