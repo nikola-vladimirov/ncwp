@@ -1,5 +1,11 @@
 # Nashenski Commerce changelog
 
+## 0.19.9 (2026-11-05)
+
+### Updates
+- The update window shows the plugin icon and banner.
+- The description and the help manual are updated for 0.19.x.
+
 ## 0.19.8 (2026-11-05)
 
 ### Security
