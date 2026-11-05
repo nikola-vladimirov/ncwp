@@ -38,6 +38,15 @@ register_deactivation_hook( __FILE__, function () {
 	) as $hook ) {
 		wp_clear_scheduled_hook( $hook );
 	}
+
+	// Action Scheduler jobs would fail with "no callbacks are registered" while the plugin is off.
+	if ( function_exists( 'as_unschedule_all_actions' ) ) {
+		as_unschedule_all_actions( '', array(), 'nashenski' );
+	}
+
+	// The flags that make the carts tracker and the documents migration schedule their jobs again on the next load.
+	delete_option( 'nashenski_carts_db_version' );
+	delete_option( 'nashenski_documents_migration_version' );
 } );
 
 // Start the plugin

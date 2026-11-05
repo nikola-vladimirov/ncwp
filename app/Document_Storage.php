@@ -54,6 +54,7 @@ class Document_Storage {
 		add_action( 'admin_notices', array( __CLASS__, 'receipts_deleted_notice' ) );
 		add_action( 'add_option_' . self::CLEANUP_OPTION, array( __CLASS__, 'schedule_receipt_cleanup' ) );
 		add_action( 'update_option_' . self::CLEANUP_OPTION, array( __CLASS__, 'schedule_receipt_cleanup' ) );
+		add_action( 'admin_init', array( __CLASS__, 'restore_receipt_cleanup' ) );
 	}
 
 	/**
@@ -117,6 +118,15 @@ class Document_Storage {
 		as_unschedule_all_actions( self::CLEANUP_HOOK, array(), 'nashenski' );
 
 		if ( (int) get_option( self::CLEANUP_OPTION ) > 0 ) {
+			as_schedule_recurring_action( time() + HOUR_IN_SECONDS, DAY_IN_SECONDS, self::CLEANUP_HOOK, array(), 'nashenski' );
+		}
+	}
+
+	/**
+	 * Deactivating the plugin unschedules its jobs; the daily cleanup comes back when the setting is on and the job is missing.
+	 */
+	public static function restore_receipt_cleanup() {
+		if ( function_exists( 'as_has_scheduled_action' ) && (int) get_option( self::CLEANUP_OPTION ) > 0 && ! as_has_scheduled_action( self::CLEANUP_HOOK, array(), 'nashenski' ) ) {
 			as_schedule_recurring_action( time() + HOUR_IN_SECONDS, DAY_IN_SECONDS, self::CLEANUP_HOOK, array(), 'nashenski' );
 		}
 	}
