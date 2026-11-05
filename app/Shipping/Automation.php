@@ -22,8 +22,8 @@ class Automation {
 	/** Set once the shipment was delivered or went back, so the hourly check leaves the order alone. */
 	const STATE_META = '_nashenski_shipment_state';
 
-	/** Where the next hourly check starts in the list of open orders; wraps to 0 at the end. */
-	const OFFSET_OPTION = 'nashenski_shipments_offset';
+	/** Creation time (timestamp) of the last order of the previous hourly batch; the next batch starts there. */
+	const CURSOR_OPTION = 'nashenski_shipments_cursor';
 
 	/** Public tracking pages; the waybill number goes at the end. */
 	const TRACKING = array(
@@ -209,14 +209,15 @@ class Automation {
 	public static function check_shipments() {
 		// ponytail: 100 open orders per hour, created in the last 60 days; a busier store can raise it.
 		$limit = (int) apply_filters( 'nashenski/shipments/check_limit', 100 );
-		// Each run reads the next page of open orders, so an unchanged order is never saved just to move it to the back of the queue.
-		$offset = $limit > 0 ? (int) get_option( self::OFFSET_OPTION, 0 ) : 0;
+		// Each run reads the open orders from the date the last run reached, oldest first: an unchanged order is never saved just to move it back,
+		// and an order that leaves the list (completed, cancelled, too old) cannot make another one be skipped.
+		$start = time() - 60 * DAY_IN_SECONDS;
+		$from = $limit > 0 ? max( $start, (int) get_option( self::CURSOR_OPTION, 0 ) ) : $start;
 		$args = array(
 			'status' => array( 'processing', 'on-hold' ),
 			'limit' => $limit,
-			'offset' => $offset,
-			'date_created' => '>' . ( time() - 60 * DAY_IN_SECONDS ),
-			'orderby' => 'ID',
+			'date_created' => '>=' . $from,
+			'orderby' => 'date',
 			'order' => 'ASC',
 		);
 		$open = array( 'key' => self::STATE_META, 'compare' => 'NOT EXISTS' );
@@ -242,19 +243,21 @@ class Automation {
 			}
 		}
 
-		$changed = 0;
+		$dates = array();
 
 		foreach ( $orders as $order ) {
 			// check_order() saves an order only when its shipment changed (delivered or returned); the others are left alone.
 			// A change-only save writes the order's meta and its new status, never a stale copy of the rest of the row.
-			if ( in_array( self::check_order( $order ), array( 'delivered', 'returned' ), true ) ) {
-				++$changed;
-			}
+			self::check_order( $order );
+			$dates[] = $order->get_date_created() ? $order->get_date_created()->getTimestamp() : $from;
 		}
 
 		if ( $limit > 0 ) {
-			// A changed order leaves the list (it has its state meta now), so the next page starts that many places earlier.
-			update_option( self::OFFSET_OPTION, count( $orders ) < $limit ? 0 : $offset + $limit - $changed, false );
+			// A short page is the end of the list, so start again at the window start. Otherwise go on from the last order's date (it is read once more).
+			// shortcut: a page sharing one timestamp moves on one second, so more orders with that same second than the limit would be skipped; raise the limit then.
+			$last = $dates ? max( $dates ) : $from;
+			$next = count( $orders ) < $limit ? $start : ( min( $dates ) === $last ? $last + 1 : $last );
+			update_option( self::CURSOR_OPTION, $next, false );
 		}
 	}
 
