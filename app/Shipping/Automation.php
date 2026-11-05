@@ -209,10 +209,20 @@ class Automation {
 	public static function check_shipments() {
 		// ponytail: 100 open orders per hour, created in the last 60 days; a busier store can raise it.
 		$limit = (int) apply_filters( 'nashenski/shipments/check_limit', 100 );
-		// Each run reads the open orders from the date the last run reached, oldest first: an unchanged order is never saved just to move it back,
-		// and an order that leaves the list (completed, cancelled, too old) cannot make another one be skipped.
+		// Each run reads the open orders from the creation second the last run reached, oldest first, skipping the IDs already read in that second:
+		// an unchanged order is never saved just to move it back, an order that leaves the list cannot make another one be skipped,
+		// and more orders in one second than the limit are still all reached.
 		$start = time() - 60 * DAY_IN_SECONDS;
-		$from = $limit > 0 ? max( $start, (int) get_option( self::CURSOR_OPTION, 0 ) ) : $start;
+		$from = $start;
+		$seen = array();
+		$cursor = $limit > 0 ? get_option( self::CURSOR_OPTION ) : false;
+
+		// A missing, corrupt, older-than-the-window or future cursor means the window start with no IDs.
+		if ( is_array( $cursor ) && isset( $cursor['from'], $cursor['ids'] ) && is_int( $cursor['from'] ) && is_array( $cursor['ids'] ) && $cursor['from'] >= $start && $cursor['from'] <= time() ) {
+			$from = $cursor['from'];
+			$seen = array_map( 'intval', $cursor['ids'] );
+		}
+
 		$args = array(
 			'status' => array( 'processing', 'on-hold' ),
 			'limit' => $limit,
@@ -220,6 +230,10 @@ class Automation {
 			'orderby' => 'date',
 			'order' => 'ASC',
 		);
+
+		if ( $seen ) {
+			$args['exclude'] = $seen;
+		}
 		$open = array( 'key' => self::STATE_META, 'compare' => 'NOT EXISTS' );
 		$legacy = ! ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() );
 
@@ -249,14 +263,20 @@ class Automation {
 			// check_order() saves an order only when its shipment changed (delivered or returned); the others are left alone.
 			// A change-only save writes the order's meta and its new status, never a stale copy of the rest of the row.
 			self::check_order( $order );
-			$dates[] = $order->get_date_created() ? $order->get_date_created()->getTimestamp() : $from;
+			$dates[ $order->get_id() ] = $order->get_date_created() ? $order->get_date_created()->getTimestamp() : $from;
 		}
 
 		if ( $limit > 0 ) {
-			// A short page is the end of the list, so start again at the window start. Otherwise go on from the last order's date (it is read once more).
-			// shortcut: a page sharing one timestamp moves on one second, so more orders with that same second than the limit would be skipped; raise the limit then.
-			$last = $dates ? max( $dates ) : $from;
-			$next = count( $orders ) < $limit ? $start : ( min( $dates ) === $last ? $last + 1 : $last );
+			if ( count( $orders ) < $limit ) {
+				// A short page is the end of the list, so start again at the window start.
+				$next = array( 'from' => $start, 'ids' => array() );
+			} else {
+				// Go on from the page's last second; the IDs read in it are skipped next time, with the stored ones when it is still the same second.
+				$last = max( $dates );
+				$ids = array_keys( array_filter( $dates, function ( $date ) use ( $last ) { return $date === $last; } ) );
+				$next = array( 'from' => $last, 'ids' => array_values( array_unique( array_merge( $last === $from ? $seen : array(), $ids ) ) ) );
+			}
+
 			update_option( self::CURSOR_OPTION, $next, false );
 		}
 	}

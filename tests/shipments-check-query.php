@@ -69,6 +69,9 @@ function wc_get_orders( $a ) {
 	if ( preg_match( '/^(>=?)(\d+)$/', $a['date_created'] ?? '', $m ) ) {
 		$r = array_values( array_filter( $r, function ( $o ) use ( $m ) { return '>=' === $m[1] ? $o->date >= (int) $m[2] : $o->date > (int) $m[2]; } ) );
 	}
+	if ( ! empty( $a['exclude'] ) ) {
+		$r = array_values( array_filter( $r, function ( $o ) use ( $a ) { return ! in_array( $o->id, $a['exclude'], true ); } ) );
+	}
 	$by_date = 'date' === ( $a['orderby'] ?? 'ID' );
 	usort( $r, function ( $x, $y ) use ( $by_date ) { return $by_date ? array( $x->date, $x->id ) <=> array( $y->date, $y->id ) : $x->id <=> $y->id; } );
 	$r = array_slice( $r, $a['offset'] ?? 0, $a['limit'] > 0 ? $a['limit'] : null );
@@ -106,7 +109,9 @@ require __DIR__ . '/../app/Shipping/Automation.php';
 function check( $ok, $what ) { if ( ! $ok ) { fwrite( STDERR, "FAIL: $what\n" ); exit( 1 ); } echo "ok - $what\n"; }
 function not_exists( $q ) { return '_nashenski_shipment_state' === $q['key'] && 'NOT EXISTS' === $q['compare']; }
 function run() { $GLOBALS['checked'] = array(); Nashenski\Shipping\Automation::check_shipments(); return $GLOBALS['checked']; }
-function cursor() { return $GLOBALS['options']['nashenski_shipments_cursor'] ?? null; }
+function cursor() { $c = $GLOBALS['options']['nashenski_shipments_cursor'] ?? null; return is_array( $c ) ? $c['from'] : $c; } // The second the cursor stands on.
+function cursor_ids() { $c = $GLOBALS['options']['nashenski_shipments_cursor'] ?? null; return is_array( $c ) ? $c['ids'] : null; } // The IDs already read in that second.
+function stored( $from, $ids = array() ) { $GLOBALS['options'] = array( 'nashenski_shipments_cursor' => array( 'from' => $from, 'ids' => $ids ) ); }
 function day( $id ) { return time() - 10 * 86400 + $id * 60; } // Order dates grow with the id, all inside the 60-day window.
 function orders( ...$ids ) { $GLOBALS['result'] = array_map( function ( $i ) { $o = new FakeOrder( $i ); $o->date = day( $i ); return $o; }, $ids ); }
 function leave( $id ) { $GLOBALS['result'] = array_values( array_filter( $GLOBALS['result'], function ( $o ) use ( $id ) { return $o->id !== $id; } ) ); } // Completed, cancelled or too old: gone from the list.
@@ -145,23 +150,48 @@ $GLOBALS['limit'] = 100;
 run();
 check( not_exists( end( $GLOBALS['queries'] )['meta_query'][0] ), 'HPOS: NOT EXISTS stays in the query' );
 
-// The cursor advances across batches; unchanged orders (no waybill here) are never saved. The last order of a batch is read again, so none is missed.
+// The cursor advances across batches; unchanged orders (no waybill here) are never saved. The IDs read in the cursor second are skipped next time, so no order is read twice.
 $GLOBALS['hpos'] = false;
 $GLOBALS['limit'] = 2;
 $GLOBALS['options'] = array();
 orders( 1, 2, 3, 4, 5 );
-check( array( 1, 2 ) === run() && day( 2 ) === cursor(), 'cursor: the first batch is 1, 2 and the cursor is the date of order 2' );
-check( array( 2, 3 ) === run() && day( 3 ) === cursor(), 'cursor: the next batch starts at the cursor (2, 3)' );
-check( '>=' . day( 2 ) === $GLOBALS['queries'][ count( $GLOBALS['queries'] ) - 1 ]['date_created'], 'cursor: the query asks for orders created at or after the cursor' );
-check( array( 3, 4 ) === run() && array( 4, 5 ) === run() && day( 5 ) === cursor(), 'cursor: 3, 4 and then 4, 5' );
-check( array( 5 ) === run() && abs( cursor() - ( time() - 60 * 86400 ) ) <= 2, 'reset: a short page ends the cycle and the cursor goes back to the window start' );
+check( array( 1, 2 ) === run() && day( 2 ) === cursor() && array( 2 ) === cursor_ids(), 'cursor: the first batch is 1, 2 and the cursor is the date of order 2 with its ID' );
+check( array( 3, 4 ) === run() && day( 4 ) === cursor() && array( 4 ) === cursor_ids(), 'cursor: the next batch starts at the cursor and skips order 2 (3, 4)' );
+$q = $GLOBALS['queries'][ count( $GLOBALS['queries'] ) - 1 ];
+check( '>=' . day( 2 ) === $q['date_created'] && array( 2 ) === $q['exclude'], 'cursor: the query asks for orders created at or after the cursor, excluding the stored IDs' );
+check( array( 5 ) === run() && abs( cursor() - ( time() - 60 * 86400 ) ) <= 2 && array() === cursor_ids(), 'reset: a short page ends the cycle and the cursor goes back to the window start with no IDs' );
 check( array( 1, 2 ) === run(), 'reset: the next cycle starts at the oldest order again' );
 foreach ( $GLOBALS['result'] as $o ) { check( 0 === $o->saves && ! isset( $o->meta['_nashenski_shipment_checked'] ), "unchanged order {$o->id}: never saved, no checked meta" ); }
 
 // A cursor older than the window is held at the window start.
-$GLOBALS['options'] = array( 'nashenski_shipments_cursor' => 5 );
+stored( 5 );
 run();
-check( abs( (int) substr( end( $GLOBALS['queries'] )['date_created'], 2 ) - ( time() - 60 * 86400 ) ) <= 2, 'cursor: one older than the window is replaced by the window start' );
+check( abs( (int) substr( end( $GLOBALS['queries'] )['date_created'], 2 ) - ( time() - 60 * 86400 ) ) <= 2 && ! isset( end( $GLOBALS['queries'] )['exclude'] ), 'cursor: one older than the window is replaced by the window start, no IDs' );
+
+// A future cursor is a reset, not an empty loop: the orders are read at once and the stored cursor is valid again.
+$GLOBALS['limit'] = 2;
+orders( 1, 2, 3, 4, 5 );
+stored( time() + 100000, array( 1, 2 ) );
+check( array( 1, 2 ) === run() && cursor() <= time() && array( 2 ) === cursor_ids(), 'future cursor: reset to the window start, orders are read, a valid cursor is stored' );
+
+// A corrupt cursor value is the window start with no IDs.
+foreach ( array( 'abc', 12345, array(), array( 'from' => 'x', 'ids' => array( 1 ) ), array( 'from' => day( 3 ), 'ids' => 'nope' ), true ) as $bad ) {
+	$GLOBALS['options'] = array( 'nashenski_shipments_cursor' => $bad );
+	check( array( 1, 2 ) === run() && array( 2 ) === cursor_ids() && ! isset( end( $GLOBALS['queries'] )['exclude'] ), 'corrupt cursor ' . json_encode( $bad ) . ': window start, no IDs' );
+}
+
+// More orders in one second than the limit: every order is read across the cycle and none is skipped.
+$GLOBALS['options'] = array();
+orders( 1, 2, 3, 4, 5 );
+foreach ( array( 1, 2, 3, 4 ) as $i ) { $GLOBALS['result'][ $i - 1 ]->date = day( 1 ); }
+$seen = array_merge( run(), run(), run() );
+check( array( 1, 2, 3, 4, 5 ) === $seen, 'same second: four orders share one second with limit 2; all five are read in three runs, none skipped' );
+check( abs( cursor() - ( time() - 60 * 86400 ) ) <= 2 && array() === cursor_ids(), 'same second: the cycle ends with a reset' );
+foreach ( $GLOBALS['result'] as $o ) { check( 0 === $o->saves, "same second: unchanged order {$o->id} not saved" ); }
+// The merged IDs after the second page of the shared second.
+$GLOBALS['options'] = array();
+run(); run();
+check( day( 1 ) === cursor() && array( 1, 2, 3, 4 ) === cursor_ids(), 'same second: the stored IDs of the shared second are merged across pages' );
 
 // An order that leaves the list between runs (completed by the owner) causes no skip.
 $GLOBALS['options'] = array();
@@ -169,16 +199,15 @@ orders( 1, 2, 3, 4, 5 );
 $seen = run();
 leave( 1 );
 $seen = array_merge( $seen, run() );
-check( array( 1, 2, 2, 3 ) === $seen, 'leaving: order 1 left after the first batch, the second batch still reaches 3 (nothing skipped)' );
+check( array( 1, 2, 3, 4 ) === $seen, 'leaving: order 1 left after the first batch, the second batch still reaches 3 and 4 (nothing skipped)' );
 leave( 2 );
-$seen = array_merge( $seen, run(), run() );
-check( array( 1, 2, 2, 3, 3, 4, 4, 5 ) === $seen, 'leaving: order 2 left too; 4 and 5 are reached in the next batches' );
+check( array( 5 ) === run(), 'leaving: order 2 left too; 5 is reached in the next batch' );
 
-// A page whose orders share one timestamp still moves on (one second later).
+// A page whose orders share one timestamp does not skip: its IDs are excluded, the cursor stays on that second.
 $GLOBALS['options'] = array();
 orders( 1, 2, 3 );
 $GLOBALS['result'][0]->date = $GLOBALS['result'][1]->date = day( 1 );
-check( array( 1, 2 ) === run() && day( 1 ) + 1 === cursor(), 'same timestamp: the cursor goes one second past the shared date' );
+check( array( 1, 2 ) === run() && day( 1 ) === cursor() && array( 1, 2 ) === cursor_ids(), 'same timestamp: the cursor stays on the shared second with both IDs' );
 check( array( 3 ) === run(), 'same timestamp: the next batch moves on to order 3' );
 
 // A changed order is saved once; its unchanged neighbour is not.
@@ -189,7 +218,7 @@ $GLOBALS['labels'] = array( 41 => array( 'method' => 'nashenski_boxnow', 'number
 check( array( 41, 42 ) === run() && day( 42 ) === cursor(), 'changed: both orders are checked, the cursor is the date of order 42' );
 check( 1 === $GLOBALS['result'][0]->saves && 'completed' === $GLOBALS['result'][0]->status && 'delivered' === $GLOBALS['result'][0]->meta['_nashenski_shipment_state'], 'changed: the delivered order is saved once with its new status and state' );
 check( 0 === $GLOBALS['result'][1]->saves, 'changed: the unchanged order is not saved' );
-check( array( 42 ) === run() && 1 === $GLOBALS['result'][0]->saves && 0 === $GLOBALS['result'][1]->saves, 'changed: the next run reads only order 42, the changed order is not saved again' );
+check( array() === run() && 1 === $GLOBALS['result'][0]->saves && 0 === $GLOBALS['result'][1]->saves, 'changed: the next run reads neither (41 has its state, 42 was read), the changed order is not saved again' );
 // A status the owner sets while the batch runs survives, on an unchanged order (not saved) and on a changed one (meta-only save).
 $GLOBALS['options'] = array();
 $GLOBALS['delivered'] = '';
