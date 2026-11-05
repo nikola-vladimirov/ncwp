@@ -89,6 +89,7 @@ namespace {
 	$trigger = 'order_completed';
 	new \Nashenski\Admin\Order\Actions();
 	expect( empty( $hooks['woocommerce_payment_complete'] ) && empty( $hooks['woocommerce_order_status_processing'] ), 'Completed trigger does not register the paid hooks' );
+	$trigger = '';
 
 	// A refund of an unpaid bacs order makes no credit notice; a paid and invoiced one does.
 	$order = new FakeOrder( 'bacs', false );
