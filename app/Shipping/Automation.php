@@ -247,11 +247,17 @@ class Automation {
 	}
 
 	/**
-	 * Check shipments.
+	 * Check the shipments of the next page of open orders and move the cursor on.
 	 */
 	public static function check_shipments() {
 		// ponytail: 100 open orders per hour, created in the last 60 days; a busier store can raise it.
 		$limit = (int) apply_filters( 'nashenski/shipments/check_limit', 100 );
+
+		// A limit of 0 or below -1 would cap the query at 10 and read the same first orders every run; -1 stays "all".
+		if ( $limit < 1 && -1 !== $limit ) {
+			$limit = -1;
+		}
+
 		// Each run reads the open orders from the creation second the last run reached, oldest first, skipping the IDs already read in that second:
 		// an unchanged order is never saved just to move it back, an order that leaves the list cannot make another one be skipped,
 		// and more orders in one second than the limit are still all reached.
@@ -285,12 +291,30 @@ class Automation {
 
 		if ( $legacy ) {
 			// The legacy post datastore rejects the meta_query argument, so add it to the WP_Query it builds.
-			$add = function ( $wp_query_args ) use ( $open ) {
+			// It also filters date_created on the GMT date but sorts by the local post_date, and at a clock change the two orders differ:
+			// the cursor would skip orders. So the window goes in as a GMT date_query (the array form has no timezone step) and the sort is on the GMT date too.
+			unset( $args['date_created'] );
+			$parts = array_combine(
+				array( 'year', 'month', 'day', 'hour', 'minute', 'second' ),
+				array_map( 'intval', explode( ' ', gmdate( 'Y n j G i s', $from ) ) )
+			);
+			$add   = function ( $wp_query_args ) use ( $open, $parts ) {
 				$wp_query_args['meta_query'] = array_merge( isset( $wp_query_args['meta_query'] ) ? (array) $wp_query_args['meta_query'] : array(), array( $open ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				$wp_query_args['date_query'] = array(
+					array(
+						'column'    => 'post_date_gmt',
+						'inclusive' => true,
+						'after'     => $parts,
+					),
+				);
 
 				return $wp_query_args;
 			};
+			$order = function () {
+				return 'post_date_gmt ASC';
+			};
 			add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
+			add_filter( 'posts_orderby', $order );
 		} else {
 			$args['meta_query'] = array( $open ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		}
@@ -300,6 +324,7 @@ class Automation {
 		} finally {
 			if ( $legacy ) {
 				remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
+				remove_filter( 'posts_orderby', $order );
 			}
 		}
 

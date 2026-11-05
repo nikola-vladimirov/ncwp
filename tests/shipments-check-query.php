@@ -54,6 +54,7 @@ namespace {
 	$GLOBALS['hpos']      = false;
 	$GLOBALS['queries']   = array();
 	$GLOBALS['wp_args']   = array();
+	$GLOBALS['orderbys']  = array();
 	$GLOBALS['filters']   = array();
 	$GLOBALS['checked']   = array();
 	$GLOBALS['limit']     = 100;
@@ -212,9 +213,11 @@ namespace {
 		foreach ( $GLOBALS['filters']['woocommerce_order_data_store_cpt_get_orders_query'] ?? array() as $cb ) {
 			$wp = $cb( $wp, $a, null ); }
 		$GLOBALS['wp_args'][] = $wp;
+		$orderby              = ! empty( $GLOBALS['filters']['posts_orderby'] ) ? $GLOBALS['filters']['posts_orderby'][0]( '' ) : ''; // What the posts_orderby filter returns while the query runs.
+		$GLOBALS['orderbys'][] = $orderby;
 		if ( $GLOBALS['throw'] ) {
 			throw new RuntimeException( 'query failed' ); }
-		// Like the datastore: orders without the state meta (NOT EXISTS), the date_created window, the order, then offset and limit.
+		// Like the datastore: orders without the state meta (NOT EXISTS), the date_created window (HPOS) or the legacy date_query, the order, then offset and limit.
 		$r = array_values(
 			array_filter(
 				$GLOBALS['result'],
@@ -233,6 +236,18 @@ namespace {
 				)
 			);
 		}
+		$dq = $wp['date_query'][0] ?? null; // Legacy: WP_Query reads the six-key array form on post_date_gmt, with no timezone step.
+		if ( $dq ) {
+			$t = gmmktime( $dq['after']['hour'], $dq['after']['minute'], $dq['after']['second'], $dq['after']['month'], $dq['after']['day'], $dq['after']['year'] );
+			$r = array_values(
+				array_filter(
+					$r,
+					function ( $o ) use ( $t ) {
+						return $o->date >= $t;
+					}
+				)
+			);
+		}
 		if ( ! empty( $a['exclude'] ) ) {
 			$r = array_values(
 				array_filter(
@@ -244,10 +259,15 @@ namespace {
 			);
 		}
 		$by_date = 'date' === ( $a['orderby'] ?? 'ID' );
+		// Legacy sorts by the local post_date unless posts_orderby asks for post_date_gmt; HPOS sorts by the creation time.
+		$gmt = $GLOBALS['hpos'] || 'post_date_gmt ASC' === $orderby;
+		$key = function ( $o ) use ( $gmt ) {
+			return $gmt ? $o->date : ( $o->local ?? $o->date );
+		};
 		usort(
 			$r,
-			function ( $x, $y ) use ( $by_date ) {
-				return $by_date ? array( $x->date, $x->id ) <=> array( $y->date, $y->id ) : $x->id <=> $y->id;
+			function ( $x, $y ) use ( $by_date, $key ) {
+				return $by_date ? array( $key( $x ), $x->id ) <=> array( $key( $y ), $y->id ) : $x->id <=> $y->id;
 			}
 		);
 		$r = array_slice( $r, $a['offset'] ?? 0, $a['limit'] > 0 ? $a['limit'] : null );
@@ -270,11 +290,17 @@ namespace {
 		 */
 		public $id;
 		/**
-		 * Date.
+		 * Date: the GMT creation time, as getTimestamp() returns it.
 		 *
 		 * @var int
 		 */
 		public $date = 0;
+		/**
+		 * Local: the local post_date as a sort key; null means the same as the GMT date (no clock change).
+		 *
+		 * @var int|null
+		 */
+		public $local = null;
 		/**
 		 * Meta.
 		 *
@@ -483,6 +509,20 @@ namespace {
 			),
 		); }
 	/**
+	 * The start second a query asked for: the date_created string (HPOS) or the legacy GMT date_query.
+	 *
+	 * @param int|null $i Query index; null is the last query.
+	 * @return int Result.
+	 */
+	function qfrom( $i = null ) {
+		$i = null === $i ? count( $GLOBALS['queries'] ) - 1 : $i;
+		$q = $GLOBALS['queries'][ $i ];
+		if ( isset( $q['date_created'] ) ) {
+			return (int) substr( $q['date_created'], 2 ); }
+		$a = $GLOBALS['wp_args'][ $i ]['date_query'][0]['after'];
+		return gmmktime( $a['hour'], $a['minute'], $a['second'], $a['month'], $a['day'], $a['year'] );
+	}
+	/**
 	 * Day.
 	 *
 	 * @param mixed $id Id.
@@ -530,7 +570,30 @@ namespace {
 	check( not_exists( $GLOBALS['wp_args'][0]['meta_query'][0] ), 'legacy: the datastore filter adds NOT EXISTS' );
 	check( empty( $GLOBALS['filters'][ $hook ] ), 'legacy: the filter is removed after the query' );
 	check( array( 'processing', 'on-hold' ) === $q['status'] && 'ASC' === $q['order'] && 100 === $q['limit'], 'status, order direction and limit unchanged' );
-	check( preg_match( '/^>=(\d+)$/', $q['date_created'], $m ) && abs( (int) $m[1] - ( $before - 60 * 86400 ) ) <= 2 && ! isset( $q['date_modified'] ), 'the window is date_created >= now - 60 days, not date_modified' );
+	check( abs( qfrom( 0 ) - ( $before - 60 * 86400 ) ) <= 2 && ! isset( $q['date_modified'] ), 'the window starts now - 60 days (date_created), not date_modified' );
+	// Note 23: the legacy store filters on post_date_gmt with the six-key array form (no timezone step) and sorts by post_date_gmt, so a clock change cannot skip an order.
+	$dq = $GLOBALS['wp_args'][0]['date_query'] ?? null;
+	$f  = gmdate( 'Y n j G i s', qfrom( 0 ) );
+	list( $y, $mo, $d, $h, $mi, $se ) = array_map( 'intval', explode( ' ', $f ) );
+	check( ! isset( $q['date_created'] ), 'legacy: no date_created argument (its filter is on the local date)' );
+	check(
+		array(
+			array(
+				'column'    => 'post_date_gmt',
+				'inclusive' => true,
+				'after'     => array(
+					'year'   => $y,
+					'month'  => $mo,
+					'day'    => $d,
+					'hour'   => $h,
+					'minute' => $mi,
+					'second' => $se,
+				),
+			),
+		) === $dq,
+		'legacy: date_query is post_date_gmt, inclusive, after the six-key array'
+	);
+	check( 'post_date_gmt ASC' === $GLOBALS['orderbys'][0] && empty( $GLOBALS['filters']['posts_orderby'] ), 'legacy: posts_orderby returns post_date_gmt ASC during the query and is removed after it' );
 	check( 1 === count( $GLOBALS['queries'] ), 'one query, no paging' );
 	check( 'date' === $q['orderby'] && ! isset( $q['offset'] ), 'oldest first by creation date, no offset' );
 	check( abs( cursor() - ( $before - 60 * 86400 ) ) <= 2, 'a short page resets the cursor to the window start' );
@@ -541,6 +604,14 @@ namespace {
 	$q = end( $GLOBALS['queries'] );
 	check( -1 === $q['limit'] && ! isset( $q['offset'] ) && abs( cursor() - ( $before - 60 * 86400 ) ) <= 2, 'limit -1 is passed through unchanged, no paging, the cursor is not touched' );
 
+	// Note 24: a limit of 0 or below -1 would cap the query at 10 and read the same first orders every run, so it becomes -1.
+	foreach ( array( 0, -2, -50 ) as $bad ) {
+		$GLOBALS['limit'] = $bad;
+		run();
+		check( -1 === end( $GLOBALS['queries'] )['limit'], "limit $bad is read as -1 (no cap at 10)" );
+	}
+	$GLOBALS['limit'] = 100;
+
 	// A throwing query still removes the filter.
 	$GLOBALS['throw'] = true;
 	try {
@@ -548,7 +619,7 @@ namespace {
 		$thrown = false;
 	} catch ( RuntimeException $e ) {
 		$thrown = true; }
-	check( $thrown && empty( $GLOBALS['filters'][ $hook ] ), 'legacy: the filter is removed when the query throws' );
+	check( $thrown && empty( $GLOBALS['filters'][ $hook ] ) && empty( $GLOBALS['filters']['posts_orderby'] ), 'legacy: both filters are removed when the query throws' );
 
 	// HPOS: the condition stays in the query, no filter.
 	$GLOBALS['throw'] = false;
@@ -556,6 +627,7 @@ namespace {
 	$GLOBALS['limit'] = 100;
 	run();
 	check( not_exists( end( $GLOBALS['queries'] )['meta_query'][0] ), 'HPOS: NOT EXISTS stays in the query' );
+	check( isset( end( $GLOBALS['queries'] )['date_created'] ) && array() === end( $GLOBALS['wp_args'] ) && '' === end( $GLOBALS['orderbys'] ), 'HPOS: date_created stays in the query, no date_query and no posts_orderby' );
 
 	// The cursor advances across batches; unchanged orders (no waybill here) are never saved. The IDs read in the cursor second are skipped next time, so no order is read twice.
 	$GLOBALS['hpos']    = false;
@@ -565,7 +637,7 @@ namespace {
 	check( array( 1, 2 ) === run() && day( 2 ) === cursor() && array( 2 ) === cursor_ids(), 'cursor: the first batch is 1, 2 and the cursor is the date of order 2 with its ID' );
 	check( array( 3, 4 ) === run() && day( 4 ) === cursor() && array( 4 ) === cursor_ids(), 'cursor: the next batch starts at the cursor and skips order 2 (3, 4)' );
 	$q = $GLOBALS['queries'][ count( $GLOBALS['queries'] ) - 1 ];
-	check( '>=' . day( 2 ) === $q['date_created'] && array( 2 ) === $q['exclude'], 'cursor: the query asks for orders created at or after the cursor, excluding the stored IDs' );
+	check( day( 2 ) === qfrom() && array( 2 ) === $q['exclude'], 'cursor: the query asks for orders created at or after the cursor, excluding the stored IDs' );
 	check( array( 5 ) === run() && abs( cursor() - ( time() - 60 * 86400 ) ) <= 2 && array() === cursor_ids(), 'reset: a short page ends the cycle and the cursor goes back to the window start with no IDs' );
 	check( array( 1, 2 ) === run(), 'reset: the next cycle starts at the oldest order again' );
 	foreach ( $GLOBALS['result'] as $o ) {
@@ -574,7 +646,7 @@ namespace {
 	// A cursor older than the window is held at the window start.
 	stored( 5 );
 	run();
-	check( abs( (int) substr( end( $GLOBALS['queries'] )['date_created'], 2 ) - ( time() - 60 * 86400 ) ) <= 2 && ! isset( end( $GLOBALS['queries'] )['exclude'] ), 'cursor: one older than the window is replaced by the window start, no IDs' );
+	check( abs( qfrom() - ( time() - 60 * 86400 ) ) <= 2 && ! isset( end( $GLOBALS['queries'] )['exclude'] ), 'cursor: one older than the window is replaced by the window start, no IDs' );
 
 	// A future cursor is a reset, not an empty loop: the orders are read at once and the stored cursor is valid again.
 	$GLOBALS['limit'] = 2;
@@ -634,6 +706,29 @@ namespace {
 	$GLOBALS['result'][0]->date = $GLOBALS['result'][1]->date;
 	check( array( 1, 2 ) === run() && day( 1 ) === cursor() && array( 1, 2 ) === cursor_ids(), 'same timestamp: the cursor stays on the shared second with both IDs' );
 	check( array( 3 ) === run(), 'same timestamp: the next batch moves on to order 3' );
+	// Note 25: an order created in the cursor second after the run is read next (the cursor keeps the second, it does not step to second + 1).
+	$GLOBALS['options'] = array();
+	orders( 1, 2, 3 );
+	$GLOBALS['result'][0]->date = day( 1 );
+	$GLOBALS['result'][1]->date = day( 1 );
+	run();
+	$late               = new FakeOrder( 9 );
+	$late->date         = day( 1 );
+	$GLOBALS['result'][] = $late;
+	check( array( 9, 3 ) === run(), 'later order: an order created in the cursor second after the run is read as the next order (9, then 3)' );
+	check( 0 === $late->saves, 'later order: the new order is not saved' );
+
+	// Note 25: a clock change. Autumn: order 1 (first hour, GMT+3) is created before order 2 (second hour, GMT+2) but its local time is later, so the local order is 2, 1.
+	// Sorted by the local date the cursor would stand on order 2 and skip order 1; sorted by the GMT date both are read.
+	$GLOBALS['limit']   = 1;
+	$GLOBALS['options'] = array();
+	orders( 1, 2 );
+	$GLOBALS['result'][0]->date  = day( 1 );
+	$GLOBALS['result'][1]->date  = day( 1 ) + 1800;
+	$GLOBALS['result'][0]->local = day( 1 ) + 3 * 3600;
+	$GLOBALS['result'][1]->local = day( 1 ) + 1800 + 2 * 3600;
+	check( array( 1, 2 ) === array_merge( run(), run() ), 'clock change: both orders are read across two runs, none skipped' );
+	$GLOBALS['limit'] = 2;
 
 	// Out of time: a run stops after the budget, the cursor stands on the last order read, and the cycle still reaches every order.
 	$GLOBALS['options']   = array();
