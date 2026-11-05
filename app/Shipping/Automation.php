@@ -240,6 +240,7 @@ class Automation {
 			// An unchanged order is saved too, so the oldest-first query reaches the others next hour.
 			if ( ! in_array( self::check_order( $order ), array( 'delivered', 'returned' ), true ) ) {
 				$order->update_meta_data( self::CHECKED_META, time() );
+				$order->set_date_modified( time() ); // A meta-only save leaves post_modified alone on the legacy store.
 				$order->save();
 			}
 		}

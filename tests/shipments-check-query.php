@@ -49,6 +49,7 @@ class FakeOrder {
 	public function __construct( $id ) { $this->id = $id; }
 	public function get_id() { return $this->id; }
 	public function update_meta_data( $k, $v ) { $this->meta[ $k ] = $v; }
+	public function set_date_modified( $t ) {}
 	public function save() { $this->saves++; $this->modified = ++$GLOBALS['clock']; } // Saving updates date_modified.
 }
 
