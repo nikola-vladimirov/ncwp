@@ -14,6 +14,11 @@ class Actions {
 		
 		if ( !$order_documents_trigger || $order_documents_trigger === "order_created" ) {
 			add_action( 'woocommerce_checkout_order_processed', array( '\Nashenski\Admin\Order\Documents', 'generate_documents' ), 100 );
+
+			// Bank transfer invoices wait for the payment; with the completed trigger, completed already counts as paid.
+			foreach ( array( 'woocommerce_order_status_processing', 'woocommerce_order_status_completed', 'woocommerce_payment_complete' ) as $paid_hook ) {
+				add_action( $paid_hook, array( '\Nashenski\Admin\Order\Documents', 'generate_invoice_when_paid' ), 100, 1 );
+			}
 		} else if ( $order_documents_trigger === "order_completed" ) {
 			add_action( 'woocommerce_order_status_completed_notification', array( '\Nashenski\Admin\Order\Documents', 'generate_documents' ), 5 );
 		}

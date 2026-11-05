@@ -29,6 +29,13 @@ class Documents {
 		return 'yes' === $order->get_meta( 'nashenski_invoice_own_program' );
 	}
 
+	/** The documents are made at checkout (the default), not when the order is completed. */
+	public static function default_trigger() {
+		$trigger = nashenski_get_option( 'invoice', 'trigger' );
+
+		return ! $trigger || 'order_created' === $trigger;
+	}
+
 	public static function generate_documents( $order_id ) {
 		$order = wc_get_order( $order_id );
 
@@ -38,13 +45,21 @@ class Documents {
 			( new Document\NRA( $order ) )->generate_file();
 
 			if ( self::documents_on() && self::maybe_generate_invoice( $order ) ) {
-				( new Document\Invoice( $order ) )->generate_file();
+				// A bank transfer invoice waits for the payment (generate_invoice_when_paid); the proforma is made now.
+				$bacs = $order->get_payment_method() === 'bacs';
+				$wait = $bacs && ! $order->is_paid() && ! $order->get_meta( 'nashenski_invoice_document' );
 
-				if ( $order->get_payment_method() === 'bacs' ) {
+				if ( ! $wait ) {
+					( new Document\Invoice( $order ) )->generate_file();
+				}
+
+				if ( $bacs ) {
 					( new Document\Proforma( $order ) )->generate_file();
 				}
 
-				self::maybe_generate_invoice_copy( $order );
+				if ( ! $wait ) {
+					self::maybe_generate_invoice_copy( $order );
+				}
 			}
 
 			if ( $refunds = $order->get_refunds() ) {
@@ -54,6 +69,29 @@ class Documents {
 			}
 		} catch ( \Exception $e ) {
 			wc_get_logger()->error( 'Documents for order #' . $order_id . ' were not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
+			try { // The note must not throw out of the hook either.
+				/* translators: %s: the error message */
+				$order->add_order_note( sprintf( __( 'Some documents were not generated: %s', 'nashenski-commerce' ), $e->getMessage() ) );
+			} catch ( \Throwable $note_error ) {
+				wc_get_logger()->error( 'Order note for order #' . $order_id . ' was not added: ' . $note_error->getMessage(), array( 'source' => 'nashenski' ) );
+			}
+		}
+	}
+
+	/** Bank transfer orders get the invoice once they are paid (processing, completed or payment complete). */
+	public static function generate_invoice_when_paid( $order_id ) {
+		$order = wc_get_order( $order_id );
+
+		// Only bank transfer orders numbered at checkout (renewals have the number removed; the order document may be deleted later).
+		if ( ! $order || $order->get_payment_method() !== 'bacs' || ! $order->get_meta( 'nashenski_order_number' ) || ! self::documents_on() || ! $order->is_paid() || $order->get_meta( 'nashenski_invoice_document' ) || ! self::maybe_generate_invoice( $order ) ) {
+			return;
+		}
+
+		try {
+			( new Document\Invoice( $order ) )->generate_file();
+			self::maybe_generate_invoice_copy( $order );
+		} catch ( \Throwable $e ) {
+			wc_get_logger()->error( 'Invoice for order #' . $order_id . ' was not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
 			try { // The note must not throw out of the hook either.
 				/* translators: %s: the error message */
 				$order->add_order_note( sprintf( __( 'Some documents were not generated: %s', 'nashenski-commerce' ), $e->getMessage() ) );
@@ -106,7 +144,8 @@ class Documents {
 
 		( new Document\NRARefunded( $refund_id ) )->generate_file();
 
-		if ( self::documents_on() && self::maybe_generate_invoice( $order ) ) {
+		// With the default trigger a bank transfer order gets a credit notice only once its invoice exists.
+		if ( self::documents_on() && self::maybe_generate_invoice( $order ) && ( $order->get_payment_method() !== 'bacs' || ! self::default_trigger() || $order->get_meta( 'nashenski_invoice_document' ) ) ) {
 			( new Document\CreditNotice( $refund_id ) )->generate_file();
 
 			self::maybe_generate_credit_notice_copy( $refund_id, $order_id );
