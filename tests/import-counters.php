@@ -22,7 +22,7 @@ namespace {
 	);
 
 	$copy = new ReflectionMethod( \Nashenski\Admin\Migration::class, 'copy_options' );
-	$copy->setAccessible( true );
+
 	$copy->invoke( null, 'bulgarisation_settings_', 'bulgarisation' );
 	$o = $GLOBALS['options'];
 
