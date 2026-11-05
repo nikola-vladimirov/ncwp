@@ -244,6 +244,8 @@ class Automation {
 			// An unchanged order is saved too, so the oldest-first query reaches the others next hour.
 			if ( ! in_array( self::check_order( $order ), array( 'delivered', 'returned' ), true ) ) {
 				// Save a fresh copy: on the legacy store a save rewrites the post row, so the batch's copy would undo a status the owner changed meanwhile.
+				// Clean the post cache first: without a persistent object cache the read below would return the batch's stale copy.
+				clean_post_cache( $order->get_id() );
 				$fresh = wc_get_order( $order->get_id() );
 
 				if ( $fresh ) {

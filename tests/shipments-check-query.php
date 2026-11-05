@@ -21,7 +21,10 @@ $GLOBALS['rotate'] = false;
 $GLOBALS['result'] = array();
 $GLOBALS['clock'] = 0;
 $GLOBALS['mid_batch'] = null;
+$GLOBALS['stale'] = false; // Simulates the in-process object cache of a store without a persistent one.
+$GLOBALS['cache'] = array();
 
+function clean_post_cache( $id ) { unset( $GLOBALS['cache'][ $id ] ); }
 function apply_filters( $tag, $v ) { return $GLOBALS['limit']; }
 function add_filter( $tag, $cb ) { $GLOBALS['filters'][ $tag ][] = $cb; }
 function remove_filter( $tag, $cb ) { $GLOBALS['filters'][ $tag ] = array_values( array_filter( $GLOBALS['filters'][ $tag ] ?? array(), function ( $f ) use ( $cb ) { return $f !== $cb; } ) ); }
@@ -32,8 +35,9 @@ function nashenski_get_order_label( $id ) { // check_order() reads it first.
 	if ( $GLOBALS['mid_batch'] ) { call_user_func( $GLOBALS['mid_batch'], $id ); }
 	return array();
 }
-function wc_get_order( $id ) { // A fresh read of the stored order.
-	foreach ( $GLOBALS['result'] as $o ) { if ( $o->id === $id ) { return $o->snapshot(); } }
+function wc_get_order( $id ) { // A fresh read of the stored order, or the cached copy while the cache holds one.
+	if ( $GLOBALS['stale'] && isset( $GLOBALS['cache'][ $id ] ) ) { return $GLOBALS['cache'][ $id ]; }
+	foreach ( $GLOBALS['result'] as $o ) { if ( $o->id === $id ) { $c = $o->snapshot(); if ( $GLOBALS['stale'] ) { $GLOBALS['cache'][ $id ] = $c; } return $c; } }
 	return false;
 }
 function wc_get_orders( $a ) {
@@ -45,9 +49,9 @@ function wc_get_orders( $a ) {
 	if ( $GLOBALS['rotate'] ) { // Like the datastore: date_modified ASC, then the limit.
 		$r = $GLOBALS['result'];
 		usort( $r, function ( $x, $y ) { return $x->modified <=> $y->modified; } );
-		return array_map( function ( $o ) { return $o->snapshot(); }, array_slice( $r, 0, $a['limit'] ) );
+		return array_map( function ( $o ) { return wc_get_order( $o->id ); }, array_slice( $r, 0, $a['limit'] ) );
 	}
-	return array_map( function ( $o ) { return $o->snapshot(); }, $GLOBALS['result'] );
+	return array_map( function ( $o ) { return wc_get_order( $o->id ); }, $GLOBALS['result'] );
 }
 
 class FakeOrder {
@@ -130,5 +134,14 @@ Nashenski\Shipping\Automation::check_shipments();
 $GLOBALS['mid_batch'] = null;
 check( 'on-hold' === $GLOBALS['result'][0]->status && isset( $GLOBALS['result'][0]->meta['_nashenski_shipment_checked'] ), 'a status changed during the batch survives the checked save, and the meta is saved' );
 check( 'processing' === $GLOBALS['result'][1]->status && 1 === $GLOBALS['result'][1]->saves, 'the other order is saved once, status unchanged' );
+
+// Without a persistent object cache the batch's copy stays cached in the process: the save needs a fresh read (clean_post_cache first).
+$GLOBALS['stale'] = true;
+$GLOBALS['cache'] = array();
+$GLOBALS['result'] = array( new FakeOrder( 31 ), new FakeOrder( 32 ) );
+$GLOBALS['mid_batch'] = function ( $id ) { if ( 31 === $id ) { $GLOBALS['result'][0]->status = 'on-hold'; } };
+Nashenski\Shipping\Automation::check_shipments();
+$GLOBALS['mid_batch'] = null;
+check( 'on-hold' === $GLOBALS['result'][0]->status && isset( $GLOBALS['result'][0]->meta['_nashenski_shipment_checked'] ), 'stale in-process cache: a status changed during the batch survives, and the meta is saved' );
 echo "done\n";
 }
