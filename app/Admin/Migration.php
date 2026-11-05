@@ -212,6 +212,15 @@ class Migration {
 
 			$value = self::replace_prefix( get_option( $name ), $old );
 
+			// Never lower a document number counter Nashenski already has: issued numbers would be reused.
+			if ( preg_match( '/_next_invoice(_separate)?_number$/', $name ) ) {
+				$current = get_option( str_replace( $old, self::NEW, $name ) );
+
+				if ( is_numeric( $current ) && ( ! is_numeric( $value ) || (float) $current >= (float) $value ) ) {
+					continue;
+				}
+			}
+
 			// Shipping method titles customers see: "Woo BG - Econt" (4.x) or "Българизация - Еконт" (5.x) becomes "Econt".
 			if ( is_array( $value ) && isset( $value['title'] ) && is_string( $value['title'] ) ) {
 				$value['title'] = preg_replace( '/^(Woo BG|Българизация) - /u', '', $value['title'] );
