@@ -67,7 +67,7 @@ $q = $GLOBALS['queries'][0];
 check( ! array_key_exists( 'meta_query', $q ), 'legacy: no meta_query argument' );
 check( not_exists( $GLOBALS['wp_args'][0]['meta_query'][0] ), 'legacy: the datastore filter adds NOT EXISTS' );
 check( empty( $GLOBALS['filters'][ $hook ] ), 'legacy: the filter is removed after the query' );
-check( array( 'processing', 'on-hold' ) === $q['status'] && 'date_modified' === $q['orderby'] && 'ASC' === $q['order'] && 100 === $q['limit'], 'status, order and limit unchanged' );
+check( array( 'processing', 'on-hold' ) === $q['status'] && 'modified' === $q['orderby'] && 'ASC' === $q['order'] && 100 === $q['limit'], 'status, order and limit unchanged' );
 check( preg_match( '/^>(\d+)$/', $q['date_modified'], $m ) && abs( (int) $m[1] - ( $before - 60 * 86400 ) ) <= 2, 'date_modified is > now - 60 days' );
 check( array( 7, 8 ) === $GLOBALS['checked'], 'every returned order is checked' );
 check( 1 === count( $GLOBALS['queries'] ), 'one query, no paging' );

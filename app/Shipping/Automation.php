@@ -209,7 +209,8 @@ class Automation {
 			'status' => array( 'processing', 'on-hold' ),
 			'limit' => (int) apply_filters( 'nashenski/shipments/check_limit', 100 ),
 			'date_modified' => '>' . ( time() - 60 * DAY_IN_SECONDS ),
-			'orderby' => 'date_modified',
+			// 'modified', not 'date_modified': the legacy post store ignores the latter and sorts by creation date, so the hourly rotation never moved on.
+			'orderby' => 'modified',
 			'order' => 'ASC',
 		);
 		$open = array( 'key' => self::STATE_META, 'compare' => 'NOT EXISTS' );
