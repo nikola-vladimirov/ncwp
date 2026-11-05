@@ -7,7 +7,7 @@ use Nashenski\Front_End\Checkout\Field_Editor;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Checkout section: company invoice fields and order notes (the field table is Field_Editor::settings(), shown before them).
+ * Company invoice fields (shown in the Documents section) and order notes (Checkout; the field table is Field_Editor::settings(), shown before them).
  */
 class Fields_Tab extends Base_Tab {
 	public function __construct() {

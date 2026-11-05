@@ -108,7 +108,7 @@ class Settings_Page extends \WC_Settings_Page {
 			),
 			'checkout' => array(
 				'label' => __( 'Checkout', 'nashenski-commerce' ),
-				'parts' => array( array( 'shipping', null ), array( 'fields', null ) ),
+				'parts' => array( array( 'shipping', null ), array( 'fields', array( \Nashenski\Front_End\Checkout\Field_Editor::GROUP_CLASSIC ) ) ),
 			),
 			// Always in the menu: the on/off switch first, the settings once it is on.
 			'quick_order' => array(
@@ -121,7 +121,7 @@ class Settings_Page extends \WC_Settings_Page {
 			),
 			'documents' => array(
 				'label' => __( 'Documents', 'nashenski-commerce' ),
-				'parts' => array( array( 'documents', null ) ),
+				'parts' => array( array( 'documents', null ), array( 'fields', array( \Nashenski\Front_End\Checkout\Company_Fields::GROUP ) ) ),
 			),
 			'checks' => array(
 				'label' => __( 'Customer checks', 'nashenski-commerce' ),
@@ -189,7 +189,7 @@ class Settings_Page extends \WC_Settings_Page {
 		foreach ( $section['parts'] as $part ) {
 			$tab = $this->tab( $part[0] );
 
-			// Checkout reads top to bottom: countries, the field table, then company invoice and order notes.
+			// Checkout reads top to bottom: countries, the field table, then order notes.
 			if ( 'checkout' === $section_id && 'fields' === $part[0] ) {
 				$settings = array_merge( $settings, \Nashenski\Front_End\Checkout\Field_Editor::settings() );
 			}
