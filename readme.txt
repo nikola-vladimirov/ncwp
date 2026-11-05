@@ -13,61 +13,35 @@ WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shipping, invoices a
 
 == Description ==
 
-Nashenski Commerce ("нашенски" means "ours, done the local way") adds what a Bulgarian online store needs to WooCommerce. Everything runs on your own site: prices, labels and documents are made by your site and sent only to the services you turn on.
+**Български**
 
-**Shipping**
+Нашенски Комерс добавя към WooCommerce това, което е нужно на български онлайн магазин: доставка с куриер, документи по Наредба Н-18 и още. Всичко работи на вашия сайт: цени, етикети и документи се създават от сайта и се изпращат само към услугите, които включите.
 
-* Econt, Speedy, BOX NOW and Pigeon Express shipping methods: to an office, a locker or an address.
-* Waybills for many orders at once, courier requests for Econt and Speedy (holidays skipped), the order number on the waybill, a tracking link on the customer's order page, and order statuses that follow the shipment (delivered or returned).
-* Live shipping prices at checkout with your courier account, or from the courier's public price list when you have no account yet. The price lists are built in, editable and can be checked against the courier website.
-* Labels from the order screen, label printing and shipment status updates.
-* Works with the classic checkout, the block checkout and checkout pages built in a page builder, including multi-step checkouts.
-* Office, locker and address pickers with search, the courier's map for Econt and Speedy, and "Complete the fields to calculate" until the customer has chosen.
-* Shipping options as cards with courier logos and the delivery type, styled with the design tokens of TokenForge or another token-based CSS framework, or with your theme.
+* Доставка с Еконт, Спиди, BOX NOW и Pigeon Express: до офис, автомат или адрес.
+* Товарителници, етикети и заявки за куриер, проследяване за клиента и статуси на поръчките според пратката.
+* Всяка поръчка показва куриера и вида доставка.
+* BOX NOW: до 200 броя в поръчка кутиите се подреждат автоматично; над тази граница ги добавете на ръка.
+* Фактура, проформа, кредитно известие и документ за продажба като PDF, на български и на английски, с изпращане с имейлите за поръчката.
+* Настройка по чл. 113, ал. 9: фактурите, проформите и кредитните известия не показват ДДС.
+* Одиторски файл за НАП (Наредба Н-18), архив с фактури и износ за Microinvest Delta.
+* Документите и файловете на куриерите се пазят в частна папка и не се виждат в Медийната библиотека.
+* Редактор на полетата при поръчка, бърза поръчка, изоставени колички, функция за отказ от договор и проверки на клиенти.
+* Внос от Bulgarisation for WooCommerce и от други плъгини за куриери.
 
-**Documents and Ordinance N-18**
+**English**
 
-* Order documents, invoices and credit notes as PDF, sent with the order emails. Every document is made in Bulgarian and in English.
-* The order document is made for every order, also with invoices turned off.
-* Invoices made automatically, or by hand from the order screen with your own invoice number.
-* The standardised audit XML file (Annex 38 of Ordinance N-18) for any number of orders, checked against the NRA schema.
-* Invoice archive and Microinvest Delta export for a chosen month. Export files are deleted after 7 days, and documents never show in the Media Library.
-* The NRA audit file of the month before, emailed to your accountant on the 1st of every month (optional).
-* Custom export builder: orders, products sold or documents, with your filters, columns, order and file format (CSV, Excel, JSON, XML). Save exports to run them again.
-* Checkout field editor: order, one or two columns, required, optional or hidden for each field, and your own extra fields, in the classic, block and page builder checkouts.
-* Company invoice fields at checkout (on or off), in every checkout type, and EU VAT number check (VIES).
-* The total in words on documents, in euro.
-* A check for "mathematically impossible" prices with VAT.
+Nashenski Commerce ("нашенски" means "ours, done the local way") adds what a Bulgarian online store needs to WooCommerce: courier shipping, Ordinance N-18 documents and more. Everything runs on your own site: prices, labels and documents are made by your site and sent only to the services you turn on.
 
-**Quick order**
-
-* A "Quick order" button on the product page and the cart: a short form (a dialog, inline under the button, or a sliding panel) with ready-made or custom fields. Only Bulgarian phone numbers are accepted, local or international. The order waits for your confirmation; no stock is reserved and no payment link is sent until you confirm.
-
-**Abandoned carts**
-
-* Off by default. Keeps carts that were not ordered, records the email as soon as the shopper types it (even a logged-out shopper at checkout), and sends reminders through an editable WooCommerce email, with an optional single-use coupon and a link that refills the cart. A list with totals is under WooCommerce > Abandoned carts.
-
-**EU withdrawal function**
-
-* The "withdraw from contract here" function required by Directive 2011/83/EU, Article 11a (added by Directive (EU) 2023/2673, applied from 19 June 2026), built on WooCommerce's own withdrawal form (WooCommerce 11.1 or newer): a link on every page, on each order in My Account, on the order page and in the order emails during the withdrawal period, a shortcode for any theme or builder, prefilled fields, your site's look and Bulgarian texts.
-
-**Customer checks**
-
-* Optional checks with nekorekten.com, Connectix and NepoStop before allowing cash on delivery, at most 20 an hour from one visitor address.
-
-**Languages**
-
-* English and Bulgarian.
-
-**Moving from another plugin**
-
-Nashenski Commerce is based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3). If you used it, activate Nashenski Commerce and press "Import now": your settings, shipping zones and order data come along, and Bulgarisation is switched off.
-
-It also imports from the mreja.net plugins (Econt Express, BOX NOW Delivery, Ordinance N-18 light regime), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping: courier logins, sender details, the waybill numbers of your orders, shipping zone methods and, from the N-18 plugin, your company details and document numbers. Each import switches the old plugin off. The import runs on your site; nothing is sent anywhere.
-
-**Help inside the plugin**
-
-Every setting has a short description and a tooltip. WooCommerce > Settings > Nashenski Commerce > Help has the recommended settings, the import from other plugins, getting started and how to use every part of the plugin.
+* Shipping with Econt, Speedy, BOX NOW and Pigeon Express: to an office, a locker or an address.
+* Waybills, labels and courier requests, tracking for the customer, and order statuses that follow the shipment.
+* Every order shows the courier and the delivery type.
+* BOX NOW: up to 200 units in an order are packed into boxes automatically; above that, add the boxes by hand.
+* Invoice, pro forma, credit note and order document as PDF, in Bulgarian and English, sent with the order emails.
+* An Article 113(9) setting: invoices, pro formas and credit notes show no VAT.
+* The NRA audit file (Ordinance N-18), invoice archive and Microinvest Delta export.
+* Documents and courier files are kept in a private folder and never show in the Media Library.
+* Checkout field editor, quick order, abandoned carts, the EU withdrawal function and customer checks.
+* Import from Bulgarisation for WooCommerce and other courier plugins.
 
 == Installation ==
 
