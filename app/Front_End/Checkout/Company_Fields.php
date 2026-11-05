@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Company invoice fields at checkout: "I want an invoice for a company", then company name, EIK,
- * VAT number, MOL, town and address. Turned on or off in Checkout > Company invoice.
+ * VAT number, MOL, town and address. Turned on or off in Documents > Company invoice.
  *
  * - Classic and page builder checkouts: the fields come from Company (billing fields). When a
  *   builder checkout is made of single field elements and the template has none of them, the
