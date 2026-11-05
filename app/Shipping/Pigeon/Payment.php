@@ -114,6 +114,10 @@ class Payment {
 
 	/** Validate every monetary instruction before any order/item write. */
 	public static function request( $order ) {
+		// Staff label requests carry the order screen nonce; it is checked here, where the raw request is read.
+		if ( ! wp_verify_nonce( isset( $_REQUEST['nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) : '', 'nashenski_admin_label' ) ) {
+			throw new \InvalidArgumentException( esc_html__( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) );
+		}
 		if ( (string) nashenski_label_request( 'paymentVersion', null ) !== '1' ) {
 			throw new \InvalidArgumentException( esc_html__( 'Reload this order before generating a Pigeon label.', 'nashenski-commerce' ) );
 		}
@@ -124,7 +128,6 @@ class Payment {
 		}
 		$price = null;
 		if ( $mode === 'fixed' ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- type check only; generate_label() verified the nonce, and nashenski_label_request() re-checks it
 			if ( isset( $_REQUEST['fixedPrice'] ) && ( is_bool( $_REQUEST['fixedPrice'] ) || is_array( $_REQUEST['fixedPrice'] ) || is_object( $_REQUEST['fixedPrice'] ) ) ) {
 				throw new \InvalidArgumentException( esc_html__( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
 			}
@@ -133,7 +136,6 @@ class Payment {
 		}
 		$override = nashenski_label_request( 'codOverride', null );
 		if ( $override !== null ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- type check only, same nonce as above
 			if ( isset( $_REQUEST['codOverride'] ) && ( is_bool( $_REQUEST['codOverride'] ) || is_array( $_REQUEST['codOverride'] ) || is_object( $_REQUEST['codOverride'] ) ) ) {
 				throw new \InvalidArgumentException( esc_html__( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
 			}
