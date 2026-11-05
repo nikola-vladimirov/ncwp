@@ -30,6 +30,9 @@ class Quick_Order {
 	/** Order meta: when the shopper gave consent to be contacted. */
 	const META_CONSENT = '_nashenski_quick_order_consent';
 
+	/** Placement ids; the translated labels come from placements(), which must not run before init. */
+	const PLACEMENT_IDS = array( 'product', 'cart', 'both' );
+
 	public function __construct() {
 		add_action( 'init', array( __CLASS__, 'register_status' ) );
 		add_filter( 'wc_order_statuses', array( __CLASS__, 'add_status' ) );
@@ -40,7 +43,7 @@ class Quick_Order {
 			return;
 		}
 
-		$placement = nashenski_get_choice( 'quick_order', 'placement', self::placements() );
+		$placement = nashenski_get_choice( 'quick_order', 'placement', array_flip( self::PLACEMENT_IDS ) );
 
 		if ( in_array( $placement, array( 'product', 'both' ), true ) ) {
 			add_action( 'woocommerce_after_add_to_cart_form', array( __CLASS__, 'button' ) );
