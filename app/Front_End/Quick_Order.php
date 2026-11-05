@@ -1,4 +1,10 @@
 <?php
+/**
+ * Quick order.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Front_End;
 
 use Nashenski\Abandoned_Carts\Tracker;
@@ -24,7 +30,7 @@ class Quick_Order {
 	const NONCE = 'nashenski_quick_order';
 
 	/** Submissions per IP address in the window below. */
-	const RATE_LIMIT = 5;
+	const RATE_LIMIT  = 5;
 	const RATE_WINDOW = 600;
 
 	/** Order meta: when the shopper gave consent to be contacted. */
@@ -33,6 +39,9 @@ class Quick_Order {
 	/** Placement ids; the translated labels come from placements(), which must not run before init. */
 	const PLACEMENT_IDS = array( 'product', 'cart', 'both' );
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'init', array( __CLASS__, 'register_status' ) );
 		add_filter( 'wc_order_statuses', array( __CLASS__, 'add_status' ) );
@@ -59,10 +68,20 @@ class Quick_Order {
 		add_action( 'wp_ajax_nopriv_nashenski_quick_order_submit', array( __CLASS__, 'submit_ajax' ) );
 	}
 
+	/**
+	 * Enabled.
+	 *
+	 * @return string Result.
+	 */
 	public static function enabled() {
 		return 'yes' === nashenski_get_option( 'apis', 'enable_quick_order' );
 	}
 
+	/**
+	 * Placements.
+	 *
+	 * @return array Result.
+	 */
 	public static function placements() {
 		return array(
 			'product' => __( 'Product page', 'nashenski-commerce' ),
@@ -122,6 +141,11 @@ class Quick_Order {
 		);
 	}
 
+	/**
+	 * Phone format.
+	 *
+	 * @return mixed Result.
+	 */
 	public static function phone_format() {
 		return nashenski_get_choice( 'quick_order', 'phone_format', self::phone_formats() );
 	}
@@ -132,15 +156,50 @@ class Quick_Order {
 	 */
 	public static function dial_codes() {
 		return array(
-			'AL' => '355', 'AT' => '43', 'AU' => '61', 'BE' => '32', 'BG' => '359',
-			'BR' => '55', 'CA' => '1', 'CH' => '41', 'CY' => '357', 'CZ' => '420',
-			'DE' => '49', 'DK' => '45', 'EE' => '372', 'ES' => '34', 'FI' => '358',
-			'FR' => '33', 'GB' => '44', 'GR' => '30', 'HR' => '385', 'HU' => '36',
-			'IE' => '353', 'IL' => '972', 'IN' => '91', 'IS' => '354', 'IT' => '39',
-			'JP' => '81', 'LT' => '370', 'LU' => '352', 'LV' => '371', 'MT' => '356',
-			'MX' => '52', 'NL' => '31', 'NO' => '47', 'NZ' => '64', 'PL' => '48',
-			'PT' => '351', 'RO' => '40', 'RS' => '381', 'SE' => '46', 'SI' => '386',
-			'SK' => '421', 'TR' => '90', 'US' => '1', 'ZA' => '27',
+			'AL' => '355',
+			'AT' => '43',
+			'AU' => '61',
+			'BE' => '32',
+			'BG' => '359',
+			'BR' => '55',
+			'CA' => '1',
+			'CH' => '41',
+			'CY' => '357',
+			'CZ' => '420',
+			'DE' => '49',
+			'DK' => '45',
+			'EE' => '372',
+			'ES' => '34',
+			'FI' => '358',
+			'FR' => '33',
+			'GB' => '44',
+			'GR' => '30',
+			'HR' => '385',
+			'HU' => '36',
+			'IE' => '353',
+			'IL' => '972',
+			'IN' => '91',
+			'IS' => '354',
+			'IT' => '39',
+			'JP' => '81',
+			'LT' => '370',
+			'LU' => '352',
+			'LV' => '371',
+			'MT' => '356',
+			'MX' => '52',
+			'NL' => '31',
+			'NO' => '47',
+			'NZ' => '64',
+			'PL' => '48',
+			'PT' => '351',
+			'RO' => '40',
+			'RS' => '381',
+			'SE' => '46',
+			'SI' => '386',
+			'SK' => '421',
+			'TR' => '90',
+			'US' => '1',
+			'ZA' => '27',
 		);
 	}
 
@@ -199,9 +258,15 @@ class Quick_Order {
 		$keys      = $templates[ $template ]['fields'];
 
 		if ( null === $keys ) {
-			$keys = array_keys( array_filter( $all, function ( $key ) {
-				return 'yes' === nashenski_get_option( 'quick_order', 'field_' . $key );
-			}, ARRAY_FILTER_USE_KEY ) );
+			$keys = array_keys(
+				array_filter(
+					$all,
+					function ( $key ) {
+						return 'yes' === nashenski_get_option( 'quick_order', 'field_' . $key );
+					},
+					ARRAY_FILTER_USE_KEY
+				)
+			);
 		}
 
 		$fields = array();
@@ -215,24 +280,42 @@ class Quick_Order {
 		return $fields;
 	}
 
+	/**
+	 * Register status.
+	 */
 	public static function register_status() {
-		register_post_status( 'wc-' . self::STATUS, array(
-			'label'                     => _x( 'Quick order', 'Order status', 'nashenski-commerce' ),
-			'public'                    => false,
-			'exclude_from_search'       => false,
-			'show_in_admin_all_list'    => true,
-			'show_in_admin_status_list' => true,
-			/* translators: %s: number of quick orders */
-			'label_count'               => _n_noop( 'Quick order <span class="count">(%s)</span>', 'Quick orders <span class="count">(%s)</span>', 'nashenski-commerce' ),
-		) );
+		register_post_status(
+			'wc-' . self::STATUS,
+			array(
+				'label'                     => _x( 'Quick order', 'Order status', 'nashenski-commerce' ),
+				'public'                    => false,
+				'exclude_from_search'       => false,
+				'show_in_admin_all_list'    => true,
+				'show_in_admin_status_list' => true,
+				/* translators: %s: number of quick orders */
+				'label_count'               => _n_noop( 'Quick order <span class="count">(%s)</span>', 'Quick orders <span class="count">(%s)</span>', 'nashenski-commerce' ),
+			)
+		);
 	}
 
+	/**
+	 * Add status.
+	 *
+	 * @param mixed $statuses Statuses.
+	 * @return mixed Result.
+	 */
 	public static function add_status( $statuses ) {
 		$statuses[ 'wc-' . self::STATUS ] = _x( 'Quick order', 'Order status', 'nashenski-commerce' );
 
 		return $statuses;
 	}
 
+	/**
+	 * Menu count.
+	 *
+	 * @param mixed $count Count.
+	 * @return mixed Result.
+	 */
 	public static function menu_count( $count ) {
 		return (int) $count + wc_orders_count( self::STATUS );
 	}
@@ -242,8 +325,8 @@ class Quick_Order {
 	 * shoppers get the form prefilled from their account.
 	 */
 	public static function button() {
-		$context    = is_cart() ? 'cart' : 'product';
-		$product    = 'product' === $context ? wc_get_product( get_the_ID() ) : null;
+		$context = is_cart() ? 'cart' : 'product';
+		$product = 'product' === $context ? wc_get_product( get_the_ID() ) : null;
 
 		// A variable product needs its variation picked, which the form does not do.
 		if ( $product && ! $product->is_type( 'simple' ) ) {
@@ -267,6 +350,9 @@ class Quick_Order {
 		self::enqueue_script();
 	}
 
+	/**
+	 * Enqueue script.
+	 */
 	private static function enqueue_script() {
 		if ( wp_script_is( 'nashenski-quick-order', 'enqueued' ) ) {
 			return;
@@ -282,14 +368,16 @@ class Quick_Order {
 	 * phone mask that follows the configured Bulgarian format.
 	 */
 	private static function script() {
-		$config = wp_json_encode( array(
-			'ajax'        => admin_url( 'admin-ajax.php' ),
-			'appearance'  => nashenski_get_choice( 'quick_order', 'appearance', self::appearances() ),
-			'phoneFormat' => self::phone_format(),
-			'phoneDial'   => self::phone_dial(),
-			'errorText'   => __( 'Something went wrong. Please try again.', 'nashenski-commerce' ),
-			'closeText'   => __( 'Close', 'nashenski-commerce' ),
-		) );
+		$config = wp_json_encode(
+			array(
+				'ajax'        => admin_url( 'admin-ajax.php' ),
+				'appearance'  => nashenski_get_choice( 'quick_order', 'appearance', self::appearances() ),
+				'phoneFormat' => self::phone_format(),
+				'phoneDial'   => self::phone_dial(),
+				'errorText'   => __( 'Something went wrong. Please try again.', 'nashenski-commerce' ),
+				'closeText'   => __( 'Close', 'nashenski-commerce' ),
+			)
+		);
 
 		return '(function(){var cfg=' . $config . ';
 var open=null,box=null;
@@ -388,12 +476,20 @@ document.addEventListener("submit",function(e){
 		wp_die();
 	}
 
+	/**
+	 * Form html.
+	 *
+	 * @param mixed $context Context.
+	 * @param mixed $product_id Product id.
+	 * @param mixed $quantity Quantity.
+	 * @return mixed Result.
+	 */
 	private static function form_html( $context, $product_id, $quantity ) {
 		$user   = wp_get_current_user();
 		$fields = self::active_fields();
 		$format = self::phone_format();
 
-		$privacy = get_privacy_policy_url();
+		$privacy      = get_privacy_policy_url();
 		$privacy_link = $privacy ? sprintf( '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>', esc_url( $privacy ), esc_html__( 'privacy policy', 'nashenski-commerce' ) ) : esc_html__( 'privacy policy', 'nashenski-commerce' );
 
 		ob_start();
@@ -409,10 +505,12 @@ document.addEventListener("submit",function(e){
 				<input type="text" name="name" required autocomplete="name" value="<?php echo esc_attr( trim( $user->first_name . ' ' . $user->last_name ) ); ?>"></label></p>
 			<p><label><?php esc_html_e( 'Phone', 'nashenski-commerce' ); ?> <span aria-hidden="true">*</span><br>
 				<input type="tel" name="phone" required autocomplete="tel" inputmode="tel" data-nashenski-phone placeholder="<?php echo esc_attr( self::phone_example() ); ?>"></label>
-				<span class="description"><?php
+				<span class="description">
+				<?php
 					/* translators: %s: example phone number */
 					echo esc_html( sprintf( __( 'Phone number, for example %s.', 'nashenski-commerce' ), self::phone_example() ) );
-				?></span></p>
+				?>
+				</span></p>
 			<p><label><?php esc_html_e( 'Email', 'nashenski-commerce' ); ?> <span aria-hidden="true">*</span><br>
 				<input type="email" name="email" required autocomplete="email" value="<?php echo esc_attr( $user->user_email ); ?>"></label></p>
 
@@ -548,6 +646,8 @@ document.addEventListener("submit",function(e){
 	/**
 	 * A phone number, however it was typed, as +<dial><national>. The country comes from the setting,
 	 * and a number typed with an explicit +<dial> is taken as it was typed. Returns '' when invalid.
+	 *
+	 * @param mixed $raw Raw.
 	 */
 	public static function normalize_phone( $raw ) {
 		$raw    = trim( (string) $raw );
@@ -606,6 +706,11 @@ document.addEventListener("submit",function(e){
 		return '0888 123 456';
 	}
 
+	/**
+	 * Phone error.
+	 *
+	 * @return mixed Result.
+	 */
 	private static function phone_error() {
 		return sprintf(
 			/* translators: %s: example phone number */
@@ -614,15 +719,30 @@ document.addEventListener("submit",function(e){
 		);
 	}
 
+	/**
+	 * Thanks text.
+	 *
+	 * @return mixed Result.
+	 */
 	private static function thanks_text() {
 		return esc_html__( 'Thank you. We have your details and will contact you to confirm the order.', 'nashenski-commerce' );
 	}
 
+	/**
+	 * Create order.
+	 *
+	 * @param mixed $items Items.
+	 * @param mixed $post Post.
+	 * @param mixed $contact Contact.
+	 * @return bool|mixed Result.
+	 */
 	private static function create_order( $items, $post, $contact ) {
-		$order = wc_create_order( array(
-			'status'      => self::STATUS,
-			'customer_id' => get_current_user_id(),
-		) );
+		$order = wc_create_order(
+			array(
+				'status'      => self::STATUS,
+				'customer_id' => get_current_user_id(),
+			)
+		);
 
 		if ( is_wp_error( $order ) || ! $order ) {
 			return false;
@@ -652,7 +772,11 @@ document.addEventListener("submit",function(e){
 		$fields = self::active_fields();
 		$notes  = array();
 
-		foreach ( array( 'product_notes' => __( 'Product notes', 'nashenski-commerce' ), 'preferred_time' => __( 'Preferred delivery time', 'nashenski-commerce' ), 'message' => __( 'Message', 'nashenski-commerce' ) ) as $key => $label ) {
+		foreach ( array(
+			'product_notes'  => __( 'Product notes', 'nashenski-commerce' ),
+			'preferred_time' => __( 'Preferred delivery time', 'nashenski-commerce' ),
+			'message'        => __( 'Message', 'nashenski-commerce' ),
+		) as $key => $label ) {
 			if ( isset( $fields[ $key ] ) && ! empty( $post[ $key ] ) ) {
 				$notes[] = $label . ': ' . sanitize_textarea_field( $post[ $key ] );
 			}
@@ -672,6 +796,8 @@ document.addEventListener("submit",function(e){
 	/**
 	 * The owner gets WooCommerce's own "New order" email, like for any order (its recipients and on/off
 	 * setting apply). It is marked sent, so confirming the quick order later does not send it again.
+	 *
+	 * @param mixed $order Order.
 	 */
 	private static function notify_owner( $order ) {
 		$emails = WC()->mailer() ? WC()->mailer()->get_emails() : array();
@@ -700,6 +826,11 @@ document.addEventListener("submit",function(e){
 		);
 	}
 
+	/**
+	 * Notify shopper.
+	 *
+	 * @param mixed $order Order.
+	 */
 	private static function notify_shopper( $order ) {
 		wp_mail(
 			$order->get_billing_email(),
@@ -713,6 +844,11 @@ document.addEventListener("submit",function(e){
 		);
 	}
 
+	/**
+	 * Client ip.
+	 *
+	 * @return mixed Result.
+	 */
 	private static function client_ip() {
 		// Not WC_Geolocation: it trusts X-Forwarded-For, which a bot can spoof to dodge the limit.
 		$ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
@@ -721,17 +857,30 @@ document.addEventListener("submit",function(e){
 		return (string) apply_filters( 'nashenski/quick_order/client_ip', $ip );
 	}
 
+	/**
+	 * Too many requests.
+	 *
+	 * @return mixed Result.
+	 */
 	private static function too_many_requests() {
 		$count = (int) get_transient( self::rate_key() );
 
 		return $count >= self::RATE_LIMIT;
 	}
 
+	/**
+	 * Count request.
+	 */
 	private static function count_request() {
 		// Not atomic: two requests at the same moment can both pass. Enough to slow a bot down.
 		set_transient( self::rate_key(), (int) get_transient( self::rate_key() ) + 1, self::RATE_WINDOW );
 	}
 
+	/**
+	 * Rate key.
+	 *
+	 * @return string Result.
+	 */
 	private static function rate_key() {
 		return 'nashenski_qo_' . md5( self::client_ip() );
 	}

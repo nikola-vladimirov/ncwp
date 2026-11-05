@@ -1,4 +1,10 @@
 <?php
+/**
+ * Migration.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin;
 
 defined( 'ABSPATH' ) || exit;
@@ -13,16 +19,24 @@ defined( 'ABSPATH' ) || exit;
  * zones and labels keep working.
  */
 class Migration {
-	const OLD = array( 'woo_bg', 'bulgarisation' );
-	const NEW = 'nashenski';
+	const OLD         = array( 'woo_bg', 'bulgarisation' );
+	const NEW         = 'nashenski';
 	const DONE_OPTION = 'nashenski_migrated_from_woo_bg';
-	const ACTION = 'nashenski_import_woo_bg';
+	const ACTION      = 'nashenski_import_woo_bg';
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'admin_notices', array( __CLASS__, 'notice' ) );
 		add_action( 'admin_post_' . self::ACTION, array( __CLASS__, 'handle' ) );
 	}
 
+	/**
+	 * Has old data.
+	 *
+	 * @return string Result.
+	 */
 	public static function has_old_data() {
 		global $wpdb;
 
@@ -45,6 +59,9 @@ class Migration {
 		return 'yes' === $found;
 	}
 
+	/**
+	 * Notice.
+	 */
 	public static function notice() {
 		// WooCommerce hides admin notices on its own pages, so our settings page renders this inside its content.
 		if ( Settings::is_current() ) {
@@ -54,6 +71,9 @@ class Migration {
 		self::render();
 	}
 
+	/**
+	 * Render.
+	 */
 	public static function render() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
@@ -67,22 +87,26 @@ class Migration {
 			<div class="notice notice-success is-dismissible">
 				<p>
 					<?php
-					echo esc_html( sprintf(
+					echo esc_html(
+						sprintf(
 						/* translators: 1: settings, 2: shipping method settings, 3: shipping zone methods, 4: order shipping lines, 5: order data rows */
-						__( 'Import finished: %1$d settings, %2$d shipping method settings, %3$d shipping zone methods, %4$d order shipping lines and %5$d order data rows.', 'nashenski-commerce' ),
-						$r['settings'] ?? 0,
-						$r['shipping_options'] ?? 0,
-						$r['zone_methods'] ?? 0,
-						$r['order_shipping_lines'] ?? 0,
-						$r['order_meta'] ?? 0
-					) );
+							__( 'Import finished: %1$d settings, %2$d shipping method settings, %3$d shipping zone methods, %4$d order shipping lines and %5$d order data rows.', 'nashenski-commerce' ),
+							$r['settings'] ?? 0,
+							$r['shipping_options'] ?? 0,
+							$r['zone_methods'] ?? 0,
+							$r['order_shipping_lines'] ?? 0,
+							$r['order_meta'] ?? 0
+						)
+					);
 
 					if ( ! empty( $r['skipped_numbers'] ) ) {
-						echo '<br>' . esc_html( sprintf(
+						echo '<br>' . esc_html(
+							sprintf(
 							/* translators: %d: number of document numbers */
-							_n( '%d document number skipped (conflict)', '%d document numbers skipped (conflict)', $r['skipped_numbers'], 'nashenski-commerce' ),
-							$r['skipped_numbers']
-						) );
+								_n( '%d document number skipped (conflict)', '%d document numbers skipped (conflict)', $r['skipped_numbers'], 'nashenski-commerce' ),
+								$r['skipped_numbers']
+							)
+						);
 					}
 
 					foreach ( (array) ( $r['switched_off'] ?? array() ) as $line ) {
@@ -98,6 +122,9 @@ class Migration {
 		// Data still to import is listed in the import notice (Import_Sources) and on the Help page.
 	}
 
+	/**
+	 * Handle.
+	 */
 	public static function handle() {
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! current_user_can( 'activate_plugins' ) ) {
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ) );
@@ -107,11 +134,18 @@ class Migration {
 
 		// A second run would overwrite options such as the next invoice numbers.
 		if ( ! get_option( self::DONE_OPTION ) ) {
-			$report = self::run();
+			$report                 = self::run();
 			$report['switched_off'] = Import_Sources::switch_off( self::plugin_files() );
 			// The old plugin's documents sit in a public folder; move them into the private one.
 			\Nashenski\Document_Storage::schedule_migration( true );
-			update_option( self::DONE_OPTION, array( 'time' => time(), 'report' => $report ), false );
+			update_option(
+				self::DONE_OPTION,
+				array(
+					'time'   => time(),
+					'report' => $report,
+				),
+				false
+			);
 		}
 
 		$back = wp_get_referer() ? wp_get_referer() : Settings::url();
@@ -127,12 +161,19 @@ class Migration {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		return array_keys( array_filter( get_plugins(), function ( $plugin ) {
-			return in_array( $plugin['Name'], array( 'Bulgarisation for WooCommerce', 'Bulgarisation for WooCommerce - Pro' ), true );
-		} ) );
+		return array_keys(
+			array_filter(
+				get_plugins(),
+				function ( $plugin ) {
+					return in_array( $plugin['Name'], array( 'Bulgarisation for WooCommerce', 'Bulgarisation for WooCommerce - Pro' ), true );
+				}
+			)
+		);
 	}
 
 	/**
+	 * Run the import.
+	 *
 	 * @return array Counts of what was imported.
 	 */
 	public static function run() {
@@ -151,33 +192,43 @@ class Migration {
 
 	/**
 	 * What one old prefix left behind: settings, shipping zones, order data.
+	 *
+	 * @param mixed $old Old.
 	 */
 	private static function import_from( $old ) {
 		global $wpdb;
 
 		$report = array(
-			'settings' => self::copy_options( $old . '_settings_', $old ),
+			'settings'         => self::copy_options( $old . '_settings_', $old ),
 			'shipping_options' => self::copy_options( 'woocommerce_' . $old . '_', $old ),
 		);
 
 		// Shipping zone methods: woo_bg_econt -> nashenski_econt.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import of the old plugin data; no WordPress API for it.
-		$report['zone_methods'] = (int) $wpdb->query( $wpdb->prepare(
-			"UPDATE {$wpdb->prefix}woocommerce_shipping_zone_methods SET method_id = REPLACE( method_id, %s, %s ) WHERE method_id LIKE %s",
-			$old . '_', self::NEW . '_', $wpdb->esc_like( $old . '_' ) . '%'
-		) );
+		$report['zone_methods'] = (int) $wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->prefix}woocommerce_shipping_zone_methods SET method_id = REPLACE( method_id, %s, %s ) WHERE method_id LIKE %s",
+				$old . '_',
+				self::NEW . '_',
+				$wpdb->esc_like( $old . '_' ) . '%'
+			)
+		);
 
 		// Shipping lines of existing orders, so labels can still be made for them.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import of the old plugin data; no WordPress API for it.
-		$report['order_shipping_lines'] = (int) $wpdb->query( $wpdb->prepare(
-			"UPDATE {$wpdb->prefix}woocommerce_order_itemmeta SET meta_value = REPLACE( meta_value, %s, %s ) WHERE meta_key = 'method_id' AND meta_value LIKE %s",
-			$old . '_', self::NEW . '_', $wpdb->esc_like( $old . '_' ) . '%'
-		) );
+		$report['order_shipping_lines'] = (int) $wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->prefix}woocommerce_order_itemmeta SET meta_value = REPLACE( meta_value, %s, %s ) WHERE meta_key = 'method_id' AND meta_value LIKE %s",
+				$old . '_',
+				self::NEW . '_',
+				$wpdb->esc_like( $old . '_' ) . '%'
+			)
+		);
 
 		// Order meta in both storages (HPOS table and posts, when sync is on).
-		$report['order_meta'] = 0;
+		$report['order_meta']      = 0;
 		$report['skipped_numbers'] = 0;
-		$hpos_table = $wpdb->prefix . 'wc_orders_meta';
+		$hpos_table                = $wpdb->prefix . 'wc_orders_meta';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import of the old plugin data; no WordPress API for it.
 		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $hpos_table ) ) === $hpos_table ) {
@@ -193,6 +244,9 @@ class Migration {
 	 * Copy every option starting with $old_prefix to the same name with our prefix,
 	 * replacing the old prefix inside string values too. Imported values win over the
 	 * defaults Nashenski writes on its first start.
+	 *
+	 * @param mixed $old_prefix Old prefix.
+	 * @param mixed $old Old.
 	 */
 	private static function copy_options( $old_prefix, $old ) {
 		global $wpdb;
@@ -227,12 +281,19 @@ class Migration {
 			}
 
 			update_option( str_replace( $old, self::NEW, $name ), $value );
-			$count++;
+			++$count;
 		}
 
 		return $count;
 	}
 
+	/**
+	 * Replace prefix.
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $old Old.
+	 * @return mixed Result.
+	 */
 	private static function replace_prefix( $value, $old ) {
 		if ( is_string( $value ) ) {
 			return str_replace( $old . '_', self::NEW . '_', $value );
@@ -253,20 +314,37 @@ class Migration {
 
 	/**
 	 * Copy "woo_bg_*" and "_woo_bg_*" meta rows to our keys, skipping rows that already exist.
+	 *
+	 * @param mixed $table Table.
+	 * @param mixed $id_column Id column.
+	 * @param mixed $old_prefix Old prefix.
+	 * @param &     $skipped Skipped.
 	 */
 	private static function copy_meta( $table, $id_column, $old_prefix, &$skipped = 0 ) {
 		global $wpdb;
 
-		$count = 0;
-		$number_fields = array( 'order_number' => 'next_invoice_number', 'refunded_order_number' => 'next_invoice_number', 'order_invoice_number' => 'next_invoice_separate_number' );
+		$count         = 0;
+		$number_fields = array(
+			'order_number'          => 'next_invoice_number',
+			'refunded_order_number' => 'next_invoice_number',
+			'order_invoice_number'  => 'next_invoice_separate_number',
+		);
 		// Numbering goes through the same lock as checkout, not the bulk metadata copy.
 		foreach ( $number_fields as $field => $option ) {
 			// Orders that already have the number are left out here, so they are not loaded.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import of the old plugin data; no WordPress API for it.
-			$rows = $wpdb->get_results( $wpdb->prepare(
-				"SELECT o.%i AS order_id, o.meta_value FROM %i o WHERE o.meta_key = %s AND NOT EXISTS ( SELECT 1 FROM %i n WHERE n.%i = o.%i AND n.meta_key = %s AND n.meta_value NOT IN ( '', '0' ) )",
-				$id_column, $table, $old_prefix . '_' . $field, $table, $id_column, $id_column, self::NEW . '_' . $field
-			) );
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT o.%i AS order_id, o.meta_value FROM %i o WHERE o.meta_key = %s AND NOT EXISTS ( SELECT 1 FROM %i n WHERE n.%i = o.%i AND n.meta_key = %s AND n.meta_value NOT IN ( '', '0' ) )",
+					$id_column,
+					$table,
+					$old_prefix . '_' . $field,
+					$table,
+					$id_column,
+					$id_column,
+					self::NEW . '_' . $field
+				)
+			);
 			// Only the authoritative table is imported; the other one is stale or mirrored by WooCommerce.
 			if ( ! $rows || \Nashenski\Invoice\Number_Allocator::storage()[0] !== $table ) {
 				continue;
@@ -278,11 +356,11 @@ class Migration {
 				}
 				try {
 					if ( \Nashenski\Invoice\Number_Allocator::import_number( $order, self::NEW . '_' . $field, $row->meta_value, $option ) ) {
-						$count++;
+						++$count;
 					}
 				} catch ( \RuntimeException $e ) {
 					// A duplicate, empty or locked number: that order stays as it is and is reported.
-					$skipped++;
+					++$skipped;
 				}
 			}
 		}
@@ -293,8 +371,9 @@ class Migration {
 
 			// One-time bulk copy of the old plugin's meta rows; there is no WordPress API for this.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import; caches are flushed afterwards.
-			$count += (int) $wpdb->query( $wpdb->prepare(
-				'INSERT INTO %i ( %i, meta_key, meta_value )
+			$count += (int) $wpdb->query(
+				$wpdb->prepare(
+					'INSERT INTO %i ( %i, meta_key, meta_value )
 				SELECT o.%i, CONCAT( %s, SUBSTRING( o.meta_key, %d ) ), o.meta_value
 				FROM %i o
 				WHERE o.meta_key LIKE %s
@@ -304,8 +383,23 @@ class Migration {
 					WHERE n.%i = o.%i
 					AND n.meta_key = CONCAT( %s, SUBSTRING( o.meta_key, %d ) )
 				)',
-				$table, $id_column, $id_column, $new, strlen( $old ) + 1, $table, $wpdb->esc_like( $old ) . '%', $old_prefix . '_order_number', $old_prefix . '_refunded_order_number', $old_prefix . '_order_invoice_number', $table, $id_column, $id_column, $new, strlen( $old ) + 1
-			) );
+					$table,
+					$id_column,
+					$id_column,
+					$new,
+					strlen( $old ) + 1,
+					$table,
+					$wpdb->esc_like( $old ) . '%',
+					$old_prefix . '_order_number',
+					$old_prefix . '_refunded_order_number',
+					$old_prefix . '_order_invoice_number',
+					$table,
+					$id_column,
+					$id_column,
+					$new,
+					strlen( $old ) + 1
+				)
+			);
 		}
 
 		return $count;

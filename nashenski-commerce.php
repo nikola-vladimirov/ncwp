@@ -1,4 +1,10 @@
 <?php
+/**
+ * Nashenski Commerce main file: constants, bundled translations and plugin start.
+ *
+ * @package Nashenski_Commerce
+ */
+
 /*
 Plugin Name:  Nashenski Commerce
 Plugin URI:   https://pristadigital.com/
@@ -28,34 +34,40 @@ define( 'NASHENSKI_PHP_MINIMUM_VERSION', '7.4' );
 define( 'NASHENSKI_WP_MINIMUM_VERSION', '6.5' );
 
 // Stop the plugin's scheduled jobs on deactivation; no data is deleted (see uninstall.php).
-register_deactivation_hook( __FILE__, function () {
-	foreach ( array(
-		'nashenski/boxnow/clear_cache_folder',
-		'nashenski/econt/clear_cache_folder',
-		'nashenski/pigeon/clear_cache_folder',
-		'nashenski/speedy/clear_cache_folder',
-		'nashenski/prices/check',
-	) as $hook ) {
-		wp_clear_scheduled_hook( $hook );
+register_deactivation_hook(
+	__FILE__,
+	function () {
+		foreach ( array(
+			'nashenski/boxnow/clear_cache_folder',
+			'nashenski/econt/clear_cache_folder',
+			'nashenski/pigeon/clear_cache_folder',
+			'nashenski/speedy/clear_cache_folder',
+			'nashenski/prices/check',
+		) as $hook ) {
+			wp_clear_scheduled_hook( $hook );
+		}
+
+		// Action Scheduler jobs would fail with "no callbacks are registered" while the plugin is off.
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( '', array(), 'nashenski' );
+		}
+
+		// The flags that make the carts tracker and the documents migration schedule their jobs again on the next load.
+		delete_option( 'nashenski_carts_db_version' );
+		delete_option( 'nashenski_documents_migration_version' );
 	}
+);
 
-	// Action Scheduler jobs would fail with "no callbacks are registered" while the plugin is off.
-	if ( function_exists( 'as_unschedule_all_actions' ) ) {
-		as_unschedule_all_actions( '', array(), 'nashenski' );
-	}
-
-	// The flags that make the carts tracker and the documents migration schedule their jobs again on the next load.
-	delete_option( 'nashenski_carts_db_version' );
-	delete_option( 'nashenski_documents_migration_version' );
-} );
-
-// Start the plugin
+// Start the plugin.
 add_action( 'plugins_loaded', 'nashenski_init', 1, 0 );
-add_action( 'before_woocommerce_init', function() {
-	if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
-		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		}
 	}
-} );
+);
 
 /**
  * Load the plugin's texts for the current (or a given) locale: a WordPress.org language pack
@@ -66,14 +78,16 @@ add_action( 'before_woocommerce_init', function() {
  */
 function nashenski_load_bundled_translations( $locale = null ) {
 	$locale = is_string( $locale ) && '' !== $locale ? $locale : determine_locale();
-	$pack = WP_LANG_DIR . '/plugins/nashenski-commerce-' . $locale;
-	$file = file_exists( $pack . '.mo' ) || file_exists( $pack . '.l10n.php' ) ? $pack . '.mo' : __DIR__ . '/languages/nashenski-commerce-' . $locale . '.mo';
+	$pack   = WP_LANG_DIR . '/plugins/nashenski-commerce-' . $locale;
+	$file   = file_exists( $pack . '.mo' ) || file_exists( $pack . '.l10n.php' ) ? $pack . '.mo' : __DIR__ . '/languages/nashenski-commerce-' . $locale . '.mo';
 
 	unload_textdomain( 'nashenski-commerce' );
 	load_textdomain( 'nashenski-commerce', $file, $locale );
 }
 
 /**
+ * Start the plugin and return its instance.
+ *
  * @return \Nashenski\Plugin
  */
 function nashenski_init() {
@@ -82,45 +96,57 @@ function nashenski_init() {
 	add_action( 'change_locale', 'nashenski_load_bundled_translations' );
 
 	if ( version_compare( PHP_VERSION, NASHENSKI_PHP_MINIMUM_VERSION, '<' ) || version_compare( get_bloginfo( 'version' ), NASHENSKI_WP_MINIMUM_VERSION, '<' ) ) {
-		add_action( 'admin_notices', function() {
-			/* translators: %1$s is minimum php version and %2$s is minimum WP version*/
-			$message = sprintf( esc_html__( 'Nashenski Commerce requires PHP version %1$s+ and WP version %2$s+, plugin is currently NOT RUNNING.', 'nashenski-commerce' ), NASHENSKI_PHP_MINIMUM_VERSION, NASHENSKI_WP_MINIMUM_VERSION );
-			echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
-		} );
+		add_action(
+			'admin_notices',
+			function () {
+				/* translators: %1$s is minimum php version and %2$s is minimum WP version*/
+				$message = sprintf( esc_html__( 'Nashenski Commerce requires PHP version %1$s+ and WP version %2$s+, plugin is currently NOT RUNNING.', 'nashenski-commerce' ), NASHENSKI_PHP_MINIMUM_VERSION, NASHENSKI_WP_MINIMUM_VERSION );
+				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
+			}
+		);
 
 		return;
 	}
 
 	// The plugin we forked registers the same checkout fields and shipping methods; never run both.
 	if ( function_exists( 'woo_bg_init' ) ) {
-		add_action( 'admin_notices', function() {
-			$message = esc_html__( 'Nashenski Commerce is paused: please deactivate Bulgarisation for WooCommerce first. Your settings and orders can be imported afterwards.', 'nashenski-commerce' );
-			echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
-		} );
+		add_action(
+			'admin_notices',
+			function () {
+				$message = esc_html__( 'Nashenski Commerce is paused: please deactivate Bulgarisation for WooCommerce first. Your settings and orders can be imported afterwards.', 'nashenski-commerce' );
+				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
+			}
+		);
 
 		return;
 	}
 
-	if ( !class_exists( 'WooCommerce' ) ) {
-		add_action( 'admin_notices', function() {
-			$message = sprintf( esc_html__( 'Nashenski Commerce - Please enable WooCommerce first.', 'nashenski-commerce' ) );
-			echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
-		} );
-		
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		add_action(
+			'admin_notices',
+			function () {
+				$message = sprintf( esc_html__( 'Nashenski Commerce - Please enable WooCommerce first.', 'nashenski-commerce' ) );
+				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
+			}
+		);
+
 		return;
 	}
 
 	if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 		require_once __DIR__ . '/vendor/autoload.php';
 	} else {
-		add_action( 'admin_notices', function() {
-			$message = sprintf( esc_html__( 'Please run `composer install` in the plugin folder `nashenski-commerce`', 'nashenski-commerce' ) );
-			echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
-		} );
+		add_action(
+			'admin_notices',
+			function () {
+				$message = sprintf( esc_html__( 'Please run `composer install` in the plugin folder `nashenski-commerce`', 'nashenski-commerce' ) );
+				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
+			}
+		);
 		return;
 	}
 
-	$container = new \Pimple\Container( [ 'plugin_file' => __FILE__ ] );
+	$container = new \Pimple\Container( array( 'plugin_file' => __FILE__ ) );
 	$plugin    = \Nashenski\Plugin::instance( $container );
 	$plugin->init();
 
@@ -135,6 +161,11 @@ function nashenski_init() {
 	return $plugin;
 }
 
+/**
+ * Nashenski.
+ *
+ * @return mixed Result.
+ */
 function nashenski() {
 	try {
 		return \Nashenski\Plugin::instance();

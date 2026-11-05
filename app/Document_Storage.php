@@ -1,4 +1,10 @@
 <?php
+/**
+ * Document storage.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
@@ -13,18 +19,18 @@ defined( 'ABSPATH' ) || exit;
  * the path is not guessable and is never sent to the browser.
  */
 class Document_Storage {
-	const DIR_OPTION = 'nashenski_documents_dir';
-	const ACTION = 'nashenski_document';
-	const MIGRATE_HOOK = 'nashenski/documents/migrate';
-	const MIGRATE_BATCH = 50;
-	const MIGRATE_OPTION = 'nashenski_documents_migration';
-	const CLEANUP_HOOK = 'nashenski_delete_receipts';
-	const CLEANUP_OPTION = 'nashenski_settings_invoice_delete_receipts_days';
-	const CLEANUP_BATCH = 100;
+	const DIR_OPTION           = 'nashenski_documents_dir';
+	const ACTION               = 'nashenski_document';
+	const MIGRATE_HOOK         = 'nashenski/documents/migrate';
+	const MIGRATE_BATCH        = 50;
+	const MIGRATE_OPTION       = 'nashenski_documents_migration';
+	const CLEANUP_HOOK         = 'nashenski_delete_receipts';
+	const CLEANUP_OPTION       = 'nashenski_settings_invoice_delete_receipts_days';
+	const CLEANUP_BATCH        = 100;
 	const RECEIPT_DELETED_META = '_nashenski_order_document_deleted';
-	const EXPORT_UNTIL_META = '_nashenski_export_until';
-	const EXPORT_CLEANUP_HOOK = 'nashenski_delete_export_files';
-	const EXPORT_DAYS = 7;
+	const EXPORT_UNTIL_META    = '_nashenski_export_until';
+	const EXPORT_CLEANUP_HOOK  = 'nashenski_delete_export_files';
+	const EXPORT_DAYS          = 7;
 
 	/**
 	 * The folder documents were public in before 0.11.1.
@@ -35,10 +41,13 @@ class Document_Storage {
 	 * Public folders documents were in: ours before 0.11.1, and Bulgarisation's (4.x and 5.x), whose
 	 * documents the import takes over.
 	 */
-	const LEGACY_SUBDIRS = array( 'nashenski', 'woo-bg', 'bulgarisation' );
+	const LEGACY_SUBDIRS         = array( 'nashenski', 'woo-bg', 'bulgarisation' );
 	const MIGRATE_VERSION_OPTION = 'nashenski_documents_migration_version';
-	const MIGRATE_VERSION = 2;
+	const MIGRATE_VERSION        = 2;
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'admin_post_' . self::ACTION, array( __CLASS__, 'download' ) );
 		add_action( 'admin_post_nopriv_' . self::ACTION, array( __CLASS__, 'download' ) );
@@ -66,14 +75,26 @@ class Document_Storage {
 		}
 	}
 
+	/**
+	 * Delete export files.
+	 */
 	public static function delete_export_files() {
-		$ids = get_posts( array(
-			'post_type' => 'attachment',
-			'post_status' => 'any',
-			'fields' => 'ids',
-			'posts_per_page' => self::CLEANUP_BATCH,
-			'meta_query' => array( array( 'key' => self::EXPORT_UNTIL_META, 'value' => time(), 'compare' => '<', 'type' => 'NUMERIC' ) ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- daily background job.
-		) );
+		$ids = get_posts(
+			array(
+				'post_type'      => 'attachment',
+				'post_status'    => 'any',
+				'fields'         => 'ids',
+				'posts_per_page' => self::CLEANUP_BATCH,
+				'meta_query'     => array(
+					array(
+						'key'     => self::EXPORT_UNTIL_META,
+						'value'   => time(),
+						'compare' => '<',
+						'type'    => 'NUMERIC',
+					),
+				), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- daily background job.
+			)
+		);
 
 		foreach ( $ids as $id ) {
 			wp_delete_attachment( $id, true );
@@ -82,6 +103,8 @@ class Document_Storage {
 
 	/**
 	 * Keep the private documents out of the Media Library (list and grid): they are for the order screens.
+	 *
+	 * @param mixed $query Query.
 	 */
 	public static function hide_from_media_library( $query ) {
 		global $pagenow;
@@ -91,12 +114,25 @@ class Document_Storage {
 		}
 	}
 
+	/**
+	 * Hide from media grid.
+	 *
+	 * @param mixed $args Args.
+	 * @return mixed Result.
+	 */
 	public static function hide_from_media_grid( $args ) {
 		$args['nashenski_hide_documents'] = 1;
 
 		return $args;
 	}
 
+	/**
+	 * Hide documents where.
+	 *
+	 * @param mixed $where Where.
+	 * @param mixed $query Query.
+	 * @return mixed Result.
+	 */
 	public static function hide_documents_where( $where, $query ) {
 		global $wpdb;
 
@@ -136,6 +172,8 @@ class Document_Storage {
 	 * documents stay) of orders older than the setting, or of all orders with $all. Works in
 	 * batches and queues the next one while any are left. The number stays on the order, so the
 	 * document can be made again and still shows in exports.
+	 *
+	 * @param bool $all All.
 	 */
 	public static function delete_receipts( $all = false ) {
 		$days = (int) get_option( self::CLEANUP_OPTION );
@@ -145,17 +183,27 @@ class Document_Storage {
 		}
 
 		$args = array(
-			'limit' => self::CLEANUP_BATCH,
+			'limit'  => self::CLEANUP_BATCH,
 			'return' => 'ids',
-			'type' => 'shop_order',
+			'type'   => 'shop_order',
 		);
 
 		if ( ! $all ) {
 			$args['date_created'] = '<' . ( time() - $days * DAY_IN_SECONDS );
 		}
 
-		$has_document = array( 'relation' => 'OR', array( 'key' => 'nashenski_order_document', 'compare' => 'EXISTS' ), array( 'key' => 'nashenski_order_document_en', 'compare' => 'EXISTS' ) );
-		$legacy = ! ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() );
+		$has_document = array(
+			'relation' => 'OR',
+			array(
+				'key'     => 'nashenski_order_document',
+				'compare' => 'EXISTS',
+			),
+			array(
+				'key'     => 'nashenski_order_document_en',
+				'compare' => 'EXISTS',
+			),
+		);
+		$legacy       = ! ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() );
 
 		if ( $legacy ) {
 			// The legacy post datastore rejects the meta_query argument, so add it to the WP_Query it builds.
@@ -226,6 +274,9 @@ class Document_Storage {
 		exit;
 	}
 
+	/**
+	 * Receipts deleted notice.
+	 */
 	public static function receipts_deleted_notice() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only shows a notice.
 		if ( empty( $_GET['nashenski-receipts-deleted'] ) || ! current_user_can( 'manage_woocommerce' ) ) {
@@ -250,13 +301,15 @@ class Document_Storage {
 	}
 
 	/**
-	 * upload_dir filter: point uploads at the private folder.
+	 * Filter upload_dir to point uploads at the private folder.
+	 *
+	 * @param mixed $args Args.
 	 */
 	public static function change_upload_dir( $args ) {
 		$subdir = '/' . self::subdir();
 
-		$args['path'] = $args['basedir'] . $subdir;
-		$args['url'] = $args['baseurl'] . $subdir;
+		$args['path']   = $args['basedir'] . $subdir;
+		$args['url']    = $args['baseurl'] . $subdir;
 		$args['subdir'] = $subdir;
 
 		return $args;
@@ -267,7 +320,7 @@ class Document_Storage {
 	 */
 	public static function path() {
 		$uploads = wp_upload_dir( null, false );
-		$path = trailingslashit( $uploads['basedir'] ) . self::subdir();
+		$path    = trailingslashit( $uploads['basedir'] ) . self::subdir();
 
 		if ( ! is_dir( $path ) ) {
 			wp_mkdir_p( $path );
@@ -287,6 +340,9 @@ class Document_Storage {
 	/**
 	 * Write $contents as $name.$extension into the private folder as a private attachment.
 	 *
+	 * @param mixed $name Name.
+	 * @param mixed $extension Extension.
+	 * @param mixed $contents Contents.
 	 * @return int Attachment ID, 0 on failure.
 	 */
 	public static function save( $name, $extension, $contents ) {
@@ -300,13 +356,16 @@ class Document_Storage {
 			return 0;
 		}
 
-		$attach_id = wp_insert_attachment( array(
-			'guid' => $file['file'],
-			'post_mime_type' => $file['type'],
-			'post_title' => $name,
-			'post_content' => '',
-			'post_status' => 'private',
-		), $file['file'] );
+		$attach_id = wp_insert_attachment(
+			array(
+				'guid'           => $file['file'],
+				'post_mime_type' => $file['type'],
+				'post_title'     => $name,
+				'post_content'   => '',
+				'post_status'    => 'private',
+			),
+			$file['file']
+		);
 
 		if ( is_wp_error( $attach_id ) ) {
 			return 0;
@@ -325,56 +384,75 @@ class Document_Storage {
 	 * The link carries a signature that expires, used only for guest orders: the page showing it
 	 * (WooCommerce's order-received page) has already checked the order key and, after its grace
 	 * period, the email, so a copied link cannot be reused for long.
+	 *
+	 * @param mixed $order Order.
+	 * @param mixed $meta Meta.
 	 */
 	public static function order_document_url( $order, $meta ) {
 		$expires = time() + (int) apply_filters( 'nashenski/documents/guest_link_lifetime', DAY_IN_SECONDS );
 
-		return add_query_arg( array(
-			'action' => self::ACTION,
-			'order' => $order->get_id(),
-			'doc' => $meta,
-			'expires' => $expires,
-			'token' => self::sign( $order->get_id(), $meta, $expires ),
-		), admin_url( 'admin-post.php' ) );
+		return add_query_arg(
+			array(
+				'action'  => self::ACTION,
+				'order'   => $order->get_id(),
+				'doc'     => $meta,
+				'expires' => $expires,
+				'token'   => self::sign( $order->get_id(), $meta, $expires ),
+			),
+			admin_url( 'admin-post.php' )
+		);
 	}
 
+	/**
+	 * Sign.
+	 *
+	 * @param mixed $order_id Order id.
+	 * @param mixed $meta Meta.
+	 * @param mixed $expires Expires.
+	 * @return mixed Result.
+	 */
 	private static function sign( $order_id, $meta, $expires ) {
 		return hash_hmac( 'sha256', $order_id . '|' . $meta . '|' . $expires, wp_salt( 'auth' ) );
 	}
 
 	/**
 	 * Link to an accounting export (not tied to one order); staff only.
+	 *
+	 * @param mixed $attach_id Attach id.
 	 */
 	public static function export_url( $attach_id ) {
-		return add_query_arg( array(
-			'action' => self::ACTION,
-			'file' => absint( $attach_id ),
-		), admin_url( 'admin-post.php' ) );
+		return add_query_arg(
+			array(
+				'action' => self::ACTION,
+				'file'   => absint( $attach_id ),
+			),
+			admin_url( 'admin-post.php' )
+		);
 	}
 
 	/**
-	 * admin-post handler for both kinds of links.
+	 * Handle admin-post for both kinds of links.
 	 */
 	public static function download() {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- a read-only download; access is checked below.
 		$order_id = absint( $_GET['order'] ?? 0 );
-		$meta = sanitize_key( wp_unslash( $_GET['doc'] ?? '' ) );
-		$expires = absint( $_GET['expires'] ?? 0 );
-		$token = sanitize_text_field( wp_unslash( $_GET['token'] ?? '' ) );
-		$file_id = absint( $_GET['file'] ?? 0 );
+		$meta     = sanitize_key( wp_unslash( $_GET['doc'] ?? '' ) );
+		$expires  = absint( $_GET['expires'] ?? 0 );
+		$token    = sanitize_text_field( wp_unslash( $_GET['token'] ?? '' ) );
+		$file_id  = absint( $_GET['file'] ?? 0 );
 		// phpcs:enable
 
 		$attach_id = 0;
 
 		if ( $order_id ) {
-			$order = wc_get_order( $order_id );
+			$order      = wc_get_order( $order_id );
 			$main_order = $order instanceof \WC_Order_Refund ? wc_get_order( $order->get_parent_id() ) : $order;
-			$signed = $expires >= time() && hash_equals( self::sign( $order_id, $meta, $expires ), $token );
+			$signed     = $expires >= time() && hash_equals( self::sign( $order_id, $meta, $expires ), $token );
 
 			if ( $main_order && self::is_document_meta( $meta ) && self::can_download( $main_order, $signed ) ) {
 				$attach_id = absint( $order->get_meta( $meta ) );
 			}
-		} else if ( $file_id && current_user_can( 'manage_woocommerce' ) ) {
+		} elseif ( $file_id && current_user_can( 'manage_woocommerce' ) ) {
 			$attach_id = $file_id;
 		}
 
@@ -384,7 +462,7 @@ class Document_Storage {
 			wp_die( esc_html__( 'The document was not found or you do not have access to it.', 'nashenski-commerce' ), '', array( 'response' => 404 ) );
 		}
 
-		$type = wp_check_filetype( $path );
+		$type        = wp_check_filetype( $path );
 		$disposition = 'application/pdf' === $type['type'] ? 'inline' : 'attachment';
 
 		nocache_headers();
@@ -409,7 +487,7 @@ class Document_Storage {
 	private static function can_download( $order, $signed ) {
 		if ( current_user_can( 'manage_woocommerce' ) || current_user_can( 'edit_shop_orders' ) ) {
 			$allowed = true;
-		} else if ( $order->get_customer_id() ) {
+		} elseif ( $order->get_customer_id() ) {
 			$allowed = current_user_can( 'view_order', $order->get_id() );
 		} else {
 			$allowed = $signed;
@@ -420,6 +498,8 @@ class Document_Storage {
 
 	/**
 	 * Only the order meta keys that hold document attachments may be requested.
+	 *
+	 * @param mixed $meta Meta.
 	 */
 	private static function is_document_meta( $meta ) {
 		$documents = array(
@@ -437,11 +517,13 @@ class Document_Storage {
 
 	/**
 	 * The file is in the private folder, or in the old public one while it is being migrated.
+	 *
+	 * @param mixed $path Path.
 	 */
 	private static function is_stored_here( $path ) {
 		$uploads = wp_upload_dir( null, false );
-		$base = wp_normalize_path( trailingslashit( $uploads['basedir'] ) );
-		$path = wp_normalize_path( $path );
+		$base    = wp_normalize_path( trailingslashit( $uploads['basedir'] ) );
+		$path    = wp_normalize_path( $path );
 
 		foreach ( array_merge( array( self::subdir() ), self::LEGACY_SUBDIRS ) as $subdir ) {
 			if ( 0 === strpos( $path, $base . $subdir . '/' ) && false === strpos( $path, '..' ) ) {
@@ -455,6 +537,8 @@ class Document_Storage {
 	/**
 	 * Start moving documents out of the old public folders, once per site and MIGRATE_VERSION
 	 * (version 2 added Bulgarisation's folders), and again after an import ($again).
+	 *
+	 * @param bool $again Again.
 	 */
 	public static function schedule_migration( $again = false ) {
 		if ( ( ! $again && (int) get_option( self::MIGRATE_VERSION_OPTION ) >= self::MIGRATE_VERSION ) || ! function_exists( 'as_enqueue_async_action' ) ) {
@@ -476,6 +560,8 @@ class Document_Storage {
 	/**
 	 * Move up to MIGRATE_BATCH old public documents into the private folder and make their
 	 * attachments private; queues itself again while any are left.
+	 *
+	 * @param int $after After.
 	 */
 	public static function migrate_batch( $after = 0 ) {
 		global $wpdb;
@@ -485,20 +571,25 @@ class Document_Storage {
 
 		// In ID order after $after, so a file that cannot be moved is skipped instead of blocking the rest.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration, batched.
-		$ids = array_map( 'absint', $wpdb->get_col( $wpdb->prepare(
-			"SELECT p.ID FROM {$wpdb->posts} p
+		$ids = array_map(
+			'absint',
+			$wpdb->get_col(
+				$wpdb->prepare(
+					"SELECT p.ID FROM {$wpdb->posts} p
 			INNER JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_wp_attached_file'
 			WHERE p.post_type = 'attachment' AND p.post_status = 'inherit' AND p.ID > %d
 			AND p.post_mime_type IN ( 'application/pdf', 'application/xml', 'text/xml', 'text/plain' )
 			AND ( m.meta_value LIKE %s OR m.meta_value LIKE %s OR m.meta_value LIKE %s )
 			ORDER BY p.ID ASC
 			LIMIT %d",
-			absint( $after ),
-			$wpdb->esc_like( self::LEGACY_SUBDIRS[0] . '/' ) . '%',
-			$wpdb->esc_like( self::LEGACY_SUBDIRS[1] . '/' ) . '%',
-			$wpdb->esc_like( self::LEGACY_SUBDIRS[2] . '/' ) . '%',
-			self::MIGRATE_BATCH
-		) ) );
+					absint( $after ),
+					$wpdb->esc_like( self::LEGACY_SUBDIRS[0] . '/' ) . '%',
+					$wpdb->esc_like( self::LEGACY_SUBDIRS[1] . '/' ) . '%',
+					$wpdb->esc_like( self::LEGACY_SUBDIRS[2] . '/' ) . '%',
+					self::MIGRATE_BATCH
+				)
+			)
+		);
 
 		$failed = array();
 
@@ -515,13 +606,18 @@ class Document_Storage {
 				update_attached_file( $id, $new );
 			}
 
-			wp_update_post( array( 'ID' => $id, 'post_status' => 'private' ) );
+			wp_update_post(
+				array(
+					'ID'          => $id,
+					'post_status' => 'private',
+				)
+			);
 		}
 
 		// Files left public, so a site owner (or support) can find them: the option holds their IDs.
 		if ( $failed ) {
-			$state = get_option( self::MIGRATE_OPTION );
-			$state = is_array( $state ) ? $state : array();
+			$state           = get_option( self::MIGRATE_OPTION );
+			$state           = is_array( $state ) ? $state : array();
 			$state['failed'] = array_values( array_unique( array_merge( $state['failed'] ?? array(), $failed ) ) );
 			update_option( self::MIGRATE_OPTION, $state, false );
 		}

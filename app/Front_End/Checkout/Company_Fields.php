@@ -1,4 +1,10 @@
 <?php
+/**
+ * Company fields.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Front_End\Checkout;
 
 defined( 'ABSPATH' ) || exit;
@@ -20,13 +26,13 @@ class Company_Fields {
 	 * Block checkout field ID => order meta (or "company" for the billing company name).
 	 */
 	const BLOCK_FIELDS = array(
-		'nashenski/to-company' => '_billing_to_company',
-		'nashenski/company-name' => 'company',
-		'nashenski/company-eik' => '_billing_company_eik',
-		'nashenski/company-vat' => '_billing_vat_number',
-		'nashenski/company-mol' => '_billing_company_mol',
+		'nashenski/to-company'         => '_billing_to_company',
+		'nashenski/company-name'       => 'company',
+		'nashenski/company-eik'        => '_billing_company_eik',
+		'nashenski/company-vat'        => '_billing_vat_number',
+		'nashenski/company-mol'        => '_billing_company_mol',
 		'nashenski/company-settlement' => '_billing_company_settlement',
-		'nashenski/company-address' => '_billing_company_address',
+		'nashenski/company-address'    => '_billing_company_address',
 	);
 
 	/**
@@ -43,6 +49,9 @@ class Company_Fields {
 		return 'yes' === nashenski_get_option( 'apis', 'enable_documents' ) && 'disable' !== nashenski_get_option( 'invoice', 'invoices' );
 	}
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		new Company();
 
@@ -59,7 +68,7 @@ class Company_Fields {
 			'checkout' => array(
 				'properties' => array(
 					'additional_fields' => array(
-						'required' => array( 'nashenski/to-company' ),
+						'required'   => array( 'nashenski/to-company' ),
 						'properties' => array(
 							'nashenski/to-company' => array( 'const' => true ),
 						),
@@ -69,6 +78,11 @@ class Company_Fields {
 		);
 	}
 
+	/**
+	 * When not ticked.
+	 *
+	 * @return array Result.
+	 */
 	private static function when_not_ticked() {
 		return array(
 			'checkout' => array(
@@ -83,39 +97,44 @@ class Company_Fields {
 		);
 	}
 
+	/**
+	 * Register block fields.
+	 */
 	public static function register_block_fields() {
 		if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
 			return;
 		}
 
-		woocommerce_register_additional_checkout_field( array(
-			'id' => 'nashenski/to-company',
-			'label' => __( 'I want an invoice for a company', 'nashenski-commerce' ),
-			// A checkbox is never required, so it would read "(optional)".
-			'optionalLabel' => __( 'I want an invoice for a company', 'nashenski-commerce' ),
-			'location' => 'order',
-			'type' => 'checkbox',
-		) );
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'            => 'nashenski/to-company',
+				'label'         => __( 'I want an invoice for a company', 'nashenski-commerce' ),
+				// A checkbox is never required, so it would read "(optional)".
+				'optionalLabel' => __( 'I want an invoice for a company', 'nashenski-commerce' ),
+				'location'      => 'order',
+				'type'          => 'checkbox',
+			)
+		);
 
 		$vat_required = 'yes' === nashenski_get_option( 'nap', 'dds_number_required' );
-		$fields = array(
-			'nashenski/company-name' => array( __( 'Company name', 'nashenski-commerce' ), true ),
-			'nashenski/company-eik' => array( __( 'EIK', 'nashenski-commerce' ), true ),
-			'nashenski/company-vat' => array( __( 'VAT number', 'nashenski-commerce' ), $vat_required ),
-			'nashenski/company-mol' => array( __( 'MOL (responsible person)', 'nashenski-commerce' ), true ),
+		$fields       = array(
+			'nashenski/company-name'       => array( __( 'Company name', 'nashenski-commerce' ), true ),
+			'nashenski/company-eik'        => array( __( 'EIK', 'nashenski-commerce' ), true ),
+			'nashenski/company-vat'        => array( __( 'VAT number', 'nashenski-commerce' ), $vat_required ),
+			'nashenski/company-mol'        => array( __( 'MOL (responsible person)', 'nashenski-commerce' ), true ),
 			'nashenski/company-settlement' => array( __( 'Registered town', 'nashenski-commerce' ), true ),
-			'nashenski/company-address' => array( __( 'Registered address', 'nashenski-commerce' ), true ),
+			'nashenski/company-address'    => array( __( 'Registered address', 'nashenski-commerce' ), true ),
 		);
 
 		foreach ( $fields as $id => $field ) {
 			$args = array(
-				'id' => $id,
-				'label' => $field[0],
-				'optionalLabel' => $field[0] . ' ' . __( '(optional)', 'nashenski-commerce' ),
-				'location' => 'order',
-				'type' => 'text',
-				'required' => $field[1] ? self::when_ticked() : false,
-				'hidden' => self::when_not_ticked(),
+				'id'                => $id,
+				'label'             => $field[0],
+				'optionalLabel'     => $field[0] . ' ' . __( '(optional)', 'nashenski-commerce' ),
+				'location'          => 'order',
+				'type'              => 'text',
+				'required'          => $field[1] ? self::when_ticked() : false,
+				'hidden'            => self::when_not_ticked(),
 				'sanitize_callback' => function ( $value ) {
 					return sanitize_text_field( (string) $value );
 				},
@@ -131,6 +150,8 @@ class Company_Fields {
 
 	/**
 	 * Bulgarian EIK: 9 or 13 digits, optionally with the BG prefix.
+	 *
+	 * @param mixed $value Value.
 	 */
 	public static function validate_eik( $value ) {
 		$digits = preg_replace( '/^BG/i', '', preg_replace( '/\s+/', '', (string) $value ) );
@@ -144,6 +165,11 @@ class Company_Fields {
 
 	/**
 	 * Block checkout: copy each company field into the order data the documents read.
+	 *
+	 * @param mixed $key Key.
+	 * @param mixed $value Value.
+	 * @param mixed $group Group.
+	 * @param mixed $wc_object Wc object.
 	 */
 	public static function save_block_field( $key, $value, $group, $wc_object ) {
 		if ( ! isset( self::BLOCK_FIELDS[ $key ] ) || ! $wc_object instanceof \WC_Order ) {
@@ -173,7 +199,7 @@ class Company_Fields {
 		}
 
 		$fields = WC()->checkout()->get_checkout_fields( 'billing' );
-		$keys = array( 'billing_to_company', 'billing_company', 'billing_company_eik', 'billing_vat_number', 'billing_company_mol', 'billing_company_settlement', 'billing_company_address' );
+		$keys   = array( 'billing_to_company', 'billing_company', 'billing_company_eik', 'billing_vat_number', 'billing_company_mol', 'billing_company_settlement', 'billing_company_address' );
 
 		echo '<template id="nashenski-company-fields" class="nashenski-extra-fields">';
 

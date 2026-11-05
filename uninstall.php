@@ -4,7 +4,10 @@
  *
  * Removes scheduled jobs, the abandoned carts table (customer emails and phones) and transients.
  * Settings, order data and documents stay: invoices and store data are legal records.
+ *
+ * @package Nashenski_Commerce
  */
+
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 foreach ( array(

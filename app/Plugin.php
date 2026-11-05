@@ -1,8 +1,17 @@
 <?php
+/**
+ * Plugin.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Plugin.
+ */
 class Plugin {
 	const VERSION = '0.19.9';
 
@@ -11,18 +20,32 @@ class Plugin {
 	 */
 	const COURIERS = array( 'econt', 'speedy', 'boxnow', 'pigeon' );
 
-	protected static $_instance;
+	/**
+	 * Instance.
+	 *
+	 * @var mixed
+	 */
+	protected static $instance;
 
-	/** @var \Pimple\Container */
+	/**
+	 * Container.
+	 *
+	 * @var \Pimple\Container
+	 */
 	protected $container = null;
 
 	/**
-	 * @param \Pimple\Container $container
+	 * Constructor.
+	 *
+	 * @param \Pimple\Container $container Dependency container.
 	 */
 	public function __construct( \Pimple\Container $container ) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Init.
+	 */
 	public function init() {
 		require_once __DIR__ . '/functions.php';
 		$this->maybe_upgrade();
@@ -32,8 +55,8 @@ class Plugin {
 
 		add_filter( 'plugin_action_links_' . plugin_basename( nashenski()->plugin_dir_path() . 'nashenski-commerce.php' ), array( __CLASS__, 'plugin_action_links' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
-		add_filter( 'robots_txt', array( __CLASS__, 'robots_txt' ), 99, 2 );
-		add_filter( 'rest_attachment_query', array( __CLASS__, 'exclude_pdf_from_rest' ), 10, 2);
+		add_filter( 'robots_txt', array( __CLASS__, 'robots_txt' ), 99, 1 );
+		add_filter( 'rest_attachment_query', array( __CLASS__, 'exclude_pdf_from_rest' ), 10, 1 );
 	}
 
 	/**
@@ -48,20 +71,25 @@ class Plugin {
 
 		// 0.2.0: the BGN/EUR dual price feature was removed.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time cleanup of options by prefix on upgrade.
-		$wpdb->query( $wpdb->prepare(
-			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name = %s",
-			$wpdb->esc_like( 'nashenski_settings_multi_currency_' ) . '%',
-			'nashenski_settings_apis_enable_multi_currency'
-		) );
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name = %s",
+				$wpdb->esc_like( 'nashenski_settings_multi_currency_' ) . '%',
+				'nashenski_settings_apis_enable_multi_currency'
+			)
+		);
 
 		// 0.17.0: the CVC courier was removed; its settings, schedule and cached offices go.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time cleanup of options by name on upgrade.
-		$wpdb->query( $wpdb->prepare(
-			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-			$wpdb->esc_like( 'nashenski_settings_' ) . '%cvc%'
-		) );
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( 'nashenski_settings_' ) . '%cvc%'
+			)
+		);
 		wp_clear_scheduled_hook( 'nashenski/cvc/clear_cache_folder' );
-		foreach ( glob( File::CACHE_FOLDER . 'cvc' . DIRECTORY_SEPARATOR . '*' ) ?: array() as $cvc_file ) {
+		$cvc_files = glob( File::CACHE_FOLDER . 'cvc' . DIRECTORY_SEPARATOR . '*' );
+		foreach ( $cvc_files ? $cvc_files : array() as $cvc_file ) {
 			wp_delete_file( $cvc_file );
 		}
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -75,11 +103,14 @@ class Plugin {
 		update_option( 'nashenski_version', self::VERSION );
 	}
 
+	/**
+	 * Load default options.
+	 */
 	private function load_default_options() {
 		if ( ! nashenski_get_option( 'apis', 'enable_documents' ) ) {
 			$order_documents_trigger = nashenski_get_option( 'invoice', 'trigger' );
 
-			if ( $order_documents_trigger !== 'disabled' ) {
+			if ( 'disabled' !== $order_documents_trigger ) {
 				nashenski_set_option( 'apis', 'enable_documents', 'yes' );
 				nashenski_set_option( 'invoice', 'nra_n18', 'yes' );
 				nashenski_set_option( 'invoice', 'trigger', $order_documents_trigger );
@@ -88,30 +119,35 @@ class Plugin {
 				nashenski_set_option( 'invoice', 'nra_n18', 'no' );
 			}
 
-			add_action( 'admin_notices', function() {
-				/* translators: %s: link to the settings */
-				$message = sprintf( __( 'Nashenski Commerce - Please review the options and save them again from "%s".', 'nashenski-commerce' ), sprintf( '<a href="%s">%s</a>', \Nashenski\Admin\Settings::url(), __( 'Settings', 'nashenski-commerce' ) ) );
+			add_action(
+				'admin_notices',
+				function () {
+					/* translators: %s: link to the settings */
+					$message = sprintf( __( 'Nashenski Commerce - Please review the options and save them again from "%s".', 'nashenski-commerce' ), sprintf( '<a href="%s">%s</a>', \Nashenski\Admin\Settings::url(), __( 'Settings', 'nashenski-commerce' ) ) );
 
-				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
-			} );
+					echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
+				}
+			);
 		}
 
-		if ( nashenski_get_option( 'reports', 'enable_connectix' ) && !nashenski_get_option( 'connectix', 'level_of_warning' )  ) {
+		if ( nashenski_get_option( 'reports', 'enable_connectix' ) && ! nashenski_get_option( 'connectix', 'level_of_warning' ) ) {
 			nashenski_set_option( 'connectix', 'level_of_warning', 'high' );
 		}
 
-		if ( nashenski_get_option( 'reports', 'enable_nepostop' ) && !nashenski_get_option( 'nepostop', 'level_of_warning' )  ) {
+		if ( nashenski_get_option( 'reports', 'enable_nepostop' ) && ! nashenski_get_option( 'nepostop', 'level_of_warning' ) ) {
 			nashenski_set_option( 'nepostop', 'level_of_warning', '20' );
 		}
 
-		if ( !nashenski_get_option( 'shippings', 'nashenski_econt_is_courier' ) ) {
+		if ( ! nashenski_get_option( 'shippings', 'nashenski_econt_is_courier' ) ) {
 			nashenski_set_option( 'shippings', 'nashenski_econt_is_courier', 'yes' );
 			nashenski_set_option( 'shippings', 'nashenski_speedy_is_courier', 'yes' );
 			nashenski_set_option( 'shippings', 'nashenski_boxnow_is_courier', 'yes' );
 		}
-
 	}
 
+	/**
+	 * Load classes.
+	 */
 	private function load_classes() {
 		do_action( 'nashenski/before-init-classes', $this, $this->container );
 
@@ -178,7 +214,7 @@ class Plugin {
 		new Pricing\Updater();
 
 		new Reports\Reports();
-		
+
 		// WP-CLI: wp nashenski setting ... and wp nashenski courier ... (the settings page, from the command line).
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( 'nashenski setting', 'Nashenski\CLI\Settings_Command' );
@@ -188,43 +224,60 @@ class Plugin {
 		do_action( 'nashenski/init-classes' );
 	}
 
+	/**
+	 * Container.
+	 *
+	 * @return mixed Result.
+	 */
 	public function container() {
 		return $this->container;
 	}
 
 	/**
+	 * Get the URL of the plugin's root directory.
+	 *
 	 * @return string The URL for the plugin's root directory, with a trailing slash
 	 */
 	public function plugin_dir_url() {
-		return plugin_dir_url( $this->container()[ 'plugin_file' ] );
+		return plugin_dir_url( $this->container()['plugin_file'] );
 	}
 
 	/**
+	 * Get the file system path of the plugin's root directory.
+	 *
 	 * @return string The file system path for the plugin's root directory, with a trailing slash
 	 */
 	public function plugin_dir_path() {
-		return plugin_dir_path( $this->container()[ 'plugin_file' ] );
+		return plugin_dir_path( $this->container()['plugin_file'] );
 	}
 
 	/**
-	 * @param null|\ArrayAccess $container
+	 * Get the plugin instance, creating it on the first call.
+	 *
+	 * @param null|\ArrayAccess $container Dependency container, needed on the first call.
 	 *
 	 * @return self
-	 * @throws \Exception
+	 * @throws \Exception When the first call has no container.
 	 */
 	public static function instance( $container = null ) {
-		if ( ! isset( self::$_instance ) ) {
+		if ( ! isset( self::$instance ) ) {
 			if ( empty( $container ) ) {
 				throw new \Exception( 'You need to provide a Pimple container' );
 			}
 
-			$className       = __CLASS__;
-			self::$_instance = new $className( $container );
+			$class_name     = __CLASS__;
+			self::$instance = new $class_name( $container );
 		}
 
-		return self::$_instance;
+		return self::$instance;
 	}
 
+	/**
+	 * Plugin action links.
+	 *
+	 * @param mixed $actions Actions.
+	 * @return mixed Result.
+	 */
 	public static function plugin_action_links( $actions ) {
 		$custom_actions = array(
 			'settings' => sprintf( '<a href="%s">%s</a>', \Nashenski\Admin\Settings::url(), __( 'Settings', 'nashenski-commerce' ) ),
@@ -251,7 +304,9 @@ class Plugin {
 
 		wp_register_script( 'nashenski-email-edit', false, array( 'wp-api-fetch' ), self::VERSION, true );
 		wp_enqueue_script( 'nashenski-email-edit' );
-		wp_add_inline_script( 'nashenski-email-edit', '(function(){
+		wp_add_inline_script(
+			'nashenski-email-edit',
+			'(function(){
 			if(!window.wp||!wp.apiFetch||!wp.apiFetch.use){return;}
 			var url=' . wp_json_encode( $classic_url ) . ';
 			wp.apiFetch.use(function(options,next){
@@ -262,7 +317,8 @@ class Plugin {
 				}
 				return next(options);
 			});
-		})();' );
+		})();'
+		);
 	}
 
 	/**
@@ -276,18 +332,22 @@ class Plugin {
 			wp_enqueue_media();
 			wp_enqueue_style( 'nashenski-admin', nashenski()->plugin_dir_url() . 'assets/css/admin.css', array(), self::VERSION );
 			wp_enqueue_script( 'nashenski-settings', nashenski()->plugin_dir_url() . 'assets/js/settings.js', array(), self::VERSION, true );
-			wp_localize_script( 'nashenski-settings', 'nashenskiSettings', array(
-				'downloaded' => __( 'The file was downloaded.', 'nashenski-commerce' ),
-				'failed' => __( 'Something went wrong. Please try again.', 'nashenski-commerce' ),
-			'removeRow' => __( 'Remove row', 'nashenski-commerce' ),
-			'restored' => __( 'Built-in prices restored. Save to keep them.', 'nashenski-commerce' ),
-			'pricesSame' => __( 'Your prices match the courier website.', 'nashenski-commerce' ),
-			'pricesChanged' => __( 'The courier website has different prices:', 'nashenski-commerce' ),
-			'now' => __( 'Now', 'nashenski-commerce' ),
-			'website' => __( 'Website', 'nashenski-commerce' ),
-			'useThese' => __( 'Use these prices', 'nashenski-commerce' ),
-			'filled' => __( 'New prices filled in. Check them and save.', 'nashenski-commerce' ),
-			) );
+			wp_localize_script(
+				'nashenski-settings',
+				'nashenskiSettings',
+				array(
+					'downloaded'    => __( 'The file was downloaded.', 'nashenski-commerce' ),
+					'failed'        => __( 'Something went wrong. Please try again.', 'nashenski-commerce' ),
+					'removeRow'     => __( 'Remove row', 'nashenski-commerce' ),
+					'restored'      => __( 'Built-in prices restored. Save to keep them.', 'nashenski-commerce' ),
+					'pricesSame'    => __( 'Your prices match the courier website.', 'nashenski-commerce' ),
+					'pricesChanged' => __( 'The courier website has different prices:', 'nashenski-commerce' ),
+					'now'           => __( 'Now', 'nashenski-commerce' ),
+					'website'       => __( 'Website', 'nashenski-commerce' ),
+					'useThese'      => __( 'Use these prices', 'nashenski-commerce' ),
+					'filled'        => __( 'New prices filled in. Check them and save.', 'nashenski-commerce' ),
+				)
+			);
 
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- screen detection only.
 			if ( isset( $_GET['section'] ) && 'exports' === $_GET['section'] ) {
@@ -300,7 +360,7 @@ class Plugin {
 
 		// The order screens, the product screens (impossible price notice) and its scan page only.
 		$screen = get_current_screen();
-		$id = $screen ? $screen->id : '';
+		$id     = $screen ? $screen->id : '';
 
 		if ( ! in_array( $id, array( 'shop_order', 'edit-shop_order', 'shop_subscription', 'edit-shop_subscription', 'product', 'edit-product', 'product_page_' . Admin\ImpossibleVatPrice::PAGE_SLUG ), true ) && 0 !== strpos( $id, 'woocommerce_page_wc-orders' ) ) {
 			return;
@@ -332,23 +392,35 @@ class Plugin {
 		}
 	}
 
-	public static function robots_txt( $output, $public ) {
+	/**
+	 * Robots txt.
+	 *
+	 * @param mixed $output Output.
+	 * @return mixed Result.
+	 */
+	public static function robots_txt( $output ) {
 		$plugin_dir_url = str_replace( site_url(), '', nashenski()->plugin_dir_url() );
-		$upload_dir = wp_upload_dir();
-		$upload_dir = str_replace( site_url(), '', $upload_dir['baseurl'] );
+		$upload_dir     = wp_upload_dir();
+		$upload_dir     = str_replace( site_url(), '', $upload_dir['baseurl'] );
 
 		$output .= "\n";
-		$output .= "Disallow: " . $plugin_dir_url . "\n";
-		$output .= "Disallow: " . $upload_dir . "/nashenski/\n";
-	
+		$output .= 'Disallow: ' . $plugin_dir_url . "\n";
+		$output .= 'Disallow: ' . $upload_dir . "/nashenski/\n";
+
 		return $output;
 	}
 
-	public static function exclude_pdf_from_rest( $args, $request ) {
-		$unsupported_mimes = array( 'application/pdf', 'application/xml', 'text/plain' );
-		$all_mimes = get_allowed_mime_types();
-		$accepted_mimes = array_diff( $all_mimes, $unsupported_mimes );
-		$args[ 'post_mime_type' ] = $accepted_mimes;
+	/**
+	 * Exclude pdf from rest.
+	 *
+	 * @param mixed $args Args.
+	 * @return mixed Result.
+	 */
+	public static function exclude_pdf_from_rest( $args ) {
+		$unsupported_mimes      = array( 'application/pdf', 'application/xml', 'text/plain' );
+		$all_mimes              = get_allowed_mime_types();
+		$accepted_mimes         = array_diff( $all_mimes, $unsupported_mimes );
+		$args['post_mime_type'] = $accepted_mimes;
 
 		return $args;
 	}

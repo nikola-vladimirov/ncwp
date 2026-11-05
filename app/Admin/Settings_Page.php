@@ -1,4 +1,10 @@
 <?php
+/**
+ * Settings page.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin;
 
 defined( 'ABSPATH' ) || exit;
@@ -12,21 +18,25 @@ defined( 'ABSPATH' ) || exit;
  * WooCommerce renders and saves the fields with its own settings API.
  */
 class Settings_Page extends \WC_Settings_Page {
-	const TAB = Settings::TAB;
+	const TAB    = Settings::TAB;
 	const RELOAD = 'nashenski_reload_courier_data';
 
-	/** @var Tabs\Base_Tab[]|null Old tab objects keyed by their slug. */
+	/**
+	 * Old tab objects keyed by their slug.
+	 *
+	 * @var Tabs\Base_Tab[]|null
+	 */
 	private $tabs = null;
 
 	/**
 	 * Courier options shown under "More options" (closed), by settings group. Names and values are unchanged.
 	 */
 	const MORE_OPTIONS = array(
-		'econt' => array( 'force_variations_in_desc', 'label_after_checkout', 'declared_value', 'auto_size', 'pay_options', 'sender_payment_type', 'invoice_or_packing_list' ),
-		'speedy' => array( 'ppp', 'kb', 'administrative_fee', 'force_variations_in_desc', 'label_after_checkout', 'declared_value', 'auto_size' ),
+		'econt'            => array( 'force_variations_in_desc', 'label_after_checkout', 'declared_value', 'auto_size', 'pay_options', 'sender_payment_type', 'invoice_or_packing_list' ),
+		'speedy'           => array( 'ppp', 'kb', 'administrative_fee', 'force_variations_in_desc', 'label_after_checkout', 'declared_value', 'auto_size' ),
 		'boxnow_send_from' => array( 'allow_return', 'label_after_checkout' ),
-		'pigeon' => array( 'label_after_checkout', 'auto_size' ),
-		'pigeon_services' => array( 'pay_with_pos', 'declared_value', 'paper_return_receipt', 'return_receipt', 'service_return_documents', 'id_verification_and_document_signature', 'cod_card_fee' ),
+		'pigeon'           => array( 'label_after_checkout', 'auto_size' ),
+		'pigeon_services'  => array( 'pay_with_pos', 'declared_value', 'paper_return_receipt', 'return_receipt', 'service_return_documents', 'id_verification_and_document_signature', 'cod_card_fee' ),
 	);
 
 	/**
@@ -34,8 +44,11 @@ class Settings_Page extends \WC_Settings_Page {
 	 */
 	const SENDER_FIELDS = array( 'name', 'phone', 'email', 'send_from' );
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
-		$this->id = self::TAB;
+		$this->id    = self::TAB;
 		$this->label = __( 'Nashenski Commerce', 'nashenski-commerce' );
 
 		parent::__construct();
@@ -72,6 +85,12 @@ class Settings_Page extends \WC_Settings_Page {
 		return $this->tabs;
 	}
 
+	/**
+	 * Tab.
+	 *
+	 * @param mixed $slug Slug.
+	 * @return mixed Result.
+	 */
 	private function tab( $slug ) {
 		$tabs = $this->tabs();
 
@@ -85,6 +104,11 @@ class Settings_Page extends \WC_Settings_Page {
 		return array_values( array_intersect( \Nashenski\Plugin::COURIERS, array_keys( $this->tabs() ) ) );
 	}
 
+	/**
+	 * Current courier.
+	 *
+	 * @return mixed Result.
+	 */
 	private function current_courier() {
 		$couriers = $this->couriers();
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- navigation only.
@@ -98,20 +122,20 @@ class Settings_Page extends \WC_Settings_Page {
 	 */
 	private function layout() {
 		$layout = array(
-			'' => array(
+			''                => array(
 				'label' => __( 'Overview', 'nashenski-commerce' ),
 				'parts' => array( array( 'settings', array( 'apis' ) ) ),
 			),
-			'couriers' => array(
+			'couriers'        => array(
 				'label' => __( 'Couriers', 'nashenski-commerce' ),
 				'parts' => $this->current_courier() ? array( array( $this->current_courier(), null ) ) : array(),
 			),
-			'checkout' => array(
+			'checkout'        => array(
 				'label' => __( 'Checkout', 'nashenski-commerce' ),
 				'parts' => array( array( 'shipping', null ), array( 'fields', null, null, array( \Nashenski\Front_End\Checkout\Company_Fields::GROUP ) ) ),
 			),
 			// Always in the menu: the on/off switch first, the settings once it is on.
-			'quick_order' => array(
+			'quick_order'     => array(
 				'label' => __( 'Quick order', 'nashenski-commerce' ),
 				'parts' => array( array( 'settings', array( 'apis' ), array( 'enable_quick_order' ) ), array( 'quick_order', null ) ),
 			),
@@ -119,21 +143,21 @@ class Settings_Page extends \WC_Settings_Page {
 				'label' => __( 'Abandoned carts', 'nashenski-commerce' ),
 				'parts' => array( array( 'settings', array( 'apis' ), array( 'enable_abandoned_carts' ) ), array( 'abandoned_carts', null ) ),
 			),
-			'documents' => array(
+			'documents'       => array(
 				'label' => __( 'Documents', 'nashenski-commerce' ),
 				'parts' => array( array( 'documents', null ), array( 'fields', array( \Nashenski\Front_End\Checkout\Company_Fields::GROUP ) ) ),
 			),
-			'checks' => array(
+			'checks'          => array(
 				'label' => __( 'Customer checks', 'nashenski-commerce' ),
 				'parts' => array( array( 'settings', array( 'reports' ) ), array( 'nekorekten', null ), array( 'connectix', null ), array( 'nepostop', null ) ),
 			),
-			'exports' => array(
+			'exports'         => array(
 				'label' => __( 'Exports', 'nashenski-commerce' ),
-				'page' => 'export',
+				'page'  => 'export',
 			),
-			'help' => array(
+			'help'            => array(
 				'label' => __( 'Help', 'nashenski-commerce' ),
-				'page' => 'help',
+				'page'  => 'help',
 			),
 		);
 
@@ -142,9 +166,14 @@ class Settings_Page extends \WC_Settings_Page {
 				continue;
 			}
 
-			$layout[ $id ]['parts'] = array_values( array_filter( $section['parts'], function ( $part ) {
-				return (bool) $this->tab( $part[0] );
-			} ) );
+			$layout[ $id ]['parts'] = array_values(
+				array_filter(
+					$section['parts'],
+					function ( $part ) {
+						return (bool) $this->tab( $part[0] );
+					}
+				)
+			);
 
 			if ( ! $layout[ $id ]['parts'] && '' !== $id ) {
 				unset( $layout[ $id ] );
@@ -154,10 +183,21 @@ class Settings_Page extends \WC_Settings_Page {
 		return $layout;
 	}
 
+	/**
+	 * Get own sections.
+	 *
+	 * @return mixed Result.
+	 */
 	protected function get_own_sections() {
 		return wp_list_pluck( $this->layout(), 'label' );
 	}
 
+	/**
+	 * Section.
+	 *
+	 * @param mixed $id Id.
+	 * @return mixed Result.
+	 */
 	private function section( $id ) {
 		$layout = $this->layout();
 
@@ -165,11 +205,14 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 
 	/**
+	 * Section tabs.
+	 *
+	 * @param mixed $id Id.
 	 * @return Tabs\Base_Tab[] The tab objects shown in a section.
 	 */
 	private function section_tabs( $id ) {
 		$section = $this->section( $id );
-		$tabs = array();
+		$tabs    = array();
 
 		foreach ( $section['parts'] ?? array() as $part ) {
 			$tabs[ $part[0] ] = $this->tab( $part[0] );
@@ -178,8 +221,14 @@ class Settings_Page extends \WC_Settings_Page {
 		return array_filter( $tabs );
 	}
 
+	/**
+	 * Get settings for section core.
+	 *
+	 * @param mixed $section_id Section id.
+	 * @return mixed Result.
+	 */
 	protected function get_settings_for_section_core( $section_id ) {
-		$section = $this->section( $section_id );
+		$section  = $this->section( $section_id );
 		$settings = array();
 
 		if ( ! $section || isset( $section['page'] ) ) {
@@ -202,7 +251,7 @@ class Settings_Page extends \WC_Settings_Page {
 			$titles = method_exists( $tab, 'get_groups_titles' ) ? $tab->get_groups_titles() : array();
 			// Courier options stay visible but greyed out until the login works; only the login itself is editable.
 			$locked = method_exists( $tab, 'connected' ) && ! $tab->connected();
-			$login = array_merge( array( 'env' ), \Nashenski\Front_End\Checkout\Pickers::LOGIN[ $part[0] ] ?? array() );
+			$login  = array_merge( array( 'env' ), \Nashenski\Front_End\Checkout\Pickers::LOGIN[ $part[0] ] ?? array() );
 
 			// Pairs of ( stored group, field ): a field shown in another box keeps its own option name.
 			$groups = array();
@@ -242,11 +291,11 @@ class Settings_Page extends \WC_Settings_Page {
 				}
 
 				$settings[] = array(
-					'type' => 'title',
-					'id' => 'nashenski_' . $group,
+					'type'  => 'title',
+					'id'    => 'nashenski_' . $group,
 					// A part that picks single fields (a feature switch) shows them without the group heading.
 					'title' => isset( $titles[ $group ]['title'] ) && ! isset( $part[2] ) ? wp_strip_all_tags( $titles[ $group ]['title'] ) : '',
-					'desc' => trim( ( isset( $part[2] ) ? '' : ( $titles[ $group ]['desc'] ?? '' ) ) . ( $locked && $group !== $part[0] ? ' ' . __( 'Available once the courier login works.', 'nashenski-commerce' ) : '' ) ),
+					'desc'  => trim( ( isset( $part[2] ) ? '' : ( $titles[ $group ]['desc'] ?? '' ) ) . ( $locked && $group !== $part[0] ? ' ' . __( 'Available once the courier login works.', 'nashenski-commerce' ) : '' ) ),
 				);
 
 				$more = array();
@@ -268,16 +317,29 @@ class Settings_Page extends \WC_Settings_Page {
 
 				// The rarer courier options sit in one closed group below the main fields.
 				if ( $more ) {
-					$settings = array_merge( $settings, array( array( 'type' => 'nashenski_more' ) ), $more, array( array( 'type' => 'nashenski_more', 'end' => true ) ) );
+					$settings = array_merge(
+						$settings,
+						array( array( 'type' => 'nashenski_more' ) ),
+						$more,
+						array(
+							array(
+								'type' => 'nashenski_more',
+								'end'  => true,
+							),
+						)
+					);
 				}
 
 				$settings[] = array(
 					'type' => 'sectionend',
-					'id' => 'nashenski_' . $group,
+					'id'   => 'nashenski_' . $group,
 				);
 
 				if ( $columns && $group === $send_from ) {
-					$settings[] = array( 'type' => 'nashenski_cols', 'end' => true );
+					$settings[] = array(
+						'type' => 'nashenski_cols',
+						'end'  => true,
+					);
 				}
 			}
 		}
@@ -296,8 +358,28 @@ class Settings_Page extends \WC_Settings_Page {
 			$styles = array_keys( wp_list_pluck( $look, 'type' ), 'nashenski_style', true );
 
 			if ( $styles ) {
-				array_splice( $look, end( $styles ) + 1, 0, array( array( 'type' => 'nashenski_more', 'end' => true ) ) );
-				array_splice( $look, $styles[0], 0, array( array( 'type' => 'nashenski_more', 'title' => __( 'Colours and sizes', 'nashenski-commerce' ) ) ) );
+				array_splice(
+					$look,
+					end( $styles ) + 1,
+					0,
+					array(
+						array(
+							'type' => 'nashenski_more',
+							'end'  => true,
+						),
+					)
+				);
+				array_splice(
+					$look,
+					$styles[0],
+					0,
+					array(
+						array(
+							'type'  => 'nashenski_more',
+							'title' => __( 'Colours and sizes', 'nashenski-commerce' ),
+						),
+					)
+				);
 			}
 
 			$settings = array_merge( $settings, $look, \Nashenski\Front_End\Withdrawal::settings() );
@@ -308,10 +390,12 @@ class Settings_Page extends \WC_Settings_Page {
 
 	/**
 	 * Greyed out until the courier login works. WooCommerce skips it on save, so the saved value stays.
+	 *
+	 * @param mixed $setting Setting.
 	 */
 	private static function lock( $setting ) {
 		$setting['custom_attributes']['disabled'] = 'disabled';
-		$setting['is_option'] = false;
+		$setting['is_option']                     = false;
 
 		if ( 'select' === $setting['type'] && empty( $setting['options'] ) ) {
 			$setting['options'] = array( '' => __( 'Available once the courier login works', 'nashenski-commerce' ) );
@@ -322,6 +406,8 @@ class Settings_Page extends \WC_Settings_Page {
 
 	/**
 	 * Each group in its own box; the boxes flow in two columns on wide screens (admin.css).
+	 *
+	 * @param mixed $settings Settings.
 	 */
 	private static function boxes( $settings ) {
 		$boxed = array();
@@ -334,41 +420,62 @@ class Settings_Page extends \WC_Settings_Page {
 			$boxed[] = $setting;
 
 			if ( 'sectionend' === ( $setting['type'] ?? '' ) ) {
-				$boxed[] = array( 'type' => 'nashenski_box', 'end' => true );
+				$boxed[] = array(
+					'type' => 'nashenski_box',
+					'end'  => true,
+				);
 			}
 		}
 
 		return $boxed;
 	}
 
+	/**
+	 * Output more.
+	 *
+	 * @param mixed $value Value.
+	 */
 	public static function output_more( $value ) {
 		echo empty( $value['end'] )
 			? '</table><details class="nashenski-more"><summary>' . esc_html( ! empty( $value['title'] ) ? $value['title'] : __( 'More options', 'nashenski-commerce' ) ) . '</summary><table class="form-table">'
 			: '</table></details><table class="form-table">';
 	}
 
+	/**
+	 * Output cols.
+	 *
+	 * @param mixed $value Value.
+	 */
 	public static function output_cols( $value ) {
 		echo empty( $value['end'] ) ? '<div class="nashenski-cols">' : '</div>';
 	}
 
+	/**
+	 * Output box.
+	 *
+	 * @param mixed $value Value.
+	 */
 	public static function output_box( $value ) {
 		echo empty( $value['end'] ) ? '<div class="card nashenski-box">' : '</div>';
 	}
 
 	/**
 	 * Map one of our field objects to a WooCommerce settings array (same option name).
+	 *
+	 * @param mixed $group Group.
+	 * @param mixed $field Field.
 	 */
 	public static function to_wc_setting( $group, $field ) {
 		$setting = array(
-			'id' => 'nashenski_settings_' . $group . '_' . $field->get_name(),
-			'title' => $field->get_title(),
-			'desc' => $field->get_desc(),
+			'id'       => 'nashenski_settings_' . $group . '_' . $field->get_name(),
+			'title'    => $field->get_title(),
+			'desc'     => $field->get_desc(),
 			'desc_tip' => $field->get_help_text() ? $field->get_help_text() : false,
 		);
 
 		switch ( $field->get_type() ) {
 			case 'true_false':
-				$setting['type'] = 'checkbox';
+				$setting['type']    = 'checkbox';
 				$setting['default'] = 'yes' === $field->get_default() ? 'yes' : 'no';
 
 				// A checkbox reads best with its explanation as the label next to it.
@@ -381,20 +488,20 @@ class Settings_Page extends \WC_Settings_Page {
 				$options = array();
 
 				foreach ( (array) $field->get_options() as $key => $option ) {
-					$id = is_array( $option ) && isset( $option['id'] ) ? (string) $option['id'] : (string) $key;
+					$id             = is_array( $option ) && isset( $option['id'] ) ? (string) $option['id'] : (string) $key;
 					$options[ $id ] = is_array( $option ) && isset( $option['label'] ) ? wp_strip_all_tags( $option['label'] ) : (string) $option;
 				}
 
-				$setting['type'] = 'select';
-				$setting['class'] = 'wc-enhanced-select';
-				$setting['css'] = 'width: 100%;';
+				$setting['type']    = 'select';
+				$setting['class']   = 'wc-enhanced-select';
+				$setting['css']     = 'width: 100%;';
 				$setting['options'] = $options;
 				$setting['default'] = null !== $field->get_default() ? (string) $field->get_default() : (string) array_key_first( $options );
 				break;
 
 			case 'color':
-				$setting['type'] = 'color';
-				$setting['css'] = 'width: 7em;';
+				$setting['type']    = 'color';
+				$setting['css']     = 'width: 7em;';
 				$setting['default'] = (string) $field->get_default();
 				break;
 
@@ -403,20 +510,20 @@ class Settings_Page extends \WC_Settings_Page {
 				break;
 
 			case 'methods':
-				$setting['type'] = 'nashenski_methods';
+				$setting['type']    = 'nashenski_methods';
 				$setting['choices'] = (array) $field->get_choices();
 				break;
 
 			case 'multi':
 			case 'multi_two':
-				$setting['type'] = 'nashenski_rows';
-				$setting['two'] = 'multi_two' === $field->get_type();
+				$setting['type']   = 'nashenski_rows';
+				$setting['two']    = 'multi_two' === $field->get_type();
 				$setting['labels'] = $field->get_fields_types();
 				break;
 
 			default:
-				$subtype = method_exists( $field, 'get_subtype' ) ? $field->get_subtype() : 'text';
-				$rules = (string) $field->get_validation_rules();
+				$subtype         = method_exists( $field, 'get_subtype' ) ? $field->get_subtype() : 'text';
+				$rules           = (string) $field->get_validation_rules();
 				$setting['type'] = in_array( $subtype, array( 'password', 'number' ), true ) ? $subtype : ( false !== strpos( $rules, 'email' ) ? 'email' : 'text' );
 
 				if ( null !== $field->get_default() ) {
@@ -428,6 +535,9 @@ class Settings_Page extends \WC_Settings_Page {
 		return array_merge( $setting, $field->get_wc() );
 	}
 
+	/**
+	 * Output sections.
+	 */
 	public function output_sections() {
 		?>
 		<div class="nashenski-brand">
@@ -440,10 +550,13 @@ class Settings_Page extends \WC_Settings_Page {
 		parent::output_sections();
 	}
 
+	/**
+	 * Output.
+	 */
 	public function output() {
 		global $current_section;
 
-		$id = (string) $current_section;
+		$id      = (string) $current_section;
 		$section = $this->section( $id );
 
 		Migration::render();
@@ -492,8 +605,8 @@ class Settings_Page extends \WC_Settings_Page {
 	 */
 	private function output_courier_nav() {
 		$couriers = $this->couriers();
-		$current = $this->current_courier();
-		$logos = \Nashenski\Front_End\Checkout\Courier_Logos::get_logos();
+		$current  = $this->current_courier();
+		$logos    = \Nashenski\Front_End\Checkout\Courier_Logos::get_logos();
 
 		if ( count( $couriers ) < 2 ) {
 			return;
@@ -517,25 +630,39 @@ class Settings_Page extends \WC_Settings_Page {
 
 	/**
 	 * Connection status and the reload button of courier and customer check parts.
+	 *
+	 * @param mixed $slug Slug.
+	 * @param mixed $tab Tab.
 	 */
 	private function output_tab_notes( $slug, $tab ) {
 		$is_courier = in_array( $slug, $this->couriers(), true );
 		// auth_test() may call the service, so call it once.
-		$error = method_exists( $tab, 'auth_test' ) ? trim( (string) $tab->auth_test() ) : '';
+		$error     = method_exists( $tab, 'auth_test' ) ? trim( (string) $tab->auth_test() ) : '';
 		$has_error = '' !== trim( wp_strip_all_tags( $error, true ) );
 
 		if ( $has_error ) {
 			echo '<div class="notice notice-warning inline">' . wp_kses_post( $error ) . '</div>';
 		} elseif ( $is_courier ) {
-			echo '<div class="notice notice-success inline"><p>' . esc_html( sprintf(
+			echo '<div class="notice notice-success inline"><p>' . esc_html(
+				sprintf(
 				/* translators: %s: courier name */
-				__( 'Connected to %s. Prices and labels use your account.', 'nashenski-commerce' ),
-				$tab->get_name()
-			) ) . '</p></div>';
+					__( 'Connected to %s. Prices and labels use your account.', 'nashenski-commerce' ),
+					$tab->get_name()
+				)
+			) . '</p></div>';
 		}
 
 		if ( $is_courier ) {
-			$url = wp_nonce_url( add_query_arg( array( self::RELOAD => 1, 'courier' => $slug ), Settings::url( 'couriers' ) ), self::RELOAD );
+			$url = wp_nonce_url(
+				add_query_arg(
+					array(
+						self::RELOAD => 1,
+						'courier'    => $slug,
+					),
+					Settings::url( 'couriers' )
+				),
+				self::RELOAD
+			);
 
 			printf(
 				'<p class="nashenski-section-actions"><a class="button" href="%1$s">%2$s</a> <span class="description">%3$s</span></p>',
@@ -546,6 +673,11 @@ class Settings_Page extends \WC_Settings_Page {
 		}
 	}
 
+	/**
+	 * Maybe reload courier data.
+	 *
+	 * @param mixed $courier Courier.
+	 */
 	private function maybe_reload_courier_data( $courier ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified below.
 		if ( ! in_array( $courier, \Nashenski\Plugin::COURIERS, true ) || empty( $_GET[ self::RELOAD ] ) || ! current_user_can( 'manage_woocommerce' ) ) {
@@ -564,10 +696,13 @@ class Settings_Page extends \WC_Settings_Page {
 		echo '<div class="notice notice-success inline"><p>' . esc_html__( 'Offices and cities will be downloaded again the next time they are needed.', 'nashenski-commerce' ) . '</p></div>';
 	}
 
+	/**
+	 * Save.
+	 */
 	public function save() {
 		global $current_section;
 
-		$id = (string) $current_section;
+		$id      = (string) $current_section;
 		$section = $this->section( $id );
 
 		if ( ! $section || isset( $section['page'] ) ) {
@@ -617,16 +752,20 @@ class Settings_Page extends \WC_Settings_Page {
 		}
 
 		if ( $links ) {
-			echo '<div class="notice notice-info inline"><p>' . wp_kses_post( sprintf(
+			echo '<div class="notice notice-info inline"><p>' . wp_kses_post(
+				sprintf(
 				/* translators: %s: courier names with links */
-				__( 'New published prices were found for %s. Open the courier, press "Check the courier website" and decide whether to use them.', 'nashenski-commerce' ),
-				implode( ', ', $links )
-			) ) . ' <a href="' . esc_url( wp_nonce_url( add_query_arg( 'nashenski_dismiss_prices', 1 ), 'nashenski_dismiss_prices' ) ) . '">' . esc_html__( 'Dismiss', 'nashenski-commerce' ) . '</a></p></div>';
+					__( 'New published prices were found for %s. Open the courier, press "Check the courier website" and decide whether to use them.', 'nashenski-commerce' ),
+					implode( ', ', $links )
+				)
+			) . ' <a href="' . esc_url( wp_nonce_url( add_query_arg( 'nashenski_dismiss_prices', 1 ), 'nashenski_dismiss_prices' ) ) . '">' . esc_html__( 'Dismiss', 'nashenski-commerce' ) . '</a></p></div>';
 		}
 	}
 
 	/**
 	 * Couriers section: the "Public prices" group of the current courier.
+	 *
+	 * @param mixed $courier Courier.
 	 */
 	private function price_list_settings( $courier ) {
 		if ( ! in_array( $courier, \Nashenski\Pricing\Price_Lists::COURIERS, true ) ) {
@@ -637,10 +776,10 @@ class Settings_Page extends \WC_Settings_Page {
 
 		return array(
 			array(
-				'type' => 'title',
-				'id' => 'nashenski_prices_' . $courier,
+				'type'  => 'title',
+				'id'    => 'nashenski_prices_' . $courier,
 				'title' => __( 'Public prices', 'nashenski-commerce' ),
-				'desc' => sprintf(
+				'desc'  => sprintf(
 					/* translators: 1: link to the courier price list, 2: date */
 					__( 'Used to price orders when this courier is not connected or does not answer, so customers can always order. The built-in prices come from the %1$s (valid from %2$s). Edit them, or let Nashenski Commerce check the courier website for newer prices.', 'nashenski-commerce' ),
 					'<a href="' . esc_url( $list['source'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'courier\'s published price list', 'nashenski-commerce' ) . '</a>',
@@ -648,21 +787,21 @@ class Settings_Page extends \WC_Settings_Page {
 				),
 			),
 			array(
-				'type' => 'checkbox',
-				'id' => 'nashenski_settings_prices_use_public_' . $courier,
-				'title' => __( 'Use public prices', 'nashenski-commerce' ),
-				'desc' => __( 'Price orders with this list when there is no working courier login', 'nashenski-commerce' ),
+				'type'    => 'checkbox',
+				'id'      => 'nashenski_settings_prices_use_public_' . $courier,
+				'title'   => __( 'Use public prices', 'nashenski-commerce' ),
+				'desc'    => __( 'Price orders with this list when there is no working courier login', 'nashenski-commerce' ),
 				'default' => 'yes',
 			),
 			array(
-				'type' => 'nashenski_price_list',
-				'id' => \Nashenski\Pricing\Price_Lists::option_name( $courier ),
-				'title' => __( 'Price list', 'nashenski-commerce' ),
+				'type'    => 'nashenski_price_list',
+				'id'      => \Nashenski\Pricing\Price_Lists::option_name( $courier ),
+				'title'   => __( 'Price list', 'nashenski-commerce' ),
 				'courier' => $courier,
 			),
 			array(
 				'type' => 'sectionend',
-				'id' => 'nashenski_prices_' . $courier,
+				'id'   => 'nashenski_prices_' . $courier,
 			),
 		);
 	}
@@ -670,17 +809,19 @@ class Settings_Page extends \WC_Settings_Page {
 	/**
 	 * Editable price list: weight rows with office, locker and address prices, the rule above the
 	 * last row, VAT, surcharge and cash on delivery fee.
+	 *
+	 * @param mixed $value Value.
 	 */
 	public static function output_price_list_field( $value ) {
 		$courier = $value['courier'];
-		$list = \Nashenski\Pricing\Price_Lists::get( $courier );
-		$name = $value['id'];
-		$kinds = array(
-			'office' => __( 'To an office', 'nashenski-commerce' ),
-			'locker' => __( 'To a locker', 'nashenski-commerce' ),
+		$list    = \Nashenski\Pricing\Price_Lists::get( $courier );
+		$name    = $value['id'];
+		$kinds   = array(
+			'office'  => __( 'To an office', 'nashenski-commerce' ),
+			'locker'  => __( 'To a locker', 'nashenski-commerce' ),
 			'address' => __( 'To an address', 'nashenski-commerce' ),
 		);
-		$number = function ( $field, $current, $step = '0.01' ) {
+		$number  = function ( $field, $current, $step = '0.01' ) {
 			return sprintf( '<input type="number" min="0" step="%1$s" name="%2$s" value="%3$s">', esc_attr( $step ), esc_attr( $field ), esc_attr( null === $current ? '' : $current ) );
 		};
 		?>
@@ -767,6 +908,14 @@ class Settings_Page extends \WC_Settings_Page {
 		return $value;
 	}
 
+	/**
+	 * Sanitize price list field.
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $option Option.
+	 * @param mixed $raw_value Raw value.
+	 * @return mixed Result.
+	 */
 	public static function sanitize_price_list_field( $value, $option, $raw_value ) {
 		if ( 'nashenski_price_list' !== ( $option['type'] ?? '' ) ) {
 			return $value;
@@ -781,20 +930,22 @@ class Settings_Page extends \WC_Settings_Page {
 	/**
 	 * Price table field: rows of "from / to / price" (and "from price / to price").
 	 * Stored as JSON, exactly like before.
+	 *
+	 * @param mixed $value Value.
 	 */
 	public static function output_rows_field( $value ) {
-		$labels = (array) ( $value['labels'] ?? array() );
-		$two = ! empty( $value['two'] );
-		$rows = json_decode( (string) get_option( $value['id'], '' ), true );
-		$rows = is_array( $rows ) && $rows ? array_values( $rows ) : array( array() );
-		$columns = $two ? array( 'from', 'to', 'from_price', 'to_price', 'price' ) : array( 'from', 'to', 'price' );
-		$headers = $two
+		$labels   = (array) ( $value['labels'] ?? array() );
+		$two      = ! empty( $value['two'] );
+		$rows     = json_decode( (string) get_option( $value['id'], '' ), true );
+		$rows     = is_array( $rows ) && $rows ? array_values( $rows ) : array( array() );
+		$columns  = $two ? array( 'from', 'to', 'from_price', 'to_price', 'price' ) : array( 'from', 'to', 'price' );
+		$headers  = $two
 			? array( $labels['type'] ?? '', $labels['type'] ?? '', $labels['type2'] ?? '', $labels['type2'] ?? '', $labels['price_text'] ?? '' )
 			: array( $labels['type'] ?? '', $labels['type'] ?? '', $labels['price_text'] ?? '' );
 		$prefixes = $two
 			? array( __( 'From', 'nashenski-commerce' ), __( 'To', 'nashenski-commerce' ), __( 'From', 'nashenski-commerce' ), __( 'To', 'nashenski-commerce' ), '' )
 			: array( __( 'From', 'nashenski-commerce' ), __( 'To', 'nashenski-commerce' ), '' );
-		$name = $value['id'];
+		$name     = $value['id'];
 		?>
 		<tr valign="top">
 			<th scope="row" class="titledesc">
@@ -832,13 +983,21 @@ class Settings_Page extends \WC_Settings_Page {
 		<?php
 	}
 
+	/**
+	 * Sanitize rows field.
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $option Option.
+	 * @param mixed $raw_value Raw value.
+	 * @return mixed Result.
+	 */
 	public static function sanitize_rows_field( $value, $option, $raw_value ) {
 		if ( 'nashenski_rows' !== ( $option['type'] ?? '' ) ) {
 			return $value;
 		}
 
 		$columns = ! empty( $option['two'] ) ? array( 'from', 'to', 'from_price', 'to_price', 'price' ) : array( 'from', 'to', 'price' );
-		$rows = array();
+		$rows    = array();
 
 		foreach ( (array) $raw_value as $row ) {
 			$clean = array();
@@ -857,10 +1016,12 @@ class Settings_Page extends \WC_Settings_Page {
 
 	/**
 	 * Choices with a checkbox each. Saved as a JSON list of the checked keys.
+	 *
+	 * @param mixed $value Value.
 	 */
 	public static function output_methods_field( $value ) {
-		$saved = json_decode( (string) get_option( $value['id'], '' ), true );
-		$saved = is_array( $saved ) ? $saved : array();
+		$saved   = json_decode( (string) get_option( $value['id'], '' ), true );
+		$saved   = is_array( $saved ) ? $saved : array();
 		$choices = (array) ( $value['choices'] ?? array() );
 		?>
 		<tr valign="top">
@@ -885,6 +1046,14 @@ class Settings_Page extends \WC_Settings_Page {
 		<?php
 	}
 
+	/**
+	 * Sanitize methods field.
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $option Option.
+	 * @param mixed $raw_value Raw value.
+	 * @return mixed Result.
+	 */
 	public static function sanitize_methods_field( $value, $option, $raw_value ) {
 		if ( 'nashenski_methods' !== ( $option['type'] ?? '' ) ) {
 			return $value;
@@ -897,9 +1066,11 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 	/**
 	 * Image from the media library (stores the attachment ID).
+	 *
+	 * @param mixed $value Value.
 	 */
 	public static function output_image_field( $value ) {
-		$id = absint( get_option( $value['id'], 0 ) );
+		$id  = absint( get_option( $value['id'], 0 ) );
 		$src = $id ? wp_get_attachment_image_url( $id, 'medium' ) : '';
 		?>
 		<tr valign="top">
@@ -923,6 +1094,14 @@ class Settings_Page extends \WC_Settings_Page {
 		<?php
 	}
 
+	/**
+	 * Sanitize image field.
+	 *
+	 * @param mixed $value Value.
+	 * @param mixed $option Option.
+	 * @param mixed $raw_value Raw value.
+	 * @return mixed Result.
+	 */
 	public static function sanitize_image_field( $value, $option, $raw_value ) {
 		if ( 'nashenski_image' !== ( $option['type'] ?? '' ) ) {
 			return $value;
@@ -933,32 +1112,35 @@ class Settings_Page extends \WC_Settings_Page {
 		return $id && wp_attachment_is_image( $id ) ? $id : '';
 	}
 
+	/**
+	 * Output export.
+	 */
 	private static function output_export() {
-		$month = gmdate( 'Y-m', strtotime( 'first day of last month' ) );
-		$nonce = wp_create_nonce( 'nashenski_export_nap' );
+		$month   = gmdate( 'Y-m', strtotime( 'first day of last month' ) );
+		$nonce   = wp_create_nonce( 'nashenski_export_nap' );
 		$exports = array();
 
 		if ( 'yes' === nashenski_get_option( 'invoice', 'nra_n18' ) ) {
 			$exports[] = array(
-				'action' => 'nashenski_export_nap',
-				'title' => __( 'Standardised audit file (Annex 38)', 'nashenski-commerce' ),
-				'desc' => __( 'The monthly XML file for the NRA under Ordinance N-18. There is no limit on the number of orders.', 'nashenski-commerce' ),
-				'button' => __( 'Create XML file', 'nashenski-commerce' ),
+				'action'         => 'nashenski_export_nap',
+				'title'          => __( 'Standardised audit file (Annex 38)', 'nashenski-commerce' ),
+				'desc'           => __( 'The monthly XML file for the NRA under Ordinance N-18. There is no limit on the number of orders.', 'nashenski-commerce' ),
+				'button'         => __( 'Create XML file', 'nashenski-commerce' ),
 				'generate_files' => true,
 			);
 		}
 
 		$exports[] = array(
 			'action' => 'nashenski_export_invoice_archive',
-			'title' => __( 'Invoice archive', 'nashenski-commerce' ),
-			'desc' => __( 'A ZIP file with all invoices and credit notes of the month.', 'nashenski-commerce' ),
+			'title'  => __( 'Invoice archive', 'nashenski-commerce' ),
+			'desc'   => __( 'A ZIP file with all invoices and credit notes of the month.', 'nashenski-commerce' ),
 			'button' => __( 'Download archive', 'nashenski-commerce' ),
 		);
 
 		$exports[] = array(
 			'action' => 'nashenski_export_microinvest',
-			'title' => __( 'Microinvest Delta', 'nashenski-commerce' ),
-			'desc' => __( 'The documents of the month in the import format of Microinvest Delta.', 'nashenski-commerce' ),
+			'title'  => __( 'Microinvest Delta', 'nashenski-commerce' ),
+			'desc'   => __( 'The documents of the month in the import format of Microinvest Delta.', 'nashenski-commerce' ),
 			'button' => __( 'Create file', 'nashenski-commerce' ),
 		);
 

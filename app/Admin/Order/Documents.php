@@ -1,9 +1,19 @@
 <?php
+/**
+ * Documents.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin\Order;
+
 use Nashenski\Invoice\Document;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Documents.
+ */
 class Documents {
 	/**
 	 * Invoices and the other documents (Overview > Invoices and N-18). The order document is made
@@ -24,6 +34,8 @@ class Documents {
 	/**
 	 * Per order, so switching the setting later does not move invoices made before in or out of
 	 * the NRA audit file.
+	 *
+	 * @param mixed $order Order.
 	 */
 	public static function own_invoice( $order ) {
 		return 'yes' === $order->get_meta( 'nashenski_invoice_own_program' );
@@ -36,6 +48,11 @@ class Documents {
 		return ! $trigger || 'order_created' === $trigger;
 	}
 
+	/**
+	 * Generate documents.
+	 *
+	 * @param mixed $order_id Order id.
+	 */
 	public static function generate_documents( $order_id ) {
 		$order = wc_get_order( $order_id );
 
@@ -62,7 +79,8 @@ class Documents {
 				}
 			}
 
-			if ( $refunds = $order->get_refunds() ) {
+			$refunds = $order->get_refunds();
+			if ( $refunds ) {
 				foreach ( $refunds as $refund ) {
 					self::generate_refunded_documents( $refund->get_id(), $refund->get_parent_id() );
 				}
@@ -78,7 +96,11 @@ class Documents {
 		}
 	}
 
-	/** Bank transfer orders get the invoice once they are paid (any paid status or payment complete). */
+	/**
+	 * Bank transfer orders get the invoice once they are paid (any paid status or payment complete).
+	 *
+	 * @param mixed $order_id Order id.
+	 */
 	public static function generate_invoice_when_paid( $order_id ) {
 		$order = wc_get_order( $order_id );
 
@@ -106,6 +128,11 @@ class Documents {
 		}
 	}
 
+	/**
+	 * Generate proforma.
+	 *
+	 * @param mixed $order_id Order id.
+	 */
 	public static function generate_proforma( $order_id ) {
 		$order = wc_get_order( $order_id );
 
@@ -125,6 +152,12 @@ class Documents {
 		}
 	}
 
+	/**
+	 * Maybe generate invoice.
+	 *
+	 * @param mixed $order Order.
+	 * @return mixed Result.
+	 */
 	public static function maybe_generate_invoice( $order ) {
 		$invoice_generation = nashenski_get_option( 'invoice', 'invoices' );
 
@@ -132,18 +165,30 @@ class Documents {
 			$order->get_meta( 'nashenski_invoice_document' ) ||
 			// Own invoicing program: no automatic invoice, the shop makes it on the order screen with its own number.
 			( ! self::own_numbering() && (
-				$invoice_generation === 'always' ||
-				( $invoice_generation === 'only_for_company' && $order->get_meta('_billing_to_company') )
+				'always' === $invoice_generation ||
+				( 'only_for_company' === $invoice_generation && $order->get_meta( '_billing_to_company' ) )
 			) )
 		);
 
 		return apply_filters( 'nashenski/admin/order/maybe_generate_invoice', $generate_invoice, $order );
 	}
 
+	/**
+	 * Maybe generate proforma.
+	 *
+	 * @param mixed $order Order.
+	 * @return mixed Result.
+	 */
 	public static function maybe_generate_proforma( $order ) {
 		return apply_filters( 'nashenski/admin/order/maybe_generate_proforma', self::maybe_generate_invoice( $order ), $order );
 	}
 
+	/**
+	 * Generate refunded documents.
+	 *
+	 * @param mixed $refund_id Refund id.
+	 * @param mixed $order_id Order id.
+	 */
 	public static function generate_refunded_documents( $refund_id, $order_id ) {
 		$order = wc_get_order( $order_id );
 
@@ -157,6 +202,11 @@ class Documents {
 		}
 	}
 
+	/**
+	 * Maybe generate invoice copy.
+	 *
+	 * @param mixed $order Order.
+	 */
 	public static function maybe_generate_invoice_copy( $order ) {
 		if ( nashenski_get_option( 'invoice', 'separate_copy_documents' ) !== 'yes' ) {
 			return;
@@ -168,6 +218,12 @@ class Documents {
 		self::send_accountant_email( $order->get_id(), $copy );
 	}
 
+	/**
+	 * Maybe generate credit notice copy.
+	 *
+	 * @param mixed $refund_id Refund id.
+	 * @param mixed $order_id Order id.
+	 */
 	public static function maybe_generate_credit_notice_copy( $refund_id, $order_id ) {
 		if ( nashenski_get_option( 'invoice', 'separate_copy_documents' ) !== 'yes' ) {
 			return;
@@ -179,6 +235,12 @@ class Documents {
 		self::send_accountant_email( $order_id, $copy );
 	}
 
+	/**
+	 * Send accountant email.
+	 *
+	 * @param mixed $order_id Order id.
+	 * @param mixed $document Document.
+	 */
 	public static function send_accountant_email( $order_id, $document ) {
 		$accountant_email = nashenski_get_option( 'invoice', 'accountant_email' );
 
@@ -205,16 +267,18 @@ class Documents {
 
 	/**
 	 * PDF files of an order and its refunds: meta, name, file_url (Bulgarian) and file_url_en.
+	 *
+	 * @param mixed $main_order Main order.
 	 */
 	public static function get_order_documents( $main_order ) {
 		$names = array(
-			'nashenski_order_document' => __( 'Order', 'nashenski-commerce' ),
-			'nashenski_invoice_document' => __( 'Invoice', 'nashenski-commerce' ),
-			'nashenski_invoice_copy_document' => __( 'Invoice Copy', 'nashenski-commerce' ),
-			'nashenski_refunded_order_document' => __( 'Refunded Order', 'nashenski-commerce' ),
-			'nashenski_refunded_invoice_document' => __( 'Refunded Invoice', 'nashenski-commerce' ),
+			'nashenski_order_document'                 => __( 'Order', 'nashenski-commerce' ),
+			'nashenski_invoice_document'               => __( 'Invoice', 'nashenski-commerce' ),
+			'nashenski_invoice_copy_document'          => __( 'Invoice Copy', 'nashenski-commerce' ),
+			'nashenski_refunded_order_document'        => __( 'Refunded Order', 'nashenski-commerce' ),
+			'nashenski_refunded_invoice_document'      => __( 'Refunded Invoice', 'nashenski-commerce' ),
 			'nashenski_refunded_invoice_copy_document' => __( 'Refunded Invoice Copy', 'nashenski-commerce' ),
-			'nashenski_proform_document' => __( 'Pro forma', 'nashenski-commerce' ),
+			'nashenski_proform_document'               => __( 'Pro forma', 'nashenski-commerce' ),
 		);
 		$files = array();
 
@@ -222,9 +286,9 @@ class Documents {
 			foreach ( $names as $meta => $name ) {
 				if ( $order->get_meta( $meta ) ) {
 					$files[] = array(
-						'meta' => $meta,
-						'name' => $name,
-						'file_url' => \Nashenski\Document_Storage::order_document_url( $order, $meta ),
+						'meta'        => $meta,
+						'name'        => $name,
+						'file_url'    => \Nashenski\Document_Storage::order_document_url( $order, $meta ),
 						'file_url_en' => $order->get_meta( $meta . '_en' ) ? \Nashenski\Document_Storage::order_document_url( $order, $meta . '_en' ) : '',
 					);
 				}
