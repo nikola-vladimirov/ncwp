@@ -56,9 +56,10 @@ class Vat1139 {
         }
     }
 
-    // The proforma has no VAT column either; the Article 113(9) text stays on the invoice only.
+    // The proforma and credit notes have no VAT column either; the Article 113(9) text stays on the invoice only.
+    // shortcut: credit notes follow today's 113(9) setting, not the setting the original invoice had, upgrade if a store switches mid-year.
     private static function should_hide_vat( $document ) {
-        return self::is_invoice( $document ) || $document instanceof Document\Proforma;
+        return self::is_invoice( $document ) || $document instanceof Document\Proforma || $document instanceof Document\CreditNotice;
     }
 
     // The separate copy (Documents > Generate separate copy documents) must print like the original.
