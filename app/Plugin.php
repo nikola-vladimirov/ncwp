@@ -69,6 +69,9 @@ class Plugin {
 		global $wp_filesystem;
 		$wp_filesystem->rmdir( File::CACHE_FOLDER . 'cvc', true ); // A missing folder is fine.
 
+		// 0.19.10: the documents migration flag is read on every request; sites that saved it outside the autoload set load it with the other options now.
+		wp_set_option_autoload( 'nashenski_documents_migration_version', true );
+
 		update_option( 'nashenski_version', self::VERSION );
 	}
 

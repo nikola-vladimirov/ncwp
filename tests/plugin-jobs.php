@@ -15,13 +15,16 @@ namespace {
 	$GLOBALS['created'] = array();
 	$GLOBALS['cleared'] = array();
 	$GLOBALS['deactivate'] = null;
+	$GLOBALS['autoload'] = array();
+	$GLOBALS['enqueued'] = array();
 
 	function add_action() {}
 	function add_filter() {}
 	function register_deactivation_hook( $file, $cb ) { $GLOBALS['deactivate'] = $cb; }
 	function wp_clear_scheduled_hook( $h ) { $GLOBALS['cleared'][] = $h; }
 	function get_option( $k, $d = false ) { return $GLOBALS['options'][ $k ] ?? $d; }
-	function update_option( $k, $v ) { $GLOBALS['options'][ $k ] = $v; }
+	function update_option( $k, $v, $autoload = null ) { $GLOBALS['options'][ $k ] = $v; $GLOBALS['autoload'][ $k ] = $autoload; }
+	function as_enqueue_async_action( $hook ) { $GLOBALS['enqueued'][] = $hook; }
 	function delete_option( $k ) { unset( $GLOBALS['options'][ $k ] ); }
 	function as_unschedule_all_actions( $hook = '', $args = array(), $group = '' ) { $GLOBALS['unscheduled'][] = array( $hook, $group ); $GLOBALS['scheduled'] = array(); }
 	function as_has_scheduled_action( $hook ) { return in_array( $hook, $GLOBALS['scheduled'], true ); }
@@ -63,6 +66,12 @@ namespace {
 	$GLOBALS['options'][ Nashenski\Document_Storage::CLEANUP_OPTION ] = 0;
 	Nashenski\Document_Storage::restore_receipt_cleanup();
 	check( array() === $GLOBALS['created'], 'with the cleanup off nothing is scheduled' );
+
+	// The migration runs again after the reset, and its flag is saved autoloaded, so the init check costs no query.
+	$GLOBALS['scheduled'] = array();
+	Nashenski\Document_Storage::schedule_migration();
+	check( array( Nashenski\Document_Storage::MIGRATE_HOOK ) === $GLOBALS['enqueued'], 'the migration is queued again after the reset' );
+	check( true === $GLOBALS['autoload'][ Nashenski\Document_Storage::MIGRATE_VERSION_OPTION ] && Nashenski\Document_Storage::MIGRATE_VERSION === get_option( Nashenski\Document_Storage::MIGRATE_VERSION_OPTION ), 'the migration flag is saved with autoload on' );
 
 	echo "PASS\n";
 }

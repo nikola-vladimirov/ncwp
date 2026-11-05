@@ -469,7 +469,8 @@ class Document_Storage {
 			update_option( self::MIGRATE_OPTION, 'scheduled', false );
 		}
 
-		update_option( self::MIGRATE_VERSION_OPTION, self::MIGRATE_VERSION, false );
+		// Autoloaded: init reads it on every request, and an option left out of the autoload set costs a query each time.
+		update_option( self::MIGRATE_VERSION_OPTION, self::MIGRATE_VERSION, true );
 	}
 
 	/**
