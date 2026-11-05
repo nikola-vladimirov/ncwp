@@ -233,7 +233,7 @@ class Method extends \WC_Shipping_Method {
 				'title'       => __( 'Free shipping over', 'nashenski-commerce' ),
 				'type'        => 'number',
 				'placeholder' => '0',
-				'description' => __( 'Free shipping over total cart price.', 'nashenski-commerce' ),
+				'description' => __( 'Free shipping at or above total cart price.', 'nashenski-commerce' ),
 				'default'     => '',
 				'desc_tip'    => true,
 			),

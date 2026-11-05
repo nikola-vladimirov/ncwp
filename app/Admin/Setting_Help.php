@@ -58,7 +58,7 @@ class Setting_Help {
 			'nashenski_settings_boxnow_price_price_type' => array( '', __( 'BOX NOW has no price calculation in its API, so you set the prices here. Save after choosing to see the right table.', 'nashenski-commerce' ) ),
 			'/^nashenski_settings_boxnow_price_from_to_/' => array( '', __( 'Each row is a range and the price the customer pays in it.', 'nashenski-commerce' ) ),
 			'nashenski_settings_boxnow_price_hide_over' => array( '', __( 'For example 200: BOX NOW is not offered for bigger orders.', 'nashenski-commerce' ) ),
-			'nashenski_settings_boxnow_price_free_shipping_over' => array( '', __( 'Orders above this total ship for free with BOX NOW.', 'nashenski-commerce' ) ),
+			'nashenski_settings_boxnow_price_free_shipping_over' => array( '', __( 'Orders at or above this total ship for free with BOX NOW.', 'nashenski-commerce' ) ),
 			'nashenski_settings_boxnow_price_box_size' => array( '', __( 'The locker compartment size for orders whose products have no dimensions.', 'nashenski-commerce' ) ),
 			'/^nashenski_settings_pigeon_services_/' => array( '', __( 'An extra Pigeon Express service. It may cost extra and must be in your contract.', 'nashenski-commerce' ) ),
 
@@ -138,7 +138,7 @@ class Setting_Help {
 			'method:test' => array( __( 'Whether the customer may open or test the parcel before paying.', 'nashenski-commerce' ), __( 'Not possible at parcel lockers. If the customer refuses after a test, the return is paid as your contract says.', 'nashenski-commerce' ) ),
 			'method:sms' => array( '', __( 'The courier texts the customer about the delivery. It may cost extra.', 'nashenski-commerce' ) ),
 			'method:is_sat' => array( '', __( 'Delivery and pickup on Saturdays. It may cost extra.', 'nashenski-commerce' ) ),
-			'method:free_shipping_over' => array( __( 'Orders above this total ship for free with this method.', 'nashenski-commerce' ), __( 'You still pay the courier; the customer sees "Free".', 'nashenski-commerce' ) ),
+			'method:free_shipping_over' => array( __( 'Orders at or above this total ship for free with this method.', 'nashenski-commerce' ), __( 'You still pay the courier; the customer sees "Free".', 'nashenski-commerce' ) ),
 			'method:fixed_price' => array( __( 'A set delivery price instead of the courier\'s calculation.', 'nashenski-commerce' ), __( 'The difference to the real courier price is yours.', 'nashenski-commerce' ) ),
 		);
 	}
