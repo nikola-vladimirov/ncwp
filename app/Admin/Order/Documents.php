@@ -29,6 +29,13 @@ class Documents {
 		return 'yes' === $order->get_meta( 'nashenski_invoice_own_program' );
 	}
 
+	/** The documents are made at checkout (the default), not when the order is completed. */
+	public static function default_trigger() {
+		$trigger = nashenski_get_option( 'invoice', 'trigger' );
+
+		return ! $trigger || 'order_created' === $trigger;
+	}
+
 	public static function generate_documents( $order_id ) {
 		$order = wc_get_order( $order_id );
 
@@ -40,7 +47,7 @@ class Documents {
 			if ( self::documents_on() && self::maybe_generate_invoice( $order ) ) {
 				// A bank transfer invoice waits for the payment (generate_invoice_when_paid); the proforma is made now.
 				$bacs = $order->get_payment_method() === 'bacs';
-				$wait = $bacs && ! $order->is_paid();
+				$wait = $bacs && ! $order->is_paid() && ! $order->get_meta( 'nashenski_invoice_document' );
 
 				if ( ! $wait ) {
 					( new Document\Invoice( $order ) )->generate_file();
@@ -137,8 +144,8 @@ class Documents {
 
 		( new Document\NRARefunded( $refund_id ) )->generate_file();
 
-		// A bank transfer order gets a credit notice only once its invoice exists.
-		if ( self::documents_on() && self::maybe_generate_invoice( $order ) && ( $order->get_payment_method() !== 'bacs' || $order->get_meta( 'nashenski_invoice_document' ) ) ) {
+		// With the default trigger a bank transfer order gets a credit notice only once its invoice exists.
+		if ( self::documents_on() && self::maybe_generate_invoice( $order ) && ( $order->get_payment_method() !== 'bacs' || ! self::default_trigger() || $order->get_meta( 'nashenski_invoice_document' ) ) ) {
 			( new Document\CreditNotice( $refund_id ) )->generate_file();
 
 			self::maybe_generate_credit_notice_copy( $refund_id, $order_id );

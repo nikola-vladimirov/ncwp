@@ -70,6 +70,18 @@ namespace {
 	\Nashenski\Admin\Order\Documents::generate_refunded_documents( 5, 1 );
 	expect( array( 'nra_refund', 'credit' ) === made(), 'Non-bacs refund: credit notice unchanged' );
 
+	// Regenerate PDF's on an unpaid bacs order rebuilds an existing invoice.
+	$order = new FakeOrder( 'bacs', false );
+	$order->has_invoice = true;
+	\Nashenski\Admin\Order\Documents::generate_documents( 1 );
+	expect( array( 'nra', 'invoice', 'proforma' ) === made(), 'Unpaid bacs order with an invoice: regenerate rebuilds it' );
+	// Under the completed trigger the credit notice is made as before, invoice meta or not.
+	$trigger = 'order_completed';
+	$order = new FakeOrder( 'bacs', false );
+	\Nashenski\Admin\Order\Documents::generate_refunded_documents( 5, 1 );
+	expect( array( 'nra_refund', 'credit' ) === made(), 'Completed trigger: credit notice as on main' );
+	$trigger = '';
+
 	// The paid hooks exist for the default trigger only.
 	new \Nashenski\Admin\Order\Actions();
 	expect( ! empty( $hooks['woocommerce_payment_complete'] ), 'Default trigger registers the paid hook' );
