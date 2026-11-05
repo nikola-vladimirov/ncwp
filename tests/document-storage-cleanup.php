@@ -24,6 +24,7 @@ function add_filter( $tag, $cb ) { $GLOBALS['filters'][ $tag ][] = $cb; }
 function remove_filter( $tag, $cb ) { $GLOBALS['filters'][ $tag ] = array_values( array_filter( $GLOBALS['filters'][ $tag ] ?? array(), function ( $f ) use ( $cb ) { return $f !== $cb; } ) ); }
 function wc_get_orders( $a ) {
 	$GLOBALS['queries'][] = $a;
+	if ( $GLOBALS['throw'] ?? false ) { throw new RuntimeException( 'query failed' ); }
 	$wp = array();
 	foreach ( $GLOBALS['filters']['woocommerce_order_data_store_cpt_get_orders_query'] ?? array() as $cb ) { $wp = $cb( $wp, $a, null ); }
 	$GLOBALS['wp_args'][] = $wp;
@@ -73,6 +74,12 @@ check( 0 === $GLOBALS['enqueued'], 'a short batch queues nothing' );
 $GLOBALS['queue'] = array( range( 1001, 1100 ), range( 2001, 2100 ), range( 3001, 3030 ) );
 foreach ( array( 1, 2, 3 ) as $run ) { Nashenski\Document_Storage::delete_receipts(); }
 check( 2 === $GLOBALS['enqueued'], 'each full batch of 100 re-queues once, the short one does not' );
+
+// A throwing query still removes the filter.
+$GLOBALS['throw'] = true;
+try { Nashenski\Document_Storage::delete_receipts(); $thrown = false; } catch ( RuntimeException $e ) { $thrown = true; }
+$GLOBALS['throw'] = false;
+check( $thrown && empty( $GLOBALS['filters']['woocommerce_order_data_store_cpt_get_orders_query'] ), 'legacy: the filter is removed when the query throws' );
 
 // HPOS: meta_query stays in the query, no filter.
 $GLOBALS['hpos'] = true;

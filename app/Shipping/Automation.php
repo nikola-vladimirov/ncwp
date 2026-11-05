@@ -202,32 +202,37 @@ class Automation {
 
 	public static function check_shipments() {
 		// ponytail: 100 open orders per hour, changed in the last 60 days; a busier store can raise it.
-		// No meta_query: the legacy post datastore rejects it. Page through the orders and skip the finished ones here.
-		$limit = max( 1, (int) apply_filters( 'nashenski/shipments/check_limit', 100 ) );
 		$args = array(
 			'status' => array( 'processing', 'on-hold' ),
-			'limit' => $limit,
-			'paged' => 1,
+			'limit' => (int) apply_filters( 'nashenski/shipments/check_limit', 100 ),
 			'date_modified' => '>' . ( time() - 60 * DAY_IN_SECONDS ),
 			'orderby' => 'date_modified',
 			'order' => 'ASC',
 		);
-		$open = array();
+		$open = array( 'key' => self::STATE_META, 'compare' => 'NOT EXISTS' );
+		$legacy = ! ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() );
 
-		// Collect first: checking an order changes its date and would shift the pages.
-		do {
-			$page = wc_get_orders( $args );
+		if ( $legacy ) {
+			// The legacy post datastore rejects the meta_query argument, so add it to the WP_Query it builds.
+			$add = function ( $wp_query_args ) use ( $open ) {
+				$wp_query_args['meta_query'] = array_merge( isset( $wp_query_args['meta_query'] ) ? (array) $wp_query_args['meta_query'] : array(), array( $open ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 
-			foreach ( $page as $order ) {
-				if ( count( $open ) < $limit && ! isset( $open[ $order->get_id() ] ) && ! $order->meta_exists( self::STATE_META ) ) {
-					$open[ $order->get_id() ] = $order;
-				}
+				return $wp_query_args;
+			};
+			add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
+		} else {
+			$args['meta_query'] = array( $open ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+		}
+
+		try {
+			$orders = wc_get_orders( $args );
+		} finally {
+			if ( $legacy ) {
+				remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
 			}
+		}
 
-			$args['paged']++;
-		} while ( count( $page ) === $limit && count( $open ) < $limit );
-
-		foreach ( $open as $order ) {
+		foreach ( $orders as $order ) {
 			self::check_order( $order );
 		}
 	}

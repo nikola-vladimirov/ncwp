@@ -159,10 +159,12 @@ class Document_Storage {
 			$args['meta_query'] = array( $has_document ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- batched background job.
 		}
 
-		$ids = wc_get_orders( $args );
-
-		if ( $legacy ) {
-			remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
+		try {
+			$ids = wc_get_orders( $args );
+		} finally {
+			if ( $legacy ) {
+				remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
+			}
 		}
 
 		foreach ( $ids as $id ) {
