@@ -132,45 +132,62 @@ class Document_Storage {
 			return 0;
 		}
 
+		// No meta_query: the legacy post datastore rejects it. Page through the date range and check the meta here.
 		$args = array(
 			'limit' => self::CLEANUP_BATCH,
 			'return' => 'ids',
 			'type' => 'shop_order',
-			'meta_query' => array( 'relation' => 'OR', array( 'key' => 'nashenski_order_document', 'compare' => 'EXISTS' ), array( 'key' => 'nashenski_order_document_en', 'compare' => 'EXISTS' ) ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- batched background job.
+			'paged' => 1,
 		);
 
 		if ( ! $all ) {
 			$args['date_created'] = '<' . ( time() - $days * DAY_IN_SECONDS );
 		}
 
-		$ids = wc_get_orders( $args );
+		$done = 0;
 
-		foreach ( $ids as $id ) {
-			$order = wc_get_order( $id );
+		do {
+			$ids = wc_get_orders( $args );
 
-			if ( ! $order ) {
-				continue;
-			}
+			foreach ( $ids as $id ) {
+				$order = wc_get_order( $id );
 
-			foreach ( array( 'nashenski_order_document', 'nashenski_order_document_en' ) as $meta ) {
-				$attach_id = (int) $order->get_meta( $meta );
-
-				if ( $attach_id && 'attachment' === get_post_type( $attach_id ) ) {
-					wp_delete_attachment( $attach_id, true );
+				if ( ! $order ) {
+					continue;
 				}
 
-				$order->delete_meta_data( $meta );
+				$cleared = false;
+
+				foreach ( array( 'nashenski_order_document', 'nashenski_order_document_en' ) as $meta ) {
+					if ( ! $order->meta_exists( $meta ) ) {
+						continue;
+					}
+
+					$attach_id = (int) $order->get_meta( $meta );
+
+					if ( $attach_id && 'attachment' === get_post_type( $attach_id ) ) {
+						wp_delete_attachment( $attach_id, true );
+					}
+
+					$order->delete_meta_data( $meta );
+					$cleared = true;
+				}
+
+				if ( $cleared ) {
+					$order->update_meta_data( self::RECEIPT_DELETED_META, time() );
+					$order->save();
+					$done++;
+				}
 			}
 
-			$order->update_meta_data( self::RECEIPT_DELETED_META, time() );
-			$order->save();
-		}
+			$args['paged']++;
+		} while ( count( $ids ) === self::CLEANUP_BATCH && $done < self::CLEANUP_BATCH );
 
-		if ( count( $ids ) === self::CLEANUP_BATCH && function_exists( 'as_enqueue_async_action' ) ) {
+		if ( $done >= self::CLEANUP_BATCH && function_exists( 'as_enqueue_async_action' ) ) {
 			as_enqueue_async_action( self::CLEANUP_HOOK, array( (bool) $all ), 'nashenski' );
 		}
 
-		return count( $ids );
+		return $done;
 	}
 
 	/**
