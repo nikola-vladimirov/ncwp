@@ -75,14 +75,15 @@ class Documents {
 	public static function generate_invoice_when_paid( $order_id ) {
 		$order = wc_get_order( $order_id );
 
-		if ( ! $order || ! self::documents_on() || ! $order->is_paid() || $order->get_meta( 'nashenski_invoice_document' ) || ! self::maybe_generate_invoice( $order ) ) {
+		// Only bank transfer orders whose order document was made at checkout (renewals have none).
+		if ( ! $order || $order->get_payment_method() !== 'bacs' || ! $order->get_meta( 'nashenski_order_document' ) || ! self::documents_on() || ! $order->is_paid() || $order->get_meta( 'nashenski_invoice_document' ) || ! self::maybe_generate_invoice( $order ) ) {
 			return;
 		}
 
 		try {
 			( new Document\Invoice( $order ) )->generate_file();
 			self::maybe_generate_invoice_copy( $order );
-		} catch ( \Exception $e ) {
+		} catch ( \Throwable $e ) {
 			wc_get_logger()->error( 'Invoice for order #' . $order_id . ' was not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
 			try { // The note must not throw out of the hook either.
 				/* translators: %s: the error message */
@@ -136,7 +137,8 @@ class Documents {
 
 		( new Document\NRARefunded( $refund_id ) )->generate_file();
 
-		if ( self::documents_on() && self::maybe_generate_invoice( $order ) ) {
+		// No credit notice for an invoice that was never made (an unpaid bank transfer order).
+		if ( self::documents_on() && self::maybe_generate_invoice( $order ) && $order->get_meta( 'nashenski_invoice_document' ) ) {
 			( new Document\CreditNotice( $refund_id ) )->generate_file();
 
 			self::maybe_generate_credit_notice_copy( $refund_id, $order_id );
