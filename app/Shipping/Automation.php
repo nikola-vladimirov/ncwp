@@ -22,8 +22,8 @@ class Automation {
 	/** Set once the shipment was delivered or went back, so the hourly check leaves the order alone. */
 	const STATE_META = '_nashenski_shipment_state';
 
-	/** Time of the last hourly check; saving it moves the order to the back of the date_modified queue. */
-	const CHECKED_META = '_nashenski_shipment_checked';
+	/** Where the next hourly check starts in the list of open orders; wraps to 0 at the end. */
+	const OFFSET_OPTION = 'nashenski_shipments_offset';
 
 	/** Public tracking pages; the waybill number goes at the end. */
 	const TRACKING = array(
@@ -208,13 +208,15 @@ class Automation {
 
 	public static function check_shipments() {
 		// ponytail: 100 open orders per hour, created in the last 60 days; a busier store can raise it.
+		$limit = (int) apply_filters( 'nashenski/shipments/check_limit', 100 );
+		// Each run reads the next page of open orders, so an unchanged order is never saved just to move it to the back of the queue.
+		$offset = $limit > 0 ? (int) get_option( self::OFFSET_OPTION, 0 ) : 0;
 		$args = array(
 			'status' => array( 'processing', 'on-hold' ),
-			'limit' => (int) apply_filters( 'nashenski/shipments/check_limit', 100 ),
-			// date_created, not date_modified: each check bumps the modified date, so a modified window would keep open orders in for ever.
+			'limit' => $limit,
+			'offset' => $offset,
 			'date_created' => '>' . ( time() - 60 * DAY_IN_SECONDS ),
-			// 'modified', not 'date_modified': the legacy post store ignores the latter and sorts by creation date, so the hourly rotation never moved on.
-			'orderby' => 'modified',
+			'orderby' => 'ID',
 			'order' => 'ASC',
 		);
 		$open = array( 'key' => self::STATE_META, 'compare' => 'NOT EXISTS' );
@@ -240,20 +242,19 @@ class Automation {
 			}
 		}
 
-		foreach ( $orders as $order ) {
-			// An unchanged order is saved too, so the oldest-first query reaches the others next hour.
-			if ( ! in_array( self::check_order( $order ), array( 'delivered', 'returned' ), true ) ) {
-				// Save a fresh copy: on the legacy store a save rewrites the post row, so the batch's copy would undo a status the owner changed meanwhile.
-				// Clean the post cache first: without a persistent object cache the read below would return the batch's stale copy.
-				clean_post_cache( $order->get_id() );
-				$fresh = wc_get_order( $order->get_id() );
+		$changed = 0;
 
-				if ( $fresh ) {
-					$fresh->update_meta_data( self::CHECKED_META, time() );
-					$fresh->set_date_modified( time() ); // A meta-only save leaves post_modified alone on the legacy store.
-					$fresh->save();
-				}
+		foreach ( $orders as $order ) {
+			// check_order() saves an order only when its shipment changed (delivered or returned); the others are left alone.
+			// A change-only save writes the order's meta and its new status, never a stale copy of the rest of the row.
+			if ( in_array( self::check_order( $order ), array( 'delivered', 'returned' ), true ) ) {
+				++$changed;
 			}
+		}
+
+		if ( $limit > 0 ) {
+			// A changed order leaves the list (it has its state meta now), so the next page starts that many places earlier.
+			update_option( self::OFFSET_OPTION, count( $orders ) < $limit ? 0 : $offset + $limit - $changed, false );
 		}
 	}
 
