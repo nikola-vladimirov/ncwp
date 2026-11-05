@@ -17,7 +17,9 @@ $GLOBALS['filters'] = array();
 $GLOBALS['checked'] = array();
 $GLOBALS['limit'] = 100;
 $GLOBALS['throw'] = false;
+$GLOBALS['rotate'] = false;
 $GLOBALS['result'] = array();
+$GLOBALS['clock'] = 0;
 
 function apply_filters( $tag, $v ) { return $GLOBALS['limit']; }
 function add_filter( $tag, $cb ) { $GLOBALS['filters'][ $tag ][] = $cb; }
@@ -31,13 +33,23 @@ function wc_get_orders( $a ) {
 	foreach ( $GLOBALS['filters']['woocommerce_order_data_store_cpt_get_orders_query'] ?? array() as $cb ) { $wp = $cb( $wp, $a, null ); }
 	$GLOBALS['wp_args'][] = $wp;
 	if ( $GLOBALS['throw'] ) { throw new RuntimeException( 'query failed' ); }
+	if ( $GLOBALS['rotate'] ) { // Like the datastore: date_modified ASC, then the limit.
+		$r = $GLOBALS['result'];
+		usort( $r, function ( $x, $y ) { return $x->modified <=> $y->modified; } );
+		return array_slice( $r, 0, $a['limit'] );
+	}
 	return $GLOBALS['result'];
 }
 
 class FakeOrder {
 	public $id;
+	public $modified = 0;
+	public $meta = array();
+	public $saves = 0;
 	public function __construct( $id ) { $this->id = $id; }
 	public function get_id() { return $this->id; }
+	public function update_meta_data( $k, $v ) { $this->meta[ $k ] = $v; }
+	public function save() { $this->saves++; $this->modified = ++$GLOBALS['clock']; } // Saving updates date_modified.
 }
 
 require __DIR__ . '/../app/Shipping/Automation.php';
@@ -76,5 +88,18 @@ $GLOBALS['hpos'] = true;
 $GLOBALS['limit'] = 100;
 Nashenski\Shipping\Automation::check_shipments();
 check( not_exists( end( $GLOBALS['queries'] )['meta_query'][0] ), 'HPOS: NOT EXISTS stays in the query' );
+// An unchanged open order (no waybill here) is saved with the checked meta, so the next run reaches the others.
+$GLOBALS['hpos'] = false;
+$GLOBALS['rotate'] = true;
+$GLOBALS['limit'] = 2;
+$GLOBALS['result'] = array( new FakeOrder( 1 ), new FakeOrder( 2 ), new FakeOrder( 3 ), new FakeOrder( 4 ) );
+foreach ( $GLOBALS['result'] as $i => $o ) { $o->modified = -10 + $i; }
+$GLOBALS['checked'] = array();
+Nashenski\Shipping\Automation::check_shipments();
+check( array( 1, 2 ) === $GLOBALS['checked'], 'rotation: the first run takes the two oldest' );
+check( isset( $GLOBALS['result'][0]->meta['_nashenski_shipment_checked'] ) && 1 === $GLOBALS['result'][0]->saves, 'unchanged order: saved once with the checked meta' );
+$GLOBALS['checked'] = array();
+Nashenski\Shipping\Automation::check_shipments();
+check( array( 3, 4 ) === $GLOBALS['checked'], 'rotation: the second run reaches the newer orders' );
 echo "done\n";
 }

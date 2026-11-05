@@ -22,6 +22,9 @@ class Automation {
 	/** Set once the shipment was delivered or went back, so the hourly check leaves the order alone. */
 	const STATE_META = '_nashenski_shipment_state';
 
+	/** Time of the last hourly check; saving it moves the order to the back of the date_modified queue. */
+	const CHECKED_META = '_nashenski_shipment_checked';
+
 	/** Public tracking pages; the waybill number goes at the end. */
 	const TRACKING = array(
 		'econt' => 'https://www.econt.com/services/track-shipment/',
@@ -233,7 +236,11 @@ class Automation {
 		}
 
 		foreach ( $orders as $order ) {
-			self::check_order( $order );
+			// An unchanged order is saved too, so the oldest-first query reaches the others next hour.
+			if ( ! in_array( self::check_order( $order ), array( 'delivered', 'returned' ), true ) ) {
+				$order->update_meta_data( self::CHECKED_META, time() );
+				$order->save();
+			}
 		}
 	}
 
