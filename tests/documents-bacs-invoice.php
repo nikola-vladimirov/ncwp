@@ -15,12 +15,12 @@ namespace {
 	define( 'ABSPATH', __DIR__ . '/fixtures/' );
 	require __DIR__ . '/../vendor/autoload.php';
 	class FakeOrder {
-		public $method, $paid, $has_invoice = false, $has_order_doc = true;
+		public $method, $paid, $has_invoice = false, $has_number = true;
 		public function __construct( $method, $paid ) { $this->method = $method; $this->paid = $paid; }
 		public function get_payment_method() { return $this->method; }
 		public function is_paid() { return $this->paid; }
 		public function get_refunds() { return array(); }
-		public function get_meta( $key ) { return "nashenski_invoice_document" === $key ? $this->has_invoice : ( "nashenski_order_document" === $key ? $this->has_order_doc : "" ); }
+		public function get_meta( $key ) { return "nashenski_invoice_document" === $key ? $this->has_invoice : ( "nashenski_order_number" === $key ? $this->has_number : "" ); }
 	}
 	$order = null;
 	function wc_get_order( $id ) { return $GLOBALS['order']; }
@@ -57,9 +57,18 @@ namespace {
 		expect( array() === made(), "Paid $method order: the paid hook makes no invoice" );
 	}
 	$order = new FakeOrder( 'bacs', true );
-	$order->has_order_doc = false;
+	$order->has_number = false;
 	\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 3 );
-	expect( array() === made(), 'Paid bacs order without an order document (renewal): no invoice' );
+	expect( array() === made(), 'Paid bacs order without an order number (renewal): no invoice' );
+
+	// The order document was deleted (retention) but the number stays: the paid bacs order is still invoiced. The fake order has no order document meta.
+	$order = new FakeOrder( 'bacs', true );
+	\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 3 );
+	expect( array( 'invoice' ) === made(), 'Paid bacs order with its order document deleted but the number kept: invoice made' );
+	// A non-bacs refund still gets its credit notice without the invoice meta check.
+	$order = new FakeOrder( 'stripe', true );
+	\Nashenski\Admin\Order\Documents::generate_refunded_documents( 5, 1 );
+	expect( array( 'nra_refund', 'credit' ) === made(), 'Non-bacs refund: credit notice unchanged' );
 
 	// The paid hooks exist for the default trigger only.
 	new \Nashenski\Admin\Order\Actions();
