@@ -207,11 +207,12 @@ class Automation {
 	}
 
 	public static function check_shipments() {
-		// ponytail: 100 open orders per hour, changed in the last 60 days; a busier store can raise it.
+		// ponytail: 100 open orders per hour, created in the last 60 days; a busier store can raise it.
 		$args = array(
 			'status' => array( 'processing', 'on-hold' ),
 			'limit' => (int) apply_filters( 'nashenski/shipments/check_limit', 100 ),
-			'date_modified' => '>' . ( time() - 60 * DAY_IN_SECONDS ),
+			// date_created, not date_modified: each check bumps the modified date, so a modified window would keep open orders in for ever.
+			'date_created' => '>' . ( time() - 60 * DAY_IN_SECONDS ),
 			// 'modified', not 'date_modified': the legacy post store ignores the latter and sorts by creation date, so the hourly rotation never moved on.
 			'orderby' => 'modified',
 			'order' => 'ASC',
@@ -242,9 +243,14 @@ class Automation {
 		foreach ( $orders as $order ) {
 			// An unchanged order is saved too, so the oldest-first query reaches the others next hour.
 			if ( ! in_array( self::check_order( $order ), array( 'delivered', 'returned' ), true ) ) {
-				$order->update_meta_data( self::CHECKED_META, time() );
-				$order->set_date_modified( time() ); // A meta-only save leaves post_modified alone on the legacy store.
-				$order->save();
+				// Save a fresh copy: on the legacy store a save rewrites the post row, so the batch's copy would undo a status the owner changed meanwhile.
+				$fresh = wc_get_order( $order->get_id() );
+
+				if ( $fresh ) {
+					$fresh->update_meta_data( self::CHECKED_META, time() );
+					$fresh->set_date_modified( time() ); // A meta-only save leaves post_modified alone on the legacy store.
+					$fresh->save();
+				}
 			}
 		}
 	}
