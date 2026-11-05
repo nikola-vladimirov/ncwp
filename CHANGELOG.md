@@ -1,5 +1,11 @@
 # Nashenski Commerce changelog
 
+## 0.19.8 (2026-11-05)
+
+### Security
+- BOX NOW: an order with more than 200 units is no longer packed into boxes automatically, so a large order cannot make a page load or label request run for minutes. Add the boxes by hand.
+- BOX NOW: the sender addresses cache moved to the private uploads folder, next to the other private files, and is cleared with the other courier caches.
+
 ## 0.19.7 (2026-11-05)
 
 ### Documents

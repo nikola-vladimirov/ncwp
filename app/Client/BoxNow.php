@@ -5,7 +5,9 @@ use Nashenski\File;
 defined( 'ABSPATH' ) || exit;
 
 class BoxNow {
-	use Courier_Client;
+	use Courier_Client {
+		clear_cache_folder as protected clear_courier_cache_folder;
+	}
 
 	const LIVE_URL = 'https://api-production.boxnow.bg';
     const DEMO_URL = 'https://api-stage.boxnow.bg';
@@ -27,6 +29,12 @@ class BoxNow {
 		$this->load_base_endpoint();
 
 		$this->load_access_token( true );
+	}
+
+	/** The shared cache clearing, plus the sender addresses kept in the private documents folder. */
+	public static function clear_cache_folder( $skip_cached_files = false ) {
+		static::clear_courier_cache_folder( $skip_cached_files );
+		BoxNow\Origins::clear();
 	}
 
 	public function api_call( $endpoint, $args, $method = 'POST', $return_plain = false ) {

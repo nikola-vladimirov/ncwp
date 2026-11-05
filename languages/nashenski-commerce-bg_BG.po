@@ -6277,3 +6277,8 @@ msgstr "WooCommerce за България: доставка с Econt, Speedy, BO
 #: nashenski-commerce.php
 msgid "PristaDigital"
 msgstr "PristaDigital"
+
+#. translators: %d: the unit limit for automatic BOX NOW packing
+#: app/Admin/BoxNow.php:207
+msgid "This order has more than %d units, so it is not packed into BOX NOW boxes automatically. Add the boxes by hand."
+msgstr "Поръчката има повече от %d единици, затова не се опакова автоматично в кутии BOX NOW. Добавете кутиите ръчно."

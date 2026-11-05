@@ -1,6 +1,7 @@
 <?php
 namespace Nashenski\Client\BoxNow;
 use Nashenski\Container\Client;
+use Nashenski\Document_Storage;
 use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
@@ -15,12 +16,25 @@ class Origins {
 		$this->container = $container;
 	}
 
+	// Sender addresses: kept in the private documents folder (random name, deny rules), not the public cache folder.
+	private static function file() {
+		return Document_Storage::path() . '/boxnow-origins.json';
+	}
+
+	public static function clear() {
+		if ( file_exists( self::file() ) ) {
+			wp_delete_file( self::file() );
+		}
+	}
+
 	protected function load_origins() {
-		if ( ! is_dir( $this->container[ Client::BOXNOW ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::BOXNOW ]::CACHE_FOLDER );
+		$origins_file = self::file();
+		$old_public_file = $this->container[ Client::BOXNOW ]::CACHE_FOLDER . 'origins.json';
+
+		if ( file_exists( $old_public_file ) ) {
+			wp_delete_file( $old_public_file );
 		}
 
-		$origins_file = $this->container[ Client::BOXNOW ]::CACHE_FOLDER . 'origins.json';
 		$origins = File::get_file( $origins_file );
 
 		$failed_key = 'nashenski_boxnow_origins_failed';

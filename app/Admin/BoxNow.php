@@ -2,10 +2,14 @@
 namespace Nashenski\Admin;
 use Nashenski\Container\Client;
 use Nashenski\Shipping\BoxNow\Method;
+use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 
 defined( 'ABSPATH' ) || exit;
 
 class BoxNow {
+	/** Most units of one order that are packed into boxes automatically. */
+	const MAX_AUTO_PACK_UNITS = 200;
+
 	private static $container = null;
 
 	public function __construct() {
@@ -36,6 +40,11 @@ class BoxNow {
 					echo '<div id="nashenski--boxnow-admin"></div>';
 
 					$label = self::generate_label_data( $theorder->get_id() );
+
+					if ( empty( $label['items'] ) && ! $theorder->get_meta( 'nashenski_boxnow_shipment_status' ) ) {
+						echo '<div class="notice notice-warning inline"><p>' . esc_html( self::too_many_units_message() ) . '</p></div>';
+					}
+
 					$cookie_data = $theorder->get_meta( 'nashenski_boxnow_cookie_data' );
 					$sender_data = self::generate_sender_data();
 					$shipment_status = $theorder->get_meta( 'nashenski_boxnow_shipment_status' );
@@ -193,11 +202,20 @@ class BoxNow {
 		return $box_size;
 	}
 
+	public static function too_many_units_message() {
+		/* translators: %d: unit limit */
+		return sprintf( __( 'This order has more than %d units, so it is not packed into BOX NOW boxes automatically. Add the boxes by hand.', 'nashenski-commerce' ), self::MAX_AUTO_PACK_UNITS );
+	}
+
 	public static function generate_items( $order ) {
 		$box_size = self::get_box_size();
 
 		if ( $box_size === 'auto' ) {
-			$items = self::auto_generate_items_to_boxes( $order );
+			try {
+				$items = self::auto_generate_items_to_boxes( $order );
+			} catch ( Packing_Limit_Exceeded $e ) {
+				$items = [];
+			}
 		} else {
 			$items = self::generate_all_items_to_one_box( $order, $box_size );
 		}
@@ -219,8 +237,18 @@ class BoxNow {
 		$items = [ $default_box_values ];
 		$box_count = 0;
 
+		$units = 0;
+
 		foreach ( $order->get_items() as $order_item ) {
-			for ( $i = 0; $i < $order_item['quantity']; $i++ ) { 
+			$units += max( 0, ceil( (float) $order_item['quantity'] ) );
+		}
+
+		if ( $units > self::MAX_AUTO_PACK_UNITS ) {
+			throw new Packing_Limit_Exceeded( 'Order has too many units to pack automatically.' );
+		}
+
+		foreach ( $order->get_items() as $order_item ) {
+			for ( $i = 0; $i < $order_item['quantity']; $i++ ) {
 				$order_items[] = $order_item;
 			}
 		}
@@ -366,6 +394,10 @@ class BoxNow {
 
 		if ( $use_request_data && ( null !== nashenski_label_request( 'allowReturn', null ) ) ) {
 			$label_data['allowReturn'] = wc_string_to_bool( nashenski_label_request( 'allowReturn' ) );
+		}
+
+		if ( empty( $label_data['items'] ) ) {
+			return [ 'message' => self::too_many_units_message() ];
 		}
 
 		return self::send_label_to_boxnow( $label_data, $order );
