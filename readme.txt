@@ -12,36 +12,35 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shipping, invoices and Ordinance N-18 documents.
 
 == Description ==
-
 **Български**
 
 Нашенски Комерс добавя към WooCommerce това, което е нужно на български онлайн магазин: доставка с куриер, документи по Наредба Н-18 и още. Всичко работи на вашия сайт: цени, етикети и документи се създават от сайта и се изпращат само към услугите, които включите.
 
 * Доставка с Еконт, Спиди, BOX NOW и Pigeon Express: до офис, автомат или адрес.
-* Товарителници, етикети и заявки за куриер, проследяване за клиента и статуси на поръчките според пратката.
+* Товарителници и етикети, заявки за куриер за Еконт и Спиди, проследяване за клиента и статуси на поръчките според пратката (Еконт, Спиди, BOX NOW).
 * Всяка поръчка показва куриера и вида доставка.
-* BOX NOW: до 200 броя в поръчка кутиите се подреждат автоматично; над тази граница ги добавете на ръка.
-* Фактура, проформа, кредитно известие и документ за продажба като PDF, на български и на английски, с изпращане с имейлите за поръчката.
-* Настройка по чл. 113, ал. 9: фактурите, проформите и кредитните известия не показват ДДС.
-* Одиторски файл за НАП (Наредба Н-18), архив с фактури и износ за Microinvest Delta.
-* Документите и файловете на куриерите се пазят в частна папка и не се виждат в Медийната библиотека.
-* Редактор на полетата при поръчка, бърза поръчка, изоставени колички, функция за отказ от договор и проверки на клиенти.
-* Внос от Bulgarisation for WooCommerce и от други плъгини за куриери.
+* BOX NOW: до 200 единици в поръчка кутиите се подреждат автоматично. Над тази граница ги добавете ръчно.
+* Фактура, проформа, кредитно известие и документ за продажба като PDF, на български и на английски. Българският PDF се изпраща с имейлите за поръчката.
+* Настройка по чл. 113, ал. 9: фактурите, проформите и кредитните известия не показват ДДС. Работи, докато данъците в WooCommerce са изключени.
+* Одиторски файл за НАП (Наредба Н-18), архив с фактури и файл за Microinvest Delta.
+* Документите и счетоводните файлове се пазят в частна папка и не се виждат в Медийната библиотека.
+* Редактор на полетата при плащане, бърза поръчка, изоставени колички, функция за отказ (ЕС) и проверки на клиенти.
+* Внася данни от Bulgarisation for WooCommerce и от други плъгини за куриери и за Наредба Н-18.
 
 **English**
 
-Nashenski Commerce ("нашенски" means "ours, done the local way") adds what a Bulgarian online store needs to WooCommerce: courier shipping, Ordinance N-18 documents and more. Everything runs on your own site: prices, labels and documents are made by your site and sent only to the services you turn on.
+Nashenski Commerce adds what a Bulgarian online store needs to WooCommerce: courier shipping, Ordinance N-18 documents and more. Everything runs on your own site: prices, labels and documents are made by your site and sent only to the services you turn on.
 
 * Shipping with Econt, Speedy, BOX NOW and Pigeon Express: to an office, a locker or an address.
-* Waybills, labels and courier requests, tracking for the customer, and order statuses that follow the shipment.
+* Waybills and labels, courier requests for Econt and Speedy, tracking for the customer, and order statuses that follow the shipment (Econt, Speedy, BOX NOW).
 * Every order shows the courier and the delivery type.
-* BOX NOW: up to 200 units in an order are packed into boxes automatically; above that, add the boxes by hand.
-* Invoice, pro forma, credit note and order document as PDF, in Bulgarian and English, sent with the order emails.
-* An Article 113(9) setting: invoices, pro formas and credit notes show no VAT.
+* BOX NOW: up to 200 units in an order are packed into boxes automatically. Above that, add the boxes by hand.
+* Invoice, proforma, credit note and order document as PDF, in Bulgarian and English. The Bulgarian PDF is sent with the order emails.
+* An Article 113(9) setting: invoices, proformas and credit notes show no VAT. It works while WooCommerce taxes are off.
 * The NRA audit file (Ordinance N-18), invoice archive and Microinvest Delta export.
-* Documents and courier files are kept in a private folder and never show in the Media Library.
+* Documents and accounting exports are kept in a private folder and never show in the Media Library.
 * Checkout field editor, quick order, abandoned carts, the EU withdrawal function and customer checks.
-* Import from Bulgarisation for WooCommerce and other courier plugins.
+* Import from Bulgarisation for WooCommerce and other courier and Ordinance N-18 plugins.
 
 == Installation ==
 
