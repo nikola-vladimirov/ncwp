@@ -31,7 +31,7 @@ class Method extends \WC_Shipping_Method {
 	 * @access public
 	 * @return void
 	 */
-	function init() {
+	public function init() {
 		// Load the settings API
 		$this->init_form_fields(); // This is part of the settings API. Override the method to add your own settings
 		$this->init_settings(); // This is part of the settings API. Loads settings you previously init.
@@ -45,10 +45,10 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	/**
-	 * calculate_shipping function.
+	 * Calculate the shipping rate.
 	 *
 	 * @access public
-	 * @param mixed $package
+	 * @param mixed $package Package.
 	 * @return void
 	 */
 	public function calculate_shipping( $package = Array() ) {
