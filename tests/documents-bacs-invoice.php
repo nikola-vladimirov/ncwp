@@ -90,11 +90,17 @@ namespace {
 
 	// The paid hooks exist for the default trigger only.
 	new \Nashenski\Admin\Order\Actions();
-	expect( ! empty( $hooks['woocommerce_payment_complete'] ), 'Default trigger registers the paid hook' );
+	expect( ! empty( $hooks['woocommerce_payment_complete'] ) && ! empty( $hooks['woocommerce_order_status_changed'] ), 'Default trigger registers the paid hooks' );
+	// Any paid status counts (a custom one from woocommerce_order_is_paid_statuses): the callback checks is_paid(), and a second status change makes nothing.
+	$order = new FakeOrder( 'bacs', true );
+	foreach ( $hooks['woocommerce_order_status_changed'] as $callback ) { call_user_func( $callback, 1, 'pending', 'wc-custom-paid' ); }
+	expect( array( 'invoice' ) === made(), 'A custom paid status makes the invoice' );
+	foreach ( $hooks['woocommerce_order_status_changed'] as $callback ) { call_user_func( $callback, 1, 'wc-custom-paid', 'completed' ); }
+	expect( array() === made(), 'A second paid status change makes no second invoice' );
 	$hooks = array();
 	$trigger = 'order_completed';
 	new \Nashenski\Admin\Order\Actions();
-	expect( empty( $hooks['woocommerce_payment_complete'] ) && empty( $hooks['woocommerce_order_status_processing'] ), 'Completed trigger does not register the paid hooks' );
+	expect( empty( $hooks['woocommerce_payment_complete'] ) && empty( $hooks['woocommerce_order_status_changed'] ), 'Completed trigger does not register the paid hooks' );
 	$trigger = '';
 
 	// A refund of an unpaid bacs order makes no credit notice; a paid and invoiced one does.

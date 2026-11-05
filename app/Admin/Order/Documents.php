@@ -78,7 +78,7 @@ class Documents {
 		}
 	}
 
-	/** Bank transfer orders get the invoice once they are paid (processing, completed or payment complete). */
+	/** Bank transfer orders get the invoice once they are paid (any paid status or payment complete). */
 	public static function generate_invoice_when_paid( $order_id ) {
 		$order = wc_get_order( $order_id );
 
