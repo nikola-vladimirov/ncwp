@@ -15,6 +15,8 @@ WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shipping, invoices a
 
 **Български**
 
+Ръководство (на български и на английски): https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+
 Nashenski Commerce добавя към WooCommerce всичко, от което се нуждае български онлайн магазин. Всичко работи на вашия сайт: цените, етикетите и документите се правят от сайта ви и се изпращат само към услугите, които включите.
 
 **Доставка**
@@ -75,6 +77,8 @@ Nashenski Commerce е базиран на Bulgarisation for WooCommerce 4.0.13 �
 Всяка настройка има кратко описание и подсказка. WooCommerce > Настройки > Nashenski Commerce > Помощ съдържа препоръчаните настройки, импорта от други плъгини, първите стъпки и как се използва всяка част от плъгина.
 
 **English**
+
+Manual (Bulgarian and English): https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
 Nashenski Commerce adds what a Bulgarian online store needs to WooCommerce. Everything runs on your own site: prices, labels and documents are made by your site and sent only to the services you turn on.
 
@@ -194,6 +198,8 @@ The plugin only contacts a service after you turn it on and enter your own accou
 The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf php-font-lib (LGPL-2.1 or later) and php-svg-lib (LGPL-3.0 or later), which make the PDF documents; and Pimple, Masterminds HTML5, sabberworm PHP-CSS-Parser, setasign FPDI, chillerlan php-qrcode and php-settings-container, clegginabox PDF merger, ddeboer VATIN and PSR container (all MIT). Their licences are in each library's folder.
 
 == Changelog ==
+
+Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
 = 0.19.9 =
 * Updates: the update window shows the plugin icon and banner. The description and the help manual are updated for 0.19.x.

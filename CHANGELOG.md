@@ -1,5 +1,7 @@
 # Nashenski Commerce changelog
 
+Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+
 ## 0.19.9 (2026-11-05)
 
 ### Updates
