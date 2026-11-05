@@ -7,3 +7,4 @@ vendor/**/Tests export-ignore
 vendor/**/tests export-ignore
 composer.lock export-ignore
 README.md export-ignore
+tests export-ignore
