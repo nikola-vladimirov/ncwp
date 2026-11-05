@@ -90,6 +90,11 @@ class Documents {
 		try {
 			( new Document\Invoice( $order ) )->generate_file();
 			self::maybe_generate_invoice_copy( $order );
+
+			// Refunds made before the payment had no credit notice (it needs the invoice); make them now, as generate_documents does.
+			foreach ( $order->get_refunds() as $refund ) {
+				self::generate_refunded_documents( $refund->get_id(), $refund->get_parent_id() );
+			}
 		} catch ( \Throwable $e ) {
 			wc_get_logger()->error( 'Invoice for order #' . $order_id . ' was not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
 			try { // The note must not throw out of the hook either.

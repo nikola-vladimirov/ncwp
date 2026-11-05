@@ -4,7 +4,7 @@ namespace Nashenski\Invoice\Document {
 	class Log { public static $made = array(); }
 	class NRA { public function __construct( $o ) {} public function generate_file() { Log::$made[] = 'nra'; } }
 	class Proforma { public function __construct( $o ) {} public function generate_file() { Log::$made[] = 'proforma'; } }
-	class Invoice { public function __construct( $o ) {} public function generate_file() { Log::$made[] = 'invoice'; } }
+	class Invoice { private $o; public function __construct( $o ) { $this->o = $o; } public function generate_file() { Log::$made[] = 'invoice'; $this->o->has_invoice = true; } }
 	class NRARefunded { public function __construct( $o ) {} public function generate_file() { Log::$made[] = 'nra_refund'; } }
 	class CreditNotice { public function __construct( $o ) {} public function generate_file() { Log::$made[] = 'credit'; } }
 }
@@ -15,12 +15,18 @@ namespace {
 	define( 'ABSPATH', __DIR__ . '/fixtures/' );
 	require __DIR__ . '/../vendor/autoload.php';
 	class FakeOrder {
-		public $method, $paid, $has_invoice = false, $has_number = true;
+		public $method, $paid, $has_invoice = false, $has_number = true, $refunds = array();
 		public function __construct( $method, $paid ) { $this->method = $method; $this->paid = $paid; }
 		public function get_payment_method() { return $this->method; }
 		public function is_paid() { return $this->paid; }
-		public function get_refunds() { return array(); }
+		public function get_refunds() { return $this->refunds; }
 		public function get_meta( $key ) { return "nashenski_invoice_document" === $key ? $this->has_invoice : ( "nashenski_order_number" === $key ? $this->has_number : "" ); }
+	}
+	class FakeRefund {
+		private $id, $parent;
+		public function __construct( $id, $parent ) { $this->id = $id; $this->parent = $parent; }
+		public function get_id() { return $this->id; }
+		public function get_parent_id() { return $this->parent; }
 	}
 	$order = null;
 	function wc_get_order( $id ) { return $GLOBALS['order']; }
@@ -98,6 +104,17 @@ namespace {
 	$order->has_invoice = true;
 	\Nashenski\Admin\Order\Documents::generate_refunded_documents( 5, 1 );
 	expect( array( 'nra_refund', 'credit' ) === made(), 'Invoiced order refund: credit notice made' );
+
+	// A refund made before the payment gets its credit notice once the invoice is made; a second run adds nothing.
+	$order = new FakeOrder( 'bacs', false );
+	$order->refunds = array( new FakeRefund( 7, 1 ) );
+	\Nashenski\Admin\Order\Documents::generate_refunded_documents( 7, 1 );
+	expect( array( 'nra_refund' ) === made(), 'Refund before payment: no credit notice yet' );
+	$order->paid = true;
+	\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 1 );
+	expect( array( 'invoice', 'nra_refund', 'credit' ) === made(), 'Payment makes the invoice and the credit notice of the earlier refund' );
+	\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 1 );
+	expect( array() === made(), 'A second run makes no second credit notice' );
 
 	echo 'PASS: ' . $checks . " bacs invoice assertions\n";
 }
