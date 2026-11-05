@@ -35,7 +35,7 @@ function wc_get_dimension( $value, $to, $from = 'cm' ) { return $from === $to ? 
 function nashenski_normalize_text_for_label( $value, $limit = 0 ) { return $limit ? substr( $value, 0, $limit ) : $value; }
 function nashenski_courier_cookie( $key ) { return $GLOBALS['cookie']; }
 function nashenski_has_free_shipping_coupon_in_cart() { return $GLOBALS['free_coupon']; }
-function nashenski_get_package_total() { return 100; }
+function nashenski_get_package_total() { return $GLOBALS['package_total'] ?? 100; }
 function nashenski_tax_based_price( $value, $tax = 20 ) { return $value; }
 function nashenski_format_phone( $phone, $country ) { return $phone; }
 function nashenski_label_request( $key, $default = '' ) { return $default; }
@@ -252,5 +252,11 @@ fixture();
 $filters['nashenski/speedy/max_parcel_weight'][] = function() { return 0; };
 $label = \Nashenski\Admin\Speedy::set_min_parcel_weight( array( 'content' => array( 'parcels' => array( array( 'weight' => 65 ) ) ) ) );
 expect( array( 65.0 ) === array_column( $label['content']['parcels'], 'weight' ), 'Disabling weight splitting must retain one finite parcel' );
+foreach ( array( '10000' => true, '9999' => false ) as $total => $free ) {
+	fixture(); $package_total = (int) $total / 100;
+	$m = new SpeedyMethod(); $m->free_shipping_over = 100; $m->calculate_shipping( package( 1 ) );
+	expect( $m->free_shipping === $free, 'Speedy free shipping at total ' . $package_total . ' must be ' . var_export( $free, true ) );
+}
+unset( $package_total );
 echo 'PASS: ' . $checks . " Speedy assertions\n";
 }

@@ -233,7 +233,7 @@ class Method extends \WC_Shipping_Method {
 				'title'       => __( 'Free shipping over', 'nashenski-commerce' ),
 				'type'        => 'number',
 				'placeholder' => '0',
-				'description' => __( 'Free shipping over total cart price.', 'nashenski-commerce' ),
+				'description' => __( 'Free shipping at or above total cart price.', 'nashenski-commerce' ),
 				'default'     => '',
 				'desc_tip'    => true,
 			),
@@ -659,7 +659,7 @@ class Method extends \WC_Shipping_Method {
 
 		if ( 
 			nashenski_has_free_shipping_coupon_in_cart() || 
-			( !empty( $this->free_shipping_over ) && nashenski_get_package_total() > $this->free_shipping_over )
+			( !empty( $this->free_shipping_over ) && nashenski_get_package_total() >= $this->free_shipping_over )
 		) {
 			$this->free_shipping = true;
 
