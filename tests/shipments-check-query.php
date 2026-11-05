@@ -30,6 +30,7 @@ $GLOBALS['wp_args'] = array();
 $GLOBALS['filters'] = array();
 $GLOBALS['checked'] = array();
 $GLOBALS['limit'] = 100;
+$GLOBALS['seconds'] = 20; // The time budget of one run.
 $GLOBALS['throw'] = false;
 $GLOBALS['result'] = array();
 $GLOBALS['mid_batch'] = null;
@@ -39,7 +40,7 @@ $GLOBALS['delivered'] = ''; // The status the owner chose for a delivered parcel
 
 function get_option( $k, $d = false ) { return $GLOBALS['options'][ $k ] ?? $d; }
 function update_option( $k, $v, $autoload = null ) { $GLOBALS['options'][ $k ] = $v; return true; }
-function apply_filters( $tag, $v ) { return $GLOBALS['limit']; }
+function apply_filters( $tag, $v ) { return 'nashenski/shipments/check_seconds' === $tag ? $GLOBALS['seconds'] : $GLOBALS['limit']; }
 function add_filter( $tag, $cb ) { $GLOBALS['filters'][ $tag ][] = $cb; }
 function remove_filter( $tag, $cb ) { $GLOBALS['filters'][ $tag ] = array_values( array_filter( $GLOBALS['filters'][ $tag ] ?? array(), function ( $f ) use ( $cb ) { return $f !== $cb; } ) ); }
 function __( $t ) { return $t; }
@@ -210,6 +211,24 @@ $GLOBALS['result'][0]->date = $GLOBALS['result'][1]->date = day( 1 );
 check( array( 1, 2 ) === run() && day( 1 ) === cursor() && array( 1, 2 ) === cursor_ids(), 'same timestamp: the cursor stays on the shared second with both IDs' );
 check( array( 3 ) === run(), 'same timestamp: the next batch moves on to order 3' );
 
+// Out of time: a run stops after the budget, the cursor stands on the last order read, and the cycle still reaches every order.
+$GLOBALS['options'] = array();
+$GLOBALS['limit'] = 100;
+$GLOBALS['seconds'] = 0;
+$GLOBALS['mid_batch'] = function () { usleep( 2000 ); };
+orders( 1, 2, 3, 4, 5 );
+check( array( 1 ) === run() && day( 1 ) === cursor() && array( 1 ) === cursor_ids(), 'time budget: a slow run reads one order and the cursor stands on it, not back at the start' );
+check( array( 2 ) === run() && day( 2 ) === cursor(), 'time budget: the next run goes on with order 2' );
+$seen = array_merge( run(), run() );
+check( array( 3, 4 ) === $seen, 'time budget: orders 3 and 4 follow' );
+check( array( 5 ) === run() && abs( cursor() - ( time() - 60 * 86400 ) ) <= 2 && array() === cursor_ids(), 'time budget: the last order ends the cycle and the cursor goes back to the window start' );
+foreach ( $GLOBALS['result'] as $o ) { check( 0 === $o->saves, "time budget: unchanged order {$o->id} not saved" ); }
+// With limit -1 (no cursor) the budget does not cut the run: every order is still read.
+$GLOBALS['limit'] = -1;
+check( array( 1, 2, 3, 4, 5 ) === run(), 'time budget: limit -1 reads every order, the budget is not used' );
+$GLOBALS['seconds'] = 20;
+$GLOBALS['limit'] = 2;
+$GLOBALS['mid_batch'] = null;
 // A changed order is saved once; its unchanged neighbour is not.
 $GLOBALS['options'] = array();
 $GLOBALS['delivered'] = 'wc-completed';

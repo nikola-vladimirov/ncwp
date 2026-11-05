@@ -258,16 +258,24 @@ class Automation {
 		}
 
 		$dates = array();
+		// Each order is one courier call (up to 60 s when the courier is slow), so a run stops after this many seconds and the next one goes on from there.
+		$budget = (float) apply_filters( 'nashenski/shipments/check_seconds', 20 );
+		$began = microtime( true );
 
 		foreach ( $orders as $order ) {
 			// check_order() saves an order only when its shipment changed (delivered or returned); the others are left alone.
 			// A change-only save writes the order's meta and its new status, never a stale copy of the rest of the row.
 			self::check_order( $order );
 			$dates[ $order->get_id() ] = $order->get_date_created() ? $order->get_date_created()->getTimestamp() : $from;
+
+			if ( $limit > 0 && microtime( true ) - $began > $budget ) {
+				break;
+			}
 		}
 
 		if ( $limit > 0 ) {
-			if ( count( $orders ) < $limit ) {
+			// Orders left unread (out of time) make the page a full one: the cursor moves to the last order read, not back to the start.
+			if ( count( $orders ) < $limit && count( $dates ) === count( $orders ) ) {
 				// A short page is the end of the list, so start again at the window start.
 				$next = array( 'from' => $start, 'ids' => array() );
 			} else {
