@@ -91,6 +91,19 @@ namespace {
 	// The paid hooks exist for the default trigger only.
 	new \Nashenski\Admin\Order\Actions();
 	expect( ! empty( $hooks['woocommerce_payment_complete'] ) && ! empty( $hooks['woocommerce_order_status_changed'] ), 'Default trigger registers the paid hooks' );
+	// WooCommerce fires status_processing, then pending_to_processing (the email sends here), then status_changed. The invoice must exist at the email, so the processing and completed hooks are registered and come before the changed hook.
+	$names = array_keys( $hooks );
+	expect( in_array( 'woocommerce_order_status_processing', $names, true ) && in_array( 'woocommerce_order_status_completed', $names, true ), 'The processing and completed hooks are registered' );
+	expect( array_search( 'woocommerce_order_status_processing', $names, true ) < array_search( 'woocommerce_order_status_changed', $names, true ), 'The processing hook is registered before the changed hook' );
+	$order = new FakeOrder( 'bacs', true );
+	$invoice_at_email = null;
+	$email = function () use ( &$order, &$invoice_at_email ) { $invoice_at_email = $order->has_invoice; };
+	foreach ( array( 'woocommerce_order_status_processing', 'woocommerce_order_status_pending_to_processing', 'woocommerce_order_status_changed' ) as $step ) {
+		$callbacks = 'woocommerce_order_status_pending_to_processing' === $step ? array( $email ) : ( $hooks[ $step ] ?? array() );
+		foreach ( $callbacks as $callback ) { call_user_func( $callback, 1, 'pending', 'processing' ); }
+	}
+	expect( true === $invoice_at_email, 'The invoice exists before the processing email is built' );
+	expect( array( 'invoice' ) === made(), 'Processing makes exactly one invoice, the changed hook adds none' );
 	// Any paid status counts (a custom one from woocommerce_order_is_paid_statuses): the callback checks is_paid(), and a second status change makes nothing.
 	$order = new FakeOrder( 'bacs', true );
 	foreach ( $hooks['woocommerce_order_status_changed'] as $callback ) { call_user_func( $callback, 1, 'pending', 'wc-custom-paid' ); }

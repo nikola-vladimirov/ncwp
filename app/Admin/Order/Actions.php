@@ -15,8 +15,8 @@ class Actions {
 		if ( !$order_documents_trigger || $order_documents_trigger === "order_created" ) {
 			add_action( 'woocommerce_checkout_order_processed', array( '\Nashenski\Admin\Order\Documents', 'generate_documents' ), 100 );
 
-			// Bank transfer invoices wait for the payment. Any status change is checked, so a custom paid status counts too (the callback tests is_paid()); with the completed trigger, completed already counts as paid.
-			foreach ( array( 'woocommerce_order_status_changed', 'woocommerce_payment_complete' ) as $paid_hook ) {
+			// Bank transfer invoices wait for the payment. The processing and completed hooks fire before WooCommerce sends the email, so the mail carries the invoice; woocommerce_order_status_changed fires after it and only adds custom paid statuses (the callback tests is_paid() and the invoice meta, so one invoice). With the completed trigger, completed already counts as paid.
+			foreach ( array( 'woocommerce_order_status_processing', 'woocommerce_order_status_completed', 'woocommerce_payment_complete', 'woocommerce_order_status_changed' ) as $paid_hook ) {
 				add_action( $paid_hook, array( '\Nashenski\Admin\Order\Documents', 'generate_invoice_when_paid' ), 100, 1 );
 			}
 		} else if ( $order_documents_trigger === "order_completed" ) {
