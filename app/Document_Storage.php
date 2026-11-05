@@ -1,6 +1,8 @@
 <?php
 namespace Nashenski;
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -136,14 +138,34 @@ class Document_Storage {
 			'limit' => self::CLEANUP_BATCH,
 			'return' => 'ids',
 			'type' => 'shop_order',
-			'meta_query' => array( 'relation' => 'OR', array( 'key' => 'nashenski_order_document', 'compare' => 'EXISTS' ), array( 'key' => 'nashenski_order_document_en', 'compare' => 'EXISTS' ) ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- batched background job.
 		);
 
 		if ( ! $all ) {
 			$args['date_created'] = '<' . ( time() - $days * DAY_IN_SECONDS );
 		}
 
-		$ids = wc_get_orders( $args );
+		$has_document = array( 'relation' => 'OR', array( 'key' => 'nashenski_order_document', 'compare' => 'EXISTS' ), array( 'key' => 'nashenski_order_document_en', 'compare' => 'EXISTS' ) );
+		$legacy = ! ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() );
+
+		if ( $legacy ) {
+			// The legacy post datastore rejects the meta_query argument, so add it to the WP_Query it builds.
+			$add = function ( $wp_query_args ) use ( $has_document ) {
+				$wp_query_args['meta_query'] = array_merge( isset( $wp_query_args['meta_query'] ) ? (array) $wp_query_args['meta_query'] : array(), array( $has_document ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- batched background job.
+
+				return $wp_query_args;
+			};
+			add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
+		} else {
+			$args['meta_query'] = array( $has_document ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- batched background job.
+		}
+
+		try {
+			$ids = wc_get_orders( $args );
+		} finally {
+			if ( $legacy ) {
+				remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
+			}
+		}
 
 		foreach ( $ids as $id ) {
 			$order = wc_get_order( $id );

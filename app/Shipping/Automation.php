@@ -22,6 +22,9 @@ class Automation {
 	/** Set once the shipment was delivered or went back, so the hourly check leaves the order alone. */
 	const STATE_META = '_nashenski_shipment_state';
 
+	/** Time of the last hourly check; saving it moves the order to the back of the date_modified queue. */
+	const CHECKED_META = '_nashenski_shipment_checked';
+
 	/** Public tracking pages; the waybill number goes at the end. */
 	const TRACKING = array(
 		'econt' => 'https://www.econt.com/services/track-shipment/',
@@ -202,22 +205,42 @@ class Automation {
 
 	public static function check_shipments() {
 		// ponytail: 100 open orders per hour, changed in the last 60 days; a busier store can raise it.
-		$orders = wc_get_orders( array(
+		$args = array(
 			'status' => array( 'processing', 'on-hold' ),
 			'limit' => (int) apply_filters( 'nashenski/shipments/check_limit', 100 ),
 			'date_modified' => '>' . ( time() - 60 * DAY_IN_SECONDS ),
 			'orderby' => 'date_modified',
 			'order' => 'ASC',
-			'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				array(
-					'key' => self::STATE_META,
-					'compare' => 'NOT EXISTS',
-				),
-			),
-		) );
+		);
+		$open = array( 'key' => self::STATE_META, 'compare' => 'NOT EXISTS' );
+		$legacy = ! ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() );
+
+		if ( $legacy ) {
+			// The legacy post datastore rejects the meta_query argument, so add it to the WP_Query it builds.
+			$add = function ( $wp_query_args ) use ( $open ) {
+				$wp_query_args['meta_query'] = array_merge( isset( $wp_query_args['meta_query'] ) ? (array) $wp_query_args['meta_query'] : array(), array( $open ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+
+				return $wp_query_args;
+			};
+			add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
+		} else {
+			$args['meta_query'] = array( $open ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+		}
+
+		try {
+			$orders = wc_get_orders( $args );
+		} finally {
+			if ( $legacy ) {
+				remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
+			}
+		}
 
 		foreach ( $orders as $order ) {
-			self::check_order( $order );
+			// An unchanged order is saved too, so the oldest-first query reaches the others next hour.
+			if ( ! in_array( self::check_order( $order ), array( 'delivered', 'returned' ), true ) ) {
+				$order->update_meta_data( self::CHECKED_META, time() );
+				$order->save();
+			}
 		}
 	}
 
