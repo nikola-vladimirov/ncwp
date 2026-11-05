@@ -536,7 +536,7 @@ class Method extends \WC_Shipping_Method {
 
 		if ( 
 			nashenski_has_free_shipping_coupon_in_cart() ||
-			( !empty( $this->free_shipping_over ) && nashenski_get_package_total() > $this->free_shipping_over )
+			( !empty( $this->free_shipping_over ) && nashenski_get_package_total() >= $this->free_shipping_over )
 		) {
 			$this->free_shipping = true;
 			

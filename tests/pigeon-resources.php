@@ -40,7 +40,7 @@ function __( $value, $domain = '' ) { return $value; }
 function esc_html( $value ) { return $value; }
 function nashenski_courier_cookie( $key ) { return $GLOBALS['cookie']; }
 function nashenski_has_free_shipping_coupon_in_cart() { return $GLOBALS['free_coupon']; }
-function nashenski_get_package_total() { return 100; }
+function nashenski_get_package_total() { return $GLOBALS['package_total'] ?? 100; }
 function nashenski_tax_based_price( $value, $tax = 20 ) { return $value; }
 function wc_tax_enabled() { return false; }
 function do_action( $name, ...$args ) {}
@@ -258,5 +258,11 @@ fixture( true ); $item = package( 1, 0 )['contents'][0]; $item['data']->read_lim
 $m = new PigeonMethod( 'locker' ); $m->package = array( 'contents' => array_fill( 0, 2000, $item ) );
 expect( rejected( function() use ( $m ) { APSBoxes::calculate_label( array(), $m ); } ), 'Direct locker filtering must reject excessive rows before conversion or ordinary-error fallback' );
 expect( 0 === $item['data']->reads, 'Excessive-row rejection must precede product extraction' );
+foreach ( array( '10000' => true, '9999' => false ) as $total => $free ) {
+	fixture(); $package_total = (int) $total / 100;
+	$m = new PigeonMethod(); $m->free_shipping_over = 100; $m->calculate_shipping( package( 1 ) );
+	expect( $m->free_shipping === $free, 'Pigeon free shipping at total ' . $package_total . ' must be ' . var_export( $free, true ) );
+}
+unset( $package_total );
 echo 'PASS: ' . $checks . " Pigeon assertions\n";
 }

@@ -35,7 +35,7 @@ function wc_get_dimension( $value, $to, $from = 'cm' ) { return $from === $to ? 
 function nashenski_normalize_text_for_label( $value, $limit = 0 ) { return $limit ? substr( $value, 0, $limit ) : $value; }
 function nashenski_courier_cookie( $key ) { return $GLOBALS['cookie']; }
 function nashenski_has_free_shipping_coupon_in_cart() { return $GLOBALS['free_coupon']; }
-function nashenski_get_package_total() { return 100; }
+function nashenski_get_package_total() { return $GLOBALS['package_total'] ?? 100; }
 function nashenski_tax_based_price( $value, $tax = 20 ) { return $value; }
 function nashenski_format_phone( $value, $country = '' ) { return $value; }
 function get_woocommerce_currency() { return 'EUR'; }
@@ -243,5 +243,11 @@ foreach ( array( false, true ) as $auto ) {
 	$m = new EcontMethod(); $m->calculate_shipping( package( 1000000000, 1e-12, array( 0, 0, 0 ) ) );
 	expect( 1 === count( $m->rates ), 'Huge quantities without per-unit sizing must not be rejected by an arbitrary order-quantity cap' );
 }
+foreach ( array( '10000' => true, '9999' => false ) as $total => $free ) {
+	fixture(); $package_total = (int) $total / 100; $cookie['fixed_price'] = '0';
+	$m = new EcontMethod(); $m->free_shipping_over = 100; $m->calculate_shipping( package( 1 ) );
+	expect( $m->free_shipping === $free, 'Econt free shipping at total ' . $package_total . ' must be ' . var_export( $free, true ) );
+}
+unset( $package_total );
 echo 'PASS: ' . $checks . " Econt assertions\n";
 }
