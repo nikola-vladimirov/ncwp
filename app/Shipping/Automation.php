@@ -39,6 +39,9 @@ class Automation {
 	/** Couriers whose API takes a courier request. The others collect with the waybill itself. */
 	const PICKUP = array( 'econt', 'speedy' );
 
+	/** Order action ids; the translated labels come from actions(), which must not run before init. */
+	const ACTION_IDS = array( 'nashenski_create_waybill', 'nashenski_request_courier', 'nashenski_check_shipment' );
+
 	public function __construct() {
 		if ( 'yes' === nashenski_get_option( self::GROUP, 'order_number' ) ) {
 			foreach ( array_keys( Register::COURIERS ) as $courier ) {
@@ -56,7 +59,7 @@ class Automation {
 
 		add_filter( 'woocommerce_order_actions', array( __CLASS__, 'order_actions' ), 10, 2 );
 
-		foreach ( array_keys( self::actions() ) as $action ) {
+		foreach ( self::ACTION_IDS as $action ) {
 			add_action( 'woocommerce_order_action_' . $action, function ( $order ) use ( $action ) {
 				self::notice( self::run( $action, array( $order ) ) );
 			} );
