@@ -2723,8 +2723,8 @@ msgid "9 or 13 digits. The NRA audit file cannot be made without it."
 msgstr "9 или 13 цифри. Одиторският файл за НАП не може да се създаде без него."
 
 #: app/Admin/Setting_Help.php:85
-msgid "For a company that is not registered for VAT: invoices carry the note about Article 113(9) and show no VAT. Works while WooCommerce taxes are off."
-msgstr "За фирма без регистрация по ДДС: фактурите съдържат текста за чл. 113, ал. 9 и не показват ДДС. Работи, докато данъците в WooCommerce са изключени."
+msgid "For a company that is not registered for VAT: invoices carry the note about Article 113(9), and invoices, proformas and credit notes show no VAT. Works while WooCommerce taxes are off."
+msgstr "За фирма без регистрация по ДДС: фактурите съдържат текста за чл. 113, ал. 9, а фактурите, проформите и кредитните известия не показват ДДС. Работи, докато данъците в WooCommerce са изключени."
 
 #: app/Admin/Setting_Help.php:86
 msgid "Starts with BG. Leave empty if you are not registered for VAT."

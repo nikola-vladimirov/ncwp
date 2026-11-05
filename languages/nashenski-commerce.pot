@@ -2718,7 +2718,7 @@ msgid "9 or 13 digits. The NRA audit file cannot be made without it."
 msgstr ""
 
 #: app/Admin/Setting_Help.php:85
-msgid "For a company that is not registered for VAT: invoices carry the note about Article 113(9) and show no VAT. Works while WooCommerce taxes are off."
+msgid "For a company that is not registered for VAT: invoices carry the note about Article 113(9), and invoices, proformas and credit notes show no VAT. Works while WooCommerce taxes are off."
 msgstr ""
 
 #: app/Admin/Setting_Help.php:86

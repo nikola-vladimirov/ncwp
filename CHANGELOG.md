@@ -1,5 +1,11 @@
 # Nashenski Commerce changelog
 
+## 0.19.7 (2026-11-05)
+
+### Documents
+- Credit notes under the Article 113(9) setting show no VAT column, as invoices and pro formas do.
+- Plugin Check fixes: escaped Pigeon Express error texts, safer document numbering queries, and the Pigeon label nonce is checked.
+
 ## 0.19.6 (2026-11-05)
 
 ### Orders

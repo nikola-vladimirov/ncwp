@@ -82,7 +82,7 @@ class Setting_Help {
 			'nashenski_settings_nap_company_name' => array( __( 'As in the Commercial Register.', 'nashenski-commerce' ), '' ),
 			'nashenski_settings_nap_mol' => array( __( 'The person who represents the company.', 'nashenski-commerce' ), '' ),
 			'nashenski_settings_nap_eik' => array( __( '9 or 13 digits. The NRA audit file cannot be made without it.', 'nashenski-commerce' ), '' ),
-			'nashenski_settings_nap_vat_113_9' => array( '', __( 'For a company that is not registered for VAT: invoices carry the note about Article 113(9) and show no VAT. Works while WooCommerce taxes are off.', 'nashenski-commerce' ) ),
+			'nashenski_settings_nap_vat_113_9' => array( '', __( 'For a company that is not registered for VAT: invoices carry the note about Article 113(9), and invoices, proformas and credit notes show no VAT. Works while WooCommerce taxes are off.', 'nashenski-commerce' ) ),
 			'nashenski_settings_nap_dds_number' => array( __( 'Starts with BG. Leave empty if you are not registered for VAT.', 'nashenski-commerce' ), '' ),
 			'nashenski_settings_nap_dds_number_required' => array( '', __( 'Customers who ask for a company invoice must then enter the company VAT number.', 'nashenski-commerce' ) ),
 			'nashenski_settings_nap_phone_number' => array( __( 'Shown on your documents.', 'nashenski-commerce' ), '' ),
