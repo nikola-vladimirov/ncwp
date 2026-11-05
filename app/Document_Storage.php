@@ -1,6 +1,8 @@
 <?php
 namespace Nashenski;
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -132,62 +134,63 @@ class Document_Storage {
 			return 0;
 		}
 
-		// No meta_query: the legacy post datastore rejects it. Page through the date range and check the meta here.
 		$args = array(
 			'limit' => self::CLEANUP_BATCH,
 			'return' => 'ids',
 			'type' => 'shop_order',
-			'paged' => 1,
 		);
 
 		if ( ! $all ) {
 			$args['date_created'] = '<' . ( time() - $days * DAY_IN_SECONDS );
 		}
 
-		$done = 0;
+		$has_document = array( 'relation' => 'OR', array( 'key' => 'nashenski_order_document', 'compare' => 'EXISTS' ), array( 'key' => 'nashenski_order_document_en', 'compare' => 'EXISTS' ) );
+		$legacy = ! ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() );
 
-		do {
-			$ids = wc_get_orders( $args );
+		if ( $legacy ) {
+			// The legacy post datastore rejects the meta_query argument, so add it to the WP_Query it builds.
+			$add = function ( $wp_query_args ) use ( $has_document ) {
+				$wp_query_args['meta_query'] = array_merge( isset( $wp_query_args['meta_query'] ) ? (array) $wp_query_args['meta_query'] : array(), array( $has_document ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- batched background job.
 
-			foreach ( $ids as $id ) {
-				$order = wc_get_order( $id );
+				return $wp_query_args;
+			};
+			add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
+		} else {
+			$args['meta_query'] = array( $has_document ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- batched background job.
+		}
 
-				if ( ! $order ) {
-					continue;
-				}
+		$ids = wc_get_orders( $args );
 
-				$cleared = false;
+		if ( $legacy ) {
+			remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
+		}
 
-				foreach ( array( 'nashenski_order_document', 'nashenski_order_document_en' ) as $meta ) {
-					if ( ! $order->meta_exists( $meta ) ) {
-						continue;
-					}
+		foreach ( $ids as $id ) {
+			$order = wc_get_order( $id );
 
-					$attach_id = (int) $order->get_meta( $meta );
-
-					if ( $attach_id && 'attachment' === get_post_type( $attach_id ) ) {
-						wp_delete_attachment( $attach_id, true );
-					}
-
-					$order->delete_meta_data( $meta );
-					$cleared = true;
-				}
-
-				if ( $cleared ) {
-					$order->update_meta_data( self::RECEIPT_DELETED_META, time() );
-					$order->save();
-					$done++;
-				}
+			if ( ! $order ) {
+				continue;
 			}
 
-			$args['paged']++;
-		} while ( count( $ids ) === self::CLEANUP_BATCH && $done < self::CLEANUP_BATCH );
+			foreach ( array( 'nashenski_order_document', 'nashenski_order_document_en' ) as $meta ) {
+				$attach_id = (int) $order->get_meta( $meta );
 
-		if ( $done >= self::CLEANUP_BATCH && function_exists( 'as_enqueue_async_action' ) ) {
+				if ( $attach_id && 'attachment' === get_post_type( $attach_id ) ) {
+					wp_delete_attachment( $attach_id, true );
+				}
+
+				$order->delete_meta_data( $meta );
+			}
+
+			$order->update_meta_data( self::RECEIPT_DELETED_META, time() );
+			$order->save();
+		}
+
+		if ( count( $ids ) === self::CLEANUP_BATCH && function_exists( 'as_enqueue_async_action' ) ) {
 			as_enqueue_async_action( self::CLEANUP_HOOK, array( (bool) $all ), 'nashenski' );
 		}
 
-		return $done;
+		return count( $ids );
 	}
 
 	/**

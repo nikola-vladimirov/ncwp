@@ -219,8 +219,8 @@ class Automation {
 			$page = wc_get_orders( $args );
 
 			foreach ( $page as $order ) {
-				if ( count( $open ) < $limit && ! $order->meta_exists( self::STATE_META ) ) {
-					$open[] = $order;
+				if ( count( $open ) < $limit && ! isset( $open[ $order->get_id() ] ) && ! $order->meta_exists( self::STATE_META ) ) {
+					$open[ $order->get_id() ] = $order;
 				}
 			}
 
