@@ -202,21 +202,32 @@ class Automation {
 
 	public static function check_shipments() {
 		// ponytail: 100 open orders per hour, changed in the last 60 days; a busier store can raise it.
-		$orders = wc_get_orders( array(
+		// No meta_query: the legacy post datastore rejects it. Page through the orders and skip the finished ones here.
+		$limit = max( 1, (int) apply_filters( 'nashenski/shipments/check_limit', 100 ) );
+		$args = array(
 			'status' => array( 'processing', 'on-hold' ),
-			'limit' => (int) apply_filters( 'nashenski/shipments/check_limit', 100 ),
+			'limit' => $limit,
+			'paged' => 1,
 			'date_modified' => '>' . ( time() - 60 * DAY_IN_SECONDS ),
 			'orderby' => 'date_modified',
 			'order' => 'ASC',
-			'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				array(
-					'key' => self::STATE_META,
-					'compare' => 'NOT EXISTS',
-				),
-			),
-		) );
+		);
+		$open = array();
 
-		foreach ( $orders as $order ) {
+		// Collect first: checking an order changes its date and would shift the pages.
+		do {
+			$page = wc_get_orders( $args );
+
+			foreach ( $page as $order ) {
+				if ( count( $open ) < $limit && ! $order->meta_exists( self::STATE_META ) ) {
+					$open[] = $order;
+				}
+			}
+
+			$args['paged']++;
+		} while ( count( $page ) === $limit && count( $open ) < $limit );
+
+		foreach ( $open as $order ) {
 			self::check_order( $order );
 		}
 	}
