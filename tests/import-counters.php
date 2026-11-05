@@ -22,6 +22,7 @@ namespace {
 	);
 
 	$copy = new ReflectionMethod( \Nashenski\Admin\Migration::class, 'copy_options' );
+	$copy->setAccessible( true );
 
 	$copy->invoke( null, 'bulgarisation_settings_', 'bulgarisation' );
 	$o = $GLOBALS['options'];
@@ -35,6 +36,7 @@ namespace {
 	$copy->invoke( null, 'bulgarisation_settings_', 'bulgarisation' );
 	if ( '0000000005' !== $GLOBALS['options']['nashenski_settings_invoice_next_invoice_number'] ) { $fail[] = 'lower counter was not raised to the old value'; }
 
+$GLOBALS['options']['bulgarisation_settings_invoice_next_invoice_separate_number'] = '';	$GLOBALS['options']['nashenski_settings_invoice_next_invoice_separate_number'] = '0000000042';	$copy->invoke( null, 'bulgarisation_settings_', 'bulgarisation' );	if ( '0000000042' !== $GLOBALS['options']['nashenski_settings_invoice_next_invoice_separate_number'] ) { $fail[] = 'empty old separate counter wiped the live one'; }
 	echo $fail ? 'FAIL: ' . implode( '; ', $fail ) . "\n" : "OK import-counters\n";
 	exit( $fail ? 1 : 0 );
 }

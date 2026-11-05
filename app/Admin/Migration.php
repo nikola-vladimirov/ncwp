@@ -216,7 +216,7 @@ class Migration {
 			if ( preg_match( '/_next_invoice(_separate)?_number$/', $name ) ) {
 				$current = get_option( str_replace( $old, self::NEW, $name ) );
 
-				if ( is_numeric( $current ) && is_numeric( $value ) && (float) $current >= (float) $value ) {
+				if ( is_numeric( $current ) && ( ! is_numeric( $value ) || (float) $current >= (float) $value ) ) {
 					continue;
 				}
 			}
