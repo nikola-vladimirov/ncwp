@@ -1,4 +1,10 @@
 <?php
+/**
+ * Export Builder.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin;
 
 use Nashenski\Export\Builder\Builder;
@@ -14,6 +20,9 @@ defined( 'ABSPATH' ) || exit;
 class Export_Builder {
 	const NONCE = 'nashenski_export_builder';
 
+	/**
+	 * Construct.
+	 */
 	public function __construct() {
 		add_action( 'wp_ajax_nashenski_export_preview', array( __CLASS__, 'preview' ) );
 		add_action( 'wp_ajax_nashenski_export_save', array( __CLASS__, 'save' ) );
@@ -21,12 +30,18 @@ class Export_Builder {
 		add_action( 'admin_post_nashenski_export_download', array( __CLASS__, 'download' ) );
 	}
 
+	/**
+	 * Check.
+	 */
 	private static function check() {
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
 		}
 	}
 
+	/**
+	 * Posted config.
+	 */
 	private static function posted_config() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- checked in check(); normalized below.
 		$raw = isset( $_POST['config'] ) ? json_decode( wp_unslash( $_POST['config'] ), true ) : array();
@@ -34,6 +49,9 @@ class Export_Builder {
 		return Builder::normalize( $raw );
 	}
 
+	/**
+	 * Preview.
+	 */
 	public static function preview() {
 		self::check();
 
@@ -44,22 +62,34 @@ class Export_Builder {
 		}
 
 		$result = Builder::rows( $config, 20 );
-		$kinds = Fields::kinds( $config );
+		$kinds  = Fields::kinds( $config );
 
-		$rows = array_map( function ( $row ) use ( $kinds, $config ) {
-			return array_map( function ( $value, $i ) use ( $kinds, $config ) {
-				return Builder::format( $value, $kinds[ $i ], $config );
-			}, $row, array_keys( $row ) );
-		}, $result['rows'] );
+		$rows = array_map(
+			function ( $row ) use ( $kinds, $config ) {
+				return array_map(
+					function ( $value, $i ) use ( $kinds, $config ) {
+						return Builder::format( $value, $kinds[ $i ], $config );
+					},
+					$row,
+					array_keys( $row )
+				);
+			},
+			$result['rows']
+		);
 
-		wp_send_json_success( array(
-			'labels' => wp_list_pluck( $config['columns'], 'label' ),
-			'rows' => $rows,
-			'total' => $result['total'],
-			'file' => Builder::filename( $config ),
-		) );
+		wp_send_json_success(
+			array(
+				'labels' => wp_list_pluck( $config['columns'], 'label' ),
+				'rows'   => $rows,
+				'total'  => $result['total'],
+				'file'   => Builder::filename( $config ),
+			)
+		);
 	}
 
+	/**
+	 * Save.
+	 */
 	public static function save() {
 		self::check();
 
@@ -69,19 +99,28 @@ class Export_Builder {
 			wp_send_json_error( array( 'message' => __( 'Give the export a name.', 'nashenski-commerce' ) ) );
 		}
 
-		$templates = Builder::templates();
-		$key = sanitize_title( $config['name'] ) ?: 'export-' . wp_rand();
+		$templates         = Builder::templates();
+		$key               = sanitize_title( $config['name'] );
+		$key               = '' !== $key ? $key : 'export-' . wp_rand();
 		$templates[ $key ] = $config;
 		update_option( Builder::TEMPLATES_OPTION, $templates, false );
 
-		wp_send_json_success( array( 'key' => $key, 'templates' => $templates ) );
+		wp_send_json_success(
+			array(
+				'key'       => $key,
+				'templates' => $templates,
+			)
+		);
 	}
 
+	/**
+	 * Delete.
+	 */
 	public static function delete() {
 		self::check();
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in check().
-		$key = isset( $_POST['key'] ) ? sanitize_title( wp_unslash( $_POST['key'] ) ) : '';
+		$key       = isset( $_POST['key'] ) ? sanitize_title( wp_unslash( $_POST['key'] ) ) : '';
 		$templates = Builder::templates();
 		unset( $templates[ $key ] );
 		update_option( Builder::TEMPLATES_OPTION, $templates, false );
@@ -89,6 +128,9 @@ class Export_Builder {
 		wp_send_json_success( array( 'templates' => $templates ) );
 	}
 
+	/**
+	 * Download.
+	 */
 	public static function download() {
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_admin_referer( self::NONCE, 'nonce' ) ) {
 			wp_die( esc_html__( 'You do not have permission to do this.', 'nashenski-commerce' ), 403 );
@@ -109,8 +151,8 @@ class Export_Builder {
 		}
 
 		$result = Builder::rows( $config );
-		$path = Writer::write( $config, $result['rows'] );
-		$name = Builder::filename( $config );
+		$path   = Writer::write( $config, $result['rows'] );
+		$name   = Builder::filename( $config );
 
 		nashenski_send_download( $path, $name, Writer::mime( $config['format'] ) . ( in_array( $config['format'], array( 'csv', 'json', 'xml' ), true ) && 'cp1251' !== $config['encoding'] ? '; charset=utf-8' : '' ) );
 	}
@@ -122,42 +164,54 @@ class Export_Builder {
 		$fields = array();
 
 		foreach ( Fields::all() as $id => $field ) {
-			$fields[] = array( 'id' => $id, 'label' => $field['label'], 'group' => $field['group'], 'sources' => $field['sources'] );
+			$fields[] = array(
+				'id'      => $id,
+				'label'   => $field['label'],
+				'group'   => $field['group'],
+				'sources' => $field['sources'],
+			);
 		}
 
 		return array(
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-			'postUrl' => admin_url( 'admin-post.php' ),
-			'nonce' => wp_create_nonce( self::NONCE ),
-			'fields' => $fields,
-			'presets' => Builder::presets(),
+			'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+			'postUrl'   => admin_url( 'admin-post.php' ),
+			'nonce'     => wp_create_nonce( self::NONCE ),
+			'fields'    => $fields,
+			'presets'   => Builder::presets(),
 			'templates' => Builder::templates(),
-			'defaults' => Builder::defaults(),
-			'i18n' => array(
-				'newExport' => __( 'New export', 'nashenski-commerce' ),
-				'readyMade' => __( 'Ready-made', 'nashenski-commerce' ),
-				'savedGroup' => __( 'Saved exports', 'nashenski-commerce' ),
-				'add' => __( 'Add', 'nashenski-commerce' ),
-				'remove' => __( 'Remove', 'nashenski-commerce' ),
-				'up' => __( 'Move up', 'nashenski-commerce' ),
-				'down' => __( 'Move down', 'nashenski-commerce' ),
-				'heading' => __( 'Column heading', 'nashenski-commerce' ),
-				'noColumns' => __( 'No columns yet. Add fields from the list.', 'nashenski-commerce' ),
-				'saved' => __( 'Saved.', 'nashenski-commerce' ),
-				'deleted' => __( 'Deleted.', 'nashenski-commerce' ),
+			'defaults'  => Builder::defaults(),
+			'i18n'      => array(
+				'newExport'     => __( 'New export', 'nashenski-commerce' ),
+				'readyMade'     => __( 'Ready-made', 'nashenski-commerce' ),
+				'savedGroup'    => __( 'Saved exports', 'nashenski-commerce' ),
+				'add'           => __( 'Add', 'nashenski-commerce' ),
+				'remove'        => __( 'Remove', 'nashenski-commerce' ),
+				'up'            => __( 'Move up', 'nashenski-commerce' ),
+				'down'          => __( 'Move down', 'nashenski-commerce' ),
+				'heading'       => __( 'Column heading', 'nashenski-commerce' ),
+				'noColumns'     => __( 'No columns yet. Add fields from the list.', 'nashenski-commerce' ),
+				'saved'         => __( 'Saved.', 'nashenski-commerce' ),
+				'deleted'       => __( 'Deleted.', 'nashenski-commerce' ),
 				'confirmDelete' => __( 'Delete this saved export?', 'nashenski-commerce' ),
 				/* translators: 1: rows shown, 2: rows in the file, 3: file name */
-				'previewOf' => __( 'First %1$d of %2$d rows. File: %3$s', 'nashenski-commerce' ),
-				'noRows' => __( 'Nothing matches these filters.', 'nashenski-commerce' ),
-				'failed' => __( 'Something went wrong. Please try again.', 'nashenski-commerce' ),
-				'metaPrompt' => __( 'Order meta key, for example _billing_company_eik', 'nashenski-commerce' ),
-				'metaGroup' => __( 'Order meta', 'nashenski-commerce' ),
+				'previewOf'     => __( 'First %1$d of %2$d rows. File: %3$s', 'nashenski-commerce' ),
+				'noRows'        => __( 'Nothing matches these filters.', 'nashenski-commerce' ),
+				'failed'        => __( 'Something went wrong. Please try again.', 'nashenski-commerce' ),
+				'metaPrompt'    => __( 'Order meta key, for example _billing_company_eik', 'nashenski-commerce' ),
+				'metaGroup'     => __( 'Order meta', 'nashenski-commerce' ),
 			),
 		);
 	}
 
-	private static function checkboxes( $name, $options, $class = '' ) {
-		echo '<div class="nashenski-builder__checks ' . esc_attr( $class ) . '">';
+	/**
+	 * Checkboxes.
+	 *
+	 * @param mixed $name Name.
+	 * @param mixed $options Options.
+	 * @param mixed $css_class Class.
+	 */
+	private static function checkboxes( $name, $options, $css_class = '' ) {
+		echo '<div class="nashenski-builder__checks ' . esc_attr( $css_class ) . '">';
 
 		foreach ( $options as $value => $label ) {
 			printf(
@@ -171,6 +225,9 @@ class Export_Builder {
 		echo '</div>';
 	}
 
+	/**
+	 * Output.
+	 */
 	public static function output() {
 		$gateways = array();
 

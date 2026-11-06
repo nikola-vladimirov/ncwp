@@ -1,25 +1,45 @@
 <?php
+/**
+ * ImpossibleVatPrice.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * ImpossibleVatPrice.
+ */
 class ImpossibleVatPrice {
-	const PAGE_SLUG   = 'nashenski-impossible-prices';
-	const SCAN_NONCE  = 'nashenski_impossible_prices_scan';
-	const FIX_NONCE   = 'nashenski_impossible_prices_fix';
+	const PAGE_SLUG  = 'nashenski-impossible-prices';
+	const SCAN_NONCE = 'nashenski_impossible_prices_scan';
+	const FIX_NONCE  = 'nashenski_impossible_prices_fix';
 
+	/**
+	 * Construct.
+	 */
 	public function __construct() {
 		add_filter( 'admin_body_class', array( __CLASS__, 'add_body_class' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ), 99 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_assets' ), 20 );
 	}
 
+	/**
+	 * Add body class.
+	 *
+	 * @param mixed $classes Classes.
+	 */
 	public static function add_body_class( $classes ) {
 		$classes .= ' woocommerce_nashenski-impossible-vat-price';
 
 		return $classes;
 	}
 
+	/**
+	 * Admin menu.
+	 */
 	public static function admin_menu() {
 		add_submenu_page(
 			'edit.php?post_type=product',
@@ -31,11 +51,14 @@ class ImpossibleVatPrice {
 		);
 	}
 
+	/**
+	 * Enqueue admin assets.
+	 */
 	public static function enqueue_admin_assets() {
-		$vat_group           = nashenski_get_option( 'shop', 'vat_group' );
-		$vat_percentages     = nashenski_get_vat_groups();
-		$rate = ( isset( $vat_percentages[ $vat_group ] ) ) ? $vat_percentages[ $vat_group ] : 0;
-	
+		$vat_group       = nashenski_get_option( 'shop', 'vat_group' );
+		$vat_percentages = nashenski_get_vat_groups();
+		$rate            = ( isset( $vat_percentages[ $vat_group ] ) ) ? $vat_percentages[ $vat_group ] : 0;
+
 		wp_localize_script(
 			'nashenski-js-admin',
 			'nashenskiImpossiblePrices',
@@ -50,47 +73,50 @@ class ImpossibleVatPrice {
 				'thousandSeparator' => wc_get_price_thousand_separator(),
 				'preferHigherOnTie' => true,
 				'taxRates'          => nashenski_impossible_prices_get_tax_classes_data(),
-				'scanNonce' => wp_create_nonce( self::SCAN_NONCE ),
-				'fixNonce'  => wp_create_nonce( self::FIX_NONCE ),
-				'i18n'      => array(
-					'warningPrefix'             => esc_html__( 'This price is mathematically impossible with the current VAT.', 'nashenski-commerce' ),
-					'suggested'                 => esc_html__( 'Nearest possible price:', 'nashenski-commerce' ),
-					'apply'                     => esc_html__( 'Correct', 'nashenski-commerce' ),
-					'success'                   => esc_html__( 'The price was corrected. Save the product.', 'nashenski-commerce' ),
-					'preparing'                 => esc_html__( 'Preparing...', 'nashenski-commerce' ),
-					'notStarted'                => esc_html__( 'Not started.', 'nashenski-commerce' ),
-					'scanProducts'              => esc_html__( 'Scan products', 'nashenski-commerce' ),
-					'scanning'                  => esc_html__( 'Scanning...', 'nashenski-commerce' ),
-					'scanError'                 => esc_html__( 'An error occurred during scanning.', 'nashenski-commerce' ),
-					'scanAjaxError'             => esc_html__( 'AJAX error during scanning.', 'nashenski-commerce' ),
-					'scanFinished'              => esc_html__( 'Scanning finished.', 'nashenski-commerce' ),
+				'scanNonce'         => wp_create_nonce( self::SCAN_NONCE ),
+				'fixNonce'          => wp_create_nonce( self::FIX_NONCE ),
+				'i18n'              => array(
+					'warningPrefix'          => esc_html__( 'This price is mathematically impossible with the current VAT.', 'nashenski-commerce' ),
+					'suggested'              => esc_html__( 'Nearest possible price:', 'nashenski-commerce' ),
+					'apply'                  => esc_html__( 'Correct', 'nashenski-commerce' ),
+					'success'                => esc_html__( 'The price was corrected. Save the product.', 'nashenski-commerce' ),
+					'preparing'              => esc_html__( 'Preparing...', 'nashenski-commerce' ),
+					'notStarted'             => esc_html__( 'Not started.', 'nashenski-commerce' ),
+					'scanProducts'           => esc_html__( 'Scan products', 'nashenski-commerce' ),
+					'scanning'               => esc_html__( 'Scanning...', 'nashenski-commerce' ),
+					'scanError'              => esc_html__( 'An error occurred during scanning.', 'nashenski-commerce' ),
+					'scanAjaxError'          => esc_html__( 'AJAX error during scanning.', 'nashenski-commerce' ),
+					'scanFinished'           => esc_html__( 'Scanning finished.', 'nashenski-commerce' ),
 					/* translators: 1: current page, 2: number of pages */
-					'pageOf'                    => esc_html__( 'Scanning... page %1$s of %2$s', 'nashenski-commerce' ),
+					'pageOf'                 => esc_html__( 'Scanning... page %1$s of %2$s', 'nashenski-commerce' ),
 					/* translators: 1: products checked, 2: products with a problem */
-					'checkedFound'              => esc_html__( 'Checked: %1$s | Problematic: %2$s', 'nashenski-commerce' ),
-					'fixAll'                    => esc_html__( 'Fix all', 'nashenski-commerce' ),
-					'fixing'                    => esc_html__( 'Fixing...', 'nashenski-commerce' ),
-					'fix'                       => esc_html__( 'Fix', 'nashenski-commerce' ),
-					'edit'                      => esc_html__( 'Edit', 'nashenski-commerce' ),
-					'problematic'               => esc_html__( 'Problematic', 'nashenski-commerce' ),
-					'fixed'                     => esc_html__( 'Fixed', 'nashenski-commerce' ),
-					'missingTargetPrice'        => esc_html__( 'Missing target price', 'nashenski-commerce' ),
-					'ajaxError'                 => esc_html__( 'AJAX error', 'nashenski-commerce' ),
-					'genericError'              => esc_html__( 'Error', 'nashenski-commerce' ),
-					'noProblematicFound'        => esc_html__( 'No problematic prices found.', 'nashenski-commerce' ),
-					'noProblematicRemaining'    => esc_html__( 'No problematic prices remain.', 'nashenski-commerce' ),
-					'nothingToFix'              => esc_html__( 'There are no rows to fix.', 'nashenski-commerce' ),
+					'checkedFound'           => esc_html__( 'Checked: %1$s | Problematic: %2$s', 'nashenski-commerce' ),
+					'fixAll'                 => esc_html__( 'Fix all', 'nashenski-commerce' ),
+					'fixing'                 => esc_html__( 'Fixing...', 'nashenski-commerce' ),
+					'fix'                    => esc_html__( 'Fix', 'nashenski-commerce' ),
+					'edit'                   => esc_html__( 'Edit', 'nashenski-commerce' ),
+					'problematic'            => esc_html__( 'Problematic', 'nashenski-commerce' ),
+					'fixed'                  => esc_html__( 'Fixed', 'nashenski-commerce' ),
+					'missingTargetPrice'     => esc_html__( 'Missing target price', 'nashenski-commerce' ),
+					'ajaxError'              => esc_html__( 'AJAX error', 'nashenski-commerce' ),
+					'genericError'           => esc_html__( 'Error', 'nashenski-commerce' ),
+					'noProblematicFound'     => esc_html__( 'No problematic prices found.', 'nashenski-commerce' ),
+					'noProblematicRemaining' => esc_html__( 'No problematic prices remain.', 'nashenski-commerce' ),
+					'nothingToFix'           => esc_html__( 'There are no rows to fix.', 'nashenski-commerce' ),
 					/* translators: 1: prices fixed so far, 2: prices to fix */
-					'fixAllProgress'            => esc_html__( 'Fixing all... %1$s / %2$s', 'nashenski-commerce' ),
+					'fixAllProgress'         => esc_html__( 'Fixing all... %1$s / %2$s', 'nashenski-commerce' ),
 					/* translators: 1: prices fixed, 2: prices not fixed */
-					'fixAllSummary'             => esc_html__( 'Fixed: %1$s | Not fixed: %2$s', 'nashenski-commerce' ),
-					'statusFixing'              => esc_html__( 'Fixing...', 'nashenski-commerce' ),
-					'percentSuffix'             => "%",
+					'fixAllSummary'          => esc_html__( 'Fixed: %1$s | Not fixed: %2$s', 'nashenski-commerce' ),
+					'statusFixing'           => esc_html__( 'Fixing...', 'nashenski-commerce' ),
+					'percentSuffix'          => '%',
 				),
 			)
 		);
 	}
 
+	/**
+	 * Render admin page.
+	 */
 	public static function render_admin_page() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You do not have permission to access this page.', 'nashenski-commerce' ) );
@@ -156,6 +182,9 @@ class ImpossibleVatPrice {
 		<?php
 	}
 
+	/**
+	 * Ajax scan batch.
+	 */
 	public static function ajax_scan_batch() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_send_json_error(
@@ -219,6 +248,9 @@ class ImpossibleVatPrice {
 		);
 	}
 
+	/**
+	 * Ajax fix price.
+	 */
 	public static function ajax_fix_price() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_send_json_error(
@@ -272,7 +304,7 @@ class ImpossibleVatPrice {
 			);
 		}
 
-		if ( $recheck['nearest_raw'] !== number_format( (float) $target_price, 2, '.', '' ) ) {
+		if ( number_format( (float) $target_price, 2, '.', '' ) !== $recheck['nearest_raw'] ) {
 			wp_send_json_error(
 				array(
 					'message' => esc_html__( 'The target price no longer matches.', 'nashenski-commerce' ),
@@ -302,19 +334,24 @@ class ImpossibleVatPrice {
 
 		wp_send_json_success(
 			array(
-				'message'            => esc_html__( 'The price was fixed.', 'nashenski-commerce' ),
-				'product_id'         => $product_id,
-				'price_key'          => $price_key,
-				'target_price_raw'   => number_format( $target_price_float, 2, '.', '' ),
+				'message'              => esc_html__( 'The price was fixed.', 'nashenski-commerce' ),
+				'product_id'           => $product_id,
+				'price_key'            => $price_key,
+				'target_price_raw'     => number_format( $target_price_float, 2, '.', '' ),
 				'target_price_display' => self::format_display_decimal( $target_price_float ),
-				'adjustment_message' => $adjustment_message,
-				'new_regular_price'  => ( $product && '' !== $product->get_regular_price() ) ? self::format_display_decimal( $product->get_regular_price() ) : '',
-				'new_sale_price'     => ( $product && '' !== $product->get_sale_price() ) ? self::format_display_decimal( $product->get_sale_price() ) : '',
-				'current_rows'       => $current_rows,
+				'adjustment_message'   => $adjustment_message,
+				'new_regular_price'    => ( $product && '' !== $product->get_regular_price() ) ? self::format_display_decimal( $product->get_regular_price() ) : '',
+				'new_sale_price'       => ( $product && '' !== $product->get_sale_price() ) ? self::format_display_decimal( $product->get_sale_price() ) : '',
+				'current_rows'         => $current_rows,
 			)
 		);
 	}
 
+	/**
+	 * Get product impossible price rows.
+	 *
+	 * @param \WC_Product $product Product.
+	 */
 	protected static function get_product_impossible_price_rows( \WC_Product $product ) {
 		$rows   = array();
 		$checks = array();
@@ -347,29 +384,36 @@ class ImpossibleVatPrice {
 
 		foreach ( $checks as $check ) {
 			$rows[] = array(
-				'product_id'           => $product->get_id(),
-				'name'                 => $product->get_name(),
-				'type'                 => $product->get_type(),
-				'sku'                  => $product->get_sku(),
-				'price_key'            => $check['price_key'],
-				'price_label'          => $check['label'],
-				'entered_price_raw'    => $check['entered_price_raw'],
-				'entered_price_display'=> $check['entered_price_display'],
-				'tax_percent_raw'      => $check['tax_percent_raw'],
-				'tax_percent_display'  => $check['tax_percent_display'],
-				'nearest_raw'          => $check['nearest_raw'],
-				'nearest_display'      => $check['nearest_display'],
-				'nearest_down_raw'     => $check['nearest_down_raw'],
-				'nearest_down_display' => $check['nearest_down_display'],
-				'nearest_up_raw'       => $check['nearest_up_raw'],
-				'nearest_up_display'   => $check['nearest_up_display'],
-				'edit_link'            => get_edit_post_link( $product->get_id(), '' ),
+				'product_id'            => $product->get_id(),
+				'name'                  => $product->get_name(),
+				'type'                  => $product->get_type(),
+				'sku'                   => $product->get_sku(),
+				'price_key'             => $check['price_key'],
+				'price_label'           => $check['label'],
+				'entered_price_raw'     => $check['entered_price_raw'],
+				'entered_price_display' => $check['entered_price_display'],
+				'tax_percent_raw'       => $check['tax_percent_raw'],
+				'tax_percent_display'   => $check['tax_percent_display'],
+				'nearest_raw'           => $check['nearest_raw'],
+				'nearest_display'       => $check['nearest_display'],
+				'nearest_down_raw'      => $check['nearest_down_raw'],
+				'nearest_down_display'  => $check['nearest_down_display'],
+				'nearest_up_raw'        => $check['nearest_up_raw'],
+				'nearest_up_display'    => $check['nearest_up_display'],
+				'edit_link'             => get_edit_post_link( $product->get_id(), '' ),
 			);
 		}
 
 		return $rows;
 	}
 
+	/**
+	 * Adjust sale price after fix.
+	 *
+	 * @param \WC_Product $product Product.
+	 * @param mixed       $regular_price Regular price.
+	 * @param mixed       $sale_price Sale price.
+	 */
 	protected static function adjust_sale_price_after_fix( \WC_Product $product, $regular_price, $sale_price ) {
 		$regular_price = '' === (string) $regular_price ? '' : wc_format_decimal( $regular_price, 2 );
 		$sale_price    = '' === (string) $sale_price ? '' : wc_format_decimal( $sale_price, 2 );
@@ -415,6 +459,14 @@ class ImpossibleVatPrice {
 		);
 	}
 
+	/**
+	 * Check product price for impossibility.
+	 *
+	 * @param \WC_Product $product Product.
+	 * @param mixed       $price Price.
+	 * @param mixed       $price_key Price key.
+	 * @param mixed       $label Label.
+	 */
 	protected static function check_product_price_for_impossibility( \WC_Product $product, $price, $price_key, $label ) {
 		$price = (string) $price;
 
@@ -431,9 +483,9 @@ class ImpossibleVatPrice {
 				return null;
 			}
 		} else {
-			$vat_group           = nashenski_get_option( 'shop', 'vat_group' );
-			$vat_percentages     = nashenski_get_vat_groups();
-			$tax_percent = ( isset( $vat_percentages[ $vat_group ] ) ) ? $vat_percentages[ $vat_group ] : 0;
+			$vat_group       = nashenski_get_option( 'shop', 'vat_group' );
+			$vat_percentages = nashenski_get_vat_groups();
+			$tax_percent     = ( isset( $vat_percentages[ $vat_group ] ) ) ? $vat_percentages[ $vat_group ] : 0;
 		}
 
 		if ( self::is_gross_price_mathematically_possible( $price, $tax_percent ) ) {
@@ -461,6 +513,11 @@ class ImpossibleVatPrice {
 		);
 	}
 
+	/**
+	 * Get single tax rate percent for product.
+	 *
+	 * @param \WC_Product $product Product.
+	 */
 	protected static function get_single_tax_rate_percent_for_product( \WC_Product $product ) {
 		if ( ! wc_tax_enabled() ) {
 			return 0.0;
@@ -494,6 +551,12 @@ class ImpossibleVatPrice {
 		return (float) reset( $percents );
 	}
 
+	/**
+	 * Is gross price mathematically possible.
+	 *
+	 * @param mixed $gross_price Gross price.
+	 * @param mixed $tax_percent Tax percent.
+	 */
 	protected static function is_gross_price_mathematically_possible( $gross_price, $tax_percent ) {
 		$gross_price = (float) wc_format_decimal( $gross_price, 2 );
 		$tax_percent = (float) $tax_percent;
@@ -523,6 +586,13 @@ class ImpossibleVatPrice {
 		return false;
 	}
 
+	/**
+	 * Get nearest possible gross price.
+	 *
+	 * @param mixed $gross_price Gross price.
+	 * @param mixed $tax_percent Tax percent.
+	 * @param mixed $direction Direction.
+	 */
 	protected static function get_nearest_possible_gross_price( $gross_price, $tax_percent, $direction = 'nearest' ) {
 		$gross_price = (float) wc_format_decimal( $gross_price, 2 );
 		$tax_percent = (float) $tax_percent;
@@ -598,6 +668,12 @@ class ImpossibleVatPrice {
 		return null === $best ? '' : number_format( $best, 2, '.', '' );
 	}
 
+	/**
+	 * Get nearest possible gross price below limit.
+	 *
+	 * @param mixed $limit_gross_price Limit gross price.
+	 * @param mixed $tax_percent Tax percent.
+	 */
 	protected static function get_nearest_possible_gross_price_below_limit( $limit_gross_price, $tax_percent ) {
 		$limit_gross_price = (float) wc_format_decimal( $limit_gross_price, 2 );
 		$tax_percent       = (float) $tax_percent;
@@ -639,6 +715,11 @@ class ImpossibleVatPrice {
 		return number_format( $best, 2, '.', '' );
 	}
 
+	/**
+	 * Format display decimal.
+	 *
+	 * @param mixed $number Number.
+	 */
 	protected static function format_display_decimal( $number ) {
 		return wc_format_localized_decimal( wc_format_decimal( $number, 2 ) );
 	}

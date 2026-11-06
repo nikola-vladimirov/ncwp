@@ -1,4 +1,10 @@
 <?php
+/**
+ * Price Lists.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Pricing;
 
 defined( 'ABSPATH' ) || exit;
@@ -18,81 +24,232 @@ defined( 'ABSPATH' ) || exit;
 class Price_Lists {
 	const COURIERS = array( 'econt', 'speedy', 'pigeon' );
 
+	/**
+	 * Sources.
+	 */
 	public static function sources() {
 		return array(
-			'econt' => 'https://admin-ee.econt.com/doc_templates/tariffs/courier-bg-bg.pdf',
+			'econt'  => 'https://admin-ee.econt.com/doc_templates/tariffs/courier-bg-bg.pdf',
 			'speedy' => 'https://services.speedy.bg/pricelist/',
 			'pigeon' => 'https://pigeonexpress.com/prices-and-taxes/',
 		);
 	}
 
+	/**
+	 * Defaults.
+	 *
+	 * @param mixed $courier Courier.
+	 */
 	public static function defaults( $courier ) {
 		$lists = array(
 			// Econt tariff valid from 01.10.2026: tariff code 2 (office or Econtomat to office or Econtomat),
 			// code 3 (office to the customer's door), Econtomat 10% off, COD 1.65% paid to a bank account.
-			'econt' => array(
-				'valid_from' => '2026-10-01',
+			'econt'  => array(
+				'valid_from'   => '2026-10-01',
 				'vat_included' => true,
-				'surcharge' => 0,
-				'bands' => array(
-					array( 'to' => 1, 'office' => 4.10, 'locker' => 3.69, 'address' => 5.41 ),
-					array( 'to' => 2, 'office' => 4.49, 'locker' => 4.04, 'address' => 6.70 ),
-					array( 'to' => 5, 'office' => 4.90, 'locker' => 4.41, 'address' => 8.49 ),
-					array( 'to' => 10, 'office' => 7.84, 'locker' => 7.06, 'address' => 12.62 ),
-					array( 'to' => 15, 'office' => 8.82, 'locker' => 7.94, 'address' => 17.00 ),
-					array( 'to' => 20, 'office' => 10.79, 'locker' => 9.71, 'address' => 19.82 ),
+				'surcharge'    => 0,
+				'bands'        => array(
+					array(
+						'to'      => 1,
+						'office'  => 4.10,
+						'locker'  => 3.69,
+						'address' => 5.41,
+					),
+					array(
+						'to'      => 2,
+						'office'  => 4.49,
+						'locker'  => 4.04,
+						'address' => 6.70,
+					),
+					array(
+						'to'      => 5,
+						'office'  => 4.90,
+						'locker'  => 4.41,
+						'address' => 8.49,
+					),
+					array(
+						'to'      => 10,
+						'office'  => 7.84,
+						'locker'  => 7.06,
+						'address' => 12.62,
+					),
+					array(
+						'to'      => 15,
+						'office'  => 8.82,
+						'locker'  => 7.94,
+						'address' => 17.00,
+					),
+					array(
+						'to'      => 20,
+						'office'  => 10.79,
+						'locker'  => 9.71,
+						'address' => 19.82,
+					),
 				),
-				'over' => array(
-					'base' => array( 'office' => 10.79, 'locker' => 9.71, 'address' => 19.82 ),
-					'per_kg' => array( 'office' => 0.43, 'locker' => 0.39, 'address' => 0.52 ),
+				'over'         => array(
+					'base'   => array(
+						'office'  => 10.79,
+						'locker'  => 9.71,
+						'address' => 19.82,
+					),
+					'per_kg' => array(
+						'office'  => 0.43,
+						'locker'  => 0.39,
+						'address' => 0.52,
+					),
 				),
-				'cod' => array( 'percent' => 1.65, 'min' => 0 ),
+				'cod'          => array(
+					'percent' => 1.65,
+					'min'     => 0,
+				),
 			),
 			// Speedy price list valid from 01.10.2026, Standard 24 hours: base price between offices
 			// and automats, plus the add-on for delivery to an address; automat promo 1.52 up to 3 kg
 			// (until 01.01.2027); COD 2.4%, at least 0.61.
 			'speedy' => array(
-				'valid_from' => '2026-10-01',
+				'valid_from'   => '2026-10-01',
 				'vat_included' => true,
-				'surcharge' => 0,
-				'bands' => array(
-					array( 'to' => 3, 'office' => 2.69, 'locker' => 1.52, 'address' => 5.28 ),
-					array( 'to' => 6, 'office' => 3.74, 'locker' => 3.74, 'address' => 8.01 ),
-					array( 'to' => 10, 'office' => 4.62, 'locker' => 4.62, 'address' => 8.89 ),
-					array( 'to' => 20, 'office' => 8.23, 'locker' => 8.23, 'address' => 14.22 ),
+				'surcharge'    => 0,
+				'bands'        => array(
+					array(
+						'to'      => 3,
+						'office'  => 2.69,
+						'locker'  => 1.52,
+						'address' => 5.28,
+					),
+					array(
+						'to'      => 6,
+						'office'  => 3.74,
+						'locker'  => 3.74,
+						'address' => 8.01,
+					),
+					array(
+						'to'      => 10,
+						'office'  => 4.62,
+						'locker'  => 4.62,
+						'address' => 8.89,
+					),
+					array(
+						'to'      => 20,
+						'office'  => 8.23,
+						'locker'  => 8.23,
+						'address' => 14.22,
+					),
 				),
-				'over' => array(
-					'base' => array( 'office' => 8.23, 'locker' => 8.23, 'address' => 16.75 ),
-					'per_kg' => array( 'office' => 0.36, 'locker' => 0.36, 'address' => 0.36 ),
+				'over'         => array(
+					'base'   => array(
+						'office'  => 8.23,
+						'locker'  => 8.23,
+						'address' => 16.75,
+					),
+					'per_kg' => array(
+						'office'  => 0.36,
+						'locker'  => 0.36,
+						'address' => 0.36,
+					),
 				),
-				'cod' => array( 'percent' => 2.4, 'min' => 0.61 ),
+				'cod'          => array(
+					'percent' => 2.4,
+					'min'     => 0.61,
+				),
 			),
 			// Pigeon Express prices (October 2026) for parcels handed in at a Pigeon office: to an APS,
 			// to an office, to an address; lockers take up to 30 kg (heavier rows use the office price);
 			// fuel surcharge 17% for October 2026 (changes monthly); COD 1.5%, at least 0.40.
 			'pigeon' => array(
-				'valid_from' => '2026-10-01',
+				'valid_from'   => '2026-10-01',
 				'vat_included' => true,
-				'surcharge' => 17,
-				'bands' => array(
-					array( 'to' => 1, 'office' => 2.21, 'locker' => 1.43, 'address' => 2.97 ),
-					array( 'to' => 2, 'office' => 2.21, 'locker' => 1.43, 'address' => 2.97 ),
-					array( 'to' => 3, 'office' => 2.21, 'locker' => 1.43, 'address' => 2.97 ),
-					array( 'to' => 5, 'office' => 3.01, 'locker' => 2.63, 'address' => 5.13 ),
-					array( 'to' => 6, 'office' => 3.01, 'locker' => 3.57, 'address' => 5.13 ),
-					array( 'to' => 10, 'office' => 3.74, 'locker' => 3.57, 'address' => 5.82 ),
-					array( 'to' => 15, 'office' => 6.54, 'locker' => 4.07, 'address' => 11.32 ),
-					array( 'to' => 20, 'office' => 7.04, 'locker' => 6.07, 'address' => 11.32 ),
-					array( 'to' => 25, 'office' => 8.25, 'locker' => 7.03, 'address' => 14.83 ),
-					array( 'to' => 30, 'office' => 9.50, 'locker' => 7.03, 'address' => 16.33 ),
-					array( 'to' => 35, 'office' => 10.75, 'locker' => 10.75, 'address' => 17.83 ),
-					array( 'to' => 40, 'office' => 12.25, 'locker' => 12.25, 'address' => 19.33 ),
+				'surcharge'    => 17,
+				'bands'        => array(
+					array(
+						'to'      => 1,
+						'office'  => 2.21,
+						'locker'  => 1.43,
+						'address' => 2.97,
+					),
+					array(
+						'to'      => 2,
+						'office'  => 2.21,
+						'locker'  => 1.43,
+						'address' => 2.97,
+					),
+					array(
+						'to'      => 3,
+						'office'  => 2.21,
+						'locker'  => 1.43,
+						'address' => 2.97,
+					),
+					array(
+						'to'      => 5,
+						'office'  => 3.01,
+						'locker'  => 2.63,
+						'address' => 5.13,
+					),
+					array(
+						'to'      => 6,
+						'office'  => 3.01,
+						'locker'  => 3.57,
+						'address' => 5.13,
+					),
+					array(
+						'to'      => 10,
+						'office'  => 3.74,
+						'locker'  => 3.57,
+						'address' => 5.82,
+					),
+					array(
+						'to'      => 15,
+						'office'  => 6.54,
+						'locker'  => 4.07,
+						'address' => 11.32,
+					),
+					array(
+						'to'      => 20,
+						'office'  => 7.04,
+						'locker'  => 6.07,
+						'address' => 11.32,
+					),
+					array(
+						'to'      => 25,
+						'office'  => 8.25,
+						'locker'  => 7.03,
+						'address' => 14.83,
+					),
+					array(
+						'to'      => 30,
+						'office'  => 9.50,
+						'locker'  => 7.03,
+						'address' => 16.33,
+					),
+					array(
+						'to'      => 35,
+						'office'  => 10.75,
+						'locker'  => 10.75,
+						'address' => 17.83,
+					),
+					array(
+						'to'      => 40,
+						'office'  => 12.25,
+						'locker'  => 12.25,
+						'address' => 19.33,
+					),
 				),
-				'over' => array(
-					'base' => array( 'office' => 12.25, 'locker' => 12.25, 'address' => 19.63 ),
-					'per_kg' => array( 'office' => 0.30, 'locker' => 0.30, 'address' => 0.30 ),
+				'over'         => array(
+					'base'   => array(
+						'office'  => 12.25,
+						'locker'  => 12.25,
+						'address' => 19.63,
+					),
+					'per_kg' => array(
+						'office'  => 0.30,
+						'locker'  => 0.30,
+						'address' => 0.30,
+					),
 				),
-				'cod' => array( 'percent' => 1.5, 'min' => 0.40 ),
+				'cod'          => array(
+					'percent' => 1.5,
+					'min'     => 0.40,
+				),
 			),
 		);
 
@@ -105,10 +262,20 @@ class Price_Lists {
 		return apply_filters( 'nashenski/price_list/defaults', $list, $courier );
 	}
 
+	/**
+	 * Option name.
+	 *
+	 * @param mixed $courier Courier.
+	 */
 	public static function option_name( $courier ) {
 		return 'nashenski_settings_prices_' . $courier;
 	}
 
+	/**
+	 * Get.
+	 *
+	 * @param mixed $courier Courier.
+	 */
 	public static function get( $courier ) {
 		$saved = get_option( self::option_name( $courier ) );
 		$saved = is_string( $saved ) ? json_decode( $saved, true ) : $saved;
@@ -118,17 +285,20 @@ class Price_Lists {
 
 	/**
 	 * Clean a list (from the form, the updater or storage).
+	 *
+	 * @param mixed $prices Prices.
+	 * @param mixed $courier Courier.
 	 */
-	public static function normalize( $list, $courier ) {
-		$kinds = array( 'office', 'locker', 'address' );
+	public static function normalize( $prices, $courier ) {
+		$kinds  = array( 'office', 'locker', 'address' );
 		$number = function ( $value ) {
 			$value = str_replace( ',', '.', (string) $value );
 
 			return is_numeric( $value ) ? round( (float) $value, 4 ) : null;
 		};
-		$bands = array();
+		$bands  = array();
 
-		foreach ( (array) ( $list['bands'] ?? array() ) as $band ) {
+		foreach ( (array) ( $prices['bands'] ?? array() ) as $band ) {
 			$to = $number( $band['to'] ?? '' );
 
 			if ( null === $to || $to <= 0 ) {
@@ -144,32 +314,44 @@ class Price_Lists {
 			$bands[] = $row;
 		}
 
-		usort( $bands, function ( $a, $b ) {
-			return $a['to'] <=> $b['to'];
-		} );
+		usort(
+			$bands,
+			function ( $a, $b ) {
+				return $a['to'] <=> $b['to'];
+			}
+		);
 
-		$over = array( 'base' => array(), 'per_kg' => array() );
+		$over = array(
+			'base'   => array(),
+			'per_kg' => array(),
+		);
 
 		foreach ( $kinds as $kind ) {
-			$over['base'][ $kind ] = $number( $list['over']['base'][ $kind ] ?? '' );
-			$over['per_kg'][ $kind ] = $number( $list['over']['per_kg'][ $kind ] ?? '' );
+			$over['base'][ $kind ]   = $number( $prices['over']['base'][ $kind ] ?? '' );
+			$over['per_kg'][ $kind ] = $number( $prices['over']['per_kg'][ $kind ] ?? '' );
 		}
 
 		return array(
-			'valid_from' => preg_match( '/^\d{4}-\d{2}-\d{2}$/', (string) ( $list['valid_from'] ?? '' ) ) ? $list['valid_from'] : '',
-			'source' => esc_url_raw( (string) ( $list['source'] ?? self::sources()[ $courier ] ?? '' ) ),
-			'vat_included' => ! empty( $list['vat_included'] ),
-			'surcharge' => (float) ( $number( $list['surcharge'] ?? 0 ) ?? 0 ),
-			'bands' => $bands,
-			'over' => $over,
-			'cod' => array(
-				'percent' => (float) ( $number( $list['cod']['percent'] ?? 0 ) ?? 0 ),
-				'min' => (float) ( $number( $list['cod']['min'] ?? 0 ) ?? 0 ),
+			'valid_from'   => preg_match( '/^\d{4}-\d{2}-\d{2}$/', (string) ( $prices['valid_from'] ?? '' ) ) ? $prices['valid_from'] : '',
+			'source'       => esc_url_raw( (string) ( $prices['source'] ?? self::sources()[ $courier ] ?? '' ) ),
+			'vat_included' => ! empty( $prices['vat_included'] ),
+			'surcharge'    => (float) ( $number( $prices['surcharge'] ?? 0 ) ?? 0 ),
+			'bands'        => $bands,
+			'over'         => $over,
+			'cod'          => array(
+				'percent' => (float) ( $number( $prices['cod']['percent'] ?? 0 ) ?? 0 ),
+				'min'     => (float) ( $number( $prices['cod']['min'] ?? 0 ) ?? 0 ),
 			),
 		);
 	}
 
-	public static function save( $courier, $list ) {
-		update_option( self::option_name( $courier ), wp_json_encode( self::normalize( $list, $courier ) ) );
+	/**
+	 * Save.
+	 *
+	 * @param mixed $courier Courier.
+	 * @param mixed $prices Prices.
+	 */
+	public static function save( $courier, $prices ) {
+		update_option( self::option_name( $courier ), wp_json_encode( self::normalize( $prices, $courier ) ) );
 	}
 }
