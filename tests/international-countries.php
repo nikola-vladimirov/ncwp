@@ -82,4 +82,8 @@ nashenski_intl_assert( nashenski_intl_accepts( $econt, 'yes', 'GR' ), 'Econt: Gr
 nashenski_intl_assert( ! nashenski_intl_accepts( $econt, 'yes', 'DE' ), 'Econt: Germany refused even when on' );
 nashenski_intl_assert( ! nashenski_intl_accepts( $speedy, 'no', 'GR' ), 'Speedy: Greece refused when off' );
 nashenski_intl_assert( nashenski_intl_accepts( $speedy, 'yes', 'GR' ), 'Speedy: Greece accepted when on' );
-nashenski_intl_assert( ! nashenski_intl_accepts( $speedy, 'yes', 'RO' ), 'Speedy: Romania refused (not verified yet)' );
+
+foreach ( array( 'RO', 'CY', 'HU', 'CZ', 'HR', 'PL', 'SK', 'SI' ) as $c ) {
+	nashenski_intl_assert( nashenski_intl_accepts( $speedy, 'yes', $c ), "Speedy: $c accepted when on" );
+}
+nashenski_intl_assert( ! nashenski_intl_accepts( $speedy, 'yes', 'DE' ), 'Speedy: Germany refused (not on the price list)' );

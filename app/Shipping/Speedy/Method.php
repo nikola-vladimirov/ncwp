@@ -339,7 +339,7 @@ class Method extends \WC_Shipping_Method {
 				'default'     => 'no',
 				'options'     => array(
 					'no'  => __( 'No', 'nashenski-commerce' ),
-					'yes' => __( 'Yes, to Greece', 'nashenski-commerce' ),
+					'yes' => __( 'Yes, to the Speedy price list countries', 'nashenski-commerce' ),
 				),
 				'description' => __( 'Prices for these countries come only from Speedy, not from the public price list.', 'nashenski-commerce' ),
 				'desc_tip'    => true,
@@ -377,8 +377,8 @@ class Method extends \WC_Shipping_Method {
 	 * @return mixed Result.
 	 */
 	public function is_available( $package ) {
-		// shortcut: Speedy docs not verified for other EU countries (owner expects DPD across Europe); add them after checking.
-		$countries = 'yes' === $this->get_option( 'international', 'no' ) ? array( 'BG', 'GR' ) : array( 'BG' );
+		// Speedy's published CEE price list (services.speedy.bg/pricelist, 06.11.2026). shortcut: other EU countries need their own price rows.
+		$countries = 'yes' === $this->get_option( 'international', 'no' ) ? array( 'BG', 'RO', 'GR', 'CY', 'HU', 'CZ', 'HR', 'PL', 'SK', 'SI' ) : array( 'BG' );
 		return in_array( $package['destination']['country'], apply_filters( 'nashenski/speedy/available_countries', $countries ), true );
 	}
 

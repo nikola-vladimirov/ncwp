@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.19.9\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-06 13:20+0000\n"
-"PO-Revision-Date: 2026-11-06 13:20+0000\n"
+"POT-Creation-Date: 2026-11-06 13:21+0000\n"
+"PO-Revision-Date: 2026-11-06 13:21+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -6274,7 +6274,7 @@ msgid "Enables Speedy delivery and automatically calculate shipping price."
 msgstr ""
 
 #: app/Shipping/Speedy/Method.php:342
-msgid "Yes, to Greece"
+msgid "Yes, to the Speedy price list countries"
 msgstr ""
 
 #: app/Shipping/Speedy/Method.php:344
