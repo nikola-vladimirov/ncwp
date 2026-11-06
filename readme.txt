@@ -203,6 +203,7 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
 = 0.19.9 =
 * Updates: the update window shows the plugin icon and banner. The description and the help manual are updated for 0.19.x.
+* Fixed: a BOX NOW band row saved with an empty or invalid price used to give a free rate; now the row is refused on save with a notice, and a saved row with no price gives no BOX NOW rate. A weight band with no price for the parcel type gives no rate, not a negative one.
 
 = 0.19.8 =
 * Security: BOX NOW orders with more than 200 units are not packed automatically (add the boxes by hand); the BOX NOW sender cache moved to the private uploads folder.

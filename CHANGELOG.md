@@ -8,6 +8,10 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 - The update window shows the plugin icon and banner.
 - The description and the help manual are updated for 0.19.x.
 
+### Fixes
+- BOX NOW: a band row saved with an empty or invalid price used to give a free rate. Now the row is refused on save with a notice, and a saved row with no price gives no BOX NOW rate.
+- A weight band with no price for the parcel type now gives no rate, not a negative one.
+
 ## 0.19.8 (2026-11-05)
 
 ### Security

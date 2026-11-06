@@ -1111,11 +1111,11 @@ class Settings_Page extends \WC_Settings_Page {
 
 			foreach ( $columns as $column ) {
 				$clean[ $column ] = isset( $row[ $column ] ) && '' !== $row[ $column ] ? \Nashenski\Pricing\Price_Lists::non_negative( wc_format_decimal( $row[ $column ] ) ) : '';
-				// A value that was typed but is not a number from zero up must not become an empty cell (an empty price is a free band).
+				// A value that was typed but is not a number from zero up must not become an empty cell (the row is refused below).
 				$refused = $refused || ( isset( $row[ $column ] ) && '' !== $row[ $column ] && '' === $clean[ $column ] );
 			}
 
-			// A row with a range but no price would be a free band: refuse it.
+			// A row with a range but no price gives no rate: refuse it.
 			$refused = $refused || ( '' === $clean['price'] && '' !== implode( '', $clean ) );
 
 			if ( implode( '', $clean ) !== '' ) {
