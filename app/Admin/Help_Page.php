@@ -128,6 +128,15 @@ class Help_Page {
 				esc_html__( 'Each shipping method in a zone can have a free shipping amount and a fixed price.', 'nashenski-commerce' ),
 				esc_html__( 'When a courier publishes new prices, a notice says so. Save that courier\'s prices or press Dismiss.', 'nashenski-commerce' ),
 			),
+			__( 'Shipping abroad', 'nashenski-commerce' ) => array(
+				esc_html__( 'Your store is always in Bulgaria. Only the customer may be abroad. Turn on "Ship abroad" on the courier method in the shipping zone, for each courier you want to use.', 'nashenski-commerce' ),
+				esc_html__( 'Econt delivers to Romania and Greece. Speedy delivers to Romania, Greece, Cyprus, Hungary, the Czech Republic, Croatia, Poland, Slovakia and Slovenia. Other countries are not offered.', 'nashenski-commerce' ),
+				esc_html__( 'Add the countries to the shipping zone as usual. Customers there choose the office, locker or address as at home.', 'nashenski-commerce' ),
+				esc_html__( 'Prices abroad come only from the courier\'s live calculation, so a courier login is needed. The public price list is for Bulgaria only and is never used abroad. If there is no courier data for the order, the customer sees no price.', 'nashenski-commerce' ),
+				esc_html__( 'If the customer has chosen no office, locker or address, the checkout says "Please fill in your delivery address."', 'nashenski-commerce' ),
+				esc_html__( '"Free shipping over" is for Bulgaria. For other countries use "Free shipping over, abroad" and write the country code and the total, for example RO=150, GR=200. A country that is not listed gets no free shipping. BG is not allowed in this field.', 'nashenski-commerce' ),
+				esc_html__( 'Pigeon Express gives no price for a parcel over 30 kg.', 'nashenski-commerce' ),
+			),
 			__( 'Checkout', 'nashenski-commerce' )        => array(
 				esc_html__( 'Works with the classic checkout, the block checkout and checkout pages made with a page builder, including step-by-step checkouts.', 'nashenski-commerce' ),
 				esc_html__( 'When the customer picks a courier, they choose an office, a locker or an address right under it, from a list or on the courier\'s map. Until then the option says "Complete the fields to calculate".', 'nashenski-commerce' ),

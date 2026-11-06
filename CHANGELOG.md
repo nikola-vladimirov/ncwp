@@ -8,6 +8,14 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 - The update window shows the plugin icon and banner.
 - The description and the help manual are updated for 0.19.x.
 
+### Shipping abroad
+- New "Ship abroad" setting on the Econt and Speedy methods, off by default. Econt delivers to Romania and Greece. Speedy delivers to Romania, Greece, Cyprus, Hungary, the Czech Republic, Croatia, Poland, Slovakia and Slovenia, the countries on Speedy's published price list. Other countries are not offered.
+- Prices abroad come only from the courier's live calculation. The public price list stays Bulgarian only. A foreign order with no courier data gets no price.
+- New "Free shipping over, abroad" setting: free shipping over a total for each country, written like RO=150, GR=200. Countries not listed get no free shipping. Bulgaria keeps its own "Free shipping over" field.
+- A customer with no delivery point or address sees "Please fill in your delivery address."
+- Pigeon Express gives no rate for a parcel above its 30 kg band.
+- Known limit: a "Free shipping over, abroad" value saved through the REST API is not checked for bad pairs. Saving on the settings screen is checked.
+
 ### Fixes
 - BOX NOW: a band row saved with an empty or invalid price used to give a free rate. Now the row is refused on save with a notice, and a saved row with no price gives no BOX NOW rate.
 - A weight band with no price for the parcel type now gives no rate, not a negative one.

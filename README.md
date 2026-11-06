@@ -75,6 +75,9 @@ plugin's own scheduled jobs (documents, abandoned cart reminders, shipment statu
   courier requests for Econt and Speedy, the order number on the waybill and a tracking link for the
   customer. Order statuses can follow the shipment (delivered or returned).
 - Each order screen shows the courier, the delivery type and the chosen office, locker or address.
+- Ship abroad (off by default): Econt to Romania and Greece, Speedy to nine countries on its price
+  list. Prices abroad come only from the courier. Free shipping over a total can be set per country,
+  for example `RO=150, GR=200`.
 
 How to use: set up the courier (see Getting started), add its methods to a shipping zone, then on an
 order open the courier box, check the details and press "Generate label".

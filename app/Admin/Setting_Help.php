@@ -153,6 +153,8 @@ class Setting_Help {
 			'method:sms'                                   => array( '', __( 'The courier texts the customer about the delivery. It may cost extra.', 'nashenski-commerce' ) ),
 			'method:is_sat'                                => array( '', __( 'Delivery and pickup on Saturdays. It may cost extra.', 'nashenski-commerce' ) ),
 			'method:free_shipping_over'                    => array( __( 'Orders at or above this total ship for free with this method.', 'nashenski-commerce' ), __( 'You still pay the courier; the customer sees "Free".', 'nashenski-commerce' ) ),
+			'method:international'                         => array( __( 'Also deliver to customers in other countries. Prices come only from the courier.', 'nashenski-commerce' ), '' ),
+			'method:free_shipping_by_country'              => array( __( 'Free shipping for customers abroad, per country: RO=150, GR=200.', 'nashenski-commerce' ), '' ),
 			'method:fixed_price'                           => array( __( 'A set delivery price instead of the courier\'s calculation.', 'nashenski-commerce' ), __( 'The difference to the real courier price is yours.', 'nashenski-commerce' ) ),
 		);
 	}

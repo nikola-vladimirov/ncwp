@@ -202,6 +202,7 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
 = 0.19.9 =
+* New: "Ship abroad" for Econt (Romania, Greece) and Speedy (the nine countries on its price list), off by default. Prices abroad come only from the courier. "Free shipping over, abroad" sets free shipping per country, for example RO=150, GR=200. Pigeon Express gives no rate above 30 kg. Known limit: this setting saved through the REST API is not checked for bad pairs.
 * Updates: the update window shows the plugin icon and banner. The description and the help manual are updated for 0.19.x.
 * Fixed: a BOX NOW band row saved with an empty or invalid price used to give a free rate; now the row is refused on save with a notice, and a saved row with no price gives no BOX NOW rate. A weight band with no price for the parcel type gives no rate, not a negative one.
 
