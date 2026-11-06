@@ -269,6 +269,36 @@ namespace {
 		),
 		'a choice that only ends in "key" (the profile) is shown'
 	);
+	// S03: `setting get` prints a saved secret as "(set)", like `setting list`.
+	$cli_get = new ReflectionMethod( 'Nashenski\CLI\Settings_Command', 'get_line' );
+	if ( PHP_VERSION_ID < 80100 ) {
+		$cli_get->setAccessible( true );
+	}
+	foreach ( array(
+		array( 'nashenski_settings_econt_password', 'password' ),
+		array( 'nashenski_settings_speedy_password', 'password' ),
+		array( 'nashenski_settings_pigeon_api_secret', 'text' ),
+		array( 'nashenski_settings_nekorekten_api_key', 'text' ),
+		array( 'nashenski_settings_econt_user', 'text' ),
+	) as $case ) {
+		$cli_setting = array(
+			'id'   => $case[0],
+			'type' => $case[1],
+		);
+		expect( '(set)' === $cli_get->invoke( null, $cli_setting, 'hunter2' ), "the command line get hides $case[0]" );
+		expect( '(empty)' === $cli_get->invoke( null, $cli_setting, '' ), "the command line get says $case[0] is empty" );
+	}
+	expect(
+		'Ivan' === $cli_get->invoke(
+			null,
+			array(
+				'id'   => 'nashenski_settings_econt_name',
+				'type' => 'text',
+			),
+			'Ivan'
+		),
+		'the command line get shows an ordinary setting'
+	);
 
 	// 6. BOX NOW price rows: a negative value refuses the whole list with a notice, the saved list stays; a good list is saved.
 	$GLOBALS['options']['nashenski_settings_boxnow_price_from_to_kg'] = '[{"from":"0","to":"5","price":"3"}]';

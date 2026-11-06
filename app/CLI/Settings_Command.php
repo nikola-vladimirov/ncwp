@@ -86,7 +86,7 @@ class Settings_Command {
 				'name'    => substr( $setting['id'], strlen( self::PREFIX ) ),
 				'tab'     => $setting['tab'],
 				'type'    => $setting['type'],
-				'value'   => self::is_secret( $setting ) ? ( '' === (string) $value ? '(empty)' : '(set)' ) : self::show( $value ),
+				'value'   => self::is_secret( $setting ) ? self::masked( $value ) : self::show( $value ),
 				'default' => self::show( $setting['default'] ?? '' ),
 			);
 		}
@@ -114,9 +114,31 @@ class Settings_Command {
 	 */
 	public function get( $args ) {
 		$setting = self::find( $args[0] );
-		$value   = get_option( $setting['id'] );
 
-		\WP_CLI::line( is_scalar( $value ) || null === $value ? (string) $value : wp_json_encode( $value ) );
+		\WP_CLI::line( self::get_line( $setting, get_option( $setting['id'] ) ) );
+	}
+
+	/**
+	 * What `get` prints: a login, key or secret only as "(set)" or "(empty)", as `list` shows it.
+	 *
+	 * @param array $setting Setting.
+	 * @param mixed $value   Saved value.
+	 */
+	private static function get_line( $setting, $value ) {
+		if ( self::is_secret( $setting ) ) {
+			return self::masked( $value );
+		}
+
+		return is_scalar( $value ) || null === $value ? (string) $value : wp_json_encode( $value );
+	}
+
+	/**
+	 * A secret as "(set)" or "(empty)".
+	 *
+	 * @param mixed $value Saved value.
+	 */
+	private static function masked( $value ) {
+		return '' === (string) $value ? '(empty)' : '(set)';
 	}
 
 	/**
