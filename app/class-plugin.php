@@ -149,7 +149,7 @@ class Plugin {
 	 * Load classes.
 	 */
 	private function load_classes() {
-		\Nashenski\Hooks::action( 'nashenski_before-init-classes', 'nashenski/before-init-classes', $this, $this->container );
+		\Nashenski\Hooks::action( 'nashenski_before_init_classes', 'nashenski/before-init-classes', $this, $this->container );
 
 		new Admin\Admin_Menus();
 		new Admin\Order\Columns();
@@ -221,7 +221,7 @@ class Plugin {
 			\WP_CLI::add_command( 'nashenski courier', 'Nashenski\CLI\Courier_Command' );
 		}
 
-		\Nashenski\Hooks::action( 'nashenski_init-classes', 'nashenski/init-classes' );
+		\Nashenski\Hooks::action( 'nashenski_init_classes', 'nashenski/init-classes' );
 	}
 
 	/**

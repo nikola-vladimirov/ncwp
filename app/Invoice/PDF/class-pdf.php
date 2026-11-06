@@ -38,7 +38,7 @@ class PDF {
 	 */
 	public function __construct( $document ) {
 		$this->document   = $document;
-		$default_template = \Nashenski\Hooks::filter( 'nashenski_invoice_pdf_default-template', 'nashenski/invoice/pdf/default-template', $this->get_default_template(), $this );
+		$default_template = \Nashenski\Hooks::filter( 'nashenski_invoice_pdf_default_template', 'nashenski/invoice/pdf/default-template', $this->get_default_template(), $this );
 
 		$this->set_template( $default_template );
 	}

@@ -121,7 +121,7 @@ class Export {
 				$total_due = $order->get_total();
 
 				$this->documents[] = \Nashenski\Hooks::filter(
-					'nashenski_admin_export_microinvest-order',
+					'nashenski_admin_export_microinvest_order',
 					'nashenski/admin/export/microinvest-order',
 					array(
 						'2',
@@ -149,7 +149,7 @@ class Export {
 			if ( $order->get_meta( 'nashenski_refunded_invoice_document' ) ) {
 				$total_due         = $order->get_total();
 				$this->documents[] = \Nashenski\Hooks::filter(
-					'nashenski_admin_export_microinvest-order',
+					'nashenski_admin_export_microinvest_order',
 					'nashenski/admin/export/microinvest-order',
 					array(
 						'2',

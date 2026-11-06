@@ -33,7 +33,7 @@ foreach ( $files as $file_path ) {
 	foreach ( $calls as $call ) {
 		++$sites;
 		$old[ $call[3] ] = true;
-		if ( str_replace( '/', '_', $call[3] ) !== $call[2] || false === strpos( $call[3], 'nashenski/' ) ) {
+		if ( str_replace( array( '/', '-' ), '_', $call[3] ) !== $call[2] || false === strpos( $call[3], 'nashenski/' ) ) {
 			$fail[] = "$rel: {$call[2]} does not alias {$call[3]}";
 		}
 	}

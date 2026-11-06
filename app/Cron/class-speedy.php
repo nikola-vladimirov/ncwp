@@ -5,8 +5,6 @@
  * @package Nashenski
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Cron;
 
 use Nashenski\Container\Client;
