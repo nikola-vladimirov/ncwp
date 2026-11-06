@@ -2,6 +2,12 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.20.1 (2026-11-06)
+
+### Fixes
+- The Bulgarian description in the update window was cut into broken pieces wherever a word had the letter "х". It now shows in full.
+- The update window shows the plugin icon and banner.
+
 ## 0.20.0 (2026-11-06)
 
 ### Shipping abroad

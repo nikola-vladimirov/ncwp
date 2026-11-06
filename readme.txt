@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.20.0
+Stable tag: 0.20.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -200,6 +200,9 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 == Changelog ==
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+
+= 0.20.1 =
+* Fixed: the Bulgarian description in the update window was cut where a word had the letter "х". The update window shows the plugin icon and banner.
 
 = 0.20.0 =
 * New: "Ship abroad" for Econt (Romania, Greece) and Speedy (the nine countries on its price list), off by default. Prices abroad come only from the courier. "Free shipping over, abroad" sets free shipping per country, for example RO=150, GR=200. Pigeon Express gives no rate above 30 kg. Known limit: this setting saved through the REST API is not checked for bad pairs.
