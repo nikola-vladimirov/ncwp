@@ -431,6 +431,76 @@ foreach ( array(
 	$m                         = calculate( array( line( 1 ) ) );
 	expect( 1 === count( $m->rates ) && $cost === $m->rates[0]['cost'], "A stored price row of $stored gives a rate cost of $cost" );
 }
+// A cart that no price band holds gets no BOX NOW rate; a band the owner typed with a price of 0 is a band and gives a free rate.
+/**
+ * Rates BOX NOW offers for a cart, with the given price rows.
+ *
+ * @param string $type   Price type.
+ * @param array  $rows   Price rows as saved.
+ * @param float  $weight Cart weight.
+ * @param float  $total  Cart total.
+ * @return array Rates.
+ */
+function band_rates( $type, array $rows, $weight, $total ) {
+	$GLOBALS['boxnow_options'] = array(
+		'price_type' => $type,
+		$type        => wp_json_encode( $rows ),
+	);
+	return calculate( array( line( 1 ) ), 'card', $weight, false, '', $total )->rates;
+}
+$kg_rows       = array(
+	array(
+		'from'  => '1',
+		'to'    => '5',
+		'price' => '3',
+	),
+	array(
+		'from'  => '5',
+		'to'    => '10',
+		'price' => '0',
+	),
+);
+$total_rows    = array(
+	array(
+		'from'  => '20',
+		'to'    => '50',
+		'price' => '4',
+	),
+	array(
+		'from'  => '50',
+		'to'    => '100',
+		'price' => '0',
+	),
+);
+$combined_rows = array(
+	array(
+		'from'       => '1',
+		'to'         => '5',
+		'from_price' => '20',
+		'to_price'   => '50',
+		'price'      => '5',
+	),
+	array(
+		'from'       => '5',
+		'to'         => '10',
+		'from_price' => '20',
+		'to_price'   => '50',
+		'price'      => '0',
+	),
+);
+foreach ( array(
+	'weight bands'   => array( 'from_to_kg', $kg_rows, array( 2, 30 ), array( 7, 30 ), array( array( 12, 30 ), array( 0.5, 30 ) ), '3' ),
+	'total bands'    => array( 'from_to_order_total', $total_rows, array( 1, 30 ), array( 1, 60 ), array( array( 1, 150 ), array( 1, 10 ) ), '4' ),
+	'combined bands' => array( 'from_to_kg_and_order_total', $combined_rows, array( 2, 30 ), array( 7, 30 ), array( array( 12, 30 ), array( 2, 60 ), array( 0.5, 30 ) ), '5' ),
+) as $name => list( $type, $rows, $inside, $typed_zero, $outside, $price ) ) {
+	$rates = band_rates( $type, $rows, $inside[0], $inside[1] );
+	expect( 1 === count( $rates ) && $price === $rates[0]['cost'], "BOX NOW $name: a cart inside a band gets that band's price $price" );
+	$rates = band_rates( $type, $rows, $typed_zero[0], $typed_zero[1] );
+	expect( 1 === count( $rates ) && 0 === $rates[0]['cost'], "BOX NOW $name: a band typed with price 0 gives a free rate, not a missing band" );
+	foreach ( $outside as $cart ) {
+		expect( array() === band_rates( $type, $rows, $cart[0], $cart[1] ), "BOX NOW $name: a cart outside every band (weight {$cart[0]}, total {$cart[1]}) gets no rate" );
+	}
+}
 $GLOBALS['boxnow_options'] = array();
 // A missing or zero dimension, whatever its type (int, float, numeric string, empty, text), takes the default size.
 foreach ( array( 0, 0.0, '0', '0.0', '', null, 'abc' ) as $zero ) {

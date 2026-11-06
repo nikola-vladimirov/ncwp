@@ -170,7 +170,7 @@ class Method extends \WC_Shipping_Method {
 			$rate['meta_data']['free_shipping'] = true;
 			$this->free_shipping                = true;
 		} elseif ( $price_type ) {
-			$price = 0;
+			$price = null;
 
 			switch ( $price_type ) {
 				case 'from_to_kg':
@@ -182,6 +182,11 @@ class Method extends \WC_Shipping_Method {
 				case 'from_to_kg_and_order_total':
 					$price = $this->get_price_from_to_combined();
 					break;
+			}
+
+			// No band holds this cart: no rate. A band the owner typed with a price of 0 is a band, and gives a free rate.
+			if ( null === $price ) {
+				return;
 			}
 
 			if ( (float) $price > 0 ) {
@@ -196,10 +201,6 @@ class Method extends \WC_Shipping_Method {
 
 		$rate['meta_data']['cookie_data'] = $this->cookie_data;
 		$rate                             = apply_filters( 'nashenski/boxnow/rate', $rate, $this );
-
-		if ( '0.00' === $rate['cost'] && ! $this->free_shipping ) {
-			return;
-		}
 
 		// Register the rate.
 		$this->add_rate( $rate );
@@ -303,10 +304,10 @@ class Method extends \WC_Shipping_Method {
 	/**
 	 * Price from the weight rows of the settings.
 	 *
-	 * @return mixed Price, or nothing when there are no rows.
+	 * @return mixed Price of the band that holds the cart, or null when there are no rows or no band holds it.
 	 */
 	public function get_price_from_to_kg_option() {
-		$price  = 0;
+		$price  = null;
 		$weight = $this->get_total_weight();
 
 		$from_to_kg = nashenski_get_option( 'boxnow_price', 'from_to_kg' );
@@ -341,10 +342,10 @@ class Method extends \WC_Shipping_Method {
 	/**
 	 * Price from the order total rows of the settings.
 	 *
-	 * @return mixed Price, or nothing when there are no rows.
+	 * @return mixed Price of the band that holds the cart, or null when there are no rows or no band holds it.
 	 */
 	public function get_price_from_to_order_total_option() {
-		$price = 0;
+		$price = null;
 		$total = nashenski_get_package_total();
 
 		$from_to_total = nashenski_get_option( 'boxnow_price', 'from_to_order_total' );
@@ -379,10 +380,10 @@ class Method extends \WC_Shipping_Method {
 	/**
 	 * Price from the weight and order total rows of the settings.
 	 *
-	 * @return mixed Price, or nothing when there are no rows.
+	 * @return mixed Price of the band that holds the cart, or null when there are no rows or no band holds it.
 	 */
 	public function get_price_from_to_combined() {
-		$price  = 0;
+		$price  = null;
 		$weight = $this->get_total_weight();
 		$total  = nashenski_get_package_total();
 
