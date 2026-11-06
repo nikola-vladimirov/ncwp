@@ -825,5 +825,21 @@ namespace {
 		expect( $m->free_shipping === $free, 'Pigeon free shipping at total ' . $package_total . ' must be ' . var_export( $free, true ) );
 	}
 	unset( $package_total );
+	// A threshold that is zero in any spelling is no threshold: a cart of 99.99 does not ship free on it.
+	foreach ( array(
+		'0.00' => false,
+		'0'    => false,
+		''     => false,
+		'1'    => true,
+		'100'  => false,
+	) as $threshold => $free ) {
+		fixture();
+		$package_total         = 99.99;
+		$m                     = new PigeonMethod();
+		$m->free_shipping_over = $threshold;
+		$m->calculate_shipping( package( 1 ) );
+		expect( $m->free_shipping === $free, 'Pigeon free shipping at threshold "' . $threshold . '" must be ' . var_export( $free, true ) );
+	}
+	unset( $package_total );
 	echo 'PASS: ' . $checks . " Pigeon assertions\n";
 }

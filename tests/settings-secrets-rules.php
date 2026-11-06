@@ -270,27 +270,34 @@ namespace {
 		'a choice that only ends in "key" (the profile) is shown'
 	);
 
-	// 6. BOX NOW price rows never keep a negative amount.
-	$rows = json_decode(
-		Settings_Page::sanitize_rows_field(
-			'',
-			array( 'type' => 'nashenski_rows' ),
-			array(
-				array(
-					'from'  => '0',
-					'to'    => '5',
-					'price' => '-5',
-				),
-				array(
-					'from'  => '5',
-					'to'    => '10',
-					'price' => '7.5',
-				),
-			)
-		),
-		true
+	// 6. BOX NOW price rows: a negative value refuses the whole list with a notice, the saved list stays; a good list is saved.
+	$GLOBALS['options']['nashenski_settings_boxnow_price_from_to_kg'] = '[{"from":"0","to":"5","price":"3"}]';
+	$rows_option               = array(
+		'id'    => 'nashenski_settings_boxnow_price_from_to_kg',
+		'title' => 'From/To in kg',
+		'type'  => 'nashenski_rows',
 	);
-	expect( '' === $rows[0]['price'] && '7.5' === $rows[1]['price'], 'a negative price row is saved empty, a good one is kept' );
-
+	$bad_rows                  = array(
+		array(
+			'from'  => '0',
+			'to'    => '5',
+			'price' => '-5',
+		),
+		array(
+			'from'  => '5',
+			'to'    => '10',
+			'price' => '7.5',
+		),
+	);
+	WC_Admin_Settings::$errors = array();
+	expect( '[{"from":"0","to":"5","price":"3"}]' === Settings_Page::sanitize_rows_field( '', $rows_option, $bad_rows ), 'a list with a negative price keeps the saved list' );
+	expect( 1 === count( WC_Admin_Settings::$errors ), 'a refused list says so' );
+	WC_Admin_Settings::$errors = array();
+	$bad_rows[0]['price']      = '4';
+	$saved_rows                = json_decode( Settings_Page::sanitize_rows_field( '', $rows_option, $bad_rows ), true );
+	expect( '4' === $saved_rows[0]['price'] && '7.5' === $saved_rows[1]['price'] && ! WC_Admin_Settings::$errors, 'a good list is saved without a notice' );
+	$bad_rows[1]['price'] = '';
+	$saved_rows           = json_decode( Settings_Page::sanitize_rows_field( '', $rows_option, $bad_rows ), true );
+	expect( '' === $saved_rows[1]['price'] && ! WC_Admin_Settings::$errors, 'a price left empty on purpose is saved as it is, without a notice' );
 	echo 'PASS: ' . $checks . " settings secret and rule assertions\n";
 }

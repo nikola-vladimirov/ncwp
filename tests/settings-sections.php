@@ -191,20 +191,23 @@ namespace {
 	) as $caller => $prefix ) {
 		expect( false !== strpos( file_get_contents( __DIR__ . '/../' . $caller ), $prefix . 'run_after_save_fields(' ), "$caller runs both hook names through run_after_save_fields" );
 	}
-	expect( 1 === substr_count( file_get_contents( __DIR__ . '/../app/Admin/Settings_Page.php' ), "do_action( 'nashenski/admin/settings/after_save_fields/'" ), 'only the helper fires the hook' );
 	// One spelling of the hook everywhere.
 	$wrong = 0;
 	$right = 0;
+	$raw   = 0;
 	foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( __DIR__ . '/../app', FilesystemIterator::SKIP_DOTS ) ) as $file ) {
 		if ( 'php' !== $file->getExtension() ) {
 			continue;
 		}
 		$text = file_get_contents( $file->getPathname() );
+		// Raw calls of the hook anywhere in app/: only the helper may have one.
+		$raw += preg_match_all( '/\bdo_action\(\s*[\'"]nashenski\/admin\/settings\/after_save_fields/', $text );
 		// The one do_action_deprecated line keeps the old spelling on purpose.
 		$text   = preg_replace( '/^.*do_action_deprecated.*$/m', '', $text );
 		$wrong += substr_count( $text, 'afte_save_fields' );
 		$right += substr_count( $text, 'settings/after_save_fields/' );
 	}
+	expect( 1 === $raw, 'exactly one raw do_action of the after-save hook in app/ (the helper), so a caller cannot skip the old name' );
 	expect( 0 === $wrong, 'no file spells the hook afte_save_fields' );
 	expect( $right >= 4, 'the caller and the listeners use after_save_fields' );
 

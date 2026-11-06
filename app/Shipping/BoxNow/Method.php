@@ -166,7 +166,7 @@ class Method extends \WC_Shipping_Method {
 
 		$price_type = nashenski_get_option( 'boxnow_price', 'price_type' );
 
-		if ( $this->free_shipping_over && nashenski_get_package_total() >= $this->free_shipping_over ) {
+		if ( (float) $this->free_shipping_over > 0 && nashenski_get_package_total() >= $this->free_shipping_over ) {
 			$rate['meta_data']['free_shipping'] = true;
 			$this->free_shipping                = true;
 		} elseif ( $price_type ) {

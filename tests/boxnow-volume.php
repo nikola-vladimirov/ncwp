@@ -386,6 +386,29 @@ $m = calculate( array( line( '1e300' ) ) );
 expect( 1 === $m->capacity_checks && ! $m->rates, 'Oversize-quantity COD cart must not get a rate' );
 $m = calculate( array( line( 6 ) ), 'card' );
 expect( 0 === $m->capacity_checks && 1 === count( $m->rates ), 'Prepaid multi-box behavior must remain unchanged' );
+// A free shipping threshold that is zero in any spelling is no threshold: a cart of 99.99 does not ship free on it.
+foreach ( array(
+	'0.00' => false,
+	'0'    => false,
+	''     => false,
+	'1'    => true,
+	'100'  => false,
+) as $threshold => $free ) {
+	$GLOBALS['cookie']     = array( 'payment' => 'card' );
+	$GLOBALS['weight']     = 1;
+	$GLOBALS['oversize']   = false;
+	$GLOBALS['hide_over']  = '';
+	$GLOBALS['cart_total'] = 99.99;
+	$m                     = method( array( line( 1 ) ) );
+	$m->free_shipping_over = $threshold;
+	$m->calculate_shipping(
+		array(
+			'contents'    => array( line( 1 ) ),
+			'destination' => array( 'country' => 'BG' ),
+		)
+	);
+	expect( $free === ! empty( $m->rates[0]['meta_data']['free_shipping'] ), "BOX NOW free shipping at threshold '$threshold' must be " . var_export( $free, true ) );
+}
 // A stored price row below zero (saved before negatives were refused) gives no charge, never a negative rate.
 foreach ( array(
 	'-5' => 0,

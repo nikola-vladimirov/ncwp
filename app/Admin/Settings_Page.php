@@ -1104,17 +1104,29 @@ class Settings_Page extends \WC_Settings_Page {
 
 		$columns = ! empty( $option['two'] ) ? array( 'from', 'to', 'from_price', 'to_price', 'price' ) : array( 'from', 'to', 'price' );
 		$rows    = array();
+		$refused = false;
 
 		foreach ( (array) $raw_value as $row ) {
 			$clean = array();
 
 			foreach ( $columns as $column ) {
 				$clean[ $column ] = isset( $row[ $column ] ) && '' !== $row[ $column ] ? \Nashenski\Pricing\Price_Lists::non_negative( wc_format_decimal( $row[ $column ] ) ) : '';
+				// A value that was typed but is not a number from zero up must not become an empty cell (an empty price is a free band).
+				$refused = $refused || ( isset( $row[ $column ] ) && '' !== $row[ $column ] && '' === $clean[ $column ] );
 			}
 
 			if ( implode( '', $clean ) !== '' ) {
 				$rows[] = $clean;
 			}
+		}
+
+		if ( $refused ) {
+			if ( class_exists( 'WC_Admin_Settings' ) ) {
+				/* translators: %s: name of the setting */
+				\WC_Admin_Settings::add_error( sprintf( __( '"%s" was not saved: a weight or price must be a number from zero up, so the earlier list stays.', 'nashenski-commerce' ), $option['title'] ?? $option['id'] ) );
+			}
+
+			return get_option( $option['id'], '' );
 		}
 
 		return wp_json_encode( $rows );
