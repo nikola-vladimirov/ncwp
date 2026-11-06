@@ -41,6 +41,27 @@ namespace {
 	function check_admin_referer() {
 		return true; }
 	/**
+	 * Verify nonce.
+	 */
+	function wp_verify_nonce() {
+		return true; }
+	/**
+	 * Sanitize text field.
+	 *
+	 * @param mixed $value Value.
+	 * @return mixed
+	 */
+	function sanitize_text_field( $value ) {
+		return $value; }
+	/**
+	 * Unslash.
+	 *
+	 * @param mixed $value Value.
+	 * @return mixed
+	 */
+	function wp_unslash( $value ) {
+		return $value; }
+	/**
 	 * Add action.
 	 */
 	function add_action() {}
