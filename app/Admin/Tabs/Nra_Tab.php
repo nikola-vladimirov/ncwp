@@ -81,7 +81,7 @@ class Nra_Tab extends Base_Tab {
 						'trigger',
 						__( 'When to generate documents?', 'nashenski-commerce' )
 					),
-					new Fields\TrueFalse_Field( 'remove_shipping', __( 'Remove delivery from documents', 'nashenski-commerce' ), null, null, __( 'This option will remove the delivery from invoices and XML file.', 'nashenski-commerce' ) ),
+					new Fields\TrueFalse_Field( 'remove_shipping', __( 'Remove delivery from documents', 'nashenski-commerce' ), null, null, __( 'Removes delivery from invoices and the XML file for cash on delivery orders. Use it when the courier issues its own document for the delivery price.', 'nashenski-commerce' ) ),
 					new Fields\Text_Field( 'next_invoice_number', __( 'Next NRA Document Number', 'nashenski-commerce' ), __( 'The document number of the next order.', 'nashenski-commerce' ), 'required|digits' ),
 					new Fields\Text_Field( 'next_invoice_separate_number', __( 'Next Invoice/Credit notice Number', 'nashenski-commerce' ), __( 'If it\' filled the invoices will have different number than the NRA documents.', 'nashenski-commerce' ), 'digits' ),
 					new Fields\Text_Field( 'due_days', __( 'Due days', 'nashenski-commerce' ), __( 'Days added to documents due date.', 'nashenski-commerce' ), 'digits' ),

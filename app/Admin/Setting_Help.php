@@ -108,7 +108,6 @@ class Setting_Help {
 			'nashenski_settings_invoice_nra_n18'           => array( '', __( 'Needed by shops that take card or bank payments without a fiscal receipt (Ordinance N-18, Article 52o).', 'nashenski-commerce' ) ),
 			'nashenski_settings_invoice_invoices'          => array( __( 'Which orders get an invoice automatically.', 'nashenski-commerce' ), __( '"Only for companies" makes invoices for customers who ticked "I want an invoice for a company". Any order can also get one by hand.', 'nashenski-commerce' ) ),
 			'nashenski_settings_invoice_trigger'           => array( __( 'When the order document and invoice are made.', 'nashenski-commerce' ), __( '"Order completed" waits until you complete the order, so cancelled orders get no documents.', 'nashenski-commerce' ) ),
-			'nashenski_settings_invoice_remove_shipping'   => array( '', __( 'Use it when the courier issues its own receipt for the delivery charge.', 'nashenski-commerce' ) ),
 			'nashenski_settings_invoice_next_invoice_number' => array( __( 'The number of the next order document, 10 digits.', 'nashenski-commerce' ), '' ),
 			'nashenski_settings_invoice_next_invoice_separate_number' => array( __( 'Leave empty to number invoices together with order documents.', 'nashenski-commerce' ) . ' ' . __( 'Also used when you make an invoice by hand.', 'nashenski-commerce' ), '' ),
 			'nashenski_settings_invoice_due_days'          => array( __( 'Days from the invoice date to the payment due date.', 'nashenski-commerce' ), '' ),

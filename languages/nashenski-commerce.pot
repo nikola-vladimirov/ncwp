@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.20.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-06 18:27+0000\n"
-"PO-Revision-Date: 2026-11-06 18:27+0000\n"
+"POT-Creation-Date: 2026-11-06 18:28+0000\n"
+"PO-Revision-Date: 2026-11-06 18:28+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2832,238 +2832,234 @@ msgid "\"Order completed\" waits until you complete the order, so cancelled orde
 msgstr ""
 
 #: app/Admin/Setting_Help.php:111
-msgid "Use it when the courier issues its own receipt for the delivery charge."
-msgstr ""
-
-#: app/Admin/Setting_Help.php:112
 msgid "The number of the next order document, 10 digits."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:113
+#: app/Admin/Setting_Help.php:112
 msgid "Leave empty to number invoices together with order documents."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:113
+#: app/Admin/Setting_Help.php:112
 msgid "Also used when you make an invoice by hand."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:114
+#: app/Admin/Setting_Help.php:113
 msgid "Days from the invoice date to the payment due date."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:115
+#: app/Admin/Setting_Help.php:114
 msgid "Printed as the person who prepared the document."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:116
+#: app/Admin/Setting_Help.php:115
 msgid "Bulgarian invoices may carry an identification code instead of a signature."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:117
+#: app/Admin/Setting_Help.php:116
 msgid "Printed at the bottom of every document."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:117
+#: app/Admin/Setting_Help.php:116
 msgid "For example your bank account or a thank-you line."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:118
+#: app/Admin/Setting_Help.php:117
 msgid "Bulgarian invoices often show the total in words."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:119
+#: app/Admin/Setting_Help.php:118
 msgid "Turn on to send the copies to your accountant."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:120
+#: app/Admin/Setting_Help.php:119
 msgid "Your accountant's email address."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:121
+#: app/Admin/Setting_Help.php:120
 msgid "The file is due by the 15th of the next month. Your accountant gets it on the 1st."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:122
+#: app/Admin/Setting_Help.php:121
 msgid "Products in these tax classes count as digital goods for EU VAT: the customer's country rate applies."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:123
+#: app/Admin/Setting_Help.php:122
 msgid "The VAT group of your sales in the NRA audit file. Most shops sell in group B (20%)."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:124
+#: app/Admin/Setting_Help.php:123
 msgid "How you pay customers back for cancelled orders."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:124
+#: app/Admin/Setting_Help.php:123
 msgid "Goes into the NRA audit file for refunded orders."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:125
+#: app/Admin/Setting_Help.php:124
 msgid "Yes: for cash on delivery orders with this method, the delivery charge is left out of the order document and the NRA file, because the courier collects it and gives its own receipt."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:126
+#: app/Admin/Setting_Help.php:125
 msgid "The NRA payment type of this payment method."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:126
+#: app/Admin/Setting_Help.php:125
 msgid "How the NRA audit file reports payments made with this method."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:127
+#: app/Admin/Setting_Help.php:126
 msgid "The number of the virtual POS terminal from your bank."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:127
+#: app/Admin/Setting_Help.php:126
 msgid "Needed in the NRA audit file for card payments."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:128
+#: app/Admin/Setting_Help.php:127
 msgid "The identifier of the payment provider, if it gave you one."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:128
+#: app/Admin/Setting_Help.php:127
 msgid "Goes into the NRA audit file with each payment."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:129
+#: app/Admin/Setting_Help.php:128
 msgid "A PNG or JPG about 600 pixels wide prints sharp."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:130
+#: app/Admin/Setting_Help.php:129
 msgid "How big the logo is at the top of the document."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:130
+#: app/Admin/Setting_Help.php:129
 msgid "Larger logos push the document down; Small keeps long orders on one page."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:131
+#: app/Admin/Setting_Help.php:130
 msgid "Turn off when your logo already has these details."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:132
+#: app/Admin/Setting_Help.php:131
 msgid "Documents then keep the colours of your site."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:133
+#: app/Admin/Setting_Help.php:132
 msgid "Pick a colour or type a hex code."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:133
+#: app/Admin/Setting_Help.php:132
 msgid "Dark text on a light table header prints best."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:134
+#: app/Admin/Setting_Help.php:133
 msgid "Both have Cyrillic letters."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:135
+#: app/Admin/Setting_Help.php:134
 msgid "Size of the document text."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:135
+#: app/Admin/Setting_Help.php:134
 msgid "Smaller text fits more products on a page."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:136
+#: app/Admin/Setting_Help.php:135
 msgid "The page size of the PDF documents."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:136
+#: app/Admin/Setting_Help.php:135
 msgid "A4 suits most office printers."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:137
+#: app/Admin/Setting_Help.php:136
 msgid "Compact fits long orders on one page."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:138
+#: app/Admin/Setting_Help.php:137
 msgid "How dates look on the documents."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:138
+#: app/Admin/Setting_Help.php:137
 msgid "Bulgarian documents usually use day.month.year."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:139
+#: app/Admin/Setting_Help.php:138
 msgid "Turn off to keep phone numbers and emails off printed documents."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:140
+#: app/Admin/Setting_Help.php:139
 msgid "The space where the customer signs on receipt."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:143
+#: app/Admin/Setting_Help.php:142
 msgid "A warning sign in the orders list for customers with reports."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:144
+#: app/Admin/Setting_Help.php:143
 msgid "Customers with refused parcels then pay online or by bank transfer."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:145
+#: app/Admin/Setting_Help.php:144
 msgid "From your account on the service's website."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:146
+#: app/Admin/Setting_Help.php:145
 msgid "Lower means stricter: more customers get a warning."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:147
+#: app/Admin/Setting_Help.php:146
 msgid "Shares your waybills with NepoStop, so its data about refused parcels grows. Tell your customers in your privacy policy."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:150
+#: app/Admin/Setting_Help.php:149
 msgid "The name customers see at checkout."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:150
+#: app/Admin/Setting_Help.php:149
 msgid "Short is best, for example \"To an office\". The courier logo is shown next to it."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:151
+#: app/Admin/Setting_Help.php:150
 msgid "Add one method per delivery type to the zone."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:151
+#: app/Admin/Setting_Help.php:150
 msgid "Office and parcel locker show a list and a map; address shows the street search."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:152
+#: app/Admin/Setting_Help.php:151
 msgid "Whether the customer may open or test the parcel before paying."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:152
+#: app/Admin/Setting_Help.php:151
 msgid "Not possible at parcel lockers. If the customer refuses after a test, the return is paid as your contract says."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:153
+#: app/Admin/Setting_Help.php:152
 msgid "The courier texts the customer about the delivery. It may cost extra."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:154
+#: app/Admin/Setting_Help.php:153
 msgid "Orders at or above this total ship for free with this method."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:154
+#: app/Admin/Setting_Help.php:153
 msgid "You still pay the courier; the customer sees \"Free\"."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:155
+#: app/Admin/Setting_Help.php:154
 msgid "Also deliver to customers in other countries. Prices come only from the courier."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:156
+#: app/Admin/Setting_Help.php:155
 msgid "Free shipping for customers abroad, per country: RO=150, GR=200."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:157
+#: app/Admin/Setting_Help.php:156
 msgid "A set delivery price instead of the courier's calculation."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:157
+#: app/Admin/Setting_Help.php:156
 msgid "The difference to the real courier price is yours."
 msgstr ""
 
@@ -3764,7 +3760,7 @@ msgid "Remove delivery from documents"
 msgstr ""
 
 #: app/Admin/Tabs/Nra_Tab.php:84
-msgid "This option will remove the delivery from invoices and XML file."
+msgid "Removes delivery from invoices and the XML file for cash on delivery orders. Use it when the courier issues its own document for the delivery price."
 msgstr ""
 
 #: app/Admin/Tabs/Nra_Tab.php:85
