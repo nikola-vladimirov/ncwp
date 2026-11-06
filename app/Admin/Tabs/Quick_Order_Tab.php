@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
@@ -10,11 +10,19 @@ defined( 'ABSPATH' ) || exit;
  * Quick order section: where the button shows and which extra fields the form asks for.
  */
 class Quick_Order_Tab extends Base_Tab {
+	/**
+	 * Names the section.
+	 */
 	public function __construct() {
 		$this->set_name( __( 'Quick order', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'quick_order' );
 	}
 
+	/**
+	 * Builds the fields of the section.
+	 *
+	 * @return void
+	 */
 	public function load_fields() {
 		$rows = array(
 			new Fields\Select_Field(
@@ -66,7 +74,7 @@ class Quick_Order_Tab extends Base_Tab {
 		}
 
 		$fields = apply_filters(
-			'nashenski/admin/settings/quick_order/fields',
+			'nashenski/admin/settings/quick_order/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 			array(
 				'quick_order' => $rows,
 			)
@@ -93,6 +101,11 @@ class Quick_Order_Tab extends Base_Tab {
 		return $options;
 	}
 
+	/**
+	 * The title and description of the section.
+	 *
+	 * @return array
+	 */
 	public function get_groups_titles() {
 		return array(
 			'quick_order' => array(

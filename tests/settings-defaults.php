@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable Generic.Classes.DuplicateClassName, Generic.Files.OneObjectStructurePerFile, Universal.Files.SeparateFunctionsFromOO, Universal.Namespaces, WordPress.Security.EscapeOutput, WordPress.WP.AlternativeFunctions -- offline CLI test script: no WordPress, so stubs, unused stub parameters, filesystem calls and plain-text output are on purpose.
 /**
  * Offline test: the defaults shown in the settings match what the code does when nothing is
  * saved (courier environments demo, PDF logo medium, BOX NOW price type weight bands), and a

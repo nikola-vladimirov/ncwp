@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 /**
  * Nra Tab.
  *
@@ -27,7 +27,7 @@ class Nra_Tab extends Base_Tab {
 	 */
 	public function load_fields() {
 		$fields = apply_filters(
-			'nashenski/admin/nra/fields',
+			'nashenski/admin/nra/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 			array(
 				'nap'     => array(
 					new Fields\Text_Field( 'company_name', __( 'Company Name', 'nashenski-commerce' ), __( 'Your company name.', 'nashenski-commerce' ), 'required' ),
@@ -298,7 +298,7 @@ class Nra_Tab extends Base_Tab {
 		$this->gateways_titles();
 
 		$titles = apply_filters(
-			'nashenski/admin/nra/groups_titles',
+			'nashenski/admin/nra/groups_titles', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 			array(
 				'nap'       => array(
 					'title' => __( 'Company details', 'nashenski-commerce' ),

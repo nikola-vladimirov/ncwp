@@ -1,10 +1,13 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Client;
 
 use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The Pigeon Express API client: credentials, environment and requests.
+ */
 class Pigeon {
 	use Courier_Client;
 
@@ -15,16 +18,53 @@ class Pigeon {
 
 	const CACHE_FOLDER = File::CACHE_FOLDER . 'pigeon' . DIRECTORY_SEPARATOR;
 
-	private $env        = '';
-	private $api_key    = '';
+	/**
+	 * Environment: live or demo.
+	 *
+	 * @var string
+	 */
+	private $env = '';
+
+	/**
+	 * API key.
+	 *
+	 * @var string
+	 */
+	private $api_key = '';
+
+	/**
+	 * API secret.
+	 *
+	 * @var string
+	 */
 	private $api_secret = '';
+
+	/**
+	 * API URL for the environment.
+	 *
+	 * @var string
+	 */
 	private $base_endpoint;
+
+	/**
+	 * Whether the saved credentials were accepted.
+	 *
+	 * @var bool
+	 */
 	private $is_valid_access;
 
+	/**
+	 * Cache files that clearing the cache folder keeps.
+	 *
+	 * @var array
+	 */
 	public static $skip_cached_files = array(
 		'cities-BG.json',
 	);
 
+	/**
+	 * Loads the environment and the credentials from the settings.
+	 */
 	public function __construct() {
 		$this->set_env( nashenski_get_option( 'pigeon', 'env' ) );
 		$this->load_api_key();
@@ -32,6 +72,15 @@ class Pigeon {
 		$this->load_base_endpoint();
 	}
 
+	/**
+	 * Calls the API.
+	 *
+	 * @param string $endpoint Endpoint path.
+	 * @param array  $args     Request arguments.
+	 * @param string $method   HTTP method.
+	 * @param bool   $plain    Return the body as text instead of decoded JSON.
+	 * @return mixed Null without credentials.
+	 */
 	public function api_call( $endpoint, $args, $method = 'GET', $plain = false ) {
 		if ( empty( $this->get_api_key() ) || empty( $this->get_api_secret() ) ) {
 			return;
@@ -49,7 +98,7 @@ class Pigeon {
 			'body'    => wp_json_encode( $args ),
 		);
 
-		if ( $method === 'GET' ) {
+		if ( 'GET' === $method ) {
 			unset( $request_args['body'] );
 
 			$request = wp_remote_get( add_query_arg( $args, $url ), $request_args );
@@ -64,6 +113,12 @@ class Pigeon {
 		}
 	}
 
+	/**
+	 * Whether the saved credentials were accepted.
+	 *
+	 * @param bool $forced Read the setting again.
+	 * @return bool
+	 */
 	public function is_valid_access( $forced = false ) {
 		if ( $forced ) {
 			$this->set_is_valid_access();
@@ -72,10 +127,20 @@ class Pigeon {
 		return $this->is_valid_access;
 	}
 
+	/**
+	 * Reads the saved access check result.
+	 *
+	 * @return void
+	 */
 	private function set_is_valid_access() {
 		$this->is_valid_access = filter_var( nashenski_get_option( 'pigeon', 'is_valid_access' ), FILTER_VALIDATE_BOOLEAN );
 	}
 
+	/**
+	 * Asks Pigeon whether the credentials work.
+	 *
+	 * @return bool
+	 */
 	public function check_credentials() {
 		if ( empty( $this->get_api_key() ) || empty( $this->get_api_secret() ) ) {
 			return false;
@@ -100,47 +165,96 @@ class Pigeon {
 			&& is_array( json_decode( wp_remote_retrieve_body( $request ), true ) );
 	}
 
-	// Loaders
+	/**
+	 * Loads the API key from the settings.
+	 *
+	 * @return void
+	 */
 	public function load_api_key() {
 		$this->set_api_key( nashenski_get_option( 'pigeon', 'api_key' ) );
 	}
 
+	/**
+	 * Loads the API secret from the settings.
+	 *
+	 * @return void
+	 */
 	public function load_api_secret() {
 		$this->set_api_secret( nashenski_get_option( 'pigeon', 'api_secret' ) );
 	}
 
-	// Getters
-
+	/**
+	 * The API key.
+	 *
+	 * @return string
+	 */
 	public function get_api_key() {
 		return $this->api_key;
 	}
 
+	/**
+	 * The API secret.
+	 *
+	 * @return string
+	 */
 	public function get_api_secret() {
 		return $this->api_secret;
 	}
 
+	/**
+	 * The environment.
+	 *
+	 * @return string
+	 */
 	public function get_env() {
 		return $this->env;
 	}
 
+	/**
+	 * The API URL.
+	 *
+	 * @return string
+	 */
 	public function get_base_endpoint() {
 		return $this->base_endpoint;
 	}
 
-	// Setters
-
+	/**
+	 * Keeps the API key.
+	 *
+	 * @param string $api_key API key.
+	 * @return void
+	 */
 	private function set_api_key( $api_key ) {
 		$this->api_key = $api_key;
 	}
 
+	/**
+	 * Keeps the API secret.
+	 *
+	 * @param string $api_secret API secret.
+	 * @return void
+	 */
 	private function set_api_secret( $api_secret ) {
 		$this->api_secret = $api_secret;
 	}
 
+	/**
+	 * Sets the environment.
+	 *
+	 * @param string $env Environment.
+	 * @return void
+	 */
 	public function set_env( $env ) {
 		$this->env = $env;
 	}
 
+	/**
+	 * Keeps the API URL.
+	 *
+	 * @param string $endpoint API URL.
+	 * @return void
+	 */
 	private function set_base_endpoint( $endpoint ) {
 		$this->base_endpoint = $endpoint;
 	}

@@ -1,30 +1,95 @@
-<?php
+<?php // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter, Generic.Files.OneObjectStructurePerFile, Universal.Files.SeparateFunctionsFromOO, Universal.Namespaces, WordPress.Security.EscapeOutput -- offline CLI test script: no WordPress, so stubs, unused stub parameters, filesystem calls and plain-text output are on purpose.
 /** Offline: "Remove delivery from documents" drops delivery on cash on delivery orders only (D03). Run: php tests/invoice-remove-shipping.php */
 namespace {
 	define( 'ABSPATH', __DIR__ . '/fixtures/' );
 	$options = array();
+	/**
+	 * Option stub.
+	 *
+	 * @param string $name Option name.
+	 *
+	 * @return mixed
+	 */
 	function get_option( $name ) {
 		return $GLOBALS['options'][ $name ] ?? ''; }
+	/**
+	 * Refund stub: only the parent ID is read.
+	 */
 	class WC_Order_Refund {
+		/**
+		 * Parent order.
+		 *
+		 * @var object
+		 */
 		public $parent;
+		/**
+		 * Parent order ID.
+		 *
+		 * @return int
+		 */
 		public function get_parent_id() {
 			return 1; }
 	}
+	/**
+	 * Order stub with a payment method and shipping methods.
+	 */
 	class FakeOrder {
-		public $payment, $methods;
+		/**
+		 * Payment method.
+		 *
+		 * @var string
+		 */
+		public $payment;
+		/**
+		 * Shipping methods.
+		 *
+		 * @var array
+		 */
+		public $methods;
+		/**
+		 * Constructor.
+		 *
+		 * @param string $payment Payment method.
+		 * @param array  $methods Shipping methods.
+		 */
 		public function __construct( $payment, $methods ) {
 			$this->payment = $payment;
 			$this->methods = $methods; }
+		/**
+		 * Payment method.
+		 *
+		 * @return string
+		 */
 		public function get_payment_method() {
 			return $this->payment; }
+		/**
+		 * Shipping methods.
+		 *
+		 * @return array
+		 */
 		public function get_shipping_methods() {
 			return $this->methods; }
 	}
+	/**
+	 * Order lookup stub: always the parent order.
+	 *
+	 * @param int $id Order ID.
+	 *
+	 * @return object
+	 */
 	function wc_get_order( $id ) {
 		return $GLOBALS['parent']; }
 	require __DIR__ . '/../app/functions.php';
 
 	$checks = 0;
+	/**
+	 * Assertion: throws when the condition fails.
+	 *
+	 * @param bool   $condition Condition.
+	 * @param string $message   Failure message.
+	 *
+	 * @throws RuntimeException When the condition is false.
+	 */
 	function expect( $condition, $message ) {
 		++$GLOBALS['checks'];
 		if ( ! $condition ) {

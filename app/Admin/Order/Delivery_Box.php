@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Admin\Order;
 
 use Nashenski\Front_End\Checkout\Pickers;
@@ -15,6 +15,9 @@ defined( 'ABSPATH' ) || exit;
 class Delivery_Box {
 	const NONCE = 'nashenski_delivery';
 
+	/**
+	 * Hooks the meta box, the save and the delivery price email.
+	 */
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_box' ), 20 );
 		add_action( 'woocommerce_process_shop_order_meta', array( __CLASS__, 'save' ), 60 );
@@ -28,6 +31,10 @@ class Delivery_Box {
 	 * The quick order shopper saw no delivery price: once a label sets it, send the order details
 	 * email (WooCommerce "Order details"), with the delivery price and the new total. Again only
 	 * when the price changes.
+	 *
+	 * @param array          $data  Courier label response.
+	 * @param \WC_Order|null $order Order.
+	 * @return void
 	 */
 	public static function email_delivery_price( $data, $order ) {
 		$order = $order ? wc_get_order( $order->get_id() ) : false;
@@ -63,6 +70,11 @@ class Delivery_Box {
 		$order->save();
 	}
 
+	/**
+	 * The order on the edit screen.
+	 *
+	 * @return \WC_Order|false
+	 */
 	public static function order() {
 		global $post;
 
@@ -75,6 +87,9 @@ class Delivery_Box {
 
 	/**
 	 * Only quick orders that have no courier shipping line yet.
+	 *
+	 * @param mixed $order Order on the screen.
+	 * @return bool
 	 */
 	private static function applies( $order ) {
 		if ( ! $order instanceof \WC_Order || ! $order->get_meta( Quick_Order::META_CONSENT ) ) {
@@ -120,6 +135,11 @@ class Delivery_Box {
 		return $options;
 	}
 
+	/**
+	 * Adds the delivery box to the order screen when it applies.
+	 *
+	 * @return void
+	 */
 	public static function add_meta_box() {
 		$order = self::order();
 
@@ -132,6 +152,11 @@ class Delivery_Box {
 		add_meta_box( 'nashenski_delivery', __( 'Delivery', 'nashenski-commerce' ), array( __CLASS__, 'render' ), $screen, 'normal', 'high' );
 	}
 
+	/**
+	 * Prints the delivery box.
+	 *
+	 * @return void
+	 */
 	public static function render() {
 		$order   = self::order();
 		$options = self::options();
@@ -188,6 +213,9 @@ class Delivery_Box {
 
 	/**
 	 * Adds the courier shipping line from the choice, in place of any other shipping line.
+	 *
+	 * @param int $order_id Order ID.
+	 * @return void
 	 */
 	public static function save( $order_id ) {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- checked right below.
@@ -195,7 +223,7 @@ class Delivery_Box {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_nonce'] ) ), self::NONCE ) || ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_nonce'] ) ), self::NONCE ) || ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			return;
 		}
 
@@ -268,6 +296,10 @@ class Delivery_Box {
 
 	/**
 	 * Whether the picker finished: the type matches and an office, locker or street was chosen.
+	 *
+	 * @param array $choice Picker choice.
+	 * @param array $option Delivery option.
+	 * @return bool
 	 */
 	private static function complete( $choice, $option ) {
 		if ( 'boxnow' === $option['courier'] ) {

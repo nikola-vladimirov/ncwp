@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Shipping\Pigeon;
 
 use Nashenski\Container\Client;
@@ -6,15 +6,31 @@ use Nashenski\Transliteration;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Loads the Pigeon lockers of a city for the checkout picker.
+ */
 class Locker {
+	/**
+	 * Dependency container.
+	 *
+	 * @var object|null
+	 */
 	private static $container = null;
 
+	/**
+	 * Hooks the locker request for guests and logged-in shoppers.
+	 */
 	public function __construct() {
 
 		add_action( 'wp_ajax_nashenski_pigeon_load_lockers', array( __CLASS__, 'load_lockers' ) );
 		add_action( 'wp_ajax_nopriv_nashenski_pigeon_load_lockers', array( __CLASS__, 'load_lockers' ) );
 	}
 
+	/**
+	 * Answers the picker request with the lockers of the city, or the reason there are none.
+	 *
+	 * @return void
+	 */
 	public static function load_lockers() {
 		nashenski_check_picker_request();
 
@@ -22,7 +38,7 @@ class Locker {
 		if ( ! \Nashenski\Front_End\Checkout\Pickers::connected( 'pigeon' ) ) {
 			wp_send_json_success(
 				array(
-					'lockers' => apply_filters( 'nashenski/shipping_method/pigeon/lockers', Office::public_list( 'locker', nashenski_picker_request( 'city' ) ) ),
+					'lockers' => apply_filters( 'nashenski/shipping_method/pigeon/lockers', Office::public_list( 'locker', nashenski_picker_request( 'city' ) ) ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 					'status'  => 'valid-city',
 				)
 			);
@@ -36,7 +52,7 @@ class Locker {
 		$raw_city        = Transliteration::latin2cyrillic( nashenski_picker_request( 'city' ) );
 		$cities_data     = self::$container[ Client::PIGEON_CITIES ]->get_filtered_cities( $raw_city, $raw_state );
 
-		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'] ) || ! $raw_city ) {
+		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'], true ) || ! $raw_city ) {
 			$args['status'] = 'invalid-city';
 
 			if ( ! $state ) {
@@ -58,7 +74,7 @@ class Locker {
 				$lockers = $lockers;
 			}
 
-			$args['lockers'] = apply_filters( 'nashenski/shipping_method/pigeon/lockers', $lockers );
+			$args['lockers'] = apply_filters( 'nashenski/shipping_method/pigeon/lockers', $lockers ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 			$args['status']  = 'valid-city';
 		}
 

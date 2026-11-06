@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Client\Speedy;
 
 use Nashenski\Container\Client;
@@ -7,16 +7,42 @@ use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The Speedy cities of a country, cached in a file per region.
+ */
 class Cities {
 	const CITIES_ENDPOINT = 'location/site/csv/';
 
+	/**
+	 * Cities by region, loaded on first use.
+	 *
+	 * @var array
+	 */
 	private $cities = array();
+
+	/**
+	 * Dependency container.
+	 *
+	 * @var object
+	 */
 	private $container;
 
+	/**
+	 * Keeps the container.
+	 *
+	 * @param object $container Dependency container.
+	 */
 	public function __construct( $container ) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Reads the cities of a region from the cache file, or from Speedy when there is none.
+	 *
+	 * @param string     $region     Region name.
+	 * @param string|int $country_id Speedy country ID.
+	 * @return array
+	 */
 	protected function load_cities( $region, $country_id = '100' ) {
 		if ( ! is_dir( $this->container[ Client::SPEEDY ]::CACHE_FOLDER ) ) {
 			wp_mkdir_p( $this->container[ Client::SPEEDY ]::CACHE_FOLDER );
@@ -75,7 +101,13 @@ class Cities {
 		return $cities;
 	}
 
-	// Getters
+	/**
+	 * The cities of a region.
+	 *
+	 * @param string     $region     Region name.
+	 * @param string|int $country_id Speedy country ID.
+	 * @return array
+	 */
 	public function get_cities( $region, $country_id = '100' ) {
 		if ( empty( $this->cities[ $region ] ) ) {
 			$this->load_cities( $region, $country_id );
@@ -84,10 +116,22 @@ class Cities {
 		return $this->cities[ $region ] ?? array();
 	}
 
+	/**
+	 * Drops the loaded cities of a region from memory.
+	 *
+	 * @param string $region Region name.
+	 * @return void
+	 */
 	public function release_cities( $region ) {
 		unset( $this->cities[ $region ] );
 	}
 
+	/**
+	 * The cities of every region as picker choices, sorted by label.
+	 *
+	 * @param string|int $country_id Speedy country ID.
+	 * @return array
+	 */
 	public function get_formatted_cities( $country_id = '100' ) {
 		$formatted = array();
 		$regions   = $this->get_regions( $country_id );
@@ -119,6 +163,13 @@ class Cities {
 		return $formatted;
 	}
 
+	/**
+	 * The cities of a region given by its code.
+	 *
+	 * @param string     $region_code Region code.
+	 * @param string|int $country_id  Speedy country ID.
+	 * @return array
+	 */
 	public function get_cities_by_region( $region_code, $country_id = 100 ) {
 		// No region, or no Speedy country (Speedy did not answer).
 		$region = $region_code ? ( $this->get_regions( $country_id )[ $region_code ] ?? '' ) : '';
@@ -130,6 +181,14 @@ class Cities {
 		return array_values( $this->get_cities( $region, $country_id ) );
 	}
 
+	/**
+	 * The cities of a region, with the key of the one that matches the typed name.
+	 *
+	 * @param string     $city       City name typed by the shopper.
+	 * @param string     $state      Region code or name.
+	 * @param string|int $country_id Speedy country ID.
+	 * @return array
+	 */
 	public function get_filtered_cities( $city, $state, $country_id = 100 ) {
 		$city = $this->normalize_city_name( $city, $country_id );
 
@@ -172,6 +231,14 @@ class Cities {
 		);
 	}
 
+	/**
+	 * Key of the city with this normalized name, or false.
+	 *
+	 * @param string     $city       Normalized city name.
+	 * @param array      $cities     Cities.
+	 * @param string|int $country_id Speedy country ID.
+	 * @return int|string|false
+	 */
 	private function find_city_key( $city, $cities, $country_id ) {
 		foreach ( $cities as $key => $temp_city ) {
 			if ( $city === $this->normalize_city_name( $temp_city['name'], $country_id ) ) {
@@ -182,10 +249,17 @@ class Cities {
 		return false;
 	}
 
+	/**
+	 * City name without prefix such as "гр.", transliterated for Bulgaria, in lower case.
+	 *
+	 * @param string     $city       City name.
+	 * @param string|int $country_id Speedy country ID.
+	 * @return string
+	 */
 	private function normalize_city_name( $city, $country_id ) {
 		$city = nashenski_remove_city_prefix( $city );
 
-		if ( (string) $country_id === '100' ) {
+		if ( '100' === (string) $country_id ) {
 			$city = Transliteration::latin2cyrillic( $city );
 		}
 
@@ -195,9 +269,15 @@ class Cities {
 		return trim( $city, " \t\n\r\0\x0B.,-" );
 	}
 
+	/**
+	 * Regions of a country: code => name.
+	 *
+	 * @param string|int|null $country_id Speedy country ID.
+	 * @return array
+	 */
 	public function get_regions( $country_id = 100 ) {
 		$regions = apply_filters(
-			'nashenski/speedy/cities/regions',
+			'nashenski/speedy/cities/regions', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 			array(
 				100 => array(
 					'BG-01' => 'BLAGOEVGRAD',
@@ -236,7 +316,13 @@ class Cities {
 		return null === $country_id ? array() : ( $regions[ $country_id ] ?? array() );
 	}
 
-	// Setters
+	/**
+	 * Keeps the cities of a region.
+	 *
+	 * @param string $region Region name.
+	 * @param array  $cities Cities.
+	 * @return void
+	 */
 	private function set_cities( $region, $cities ) {
 		$this->cities[ $region ] = $cities;
 	}

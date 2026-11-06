@@ -1,30 +1,98 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Export\Nra;
 
 use Nashenski\Admin\Order\Documents;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The monthly NRA audit file: picks the orders and refunds of the month and builds the XML.
+ */
 class Export {
-	public $payment_methods, $not_included_orders, $completed_orders_ids, $refunded_orders_ids, $generate_files, $date, $xml_shop, $xml_orders;
+	/**
+	 * Payment method types for the NRA file.
+	 *
+	 * @var array
+	 */
+	public $payment_methods;
 
-	function __construct( $date, $generate_files ) {
+	/**
+	 * Numbers of the orders left out because their payment method has no NRA type.
+	 *
+	 * @var array|null
+	 */
+	public $not_included_orders;
+
+	/**
+	 * IDs of the paid orders of the month.
+	 *
+	 * @var array
+	 */
+	public $completed_orders_ids;
+
+	/**
+	 * IDs of the orders refunded in the month.
+	 *
+	 * @var array
+	 */
+	public $refunded_orders_ids;
+
+	/**
+	 * Whether the order documents are generated.
+	 *
+	 * @var bool
+	 */
+	public $generate_files;
+
+	/**
+	 * Month of the file, as Y-m.
+	 *
+	 * @var string
+	 */
+	public $date;
+
+	/**
+	 * Shop part of the file.
+	 *
+	 * @var mixed
+	 */
+	public $xml_shop;
+
+	/**
+	 * Orders part of the file.
+	 *
+	 * @var mixed
+	 */
+	public $xml_orders;
+
+	/**
+	 * Picks the orders of the month.
+	 *
+	 * @param string $date           Month, as Y-m.
+	 * @param bool   $generate_files Whether the order documents are generated.
+	 */
+	public function __construct( $date, $generate_files ) {
 		$this->payment_methods = nashenski_get_payment_types_for_meta();
 		$this->generate_files  = $generate_files;
 		$this->date            = $date;
 		$this->load_woo_orders();
 	}
 
+	/**
+	 * Reads the paid and the refunded orders of the month into the ID lists.
+	 *
+	 * @return void
+	 */
 	protected function load_woo_orders() {
 		$timespan = strtotime( 'first day of ' . $this->date . ' ' . wp_timezone_string() ) . '...' . strtotime( 'last day of ' . $this->date . ' 23:59:59 ' . wp_timezone_string() );
 
 		$order_args          = array(
 			'date_paid' => $timespan,
-			'status'    => apply_filters( 'nashenski/admin/export/orders_statuses', array( 'wc-completed', 'wc-processing' ) ),
+			'status'    => apply_filters( 'nashenski/admin/export/orders_statuses', array( 'wc-completed', 'wc-processing' ) ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 		);
 		$refunded_order_args = array(
 			'date_created' => $timespan,
-			'status'       => apply_filters( 'nashenski/admin/export/refunded_orders_statuses', array( 'wc-completed', 'wc-refunded' ) ),
+			'status'       => apply_filters( 'nashenski/admin/export/refunded_orders_statuses', array( 'wc-completed', 'wc-refunded' ) ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 		);
 
 		$this->completed_orders_ids = array();
@@ -77,17 +145,29 @@ class Export {
 
 	/**
 	 * Orders of the month after the "nashenski/admin/export/orders" or "nashenski/admin/export/refunded_orders" filter.
+	 *
+	 * @param array  $args Order query arguments.
+	 * @param string $type "refunded" or "orders".
+	 * @return array
 	 */
 	protected function filtered_orders( $args, $type ) {
 		$orders = wc_get_orders( array_merge( $args, array( 'limit' => -1 ) ) );
 
 		if ( 'refunded' === $type ) {
-			return apply_filters( 'nashenski/admin/export/refunded_orders', $orders, $this );
+			return apply_filters( 'nashenski/admin/export/refunded_orders', $orders, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 		}
 
-		return apply_filters( 'nashenski/admin/export/orders', $orders, $this );
+		return apply_filters( 'nashenski/admin/export/orders', $orders, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 	}
 
+	/**
+	 * Runs the callback on every order of the query, in batches unless a filter supplies the orders.
+	 *
+	 * @param array    $args     Order query arguments.
+	 * @param string   $type     "refunded" or "orders".
+	 * @param callable $callback Called with each order.
+	 * @return void
+	 */
 	protected function walk_orders( $args, $type, $callback ) {
 		if ( has_filter( 'refunded' === $type ? 'nashenski/admin/export/refunded_orders' : 'nashenski/admin/export/orders' ) ) {
 			$orders = $this->filtered_orders( $args, $type );
@@ -99,9 +179,10 @@ class Export {
 			return;
 		}
 
-		$page  = 1;
-		$limit = (int) apply_filters( 'nashenski/admin/export/query_batch_size', 100, $this );
-		$limit = max( 1, $limit );
+		$page    = 1;
+		$fetched = 0;
+		$limit   = (int) apply_filters( 'nashenski/admin/export/query_batch_size', 100, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$limit   = max( 1, $limit );
 
 		do {
 			$order_ids = wc_get_orders(
@@ -125,25 +206,46 @@ class Export {
 				unset( $order );
 			}
 
+			$fetched = count( $order_ids );
+
 			$this->flush_runtime_cache();
 			++$page;
-		} while ( count( $order_ids ) === $limit );
+		} while ( $fetched === $limit );
 	}
 
+	/**
+	 * Empties the object cache of this request.
+	 *
+	 * @return void
+	 */
 	protected function flush_runtime_cache() {
 		wp_cache_flush_runtime();
 	}
 
+	/**
+	 * Shop part of the file: tax IDs, domain, year and month.
+	 *
+	 * @return array
+	 */
 	protected function get_shop_data() {
+		$eik        = nashenski_get_option( 'nap', 'eik' );
+		$nap_number = nashenski_get_option( 'nap', 'nap_number' );
+		$domain     = nashenski_get_option( 'nap', 'domain' );
+
 		return array(
-			'eik'        => nashenski_get_option( 'nap', 'eik' ) ?: '',
-			'nap_number' => nashenski_get_option( 'nap', 'nap_number' ) ?: '',
-			'domain'     => nashenski_get_option( 'nap', 'domain' ) ?: '',
+			'eik'        => $eik ? $eik : '',
+			'nap_number' => $nap_number ? $nap_number : '',
+			'domain'     => $domain ? $domain : '',
 			'year'       => gmdate( 'Y', strtotime( $this->date ) ),
 			'month'      => gmdate( 'm', strtotime( $this->date ) ),
 		);
 	}
 
+	/**
+	 * Builds the file and returns its details.
+	 *
+	 * @return array|null Null when the month has no orders.
+	 */
 	public function get_xml_file() {
 		if ( empty( $this->completed_orders_ids ) && empty( $this->refunded_orders_ids ) ) {
 			return;
@@ -204,12 +306,24 @@ class Export {
 		return $this->upload_xml( $args );
 	}
 
+	/**
+	 * Empties the object cache after every 100th order.
+	 *
+	 * @param int $index Position in the list.
+	 * @return void
+	 */
 	protected function maybe_flush_runtime_cache( $index ) {
 		if ( 0 === ( ( $index + 1 ) % 100 ) ) {
 			$this->flush_runtime_cache();
 		}
 	}
 
+	/**
+	 * Builds the XML, saves it and checks it against the schema.
+	 *
+	 * @param array $args Shop data, orders and refunded orders.
+	 * @return array|null
+	 */
 	protected function upload_xml( $args ) {
 		$data   = self::generate_xml_file( $args );
 		$errors = '';
@@ -246,6 +360,12 @@ class Export {
 		);
 	}
 
+	/**
+	 * Schema errors of the saved file.
+	 *
+	 * @param int $attach_id File ID.
+	 * @return array|null Null when the file is valid.
+	 */
 	protected function get_file_errors( $attach_id ) {
 		if ( ! empty( $this->completed_orders_ids ) || ! empty( $this->refunded_orders_ids ) ) {
 			libxml_use_internal_errors( true );
@@ -258,6 +378,12 @@ class Export {
 		}
 	}
 
+	/**
+	 * Builds the XML.
+	 *
+	 * @param array $args Shop data, orders and refunded orders.
+	 * @return array The content and totals, or an error.
+	 */
 	protected function generate_xml_file( $args ) {
 		// Built on the site, no order limit.
 		if ( ! class_exists( '\XMLWriter' ) ) {
