@@ -284,9 +284,10 @@ class Price_Lists {
 	 * Hooked to woocommerce_shipping_{id}_instance_settings_values, which the form save and the REST API both run.
 	 *
 	 * @param mixed $settings Instance settings.
+	 * @param mixed $method   The shipping method being saved; a pair that is not saved is shown as its error.
 	 * @return mixed
 	 */
-	public static function clean_amounts( $settings ) {
+	public static function clean_amounts( $settings, $method = null ) {
 		if ( ! is_array( $settings ) ) {
 			return $settings;
 		}
@@ -298,13 +299,26 @@ class Price_Lists {
 		}
 
 		if ( isset( $settings['free_shipping_by_country'] ) ) {
-			$pairs = array();
+			$pairs    = array();
+			$rejected = array();
 
-			foreach ( self::free_over_list( $settings['free_shipping_by_country'] ) as $country => $amount ) {
+			foreach ( self::free_over_list( $settings['free_shipping_by_country'], $rejected ) as $country => $amount ) {
 				$pairs[] = $country . '=' . $amount;
 			}
 
 			$settings['free_shipping_by_country'] = implode( ', ', $pairs );
+
+			if ( $rejected && is_object( $method ) && method_exists( $method, 'add_error' ) ) {
+				$method->add_error(
+					esc_html(
+						sprintf(
+							/* translators: %s: the country=amount pairs that were not saved, e.g. GR=ABC, BG=50. */
+							__( 'Free shipping over, abroad: not saved: %s. Write a country code other than BG and an amount, for example GR=150.50.', 'nashenski-commerce' ),
+							implode( ', ', $rejected )
+						)
+					)
+				);
+			}
 		}
 
 		return $settings;
@@ -313,17 +327,22 @@ class Price_Lists {
 	/**
 	 * The owner's "RO=150, GR=200" list as country => amount. Malformed pairs and BG (it has its own field) are skipped.
 	 *
-	 * @param mixed $value Saved text.
+	 * @param mixed $value    Saved text.
+	 * @param array $rejected Filled with the non-empty pairs that were skipped.
 	 * @return array
 	 */
-	public static function free_over_list( $value ) {
+	public static function free_over_list( $value, &$rejected = array() ) {
 		$list = array();
 
-		// A comma before a digit stays inside the amount: "1,000" is a thousands separator, any other such comma rejects the pair.
+		// A comma before a digit stays inside the amount, as in normalize(): before exactly 3 digits it separates thousands
+		// (1,000 = 1000), before 1 or 2 final digits it is the decimal point (150,50 = 150.50); any other comma rejects the pair.
 		foreach ( preg_split( '/[,;\n]+(?!\s*\d)/', strtoupper( is_string( $value ) ? $value : '' ) ) as $pair ) {
-			$pair = preg_replace( '/(?<=\d),(?=\d{3}(?!\d))/', '', preg_replace( '/\s+/', '', $pair ) );
+			$typed = preg_replace( '/\s+/', '', $pair );
+			$pair  = preg_replace( '/(?<=\d),(?=\d{1,2}$)/', '.', preg_replace( '/(?<=\d),(?=\d{3}(?!\d))/', '', $typed ) );
 			if ( preg_match( '/^([A-Z]{2})=(\d+(?:\.\d+)?)$/', $pair, $m ) && 'BG' !== $m[1] ) {
 				$list[ $m[1] ] = $m[2];
+			} elseif ( '' !== $typed ) {
+				$rejected[] = $typed;
 			}
 		}
 

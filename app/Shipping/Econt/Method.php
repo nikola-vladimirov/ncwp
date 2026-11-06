@@ -132,7 +132,7 @@ class Method extends \WC_Shipping_Method {
 		$this->enabled            = 'yes';
 
 		// The REST API and the form both run this filter when they save the zone settings.
-		add_filter( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', array( Price_Lists::class, 'clean_amounts' ) );
+		add_filter( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', array( Price_Lists::class, 'clean_amounts' ), 10, 2 );
 
 		$this->init();
 	}
@@ -435,6 +435,16 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	/**
+	 * Country of the label's receiver, which picks who pays: the widget's office or address, else the package.
+	 * Same rule as the Speedy label, so a Bulgarian office with a foreign package country keeps receiver-pays.
+	 *
+	 * @return string ISO code.
+	 */
+	public function label_country() {
+		return $this->cookie_data['country'] ?? $this->courier_country();
+	}
+
+	/**
 	 * Get cookie data.
 	 *
 	 * @return mixed Result.
@@ -501,7 +511,7 @@ class Method extends \WC_Shipping_Method {
 			)
 		) {
 			$data['errors'] = $request;
-		} elseif ( 'BG' !== $this->courier_country() ) {
+		} elseif ( 'BG' !== $this->label_country() ) {
 			$data['price'] = nashenski_tax_based_price( $request['label']['senderDueAmount'] );
 		} elseif ( isset( $request['label']['receiverDueAmount'] ) ) {
 			$data['price'] = nashenski_tax_based_price( $request['label']['receiverDueAmount'] );
@@ -561,7 +571,7 @@ class Method extends \WC_Shipping_Method {
 		$other_data      = $this->generate_other_data();
 		$payment_by_data = $this->generate_payment_by_data();
 
-		if ( 'BG' !== $this->courier_country() ) {
+		if ( 'BG' !== $this->label_country() ) {
 			unset( $payment_by_data['paymentReceiverMethod'] );
 			unset( $payment_by_data['paymentReceiverAmount'] );
 

@@ -49,6 +49,22 @@ class WC_Shipping_Method {
 	}
 
 	/**
+	 * Errors added on save.
+	 *
+	 * @var array
+	 */
+	public $errors = array();
+
+	/**
+	 * Add error.
+	 *
+	 * @param string $error Error.
+	 */
+	public function add_error( $error ) {
+		$this->errors[] = $error;
+	}
+
+	/**
 	 * Add rate.
 	 *
 	 * @param array $rate Rate.
@@ -67,6 +83,26 @@ class WC_Shipping_Method {
  */
 function apply_filters( $tag, $value ) {
 	return $value;
+}
+
+/**
+ * Translate stub.
+ *
+ * @param string $text Text.
+ * @return string
+ */
+function __( $text ) {
+	return $text;
+}
+
+/**
+ * Escape stub.
+ *
+ * @param string $text Text.
+ * @return string
+ */
+function esc_html( $text ) {
+	return htmlspecialchars( $text );
 }
 
 /**
@@ -159,9 +195,24 @@ $thousands = array(
 	'RO' => '1500000.5',
 );
 expect( Price_Lists::free_over_list( 'GR=1,000, RO = 1,500,000.5' ) === $thousands, 'a thousands comma stays in the amount' );
-expect( array( 'HU' => '9' ) === Price_Lists::free_over_list( 'GR=1,00, RO=1,0000;HU=9' ), 'any other comma inside an amount rejects that pair' );
+$rejected = array();
+expect( array( 'HU' => '9' ) === Price_Lists::free_over_list( 'GR=1,0000, RO=1,5,5;HU=9', $rejected ), 'any other comma inside an amount rejects that pair' );
+expect( array( 'GR=1,0000', 'RO=1,5,5' ) === $rejected, 'the rejected pairs are reported' );
+$decimal = array(
+	'GR' => '150.50',
+	'RO' => '1000',
+	'HU' => '1000.5',
+	'DE' => '1.5',
+);
+expect( Price_Lists::free_over_list( 'GR=150,50, RO=1,000; HU=1000.5, DE=1,5' ) === $decimal, 'a comma before 1 or 2 final digits is the decimal point, before 3 a thousands separator, as in normalize()' );
 expect( array() === Price_Lists::free_over_list( '' ) && array() === Price_Lists::free_over_list( null ) && array() === Price_Lists::free_over_list( array( 'RO' ) ), 'empty or non-text gives no list' );
-expect( 'RO=150, GR=200' === Price_Lists::clean_amounts( array( 'free_shipping_by_country' => ' ro=150 ,bad, GR=200 ' ) )['free_shipping_by_country'], 'the saved text is cleaned to valid pairs' );
+$saving = new WC_Shipping_Method();
+expect( 'RO=150, GR=200' === Price_Lists::clean_amounts( array( 'free_shipping_by_country' => ' ro=150 ,bad, GR=200 ' ), $saving )['free_shipping_by_country'], 'the saved text is cleaned to valid pairs' );
+expect( 1 === count( $saving->errors ) && false !== strpos( $saving->errors[0], 'BAD' ), 'a rejected pair is named in the save error' );
+$saving->errors = array();
+expect( 'GR=150.50' === Price_Lists::clean_amounts( array( 'free_shipping_by_country' => 'GR=150,50' ), $saving )['free_shipping_by_country'] && array() === $saving->errors, 'GR=150,50 saves as 150.50 with no error' );
+expect( 'GR=200' === Price_Lists::clean_amounts( array( 'free_shipping_by_country' => 'BG=50, GR=200' ), $saving )['free_shipping_by_country'] && false !== strpos( $saving->errors[0], 'BG=50' ), 'BG in the abroad list is reported too' );
+expect( 'RO=150' === Price_Lists::clean_amounts( array( 'free_shipping_by_country' => 'RO=150, ,' ) )['free_shipping_by_country'], 'no method (REST) and empty pairs: still saves' );
 
 // R63: Bulgaria keeps its own field; other countries only the list.
 expect( '100' === Price_Lists::free_over( 'BG', '100', 'BG=5, RO=150' ), 'Bulgaria uses the main field' );

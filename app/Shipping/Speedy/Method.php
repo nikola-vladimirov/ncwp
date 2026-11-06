@@ -148,7 +148,7 @@ class Method extends \WC_Shipping_Method {
 		$this->enabled            = 'yes';
 
 		// The REST API and the form both run this filter when they save the zone settings.
-		add_filter( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', array( Price_Lists::class, 'clean_amounts' ) );
+		add_filter( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', array( Price_Lists::class, 'clean_amounts' ), 10, 2 );
 
 		$this->init();
 	}
@@ -418,6 +418,16 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	/**
+	 * Country of the label's recipient, which picks the service and who pays: the widget's office or address, else the package.
+	 * Same rule as the Econt label.
+	 *
+	 * @return string ISO code.
+	 */
+	public function label_country() {
+		return $this->cookie_data['country'] ?? $this->courier_country();
+	}
+
+	/**
 	 * Fixed price for this order: like Econt, it applies to Bulgaria only.
 	 *
 	 * @return mixed The fixed price, or '' when none applies.
@@ -497,7 +507,7 @@ class Method extends \WC_Shipping_Method {
 		$services_data   = '';
 		$payment_by_data = '';
 		// The service follows the recipient above (the widget's office or address), so the API prices what is sent.
-		$country = $this->cookie_data['country'] ?? $this->courier_country();
+		$country = $this->label_country();
 
 		if ( 'BG' !== $country ) {
 			$services_data   = $this->generate_services_data( '202', $country );

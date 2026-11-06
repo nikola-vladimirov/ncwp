@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.19.9\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-06 13:47+0000\n"
-"PO-Revision-Date: 2026-11-06 13:47+0000\n"
+"POT-Creation-Date: 2026-11-06 13:58+0000\n"
+"PO-Revision-Date: 2026-11-06 13:58+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -540,11 +540,11 @@ msgstr ""
 msgid "Apartment"
 msgstr ""
 
-#: app/Admin/Econt.php:109 app/Shipping/Econt/Method.php:973
+#: app/Admin/Econt.php:109 app/Shipping/Econt/Method.php:983
 msgid "Street number is required."
 msgstr ""
 
-#: app/Admin/Econt.php:110 app/Shipping/Econt/Method.php:975
+#: app/Admin/Econt.php:110 app/Shipping/Econt/Method.php:985
 msgid "Fill in at least one of block, entrance, floor or apartment."
 msgstr ""
 
@@ -4619,7 +4619,7 @@ msgstr ""
 msgid "Discount"
 msgstr ""
 
-#: app/Export/Builder/Fields.php:101 app/Shipping/Speedy/Method.php:1122
+#: app/Export/Builder/Fields.php:101 app/Shipping/Speedy/Method.php:1133
 msgid "Fees"
 msgstr ""
 
@@ -5682,6 +5682,12 @@ msgstr ""
 msgid "The request failed. Reload the page and try again."
 msgstr ""
 
+#. translators: %s: the country=amount pairs that were not saved, e.g. GR=ABC, BG=50.
+#: app/Pricing/Price_Lists.php:316
+#, php-format
+msgid "Free shipping over, abroad: not saved: %s. Write a country code other than BG and an amount, for example GR=150.50."
+msgstr ""
+
 #: app/Pricing/Updater.php:40
 msgid "There is no public price list for this courier."
 msgstr ""
@@ -6090,17 +6096,17 @@ msgstr ""
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
-#: app/Shipping/BoxNow/Method.php:462 app/Shipping/Econt/Method.php:998 app/Shipping/Speedy/Method.php:1253
+#: app/Shipping/BoxNow/Method.php:462 app/Shipping/Econt/Method.php:1008 app/Shipping/Speedy/Method.php:1264
 msgid "Please choose a automat."
 msgstr ""
 
 #. translators: 1: waybill number, 2: tracking link
-#: app/Shipping/BoxNow/Method.php:652 app/Shipping/Econt/Method.php:1109 app/Shipping/Pigeon/Method.php:835 app/Shipping/Speedy/Method.php:1302
+#: app/Shipping/BoxNow/Method.php:652 app/Shipping/Econt/Method.php:1119 app/Shipping/Pigeon/Method.php:835 app/Shipping/Speedy/Method.php:1313
 #, php-format
 msgid "Label number: %1$s. %2$s"
 msgstr ""
 
-#: app/Shipping/BoxNow/Method.php:657 app/Shipping/Econt/Method.php:1114 app/Shipping/Pigeon/Method.php:840 app/Shipping/Speedy/Method.php:1307
+#: app/Shipping/BoxNow/Method.php:657 app/Shipping/Econt/Method.php:1124 app/Shipping/Pigeon/Method.php:840 app/Shipping/Speedy/Method.php:1318
 msgid "Track your order."
 msgstr ""
 
@@ -6156,27 +6162,27 @@ msgstr ""
 msgid "Can be used only in Bulgaria"
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:489 app/Shipping/Speedy/Method.php:462
+#: app/Shipping/Econt/Method.php:499 app/Shipping/Speedy/Method.php:472
 msgid "Calculation failed. Please try again."
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:958
+#: app/Shipping/Econt/Method.php:968
 msgid "Econt - "
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:961 app/Shipping/Speedy/Method.php:1235
+#: app/Shipping/Econt/Method.php:971 app/Shipping/Speedy/Method.php:1246
 msgid "Please fill in your delivery address."
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:978 app/Shipping/Pigeon/Method.php:760 app/Shipping/Speedy/Method.php:1237
+#: app/Shipping/Econt/Method.php:988 app/Shipping/Pigeon/Method.php:760 app/Shipping/Speedy/Method.php:1248
 msgid "Please choose delivery option!"
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:990 app/Shipping/Speedy/Method.php:1246
+#: app/Shipping/Econt/Method.php:1000 app/Shipping/Speedy/Method.php:1257
 msgid "Please choose a office."
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:1006
+#: app/Shipping/Econt/Method.php:1016
 msgid "Please choose address."
 msgstr ""
 
@@ -6293,12 +6299,12 @@ msgstr ""
 msgid "Prices for these countries come only from Speedy, not from the public price list."
 msgstr ""
 
-#: app/Shipping/Speedy/Method.php:446
+#: app/Shipping/Speedy/Method.php:456
 msgid "This delivery cannot be priced now. Choose another delivery method."
 msgstr ""
 
 #. translators: %s: error message from the courier
-#: app/Shipping/Speedy/Method.php:1233
+#: app/Shipping/Speedy/Method.php:1244
 #, php-format
 msgid "Speedy - %s"
 msgstr ""

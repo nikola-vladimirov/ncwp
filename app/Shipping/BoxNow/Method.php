@@ -125,7 +125,7 @@ class Method extends \WC_Shipping_Method {
 		$this->tax_status         = ( wc_tax_enabled() ) ? 'taxable' : 'none';
 
 		// The REST API and the form both run this filter when they save the zone settings.
-		add_filter( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', array( Price_Lists::class, 'clean_amounts' ) );
+		add_filter( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', array( Price_Lists::class, 'clean_amounts' ), 10, 2 );
 
 		// Save settings in admin if you have any defined.
 		add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );

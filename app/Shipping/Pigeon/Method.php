@@ -118,7 +118,7 @@ class Method extends \WC_Shipping_Method {
 		$this->enabled            = 'yes';
 
 		// The REST API and the form both run this filter when they save the zone settings.
-		add_filter( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', array( Price_Lists::class, 'clean_amounts' ) );
+		add_filter( 'woocommerce_shipping_' . $this->id . '_instance_settings_values', array( Price_Lists::class, 'clean_amounts' ), 10, 2 );
 
 		$this->init();
 	}
