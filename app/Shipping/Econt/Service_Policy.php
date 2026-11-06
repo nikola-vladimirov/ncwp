@@ -98,7 +98,7 @@ class Service_Policy {
 		$is_aps = self::recipient_is_aps( $container, $label['receiverOfficeCode'] ?? '', $destination );
 		if ( $is_aps || self::sender_is_aps( $container, $label ) ) {
 			unset( $label['services']['declaredValueAmount'], $label['services']['declaredValueCurrency'] );
-		} elseif ( wc_string_to_bool( nashenski_get_option( 'econt', 'declared_value' ) ) ) {
+		} elseif ( 'cod' === $order->get_payment_method() && wc_string_to_bool( nashenski_get_option( 'econt', 'declared_value' ) ) ) {
 			if ( ! isset( $label['services']['declaredValueAmount'] ) ) {
 				$amount = 0;
 				$types = apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) ? array( 'line_item', 'fee' ) : array( 'line_item' );

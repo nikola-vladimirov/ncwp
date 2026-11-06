@@ -30,7 +30,7 @@ nashenski_set_option( 'econt', 'pay_options', 'no' );
 $pdf_response = array( 'label' => array( 'shipmentNumber' => '123', 'pdfURL' => 'https://ee.econt.com/test.pdf' ) );
 $orders = array();
 function policy_order( $instance, $office = '100' ) {
-	$order = wc_create_order(); $order->set_currency( 'EUR' ); $order->set_billing_country( 'BG' ); $order->set_billing_state( 'BG-22' ); $order->set_billing_city( 'Sofia' );
+	$order = wc_create_order(); $order->set_payment_method( 'cod' ); $order->set_currency( 'EUR' ); $order->set_billing_country( 'BG' ); $order->set_billing_state( 'BG-22' ); $order->set_billing_city( 'Sofia' );
 	$product = new WC_Order_Item_Product(); $product->set_name( 'Test product' ); $product->set_quantity( 1 ); $product->set_total( 100 ); $product->set_subtotal( 100 ); $product->set_taxes( array( 'total' => array( 1 => '20' ), 'subtotal' => array( 1 => '20' ) ) ); $order->add_item( $product );
 	$fee = new WC_Order_Item_Fee(); $fee->set_name( 'Fee' ); $fee->set_total( 5 ); $fee->set_taxes( array( 'total' => array( 1 => '1' ) ) ); $order->add_item( $fee );
 	$shipping = new WC_Order_Item_Shipping(); $shipping->set_method_id( Method::METHOD_ID ); $shipping->set_instance_id( $instance ); $shipping->set_total( 10 ); $shipping->set_taxes( array( 'total' => array( 1 => '2' ) ) );

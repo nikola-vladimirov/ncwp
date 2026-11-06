@@ -853,7 +853,8 @@ class Method extends \WC_Shipping_Method {
 			}
 		}
 
-		if ( $is_fragile && ! $this->recipient_is_aps() ) {
+		// Declared value is a cash on delivery service (Econt > Declared value).
+		if ( $is_fragile && 'cod' === $this->cookie_data['payment'] && ! $this->recipient_is_aps() ) {
 			$cart['services']['declaredValueAmount']   = nashenski_get_package_total();
 			$cart['services']['declaredValueCurrency'] = get_woocommerce_currency();
 		}
