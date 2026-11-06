@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.20.4
+Stable tag: 0.21.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -203,6 +203,9 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
 = 0.21.0 =
 * Changed: Developer hooks use underscores (nashenski_econt_rate in place of nashenski/econt/rate). The old slash names still work but are deprecated.
+* Changed: Four hook names with a hyphen also use underscores now. The old names keep working.
+* Changed: Every admin action checks its security token where it reads the request, and printed page pieces are escaped.
+* Changed: Class files are named class-*.php. Add-ons that load Nashenski class files by path need the new names.
 
 = 0.20.4 =
 * Fixed: Bulgarian text in order PDFs no longer prints as question marks.
