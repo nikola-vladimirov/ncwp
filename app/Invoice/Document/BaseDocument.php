@@ -326,6 +326,9 @@ class BaseDocument {
 		}
 
 		// Unique files in the system temp folder: never web-served, never shared between requests.
+		// wp_tempnam() is admin-only; checkout, cron and REST requests make invoices too.
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+
 		$original = wp_tempnam( 'nashenski-original.pdf' );
 		$copy = wp_tempnam( 'nashenski-copy.pdf' );
 
