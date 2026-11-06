@@ -132,6 +132,8 @@ class BoxNowCart {
 	 * @return mixed Result.
 	 */
 	public function get_cart_contents() {
+		if ( isset( $GLOBALS['cart_lines'] ) ) {
+			return $GLOBALS['cart_lines']; }
 		return $GLOBALS['oversize'] ? array( line( 1, 100, 100, 100 ) ) : array(); }
 }
 /**
@@ -158,7 +160,18 @@ function nashenski_courier_cookie( $name ) {
  * @return mixed Result.
  */
 function wc_get_dimension( $value, $to, $from ) {
-	return (float) $value; }
+	// Same conversion as WooCommerce: a non-numeric value (an empty dimension) throws a TypeError on PHP 8 when the units differ.
+	if ( $from !== $to ) {
+		$factor = array(
+			'in' => 2.54,
+			'm'  => 100,
+			'mm' => 0.1,
+			'yd' => 91.44,
+			'cm' => 1,
+		);
+		$value *= $factor[ $from ];
+	}
+	return $value < 0 ? 0 : $value; }
 /**
  * Get option.
  *
@@ -166,7 +179,7 @@ function wc_get_dimension( $value, $to, $from ) {
  * @return string Result.
  */
 function get_option( $key ) {
-	return 'cm'; }
+	return $GLOBALS['dimension_unit'] ?? 'cm'; }
 /**
  * Nashenski get option.
  *
@@ -351,4 +364,39 @@ foreach ( array( 0, 0.0, '0', '0.0', '', null, 'abc' ) as $zero ) {
 }
 $size = \Nashenski\Shipping\BoxNow\Method::determine_item_size( 5.5, 10, 20 );
 expect( 1 === $size['size'] && 1100.0 === (float) $size['volume'], 'A small item keeps its own size and volume' );
+// get_allowed_apm_size on stores whose dimension unit is not cm: an empty dimension must not throw (TypeError in wc_get_dimension) and takes the default size.
+/**
+ * Allowed apm size.
+ *
+ * @param string $unit  Store dimension unit.
+ * @param array  $lines Cart lines.
+ * @return array Result.
+ */
+function allowed_size( $unit, array $lines ) {
+	$GLOBALS['dimension_unit'] = $unit;
+	$GLOBALS['cart_lines']     = $lines;
+	$result                    = \Nashenski\Shipping\BoxNow\Method::get_allowed_apm_size();
+	unset( $GLOBALS['dimension_unit'], $GLOBALS['cart_lines'] );
+	return $result;
+}
+foreach ( array( 'cm', 'mm', 'm', 'in', 'yd' ) as $unit ) {
+	foreach ( array( '', null, '0' ) as $empty ) {
+		$r = allowed_size( $unit, array( line( 1, $empty, $empty, $empty ), line( 1, '', '12', '12' ) ) );
+		expect( 2 === (int) $r['max_size'] && false === $r['has_oversize_item'], 'An empty dimension takes the default size on a ' . $unit . ' store: ' . var_export( $empty, true ) );
+	}
+}
+// The same product, on a cm store and on an mm store holding the same size, gives the same box size and oversize flag.
+foreach ( array(
+	array( 'small item', 5.5, 10, 20, 1 ),
+	array( 'medium item', 10, 40, 50, 2 ),
+	array( 'large item', 30, 40, 50, 3 ),
+) as list( $name, $h, $w, $l, $box ) ) {
+	$cm = allowed_size( 'cm', array( line( 1, (string) $h, (string) $w, (string) $l ) ) );
+	$mm = allowed_size( 'mm', array( line( 1, (string) ( $h * 10 ), (string) ( $w * 10 ), (string) ( $l * 10 ) ) ) );
+	expect( (int) $cm['max_size'] === $box && $cm === $mm, 'Same product, same box on cm and mm stores: ' . $name );
+}
+$r = allowed_size( 'cm', array( line( 1, '100', '100', '100' ) ) );
+expect( 3 === (int) $r['max_size'] && true === $r['has_oversize_item'], 'An oversize product stays oversize on a cm store' );
+$r = allowed_size( 'mm', array( line( 1, '1000', '1000', '1000' ) ) );
+expect( 3 === (int) $r['max_size'] && true === $r['has_oversize_item'], 'An oversize product stays oversize on an mm store' );
 echo 'PASS: ' . $checks . " BOX NOW assertions\n";

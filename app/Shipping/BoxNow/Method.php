@@ -500,9 +500,9 @@ class Method extends \WC_Shipping_Method {
 		foreach ( WC()->cart->get_cart_contents() as $cart_item ) {
 			$_product  = $cart_item['data'];
 			$item_data = self::determine_item_size(
-				wc_get_dimension( $_product->get_height(), 'cm', get_option( 'woocommerce_dimension_unit' ) ),
-				wc_get_dimension( $_product->get_width(), 'cm', get_option( 'woocommerce_dimension_unit' ) ),
-				wc_get_dimension( $_product->get_length(), 'cm', get_option( 'woocommerce_dimension_unit' ) )
+				wc_get_dimension( (float) $_product->get_height(), 'cm', get_option( 'woocommerce_dimension_unit' ) ),
+				wc_get_dimension( (float) $_product->get_width(), 'cm', get_option( 'woocommerce_dimension_unit' ) ),
+				wc_get_dimension( (float) $_product->get_length(), 'cm', get_option( 'woocommerce_dimension_unit' ) )
 			);
 
 			if ( $item_data['oversize'] ) {
