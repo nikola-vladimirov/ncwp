@@ -21,23 +21,47 @@ namespace Automattic\WooCommerce\Utilities {
 }
 
 namespace {
-	define( 'ABSPATH', __DIR__ . '/fixtures/' );
+	// A scratch WordPress folder: the upgrade step loads wp-admin/includes/file.php and clears the CVC cache folder under WP_CONTENT_DIR.
+	$GLOBALS['scratch'] = sys_get_temp_dir() . '/nashenski-plugin-jobs-' . getmypid() . '/';
+	mkdir( $GLOBALS['scratch'] . 'wp-admin/includes', 0777, true );
+	file_put_contents(
+		$GLOBALS['scratch'] . 'wp-admin/includes/file.php',
+		'<?php
+'
+	);
+	define( 'ABSPATH', $GLOBALS['scratch'] );
+	// Removed on every exit, a failed check included.
+	register_shutdown_function(
+		function () {
+			unlink( $GLOBALS['scratch'] . 'wp-admin/includes/file.php' );
+			rmdir( $GLOBALS['scratch'] . 'wp-admin/includes' );
+			rmdir( $GLOBALS['scratch'] . 'wp-admin' );
+			rmdir( $GLOBALS['scratch'] );
+		}
+	);
+	define( 'WP_CONTENT_DIR', $GLOBALS['scratch'] . 'wp-content' );
 	define( 'HOUR_IN_SECONDS', 3600 );
 	define( 'DAY_IN_SECONDS', 86400 );
 
-	$GLOBALS['options']     = array();
-	$GLOBALS['unscheduled'] = array();
-	$GLOBALS['scheduled']   = array(); // hooks with a pending action.
-	$GLOBALS['created']     = array();
-	$GLOBALS['cleared']     = array();
-	$GLOBALS['deactivate']  = null;
-	$GLOBALS['autoload']    = array();
-	$GLOBALS['enqueued']    = array();
+	$GLOBALS['options']      = array();
+	$GLOBALS['unscheduled']  = array();
+	$GLOBALS['scheduled']    = array(); // hooks with a pending action.
+	$GLOBALS['created']      = array();
+	$GLOBALS['cleared']      = array();
+	$GLOBALS['deactivate']   = null;
+	$GLOBALS['autoload']     = array();
+	$GLOBALS['enqueued']     = array();
+	$GLOBALS['actions']      = array();
+	$GLOBALS['autoload_set'] = array();
 
 	/**
 	 * Add action.
+	 *
+	 * @param mixed $tag Tag.
+	 * @param mixed $cb Cb.
 	 */
-	function add_action() {}
+	function add_action( $tag, $cb ) {
+		$GLOBALS['actions'][] = array( $tag, $cb ); }
 	/**
 	 * Add filter.
 	 */
@@ -76,6 +100,22 @@ namespace {
 	function update_option( $k, $v, $autoload = null ) {
 		$GLOBALS['options'][ $k ]  = $v;
 		$GLOBALS['autoload'][ $k ] = $autoload; }
+	/**
+	 * Wp set option autoload.
+	 *
+	 * @param mixed $k K.
+	 * @param mixed $autoload Autoload.
+	 */
+	function wp_set_option_autoload( $k, $autoload ) {
+		$GLOBALS['autoload_set'][] = array( $k, $autoload ); }
+	/**
+	 * Wp delete file.
+	 */
+	function wp_delete_file() {}
+	/**
+	 * Wp filesystem.
+	 */
+	function WP_Filesystem() {}
 	/**
 	 * As enqueue async action.
 	 *
@@ -124,6 +164,8 @@ namespace {
 	require __DIR__ . '/../app/Abandoned_Carts/Tracker.php';
 	require __DIR__ . '/../app/Document_Storage.php';
 	require __DIR__ . '/../nashenski-commerce.php';
+	require __DIR__ . '/../app/File.php';
+	require __DIR__ . '/../app/Plugin.php';
 
 	/**
 	 * Check.
@@ -173,6 +215,52 @@ namespace {
 	Nashenski\Document_Storage::schedule_migration();
 	check( array( Nashenski\Document_Storage::MIGRATE_HOOK ) === $GLOBALS['enqueued'], 'the migration is queued again after the reset' );
 	check( true === $GLOBALS['autoload'][ Nashenski\Document_Storage::MIGRATE_VERSION_OPTION ] && Nashenski\Document_Storage::MIGRATE_VERSION === get_option( Nashenski\Document_Storage::MIGRATE_VERSION_OPTION ), 'the migration flag is saved with autoload on' );
+
+	// The upgrade step puts the documents migration flag in the autoload set, for sites that saved it outside it.
+	$wpdb                     = new class() {
+		/**
+		 * Options table name.
+		 *
+		 * @var string
+		 */
+		public $options = 'wp_options';
+		/**
+		 * Prepare.
+		 *
+		 * @param mixed $q Q.
+		 * @return mixed Result.
+		 */
+		public function prepare( $q ) {
+			return $q; }
+		/**
+		 * Esc like.
+		 *
+		 * @param mixed $t T.
+		 * @return mixed Result.
+		 */
+		public function esc_like( $t ) {
+			return $t; }
+		/**
+		 * Query.
+		 */
+		public function query() {}
+	};
+	$GLOBALS['wpdb']          = $wpdb;
+	$wp_filesystem            = new class() {
+		/**
+		 * Rmdir.
+		 */
+		public function rmdir() {}
+	};
+	$GLOBALS['wp_filesystem'] = $wp_filesystem;
+	$plugin                   = ( new ReflectionClass( Nashenski\Plugin::class ) )->newInstanceWithoutConstructor();
+	( new ReflectionMethod( $plugin, 'maybe_upgrade' ) )->invoke( $plugin );
+	check( array( array( 'nashenski_documents_migration_version', true ) ) === $GLOBALS['autoload_set'], 'the upgrade step switches the documents migration flag to autoload' );
+	check( Nashenski\Plugin::VERSION === get_option( 'nashenski_version' ), 'the upgrade step saves the new version' );
+
+	// The receipt cleanup is checked again in the admin, so a site that lost the job gets it back.
+	new Nashenski\Document_Storage();
+	check( in_array( array( 'admin_init', array( Nashenski\Document_Storage::class, 'restore_receipt_cleanup' ) ), $GLOBALS['actions'], true ), 'admin_init restores the receipt cleanup job' );
 
 	echo "PASS\n";
 }

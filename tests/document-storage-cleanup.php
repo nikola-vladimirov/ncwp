@@ -69,7 +69,7 @@ namespace {
 	 *
 	 * @param mixed $a A.
 	 * @return mixed Result.
-	 * @throws RuntimeException . (false !== strpos( $type, "Packing" ) ? " When the packing budget is exceeded." : " On failure.") .
+	 * @throws RuntimeException When the test sets the query to fail.
 	 */
 	function wc_get_orders( $a ) {
 		$GLOBALS['queries'][] = $a;

@@ -319,7 +319,7 @@ class Automation {
 				return $query && $query->get( 'nashenski_shipments_check' ) ? 'post_date_gmt ASC' : $orderby;
 			};
 			add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
-			add_filter( 'posts_orderby', $order );
+			add_filter( 'posts_orderby', $order, 10, 2 );
 		} else {
 			$args['meta_query'] = array( $open ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		}

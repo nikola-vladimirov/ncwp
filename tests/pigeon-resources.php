@@ -316,7 +316,7 @@ namespace {
 		 * Get weight.
 		 *
 		 * @return mixed Result.
-		 * @throws RuntimeException . (false !== strpos( $type, "Packing" ) ? " When the packing budget is exceeded." : " On failure.") .
+		 * @throws RuntimeException When the product is read more often than the test allows.
 		 */
 		public function get_weight() {
 			if ( ++$this->reads > $this->read_limit ) {
@@ -357,7 +357,7 @@ namespace {
 	 *
 	 * @param mixed $condition Condition.
 	 * @param mixed $message Message.
-	 * @throws RuntimeException . (false !== strpos( $type, "Packing" ) ? " When the packing budget is exceeded." : " On failure.") .
+	 * @throws RuntimeException When the check fails.
 	 */
 	function expect( $condition, $message ) {
 		++$GLOBALS['checks'];

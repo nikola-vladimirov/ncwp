@@ -244,7 +244,7 @@ namespace {
 	 *
 	 * @param mixed $value Value.
 	 * @param mixed $message Message.
-	 * @throws \RuntimeException . (false !== strpos( $type, "Packing" ) ? " When the packing budget is exceeded." : " On failure.") .
+	 * @throws \RuntimeException When the check fails.
 	 */
 	function expect( $value, $message ) {
 		++$GLOBALS['checks'];
@@ -326,7 +326,7 @@ namespace {
 		 * Get length.
 		 *
 		 * @return mixed Result.
-		 * @throws \RuntimeException . (false !== strpos( $type, "Packing" ) ? " When the packing budget is exceeded." : " On failure.") .
+		 * @throws \RuntimeException When the product is read more often than the test allows.
 		 */
 		public function get_length() {
 			if ( ++$this->dimension_reads > $this->test_read_limit ) {

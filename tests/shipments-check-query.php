@@ -130,9 +130,21 @@ namespace {
 	 *
 	 * @param mixed $tag Tag.
 	 * @param mixed $cb Cb.
+	 * @param int   $priority Priority.
+	 * @param int   $accepted_args How many arguments the callback receives.
 	 */
-	function add_filter( $tag, $cb ) {
-		$GLOBALS['filters'][ $tag ][] = $cb; }
+	function add_filter( $tag, $cb, $priority = 10, $accepted_args = 1 ) {
+		$GLOBALS['filters'][ $tag ][]                = $cb;
+		$GLOBALS['accepted'][ spl_object_id( $cb ) ] = $accepted_args; }
+	/**
+	 * Calls a filter callback the way WordPress does: only as many arguments as it was added with.
+	 *
+	 * @param callable $cb Callback.
+	 * @param array    $args All the arguments the hook passes.
+	 * @return mixed Result.
+	 */
+	function call_filter( $cb, $args ) {
+		return $cb( ...array_slice( $args, 0, $GLOBALS['accepted'][ spl_object_id( $cb ) ] ) ); }
 	/**
 	 * Remove filter.
 	 *
@@ -235,15 +247,15 @@ namespace {
 	 *
 	 * @param mixed $a A.
 	 * @return mixed Result.
-	 * @throws RuntimeException . (false !== strpos( $type, "Packing" ) ? " When the packing budget is exceeded." : " On failure.") .
+	 * @throws RuntimeException When the test sets the query to fail.
 	 */
 	function wc_get_orders( $a ) {
 		$GLOBALS['queries'][] = $a;
 		$wp                   = array();
 		foreach ( $GLOBALS['filters']['woocommerce_order_data_store_cpt_get_orders_query'] ?? array() as $cb ) {
-			$wp = $cb( $wp, $a, null ); }
+			$wp = call_filter( $cb, array( $wp, $a, null ) ); }
 		$GLOBALS['wp_args'][]  = $wp;
-		$orderby               = ! empty( $GLOBALS['filters']['posts_orderby'] ) ? $GLOBALS['filters']['posts_orderby'][0]( '', new Mock_Query( $wp ) ) : ''; // What the posts_orderby filter returns while the query runs.
+		$orderby               = ! empty( $GLOBALS['filters']['posts_orderby'] ) ? call_filter( $GLOBALS['filters']['posts_orderby'][0], array( '', new Mock_Query( $wp ) ) ) : ''; // What the posts_orderby filter returns while the query runs.
 		$GLOBALS['orderbys'][] = $orderby;
 		if ( $GLOBALS['throw'] ) {
 			throw new RuntimeException( 'query failed' ); }
@@ -571,7 +583,9 @@ namespace {
 	 * @return mixed Result.
 	 */
 	function day( $id ) {
-		return time() - 10 * 86400 + $id * 60; } // Order dates grow with the id, all inside the 60-day window.
+		static $base = null; // Fixed on the first call, so a second ticking over between two calls cannot change a date.
+		$base        = null === $base ? time() : $base;
+		return $base - 10 * 86400 + $id * 60; } // Order dates grow with the id, all inside the 60-day window.
 	/**
 	 * Orders.
 	 *

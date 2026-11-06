@@ -313,7 +313,7 @@ namespace {
 	 *
 	 * @param mixed $c C.
 	 * @param mixed $m M.
-	 * @throws RuntimeException . (false !== strpos( $type, "Packing" ) ? " When the packing budget is exceeded." : " On failure.") .
+	 * @throws RuntimeException When the check fails.
 	 */
 	function expect( $c, $m ) {
 		++$GLOBALS['checks'];
