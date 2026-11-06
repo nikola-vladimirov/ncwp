@@ -28,7 +28,7 @@ class Hooks {
 	public static function filter( $hook, $old, $value, ...$args ) {
 		// Old name kept for add-ons; deprecated since 0.21.0.
 		$value = apply_filters_deprecated( $old, array_merge( array( $value ), $args ), '0.21.0', $hook );
-		return apply_filters( $hook, $value, ...$args );
+		return apply_filters( $hook, $value, ...$args ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the caller passes the plugin's own prefixed name.
 	}
 
 	/**
@@ -41,6 +41,6 @@ class Hooks {
 	public static function action( $hook, $old, ...$args ) {
 		// Old name kept for add-ons; deprecated since 0.21.0. do_action() hands '' to callbacks when there are no arguments.
 		do_action_deprecated( $old, $args ? $args : array( '' ), '0.21.0', $hook );
-		do_action( $hook, ...$args );
+		do_action( $hook, ...$args ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the caller passes the plugin's own prefixed name.
 	}
 }

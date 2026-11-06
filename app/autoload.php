@@ -5,6 +5,8 @@
  * @package Nashenski
  */
 
+defined( 'ABSPATH' ) || exit;
+
 spl_autoload_register(
 	static function ( $class_name ) {
 		if ( 0 !== strpos( $class_name, 'Nashenski\\' ) ) {

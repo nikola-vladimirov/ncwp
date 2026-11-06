@@ -7,6 +7,22 @@
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<arg name="extensions" value="php"/>
 	<rule ref="WordPress"/>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="nashenski"/>
+				<element value="Nashenski"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="nashenski-commerce"/>
+			</property>
+		</properties>
+	</rule>
 	<!-- The language file is named after the locale, as WordPress names them. -->
 	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
 		<exclude-pattern>*/languages/*</exclude-pattern>
