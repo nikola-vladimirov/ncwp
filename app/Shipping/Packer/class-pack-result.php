@@ -9,7 +9,6 @@ namespace Nashenski\Shipping\Packer;
 
 defined( 'ABSPATH' ) || exit;
 
-// phpcs:disable WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase, WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- L, W and H are read by the couriers and Carton_Packer; renaming them breaks those callers.
 /**
  * The carton chosen for a set of items, with where each item sits.
  */
@@ -19,21 +18,21 @@ class Pack_Result {
 	 *
 	 * @var int
 	 */
-	public int $L;
+	public int $length;
 
 	/**
 	 * Carton width.
 	 *
 	 * @var int
 	 */
-	public int $W;
+	public int $width;
 
 	/**
 	 * Carton height.
 	 *
 	 * @var int
 	 */
-	public int $H;
+	public int $height;
 
 	/**
 	 * Where each item sits.
@@ -59,9 +58,9 @@ class Pack_Result {
 	 * @param float $fill_rate  Share of the carton volume the items fill.
 	 */
 	public function __construct( int $length, int $width, int $height, array $placements, float $fill_rate ) {
-		$this->L          = $length;
-		$this->W          = $width;
-		$this->H          = $height;
+		$this->length     = $length;
+		$this->width      = $width;
+		$this->height     = $height;
 		$this->placements = $placements;
 		$this->fill_rate  = $fill_rate;
 	}

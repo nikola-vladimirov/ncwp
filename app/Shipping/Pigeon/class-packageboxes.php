@@ -267,9 +267,9 @@ class PackageBoxes {
 
 			$packages[] = array(
 				'weight' => self::normalize_weight( $group['weight'] ),
-				'width'  => wc_get_dimension( $result->W, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
-				'length' => wc_get_dimension( $result->L, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
-				'height' => wc_get_dimension( $result->H, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
+				'width'  => wc_get_dimension( $result->width, 'cm', 'mm' ),
+				'length' => wc_get_dimension( $result->length, 'cm', 'mm' ),
+				'height' => wc_get_dimension( $result->height, 'cm', 'mm' ),
 			);
 		}
 

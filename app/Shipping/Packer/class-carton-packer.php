@@ -59,7 +59,7 @@ class Carton_Packer {
 
 		$cartons  = $this->normalize_cartons( $cartons );
 		$best     = $this->find_homogeneous_carton( $products, $total_vol, $cartons );
-		$best_vol = null !== $best ? $best->L * $best->W * $best->H : PHP_INT_MAX; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- L, W and H are the property names of Size and Pack_Result.
+		$best_vol = null !== $best ? $best->length * $best->width * $best->height : PHP_INT_MAX;
 
 		// Generate base candidates from aspect ratios + per-item face candidates.
 		$ratios     = array( 1.0, 4 / 3, 3 / 2, 16 / 10, 2.0, 5 / 3, 3.0, 16 / 9 );
@@ -155,7 +155,7 @@ class Carton_Packer {
 				continue;
 			}
 
-			if ( $vol < $best_vol || ( $vol === $best_vol && ( null !== $best && ( $h < $best->H || ( $h === $best->H && $l < $best->L ) ) ) ) ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- L, W and H are the property names of Size and Pack_Result.
+			if ( $vol < $best_vol || ( $vol === $best_vol && ( null !== $best && ( $h < $best->height || ( $h === $best->height && $l < $best->length ) ) ) ) ) {
 				$fill     = $total_vol / $vol;
 				$best     = new Pack_Result( $l, $w, $h, $attempt['placements'], $fill );
 				$best_vol = $vol;
@@ -316,17 +316,17 @@ class Carton_Packer {
 		}
 
 		$max_side      = max( $l, $w, $h );
-		$best_max_side = max( $best->L, $best->W, $best->H ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- L, W and H are the property names of Size and Pack_Result.
+		$best_max_side = max( $best->length, $best->width, $best->height );
 
 		if ( $max_side !== $best_max_side ) {
 			return $max_side < $best_max_side;
 		}
 
-		if ( $h !== $best->H ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- L, W and H are the property names of Size and Pack_Result.
-			return $h < $best->H; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- L, W and H are the property names of Size and Pack_Result.
+		if ( $h !== $best->height ) {
+			return $h < $best->height;
 		}
 
-		return $l < $best->L; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- L, W and H are the property names of Size and Pack_Result.
+		return $l < $best->length;
 	}
 
 	/**

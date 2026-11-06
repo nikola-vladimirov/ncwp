@@ -627,9 +627,9 @@ class Method extends \WC_Shipping_Method {
 				$result = null;
 			}
 
-			$cart_data['packages'][0]['width']  = $result ? wc_get_dimension( $result->W, 'cm', 'mm' ) : 17; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- W, L and H are the property names of Pack_Result.
-			$cart_data['packages'][0]['length'] = $result ? wc_get_dimension( $result->L, 'cm', 'mm' ) : 17; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- W, L and H are the property names of Pack_Result.
-			$cart_data['packages'][0]['height'] = $result ? wc_get_dimension( $result->H, 'cm', 'mm' ) : 17; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- W, L and H are the property names of Pack_Result.
+			$cart_data['packages'][0]['width']  = $result ? wc_get_dimension( $result->width, 'cm', 'mm' ) : 17;
+			$cart_data['packages'][0]['length'] = $result ? wc_get_dimension( $result->length, 'cm', 'mm' ) : 17;
+			$cart_data['packages'][0]['height'] = $result ? wc_get_dimension( $result->height, 'cm', 'mm' ) : 17;
 		}
 
 		return $cart_data;

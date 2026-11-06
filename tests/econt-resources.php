@@ -613,7 +613,7 @@ namespace {
 		if ( 'automat' !== $type ) {
 			$products = array_fill( 0, 3, new \Nashenski\Shipping\Packer\Product( 'Product', new \Nashenski\Shipping\Packer\Size( 20, 30, 40 ) ) );
 			$expected = ( new \Nashenski\Shipping\Packer\Carton_Packer() )->find_best_carton( $products );
-			expect( wc_get_dimension( $expected->W, 'cm', 'mm' ) === $data['packs'][0]['width'] && wc_get_dimension( $expected->H, 'cm', 'mm' ) === $data['packs'][0]['height'] && wc_get_dimension( $expected->L, 'cm', 'mm' ) === $data['packs'][0]['length'], 'Budget must preserve normal office/address carton dimensions' );
+			expect( wc_get_dimension( $expected->width, 'cm', 'mm' ) === $data['packs'][0]['width'] && wc_get_dimension( $expected->height, 'cm', 'mm' ) === $data['packs'][0]['height'] && wc_get_dimension( $expected->length, 'cm', 'mm' ) === $data['packs'][0]['length'], 'Budget must preserve normal office/address carton dimensions' );
 		} else {
 			expect( 17 === $data['packs'][0]['width'], 'Locker cart data must retain its existing fallback dimensions before the APS filter' );
 		}

@@ -913,9 +913,9 @@ class Method extends \WC_Shipping_Method {
 	 */
 	private static function get_pack_sizes_from_result( $result ): array {
 		return array(
-			'width'  => wc_get_dimension( $result->W, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- W, L and H are the property names of Pack_Result.
-			'depth'  => wc_get_dimension( $result->L, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- W, L and H are the property names of Pack_Result.
-			'height' => wc_get_dimension( $result->H, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- W, L and H are the property names of Pack_Result.
+			'width'  => wc_get_dimension( $result->width, 'cm', 'mm' ),
+			'depth'  => wc_get_dimension( $result->length, 'cm', 'mm' ),
+			'height' => wc_get_dimension( $result->height, 'cm', 'mm' ),
 		);
 	}
 

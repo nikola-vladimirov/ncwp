@@ -823,9 +823,9 @@ class Method extends \WC_Shipping_Method {
 				$packer = new Carton_Packer( $this->packing_budget() );
 				$result = $packer->find_best_carton( $sizes );
 
-				$pack['width']  = wc_get_dimension( $result->W, 'cm', 'mm' ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
-				$pack['height'] = wc_get_dimension( $result->H, 'cm', 'mm' ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
-				$pack['length'] = wc_get_dimension( $result->L, 'cm', 'mm' ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
+				$pack['width']  = wc_get_dimension( $result->width, 'cm', 'mm' );
+				$pack['height'] = wc_get_dimension( $result->height, 'cm', 'mm' );
+				$pack['length'] = wc_get_dimension( $result->length, 'cm', 'mm' );
 			}
 
 			$cart['packCount'] = 1;
