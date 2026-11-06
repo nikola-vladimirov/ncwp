@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * Plugin.
  */
 class Plugin {
-	const VERSION = '0.20.1';
+	const VERSION = '0.20.2';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).

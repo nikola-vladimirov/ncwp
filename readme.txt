@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.20.1
+Stable tag: 0.20.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -200,6 +200,10 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 == Changelog ==
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+
+= 0.20.2 =
+* Changed: Invoice numbering sits under "When to generate invoices?" in Invoices and documents. It stays visible when invoices are off, because "Make invoice" uses it.
+* Changed: Settings defaults match what the code uses: Pigeon, Econt and BOX NOW start in demo mode, the PDF logo starts medium, and BOX NOW starts with weight bands. Saved values are kept.
 
 = 0.20.1 =
 * Fixed: the Bulgarian description in the update window was cut where a word had the letter "х". The update window shows the plugin icon and banner.

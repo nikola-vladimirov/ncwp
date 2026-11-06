@@ -2,6 +2,12 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.20.2 (2026-11-06)
+
+### Changes
+- Invoice numbering sits under "When to generate invoices?" in Invoices and documents. It stays visible when invoices are off, because "Make invoice" uses it.
+- Settings defaults match what the code uses: Pigeon, Econt and BOX NOW start in demo mode, the PDF logo starts medium, and BOX NOW starts with weight bands. Saved values are kept.
+
 ## 0.20.1 (2026-11-06)
 
 ### Fixes
