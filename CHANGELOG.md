@@ -2,6 +2,15 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.20.4 (2026-11-06)
+
+### Fixes
+- Bulgarian text in order PDFs no longer prints as question marks.
+- BOX NOW gives no rate until the price type is saved, and the BOX NOW tab says so.
+
+### Changes
+- The 'Remove delivery from documents' description is clearer.
+
 ## 0.20.3 (2026-11-06)
 
 ### Fixes

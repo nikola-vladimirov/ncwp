@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.20.3
+Stable tag: 0.20.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -200,6 +200,11 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 == Changelog ==
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+
+= 0.20.4 =
+* Fixed: Bulgarian text in order PDFs no longer prints as question marks.
+* Fixed: BOX NOW gives no rate until the price type is saved, and the BOX NOW tab says so.
+* Changed: The 'Remove delivery from documents' description is clearer.
 
 = 0.20.3 =
 * Fixed: Checkout no longer fails when it makes an invoice automatically (HTTP 500).
