@@ -331,6 +331,11 @@ pdf_check( 105.0 === (float) end( $payment_calls )['service_codes']['cod_amount'
 update_option( 'woocommerce_calc_taxes', 'yes' );
 update_option( 'woocommerce_tax_based_on', 'billing' );
 update_option( 'woocommerce_shipping_tax_class', '' );
+// A site can have its own rates; one at the same priority would win over the fixture's and shipping would stay untaxed.
+$site_rates = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}woocommerce_tax_rates", ARRAY_A ); // phpcs:ignore WordPress.DB -- test setup, no values from outside.
+foreach ( $site_rates as $site_rate ) {
+	WC_Tax::_delete_tax_rate( (int) $site_rate['tax_rate_id'] );
+}
 $rate       = WC_Tax::_insert_tax_rate(
 	array(
 		'tax_rate_country'  => 'BG',
@@ -373,6 +378,9 @@ payment_rpc( $test_order, array( 'fixedPrice' => '6' ) );
 $saved = wc_get_order( $test_order->get_id() );
 pdf_check( (float) $saved->get_shipping_tax() === 0.0 && (float) end( $payment_calls )['service_codes']['cod_amount'] === (float) $saved->get_total(), 'VAT-exempt order remains exempt in preflight and final COD' );
 WC_Tax::_delete_tax_rate( $rate );
+foreach ( $site_rates as $site_rate ) {
+	$wpdb->insert( $wpdb->prefix . 'woocommerce_tax_rates', $site_rate ); // phpcs:ignore WordPress.DB -- puts the site's own rates back.
+}
 update_option( 'woocommerce_calc_taxes', 'no' );
 
 $test_order       = payment_order();
