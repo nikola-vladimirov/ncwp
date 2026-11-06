@@ -50,6 +50,11 @@ class Settings_Page extends \WC_Settings_Page {
 	const SECRET_MASK = '********';
 
 	/**
+	 * Settings that only matter for invoices. Hidden while "When to generate invoices?" is "Disable invoice generation"; their saved values stay.
+	 */
+	const INVOICE_ONLY = array( 'nashenski_settings_company_invoice_numbering', 'nashenski_settings_invoice_next_invoice_separate_number', 'nashenski_settings_invoice_due_days', 'nashenski_settings_invoice_separate_copy_documents' );
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -394,7 +399,41 @@ class Settings_Page extends \WC_Settings_Page {
 			$settings = array_merge( $settings, $look, \Nashenski\Front_End\Withdrawal::settings() );
 		}
 
+		if ( 'documents' === $section_id ) {
+			$settings = self::invoice_rows( $settings, nashenski_get_option( 'invoice', 'invoices' ) );
+		}
+
 		return self::boxes( Setting_Help::apply( $settings ) );
+	}
+
+	/**
+	 * Documents: "Invoice numbering" (stored in the company group) moves under "When to generate invoices?", and the
+	 * invoice-only rows hide while invoices are off. They are still sent on save, so their values stay (settings.js toggles them live).
+	 *
+	 * @param array  $settings Settings of the section.
+	 * @param string $invoices Saved "When to generate invoices?" value.
+	 */
+	public static function invoice_rows( $settings, $invoices ) {
+		$from = null;
+		$to   = null;
+
+		foreach ( $settings as $i => $setting ) {
+			$id = $setting['id'] ?? '';
+
+			if ( in_array( $id, self::INVOICE_ONLY, true ) ) {
+				$settings[ $i ]['row_class'] = 'nashenski-invoice-only' . ( 'disable' === $invoices ? ' hidden' : '' );
+			}
+
+			$from = self::INVOICE_ONLY[0] === $id ? $i : $from;
+			$to   = 'nashenski_settings_invoice_invoices' === $id ? $i : $to;
+		}
+
+		if ( null !== $from && null !== $to ) {
+			$moved = array_splice( $settings, $from, 1 );
+			array_splice( $settings, $from > $to ? $to + 1 : $to, 0, $moved );
+		}
+
+		return $settings;
 	}
 
 	/**

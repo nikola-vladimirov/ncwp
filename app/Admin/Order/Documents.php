@@ -24,7 +24,7 @@ class Documents {
 	}
 
 	/**
-	 * Documents > Company invoice > Invoice numbering is "Own invoicing program": invoices get the
+	 * Documents > Invoices and documents > Invoice numbering is "Own invoicing program": invoices get the
 	 * number typed in on the order screen and stay out of the NRA audit file.
 	 */
 	public static function own_numbering() {

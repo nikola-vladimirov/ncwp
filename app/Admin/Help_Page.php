@@ -183,7 +183,7 @@ class Help_Page {
 				/* translators: %s: link to the Documents section */
 				sprintf( esc_html__( 'In %s > Company invoice, "Company invoice fields" adds "I want an invoice for a company" with company name, EIK, VAT number, MOL, town and address.', 'nashenski-commerce' ), $documents ),
 				/* translators: %s: link to the Documents section */
-				sprintf( esc_html__( 'In %s > Company invoice, "Invoice numbering": "Website invoices" go into the NRA audit file. "Own invoicing program" keeps the invoice out of it; you type that program\'s number on the order.', 'nashenski-commerce' ), $documents ),
+				sprintf( esc_html__( 'In %s > Invoices and documents, "Invoice numbering": "Website invoices" go into the NRA audit file. "Own invoicing program" keeps the invoice out of it; you type that program\'s number on the order.', 'nashenski-commerce' ), $documents ),
 				esc_html__( 'Copies can go to your accountant by email, and the monthly NRA audit file too.', 'nashenski-commerce' ),
 			),
 			__( 'NRA audit file and exports', 'nashenski-commerce' ) => array(
