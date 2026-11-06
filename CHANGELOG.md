@@ -2,6 +2,14 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.20.3 (2026-11-06)
+
+### Fixes
+- Checkout no longer fails when it makes an invoice automatically (HTTP 500).
+- Card orders keep delivery on the invoice. Only cash-on-delivery invoices leave it out.
+- Econt adds declared value only to cash-on-delivery labels.
+- The command line hides secret values in 'setting get' and refuses the same bad amounts as the settings screen.
+
 ## 0.20.2 (2026-11-06)
 
 ### Changes

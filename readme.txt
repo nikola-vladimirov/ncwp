@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 0.20.2
+Stable tag: 0.20.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -200,6 +200,12 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 == Changelog ==
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+
+= 0.20.3 =
+* Fixed: Checkout no longer fails when it makes an invoice automatically (HTTP 500).
+* Fixed: Card orders keep delivery on the invoice. Only cash-on-delivery invoices leave it out.
+* Fixed: Econt adds declared value only to cash-on-delivery labels.
+* Fixed: The command line hides secret values in 'setting get' and refuses the same bad amounts as the settings screen.
 
 = 0.20.2 =
 * Changed: Invoice numbering sits under "When to generate invoices?" in Invoices and documents. It stays visible when invoices are off, because "Make invoice" uses it.
