@@ -35,18 +35,15 @@ class Emails {
 		return $email_classes;
 	}
 
-	// phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- the filter passes four arguments; $email stays in the signature.
-
 	/**
 	 * Attaches the order document and the invoice or proforma to the emails of the chosen trigger.
 	 *
 	 * @param array  $attachments Attachment paths.
 	 * @param string $email_id    Email id.
 	 * @param mixed  $order       Order.
-	 * @param mixed  $email       Email object, not used.
 	 * @return array
 	 */
-	public static function attach_invoice_to_mail( $attachments, $email_id, $order, $email ) {
+	public static function attach_invoice_to_mail( $attachments, $email_id, $order ) {
 		if ( ! is_object( $order ) || ! is_a( $order, 'WC_Order' ) ) {
 			return $attachments;
 		}
@@ -88,10 +85,9 @@ class Emails {
 	 * @param array  $attachments Attachment paths.
 	 * @param string $email_id    Email id.
 	 * @param mixed  $order       Order.
-	 * @param mixed  $email       Email object, not used.
 	 * @return array
 	 */
-	public static function attach_refund_pdfs_to_mail( $attachments, $email_id, $order, $email ) {
+	public static function attach_refund_pdfs_to_mail( $attachments, $email_id, $order ) {
 		if ( ! is_object( $order ) || ! is_a( $order, 'WC_Order' ) ) {
 			return $attachments;
 		}
@@ -134,10 +130,9 @@ class Emails {
 	 * @param array  $attachments Attachment paths.
 	 * @param string $email_id    Email id.
 	 * @param mixed  $order       Order.
-	 * @param mixed  $email       Email object, not used.
 	 * @return array
 	 */
-	public static function attach_proform_to_mail( $attachments, $email_id, $order, $email ) {
+	public static function attach_proform_to_mail( $attachments, $email_id, $order ) {
 		if ( ! is_object( $order ) || ! is_a( $order, 'WC_Order' ) ) {
 			return $attachments;
 		}
@@ -156,6 +151,4 @@ class Emails {
 
 		return $attachments;
 	}
-
-	// phpcs:enable Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 }

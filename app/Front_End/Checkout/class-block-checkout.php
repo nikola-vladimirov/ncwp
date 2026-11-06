@@ -94,11 +94,10 @@ class Block_Checkout {
 	/**
 	 * Run Nashenski's classic checkout validation (courier choice, address details, ...).
 	 *
-	 * @param \WC_Order        $order   Order.
-	 * @param \WP_REST_Request $request Store API request.
+	 * @param \WC_Order $order   Order.
 	 * @throws \Automattic\WooCommerce\StoreApi\Exceptions\RouteException When something is missing.
 	 */
-	public static function validate( $order, $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- hook callback signature.
+	public static function validate( $order ) {
 		$errors = new \WP_Error();
 		$data   = array(
 			'billing_country' => $order->get_billing_country(),

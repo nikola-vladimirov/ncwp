@@ -23,11 +23,9 @@ class CheckoutLayout {
 	/**
 	 * Names every shipping package "Shipping".
 	 *
-	 * @param string $name Package name.
-	 * @param int    $i    Package index.
 	 * @return string
 	 */
-	public static function change_shipping_package_name( $name, $i ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- filter callback signature.
+	public static function change_shipping_package_name() {
 		return __( 'Shipping', 'nashenski-commerce' );
 	}
 }

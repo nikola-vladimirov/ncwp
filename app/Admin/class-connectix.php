@@ -42,10 +42,9 @@ class Connectix {
 	/**
 	 * Send the waybill number of a new Econt label.
 	 *
-	 * @param array     $data  Label data.
-	 * @param \WC_Order $order Order.
+	 * @param array $data  Label data.
 	 */
-	public static function send_econt_tracking_code( $data, $order ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- hook callback signature.
+	public static function send_econt_tracking_code( $data ) {
 		$tracking_code = $data['label']['shipmentNumber'];
 
 		if ( ! empty( $tracking_code ) ) {
@@ -56,10 +55,9 @@ class Connectix {
 	/**
 	 * Send the waybill number of a new Speedy label.
 	 *
-	 * @param array     $data  Label data.
-	 * @param \WC_Order $order Order.
+	 * @param array $data  Label data.
 	 */
-	public static function send_speedy_tracking_code( $data, $order ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- hook callback signature.
+	public static function send_speedy_tracking_code( $data ) {
 		$tracking_code = $data['shipmentStatus']['id'];
 
 		if ( ! empty( $tracking_code ) ) {

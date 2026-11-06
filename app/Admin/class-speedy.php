@@ -698,10 +698,9 @@ class Speedy {
 	/**
 	 * Get send from type.
 	 *
-	 * @param mixed $context Context.
-	 * @return mixed Result.
+	 * @return string
 	 */
-	private static function get_send_from_type( $context = null ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- the argument stays for the existing callers.
+	private static function get_send_from_type(): string {
 		if ( ! empty( nashenski_label_request( 'send_from_type' ) ) ) {
 			return nashenski_label_request( 'send_from_type' );
 		}
@@ -1020,9 +1019,8 @@ class Speedy {
 	 *
 	 * @param mixed $response Response.
 	 * @param mixed $order_id Order id.
-	 * @param mixed $request_body Request body.
 	 */
-	protected static function update_order_shipping_price( $response, $order_id, $request_body = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- the argument stays for the existing callers.
+	protected static function update_order_shipping_price( $response, $order_id ) {
 		if ( ( null === nashenski_label_request( 'paymentBy', null ) ) ) {
 			return;
 		}

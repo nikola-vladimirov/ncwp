@@ -212,10 +212,9 @@ class Pickers {
 	 * Mark rates that still wait for the customer's choice, and drop office options nobody can choose.
 	 *
 	 * @param array $rates   Package rates.
-	 * @param array $package Shipping package.
 	 * @return array
 	 */
-	public static function mark_rates( $rates, $package ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress hook callback signature.
+	public static function mark_rates( $rates ) {
 		foreach ( $rates as $id => $rate ) {
 			$courier = self::courier_of( $id );
 
@@ -314,9 +313,8 @@ class Pickers {
 	 * one of the chosen option.
 	 *
 	 * @param \WC_Shipping_Rate $rate  Shipping rate.
-	 * @param int               $index Package index.
 	 */
-	public static function render_container( $rate, $index ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress hook callback signature.
+	public static function render_container( $rate ) {
 		$courier = self::courier_of( $rate->get_id() );
 
 		if ( ! $courier ) {

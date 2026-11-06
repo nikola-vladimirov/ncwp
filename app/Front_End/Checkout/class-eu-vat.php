@@ -274,11 +274,10 @@ class EU_Vat {
 	 * Whether the billing country is the shop country (the UK and the Isle of Man count as one).
 	 *
 	 * @param string $billing_country  Billing country code.
-	 * @param string $shipping_country Shipping country code.
 	 *
 	 * @return bool
 	 */
-	public static function is_base_country_match( $billing_country, $shipping_country ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- public signature, called with both countries.
+	public static function is_base_country_match( $billing_country ) {
 		if ( 'GB' === WC()->countries->get_base_country() && 'IM' === $billing_country ) {
 			return true;
 		}
@@ -300,7 +299,7 @@ class EU_Vat {
 	 * @return void
 	 */
 	public static function maybe_set_vat_exempt( $exempt, $billing_country, $shipping_country ) {
-		$base_country_match = self::is_base_country_match( $billing_country, $shipping_country );
+		$base_country_match = self::is_base_country_match( $billing_country );
 
 		if ( ! $base_country_match ) {
 			$exempt = apply_filters( 'nashenski_vat_number_set_is_vat_exempt', $exempt, $base_country_match, $billing_country, $shipping_country );

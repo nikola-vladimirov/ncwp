@@ -55,11 +55,10 @@ class Vat1139 {
 	/**
 	 * Removes the VAT rate of each item.
 	 *
-	 * @param array     $items Items.
-	 * @param \WC_Order $order Order.
+	 * @param array $items Items.
 	 * @return array
 	 */
-	public static function filter_order_items( $items, $order ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- filter callback signature.
+	public static function filter_order_items( $items ) {
 		foreach ( $items as &$item ) {
 			unset( $item['vat_rate'] );
 		}
@@ -70,11 +69,10 @@ class Vat1139 {
 	/**
 	 * Renames the total rows.
 	 *
-	 * @param array     $totals Total rows.
-	 * @param \WC_Order $order  Order.
+	 * @param array $totals Total rows.
 	 * @return array
 	 */
-	public static function filter_order_totals( $totals, $order ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- filter callback signature.
+	public static function filter_order_totals( $totals ) {
 		$totals['subtotal']['label'] = __( 'Total amount', 'nashenski-commerce' ) . ':';
 		$totals['total']['label']    = '<strong>' . __( 'Amount due', 'nashenski-commerce' ) . '</strong>:';
 
