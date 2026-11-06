@@ -5,6 +5,9 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
+
 namespace Nashenski\Admin;
 
 defined( 'ABSPATH' ) || exit;
@@ -727,7 +730,7 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @param mixed $courier Courier.
 	 */
 	private function maybe_reload_courier_data( $courier ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified below.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.WP.Capabilities.Unknown -- manage_woocommerce is WooCommerce's own capability; the nonce is verified below.
 		if ( ! in_array( $courier, \Nashenski\Plugin::COURIERS, true ) || empty( $_GET[ self::RELOAD ] ) || ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
@@ -780,6 +783,7 @@ class Settings_Page extends \WC_Settings_Page {
 	 * The weekly check found published prices that differ from the saved ones.
 	 */
 	private static function output_price_update_notice() {
+		// phpcs:ignore WordPress.WP.Capabilities.Unknown -- manage_woocommerce is WooCommerce's own capability.
 		if ( isset( $_GET['nashenski_dismiss_prices'] ) && check_admin_referer( 'nashenski_dismiss_prices' ) && current_user_can( 'manage_woocommerce' ) ) {
 			\Nashenski\Pricing\Updater::forget();
 		}

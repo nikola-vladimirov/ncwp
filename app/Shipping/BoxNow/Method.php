@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
 /**
  * BOX NOW shipping method.
  *
@@ -157,9 +157,9 @@ class Method extends \WC_Shipping_Method {
 			return;
 		}
 
-		do_action( 'nashenski/boxnow/rate/before_calculate', $this );
+		do_action( 'nashenski/boxnow/rate/before_calculate', $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
-		$country = apply_filters( 'nashenski/boxnow/country_for_validation', $package['destination']['country'], $this );
+		$country = apply_filters( 'nashenski/boxnow/country_for_validation', $package['destination']['country'], $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		$rate = array(
 			'label'     => $this->title,
@@ -198,7 +198,7 @@ class Method extends \WC_Shipping_Method {
 			}
 
 			if ( (float) $price > 0 ) {
-				$tax_rate     = apply_filters( 'nashenski/shipping/fixed_price_tax_rate', 20, $country );
+				$tax_rate     = apply_filters( 'nashenski/shipping/fixed_price_tax_rate', 20, $country ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 				$rate['cost'] = nashenski_tax_based_price( $price, $tax_rate );
 
 				if ( wc_tax_enabled() ) {
@@ -208,7 +208,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		$rate['meta_data']['cookie_data'] = $this->cookie_data;
-		$rate                             = apply_filters( 'nashenski/boxnow/rate', $rate, $this );
+		$rate                             = apply_filters( 'nashenski/boxnow/rate', $rate, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		// Register the rate.
 		$this->add_rate( $rate );
@@ -236,7 +236,7 @@ class Method extends \WC_Shipping_Method {
 	 * @return bool Result.
 	 */
 	public function is_available( $package ) {
-		return in_array( $package['destination']['country'], apply_filters( 'nashenski/boxnow/available_countries', array( 'BG' ) ), true );
+		return in_array( $package['destination']['country'], apply_filters( 'nashenski/boxnow/available_countries', array( 'BG' ) ), true ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 	}
 
 	/**
@@ -303,7 +303,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		if ( ! $weight ) {
-			$weight = apply_filters( 'nashenski/boxnow/method/weight', 1, $this->package, $this );
+			$weight = apply_filters( 'nashenski/boxnow/method/weight', 1, $this->package, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 		}
 
 		return $weight;
@@ -630,7 +630,7 @@ class Method extends \WC_Shipping_Method {
 			$email_ids_to_send[] = 'customer_on_hold_order';
 		}
 
-		$email_ids_to_send = apply_filters( 'nashenski/boxnow/emails_to_send_label_number', $email_ids_to_send );
+		$email_ids_to_send = apply_filters( 'nashenski/boxnow/emails_to_send_label_number', $email_ids_to_send ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		if ( ! in_array( $email->id, $email_ids_to_send, true ) ) {
 			return;
@@ -661,7 +661,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		$track_number_text = implode( '<br>', $track_numbers );
-		$track_number_text = apply_filters( 'nashenski/boxnow/track_number_text_in_email', $track_number_text, $order );
+		$track_number_text = apply_filters( 'nashenski/boxnow/track_number_text_in_email', $track_number_text, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		echo wp_kses_post( wpautop( $track_number_text ) );
 	}

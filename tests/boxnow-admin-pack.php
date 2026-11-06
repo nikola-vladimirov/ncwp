@@ -6,6 +6,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName, Generic.Classes.DuplicateClassName, Universal.Files.SeparateFunctionsFromOO, Generic.Files.OneObjectStructurePerFile, WordPress.Security.EscapeOutput, Generic.CodeAnalysis.UnusedFunctionParameter -- offline test script: it stubs WordPress in one file, keeps WordPress's own names and signatures, and prints to a terminal.
+
 define( 'ABSPATH', __DIR__ . '/fixtures/' );
 
 $GLOBALS['checks'] = 0;
@@ -129,16 +131,32 @@ class Pack_Product {
 		$this->w = $w;
 		$this->l = $l;
 	}
-	/** @return mixed Height. */
+	/**
+	 * Height.
+	 *
+	 * @return mixed Height.
+	 */
 	public function get_height() {
 		return $this->h; }
-	/** @return mixed Width. */
+	/**
+	 * Width.
+	 *
+	 * @return mixed Width.
+	 */
 	public function get_width() {
 		return $this->w; }
-	/** @return mixed Length. */
+	/**
+	 * Length.
+	 *
+	 * @return mixed Length.
+	 */
 	public function get_length() {
 		return $this->l; }
-	/** @return int Weight. */
+	/**
+	 * Weight.
+	 *
+	 * @return int Weight.
+	 */
 	public function get_weight() {
 		return 1; }
 }
@@ -170,13 +188,23 @@ class Pack_Item implements ArrayAccess {
 		$this->quantity = $quantity;
 		$this->product  = $product;
 	}
-	/** @return Pack_Product Product. */
+	/**
+	 * Product.
+	 *
+	 * @return Pack_Product Product.
+	 */
 	public function get_product() {
 		return $this->product; }
-	/** @return string Name. */
+	/**
+	 * Name.
+	 *
+	 * @return string Name.
+	 */
 	public function get_name() {
 		return 'item'; }
 	/**
+	 * Array access: whether the key exists.
+	 *
 	 * @param mixed $key Key.
 	 * @return bool Exists.
 	 */
@@ -184,6 +212,8 @@ class Pack_Item implements ArrayAccess {
 	public function offsetExists( $key ) {
 		return 'quantity' === $key; }
 	/**
+	 * Array access: the value of a key.
+	 *
 	 * @param mixed $key Key.
 	 * @return mixed Value.
 	 */
@@ -191,12 +221,16 @@ class Pack_Item implements ArrayAccess {
 	public function offsetGet( $key ) {
 		return $this->quantity; }
 	/**
+	 * Array access: sets a value.
+	 *
 	 * @param mixed $key   Key.
 	 * @param mixed $value Value.
 	 */
 	#[\ReturnTypeWillChange]
 	public function offsetSet( $key, $value ) {}
 	/**
+	 * Array access: removes a key.
+	 *
 	 * @param mixed $key Key.
 	 */
 	#[\ReturnTypeWillChange]
@@ -222,7 +256,11 @@ class Pack_Order {
 	public function __construct( array $items ) {
 		$this->items = $items;
 	}
-	/** @return array Items. */
+	/**
+	 * Items.
+	 *
+	 * @return array Items.
+	 */
 	public function get_items() {
 		return $this->items; }
 }
@@ -260,5 +298,3 @@ $empty = pack_items( 'mm', array( '', '', '' ), 1 );
 expect( count( $empty ) === 1, 'Product without dimensions must get one default box' );
 
 echo 'boxnow-admin-pack: ' . $GLOBALS['checks'] . " checks ok\n";
-
-

@@ -1,10 +1,11 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- offline test script that declares stub classes, not a plugin class file.
 /**
  * Offline test: a BOX NOW zone method saved through the REST API stores no negative threshold or price.
  * Run: php tests/boxnow-zone-negative.php
  *
  * @package Nashenski_Commerce
  */
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed, Generic.Classes.DuplicateClassName -- this offline test stubs WordPress classes and functions in one file.
 
 define( 'ABSPATH', __DIR__ . '/fixtures/' );
 

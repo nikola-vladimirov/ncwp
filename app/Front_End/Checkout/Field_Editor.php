@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Field editor.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Front_End\Checkout;
 
 defined( 'ABSPATH' ) || exit;
@@ -18,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
  *   block checkout the extra fields sit under the email. Address field widths apply to both.
  */
 class Field_Editor {
-	const GROUP = 'fields';
+	const GROUP         = 'fields';
 	const GROUP_CLASSIC = 'fields_classic';
 
 	/** Order, width and extra fields: list of rows ( key, width [, rule, label, type, options] ). */
@@ -28,8 +34,20 @@ class Field_Editor {
 	const KEYS = array( 'first_name', 'last_name', 'company', 'address_1', 'address_2', 'city', 'state', 'postcode', 'phone' );
 
 	/** Types of extra fields => block checkout type (it has text, select and checkbox). */
-	const TYPES = array( 'text' => 'text', 'textarea' => 'text', 'select' => 'select', 'checkbox' => 'checkbox', 'email' => 'text', 'tel' => 'text', 'number' => 'text', 'date' => 'text' );
+	const TYPES = array(
+		'text'     => 'text',
+		'textarea' => 'text',
+		'select'   => 'select',
+		'checkbox' => 'checkbox',
+		'email'    => 'text',
+		'tel'      => 'text',
+		'number'   => 'text',
+		'date'     => 'text',
+	);
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		if ( self::custom_rows() ) {
 			add_action( 'woocommerce_init', array( __CLASS__, 'register_block_fields' ) );
@@ -83,7 +101,7 @@ class Field_Editor {
 		}
 
 		$targets = array();
-		$names = array();
+		$names   = array();
 
 		foreach ( self::layout() as $row ) {
 			$names[ $row['key'] ] = self::field_name( 'billing', $row['key'] );
@@ -95,7 +113,10 @@ class Field_Editor {
 			$types = in_array( $row['key'], self::KEYS, true ) ? array( 'billing', 'shipping' ) : array( 'billing' );
 
 			foreach ( $types as $type ) {
-				$targets[] = array( 'name' => self::field_name( $type, $row['key'] ), 'when' => $row['when'] );
+				$targets[] = array(
+					'name' => self::field_name( $type, $row['key'] ),
+					'when' => $row['when'],
+				);
 			}
 		}
 
@@ -103,13 +124,30 @@ class Field_Editor {
 			return;
 		}
 
-		$url = nashenski()->plugin_dir_url() . 'assets/';
+		$url  = nashenski()->plugin_dir_url() . 'assets/';
 		$file = nashenski()->plugin_dir_path() . 'assets/js/checkout-conditions.js';
 
 		wp_enqueue_script( 'nashenski-checkout-conditions', $url . 'js/checkout-conditions.js', array( 'jquery' ), \Nashenski\Plugin::VERSION . '-' . filemtime( $file ), true );
-		wp_add_inline_script( 'nashenski-checkout-conditions', 'window.nashenskiConditions = ' . wp_json_encode( array( 'names' => $names, 'targets' => $targets ), JSON_HEX_TAG | JSON_HEX_AMP ) . ';', 'before' );
+		wp_add_inline_script(
+			'nashenski-checkout-conditions',
+			'window.nashenskiConditions = ' . wp_json_encode(
+				array(
+					'names'   => $names,
+					'targets' => $targets,
+				),
+				JSON_HEX_TAG | JSON_HEX_AMP
+			) . ';',
+			'before'
+		);
 	}
 
+	/**
+	 * Hide rendered field.
+	 *
+	 * @param mixed $html Html.
+	 * @param mixed $key  Key.
+	 * @return mixed
+	 */
 	public static function hide_rendered_field( $html, $key ) {
 		// With company invoice fields on, the company name belongs to them.
 		if ( 'billing_company' === $key && Company_Fields::enabled() ) {
@@ -135,14 +173,14 @@ class Field_Editor {
 	public static function address_fields() {
 		return array(
 			'first_name' => __( 'First name', 'nashenski-commerce' ),
-			'last_name' => __( 'Last name', 'nashenski-commerce' ),
-			'company' => __( 'Company name', 'nashenski-commerce' ),
-			'address_1' => __( 'Street address', 'nashenski-commerce' ),
-			'address_2' => __( 'Apartment, suite, unit (address line 2)', 'nashenski-commerce' ),
-			'city' => __( 'Town / City', 'nashenski-commerce' ),
-			'state' => __( 'Region / State', 'nashenski-commerce' ),
-			'postcode' => __( 'Postcode', 'nashenski-commerce' ),
-			'phone' => __( 'Phone', 'nashenski-commerce' ),
+			'last_name'  => __( 'Last name', 'nashenski-commerce' ),
+			'company'    => __( 'Company name', 'nashenski-commerce' ),
+			'address_1'  => __( 'Street address', 'nashenski-commerce' ),
+			'address_2'  => __( 'Apartment, suite, unit (address line 2)', 'nashenski-commerce' ),
+			'city'       => __( 'Town / City', 'nashenski-commerce' ),
+			'state'      => __( 'Region / State', 'nashenski-commerce' ),
+			'postcode'   => __( 'Postcode', 'nashenski-commerce' ),
+			'phone'      => __( 'Phone', 'nashenski-commerce' ),
 		);
 	}
 
@@ -156,7 +194,7 @@ class Field_Editor {
 		foreach ( self::layout() as $row ) {
 			if ( in_array( $row['key'], self::KEYS, true ) ) {
 				$field = '.wc-block-components-address-form__' . $row['key'];
-				$css .= '.wc-block-checkout .wc-block-components-address-form ' . $field . $field . '{flex:0 0 ' . ( 'half' === $row['width'] ? 'calc(50% - 6px)' : '100%' ) . '}';
+				$css  .= '.wc-block-checkout .wc-block-components-address-form ' . $field . $field . '{flex:0 0 ' . ( 'half' === $row['width'] ? 'calc(50% - 6px)' : '100%' ) . '}';
 			}
 		}
 
@@ -168,19 +206,30 @@ class Field_Editor {
 	 */
 	private static function option_fields() {
 		return array(
-			'company' => 'woocommerce_checkout_company_field',
+			'company'   => 'woocommerce_checkout_company_field',
 			'address_2' => 'woocommerce_checkout_address_2_field',
-			'phone' => 'woocommerce_checkout_phone_field',
+			'phone'     => 'woocommerce_checkout_phone_field',
 		);
 	}
 
+	/**
+	 * Rule.
+	 *
+	 * @param mixed $field Field.
+	 * @return mixed
+	 */
 	public static function rule( $field ) {
 		$group = in_array( $field, array( 'email', 'order_comments' ), true ) ? self::GROUP_CLASSIC : self::GROUP;
-		$rule = nashenski_get_option( $group, $field );
+		$rule  = nashenski_get_option( $group, $field );
 
 		return in_array( $rule, array( 'required', 'optional', 'hidden' ), true ) ? $rule : 'default';
 	}
 
+	/**
+	 * Has rules.
+	 *
+	 * @return mixed
+	 */
 	private static function has_rules() {
 		foreach ( array_merge( self::KEYS, array( 'email', 'order_comments' ) ) as $field ) {
 			if ( 'default' !== self::rule( $field ) ) {
@@ -200,14 +249,25 @@ class Field_Editor {
 		return is_array( $layout ) ? $layout : array();
 	}
 
+	/**
+	 * Custom rows.
+	 *
+	 * @return mixed
+	 */
 	private static function custom_rows() {
-		return array_filter( self::layout(), function ( $row ) {
-			return 0 === strpos( $row['key'], 'custom_' ) && 'hidden' !== ( $row['rule'] ?? '' );
-		} );
+		return array_filter(
+			self::layout(),
+			function ( $row ) {
+				return 0 === strpos( $row['key'], 'custom_' ) && 'hidden' !== ( $row['rule'] ?? '' );
+			}
+		);
 	}
 
 	/**
 	 * Checkout field name of a row: billing_email, shipping_city, billing_nashenski_<slug>.
+	 *
+	 * @param mixed $type Type.
+	 * @param mixed $key  Key.
 	 */
 	public static function field_name( $type, $key ) {
 		return 0 === strpos( $key, 'custom_' ) ? 'billing_nashenski_' . substr( $key, 7 ) : $type . '_' . $key;
@@ -228,6 +288,9 @@ class Field_Editor {
 
 	/**
 	 * Apply a rule to one field definition. Returns null when the field must be removed.
+	 *
+	 * @param mixed $definition Definition.
+	 * @param mixed $rule       Rule.
 	 */
 	private static function apply_rule( $definition, $rule ) {
 		switch ( $rule ) {
@@ -235,7 +298,7 @@ class Field_Editor {
 				return null;
 			case 'required':
 				$definition['required'] = true;
-				$definition['hidden'] = false;
+				$definition['hidden']   = false;
 				break;
 			case 'optional':
 				$definition['required'] = false;
@@ -245,6 +308,12 @@ class Field_Editor {
 		return $definition;
 	}
 
+	/**
+	 * Default address fields.
+	 *
+	 * @param mixed $fields Fields.
+	 * @return mixed
+	 */
 	public static function default_address_fields( $fields ) {
 		$priorities = self::priorities();
 
@@ -278,6 +347,8 @@ class Field_Editor {
 	/**
 	 * Country locale entries override the default fields per country, so the rules go there too.
 	 * The block checkout reads "hidden", "required" and the order ("priority") from here.
+	 *
+	 * @param mixed $locale Locale.
 	 */
 	public static function locale_entry( $locale ) {
 		$priorities = self::priorities();
@@ -292,10 +363,10 @@ class Field_Editor {
 			$entry = isset( $locale[ $key ] ) && is_array( $locale[ $key ] ) ? $locale[ $key ] : array();
 
 			if ( 'hidden' === $rule ) {
-				$entry['hidden'] = true;
+				$entry['hidden']   = true;
 				$entry['required'] = false;
 			} elseif ( 'default' !== $rule ) {
-				$entry['hidden'] = false;
+				$entry['hidden']   = false;
 				$entry['required'] = 'required' === $rule;
 			}
 
@@ -313,6 +384,12 @@ class Field_Editor {
 		return $locale;
 	}
 
+	/**
+	 * Country locale.
+	 *
+	 * @param mixed $locales Locales.
+	 * @return mixed
+	 */
 	public static function country_locale( $locales ) {
 		foreach ( $locales as $country => $locale ) {
 			$locales[ $country ] = self::locale_entry( is_array( $locale ) ? $locale : array() );
@@ -321,6 +398,12 @@ class Field_Editor {
 		return $locales;
 	}
 
+	/**
+	 * Billing fields.
+	 *
+	 * @param mixed $fields Fields.
+	 * @return mixed
+	 */
 	public static function billing_fields( $fields ) {
 		$rule = self::rule( 'email' );
 
@@ -335,6 +418,8 @@ class Field_Editor {
 
 	/**
 	 * Classic checkout: the final list, after themes and other plugins added theirs.
+	 *
+	 * @param mixed $fields Fields.
 	 */
 	public static function checkout_fields( $fields ) {
 		foreach ( array( 'billing', 'shipping' ) as $type ) {
@@ -400,14 +485,17 @@ class Field_Editor {
 			$name = self::field_name( 'billing', $row['key'] );
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checks the checkout nonce before it reads the fields.
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read only to compare with the rule; never output or saved, and not stripped, so it matches the script.
-			$posted = wp_unslash( $_POST[ $name ] ?? '' );
+			$posted                = wp_unslash( $_POST[ $name ] ?? '' );
 			$values[ $row['key'] ] = Conditions::clean_text( is_scalar( $posted ) ? $posted : '' );
 		}
 
 		// A hidden field counts as empty for the rules that read it, as in the script; a few passes settle the chains.
-		$rules = array_filter( self::layout(), function ( $row ) {
-			return ! empty( $row['when'] );
-		} );
+		$rules  = array_filter(
+			self::layout(),
+			function ( $row ) {
+				return ! empty( $row['when'] );
+			}
+		);
 		$hidden = array();
 		$passes = count( $rules );
 
@@ -415,13 +503,13 @@ class Field_Editor {
 			$changed = false;
 
 			foreach ( $rules as $row ) {
-				$now = ! Conditions::shown( $row['when'], $values );
-				$changed = $changed || ( $hidden[ $row['key'] ] ?? null ) !== $now;
+				$now                   = ! Conditions::shown( $row['when'], $values );
+				$changed               = $changed || ( $hidden[ $row['key'] ] ?? null ) !== $now;
 				$hidden[ $row['key'] ] = $now;
 
 				if ( $now && '' !== $values[ $row['key'] ] ) {
 					$values[ $row['key'] ] = '';
-					$changed = true;
+					$changed               = true;
 				}
 			}
 
@@ -444,10 +532,13 @@ class Field_Editor {
 	/**
 	 * Order and width from the layout, and the extra fields in the billing section. Two half-width
 	 * fields in a row share a line.
+	 *
+	 * @param mixed $section Section.
+	 * @param mixed $type    Type.
 	 */
 	private static function arrange( $section, $type ) {
 		$priorities = self::priorities();
-		$widths = array();
+		$widths     = array();
 
 		foreach ( self::layout() as $row ) {
 			$name = self::field_name( $type, $row['key'] );
@@ -463,7 +554,7 @@ class Field_Editor {
 			// With company invoice fields on, the company name belongs to them.
 			if ( isset( $section[ $name ] ) && ! ( 'billing_company' === $name && Company_Fields::enabled() ) ) {
 				$section[ $name ]['priority'] = $priorities[ $row['key'] ];
-				$widths[ $name ] = $row['width'];
+				$widths[ $name ]              = $row['width'];
 			}
 		}
 
@@ -479,9 +570,12 @@ class Field_Editor {
 			$section[ $type . '_country' ]['priority'] = $priorities['address_1'] - 5;
 		}
 
-		uasort( $section, function ( $a, $b ) {
-			return ( $a['priority'] ?? 0 ) <=> ( $b['priority'] ?? 0 );
-		} );
+		uasort(
+			$section,
+			function ( $a, $b ) {
+				return ( $a['priority'] ?? 0 ) <=> ( $b['priority'] ?? 0 );
+			}
+		);
 
 		$left = true;
 
@@ -491,8 +585,8 @@ class Field_Editor {
 				continue;
 			}
 
-			$class = 'half' === $widths[ $name ] ? ( $left ? 'form-row-first' : 'form-row-last' ) : 'form-row-wide';
-			$left = 'half' === $widths[ $name ] ? ! $left : true;
+			$class                     = 'half' === $widths[ $name ] ? ( $left ? 'form-row-first' : 'form-row-last' ) : 'form-row-wide';
+			$left                      = 'half' === $widths[ $name ] ? ! $left : true;
 			$section[ $name ]['class'] = array_merge( array_diff( (array) ( $field['class'] ?? array() ), array( 'form-row-first', 'form-row-last', 'form-row-wide' ) ), array( $class ) );
 		}
 
@@ -501,17 +595,19 @@ class Field_Editor {
 
 	/**
 	 * An extra field for woocommerce_form_field().
+	 *
+	 * @param mixed $row Row.
 	 */
 	private static function custom_definition( $row ) {
 		$definition = array(
-			'type' => $row['type'],
-			'label' => $row['label'],
+			'type'     => $row['type'],
+			'label'    => $row['label'],
 			'required' => 'required' === $row['rule'],
-			'class' => array(),
+			'class'    => array(),
 		);
 
 		if ( 'select' === $row['type'] ) {
-			$choices = self::choices( $row );
+			$choices               = self::choices( $row );
 			$definition['options'] = array( '' => __( 'Choose an option', 'nashenski-commerce' ) ) + array_combine( $choices, $choices );
 		} elseif ( 'email' === $row['type'] ) {
 			$definition['validate'] = array( 'email' );
@@ -546,6 +642,12 @@ class Field_Editor {
 		echo '</template>';
 	}
 
+	/**
+	 * Choices.
+	 *
+	 * @param mixed $row Row.
+	 * @return mixed
+	 */
 	private static function choices( $row ) {
 		return array_values( array_filter( array_map( array( Conditions::class, 'clean_text' ), explode( "\n", (string) ( $row['options'] ?? '' ) ) ), 'strlen' ) );
 	}
@@ -573,12 +675,12 @@ class Field_Editor {
 
 		foreach ( self::custom_rows() as $row ) {
 			$args = array(
-				'id' => 'nashenski/' . substr( $row['key'], 7 ),
-				'label' => $row['label'],
+				'id'            => 'nashenski/' . substr( $row['key'], 7 ),
+				'label'         => $row['label'],
 				'optionalLabel' => $row['label'] . ' ' . __( '(optional)', 'nashenski-commerce' ),
-				'location' => 'contact',
-				'type' => self::TYPES[ $row['type'] ] ?? 'text',
-				'required' => 'required' === $row['rule'],
+				'location'      => 'contact',
+				'type'          => self::TYPES[ $row['type'] ] ?? 'text',
+				'required'      => 'required' === $row['rule'],
 			);
 
 			// A field-value rule the block checkout can express: "required" and "hidden" as JSON Schema (as Company_Fields).
@@ -586,16 +688,22 @@ class Field_Editor {
 
 			if ( $rule ) {
 				$args['required'] = $rule['required'];
-				$args['hidden'] = $rule['hidden'];
+				$args['hidden']   = $rule['hidden'];
 			} elseif ( ! empty( $row['when'] ) ) {
 				// A rule the block checkout cannot write: the field stays visible, but is not required by its own setting.
 				$args['required'] = false;
 			}
 
 			if ( 'select' === $args['type'] ) {
-				$args['options'] = array_map( function ( $choice ) {
-					return array( 'value' => $choice, 'label' => $choice );
-				}, self::choices( $row ) );
+				$args['options'] = array_map(
+					function ( $choice ) {
+						return array(
+							'value' => $choice,
+							'label' => $choice,
+						);
+					},
+					self::choices( $row )
+				);
 			}
 
 			woocommerce_register_additional_checkout_field( $args );
@@ -605,6 +713,11 @@ class Field_Editor {
 	/**
 	 * Block checkout: keep each extra field also where the classic checkout keeps it, so the order
 	 * screen, emails and exports read one place.
+	 *
+	 * @param mixed $key       Key.
+	 * @param mixed $value     Value.
+	 * @param mixed $group     Group.
+	 * @param mixed $wc_object Wc object.
 	 */
 	public static function save_block_field( $key, $value, $group, $wc_object ) {
 		if ( 0 === strpos( (string) $key, 'nashenski/' ) && $wc_object instanceof \WC_Order && ! in_array( $key, array_keys( Company_Fields::BLOCK_FIELDS ), true ) ) {
@@ -614,6 +727,8 @@ class Field_Editor {
 
 	/**
 	 * The extra fields an order has: label => value.
+	 *
+	 * @param mixed $order Order.
 	 */
 	private static function values( $order ) {
 		$values = array();
@@ -633,15 +748,31 @@ class Field_Editor {
 		return $values;
 	}
 
+	/**
+	 * Admin values.
+	 *
+	 * @param mixed $order Order.
+	 */
 	public static function admin_values( $order ) {
 		foreach ( self::values( $order ) as $label => $value ) {
 			printf( '<p><strong>%1$s:</strong><br>%2$s</p>', esc_html( $label ), nl2br( esc_html( $value ) ) );
 		}
 	}
 
+	/**
+	 * Email values.
+	 *
+	 * @param mixed $fields        Fields.
+	 * @param mixed $sent_to_admin Sent to admin.
+	 * @param mixed $order         Order.
+	 * @return mixed
+	 */
 	public static function email_values( $fields, $sent_to_admin, $order ) {
 		foreach ( self::values( $order ) as $label => $value ) {
-			$fields[] = array( 'label' => $label, 'value' => $value );
+			$fields[] = array(
+				'label' => $label,
+				'value' => $value,
+			);
 		}
 
 		return $fields;
@@ -654,14 +785,14 @@ class Field_Editor {
 	 * WooCommerce's own order and widths.
 	 */
 	private static function table_rows() {
-		$rows = self::layout();
-		$keys = wp_list_pluck( $rows, 'key' );
+		$rows  = self::layout();
+		$keys  = wp_list_pluck( $rows, 'key' );
 		$order = array( 'first_name', 'last_name', 'company', 'address_1', 'address_2', 'city', 'state', 'postcode', 'phone', 'email' );
 
 		foreach ( $order as $key ) {
 			if ( ! in_array( $key, $keys, true ) ) {
 				$rows[] = array(
-					'key' => $key,
+					'key'   => $key,
 					'width' => in_array( $key, array( 'first_name', 'last_name' ), true ) ? 'half' : 'full',
 				);
 			}
@@ -670,26 +801,39 @@ class Field_Editor {
 		return $rows;
 	}
 
+	/**
+	 * Settings.
+	 *
+	 * @return mixed
+	 */
 	public static function settings() {
 		return array(
 			array(
-				'type' => 'title',
-				'id' => 'nashenski_field_layout',
+				'type'  => 'title',
+				'id'    => 'nashenski_field_layout',
 				'title' => __( 'Checkout fields', 'nashenski-commerce' ),
-				'desc' => __( 'Show, require or hide each field, set its width and order, and add your own fields.', 'nashenski-commerce' ),
+				'desc'  => __( 'Show, require or hide each field, set its width and order, and add your own fields.', 'nashenski-commerce' ),
 			),
 			array(
-				'type' => 'nashenski_field_layout',
-				'id' => self::LAYOUT_OPTION,
+				'type'  => 'nashenski_field_layout',
+				'id'    => self::LAYOUT_OPTION,
 				'title' => __( 'Fields', 'nashenski-commerce' ),
 			),
 			array(
 				'type' => 'sectionend',
-				'id' => 'nashenski_field_layout',
+				'id'   => 'nashenski_field_layout',
 			),
 		);
 	}
 
+	/**
+	 * Select.
+	 *
+	 * @param mixed $name    Name.
+	 * @param mixed $options Options.
+	 * @param mixed $current Current.
+	 * @return mixed
+	 */
 	private static function select( $name, $options, $current ) {
 		$html = '<select name="' . esc_attr( $name ) . '">';
 
@@ -700,25 +844,33 @@ class Field_Editor {
 		return $html . '</select>';
 	}
 
+	/**
+	 * Row html.
+	 *
+	 * @param mixed $name Name.
+	 * @param mixed $uid  Uid.
+	 * @param mixed $row  Row.
+	 * @return mixed
+	 */
 	private static function row_html( $name, $uid, $row ) {
 		$custom = 0 === strpos( $row['key'], 'custom_' ) || '' === $row['key'];
 		$labels = array( 'email' => __( 'Email address', 'nashenski-commerce' ) ) + self::address_fields();
-		$base = $name . '[' . $uid . ']';
-		$rules = array(
-			'default' => __( 'Default (as WooCommerce shows it)', 'nashenski-commerce' ),
+		$base   = $name . '[' . $uid . ']';
+		$rules  = array(
+			'default'  => __( 'Default (as WooCommerce shows it)', 'nashenski-commerce' ),
 			'required' => __( 'Required', 'nashenski-commerce' ),
 			'optional' => __( 'Optional', 'nashenski-commerce' ),
-			'hidden' => __( 'Hidden', 'nashenski-commerce' ),
+			'hidden'   => __( 'Hidden', 'nashenski-commerce' ),
 		);
-		$types = array(
-			'text' => __( 'Text', 'nashenski-commerce' ),
+		$types  = array(
+			'text'     => __( 'Text', 'nashenski-commerce' ),
 			'textarea' => __( 'Text area', 'nashenski-commerce' ),
-			'select' => __( 'List', 'nashenski-commerce' ),
+			'select'   => __( 'List', 'nashenski-commerce' ),
 			'checkbox' => __( 'Checkbox', 'nashenski-commerce' ),
-			'email' => __( 'Email', 'nashenski-commerce' ),
-			'tel' => __( 'Phone', 'nashenski-commerce' ),
-			'number' => __( 'Number', 'nashenski-commerce' ),
-			'date' => __( 'Date', 'nashenski-commerce' ),
+			'email'    => __( 'Email', 'nashenski-commerce' ),
+			'tel'      => __( 'Phone', 'nashenski-commerce' ),
+			'number'   => __( 'Number', 'nashenski-commerce' ),
+			'date'     => __( 'Date', 'nashenski-commerce' ),
 		);
 
 		if ( $custom ) {
@@ -726,10 +878,10 @@ class Field_Editor {
 			$field = '<input type="text" name="' . esc_attr( $base . '[label]' ) . '" value="' . esc_attr( $row['label'] ?? '' ) . '" placeholder="' . esc_attr__( 'Label', 'nashenski-commerce' ) . '" required> '
 				. self::select( $base . '[type]', $types, $row['type'] ?? 'text' )
 				. '<textarea name="' . esc_attr( $base . '[options]' ) . '" rows="3" class="nashenski-layout__options" placeholder="' . esc_attr__( 'One choice per line', 'nashenski-commerce' ) . '">' . esc_textarea( $row['options'] ?? '' ) . '</textarea>';
-			$rule = $row['rule'] ?? 'optional';
+			$rule  = $row['rule'] ?? 'optional';
 		} else {
 			$field = '<strong>' . esc_html( $labels[ $row['key'] ] ?? $row['key'] ) . '</strong>';
-			$rule = self::rule( $row['key'] );
+			$rule  = self::rule( $row['key'] );
 		}
 
 		$mode = empty( $row['when'] ) ? '' : ( ! empty( $row['when']['hide'] ) ? 'hide' : 'show' );
@@ -743,7 +895,14 @@ class Field_Editor {
 			esc_attr( $base . '[key]' ),
 			esc_attr( $row['key'] ),
 			self::select( $base . '[rule]', $rules, $rule ),
-			self::select( $base . '[width]', array( 'full' => __( 'Full width', 'nashenski-commerce' ), 'half' => __( 'Half width', 'nashenski-commerce' ) ), $row['width'] ?? 'full' ),
+			self::select(
+				$base . '[width]',
+				array(
+					'full' => __( 'Full width', 'nashenski-commerce' ),
+					'half' => __( 'Half width', 'nashenski-commerce' ),
+				),
+				$row['width'] ?? 'full'
+			),
 			$custom ? '<button type="button" class="button-link button-link-delete nashenski-layout__remove">' . esc_html__( 'Remove', 'nashenski-commerce' ) . '</button>' : '',
 			esc_attr__( 'Condition', 'nashenski-commerce' ),
 			esc_attr( $base . '[when]' ),
@@ -761,6 +920,8 @@ class Field_Editor {
 
 	/**
 	 * The table: one row per field, in checkout order.
+	 *
+	 * @param mixed $value Value.
 	 */
 	public static function output_layout_field( $value ) {
 		$name = $value['id'];
@@ -787,26 +948,47 @@ class Field_Editor {
 						?>
 					</tbody>
 				</table>
-				<template class="nashenski-layout__template"><?php echo self::row_html( $name, '__uid__', array( 'key' => '', 'type' => 'text', 'rule' => 'optional', 'width' => 'full' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in row_html(). ?></template>
+				<template class="nashenski-layout__template">
+				<?php
+				echo self::row_html( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in row_html().
+					$name,
+					'__uid__',
+					array(
+						'key'   => '',
+						'type'  => 'text',
+						'rule'  => 'optional',
+						'width' => 'full',
+					)
+				);
+				?>
+				</template>
 				<template class="nashenski-when__template"
-						data-shown="<?php
+						data-shown="
+						<?php
 						/* translators: %s: the field, the operator and the value */
 						echo esc_attr__( 'Shown when: %s', 'nashenski-commerce' );
-						?>"
-						data-hidden="<?php
+						?>
+						"
+						data-hidden="
+						<?php
 						/* translators: %s: the field, the operator and the value */
 						echo esc_attr__( 'Hidden when: %s', 'nashenski-commerce' );
-						?>"
+						?>
+						"
 						data-and="<?php echo esc_attr__( 'and', 'nashenski-commerce' ); ?>"
 							data-or="<?php echo esc_attr__( 'or', 'nashenski-commerce' ); ?>"
-						data-is-hidden="<?php
+						data-is-hidden="
+						<?php
 						/* translators: %s: field label */
 						echo esc_attr__( '%s is hidden, so its value always counts as empty.', 'nashenski-commerce' );
-						?>"
-						data-missing="<?php
+						?>
+						"
+						data-missing="
+						<?php
 						/* translators: %s: field key */
 						echo esc_attr__( '%s is not in the table any more. The rule is dropped on save.', 'nashenski-commerce' );
-						?>"
+						?>
+						"
 						data-yes="<?php echo esc_attr__( 'ticked', 'nashenski-commerce' ); ?>"
 						data-no="<?php echo esc_attr__( 'not ticked', 'nashenski-commerce' ); ?>"
 						data-pick="<?php echo esc_attr__( 'Choose a field', 'nashenski-commerce' ); ?>"
@@ -856,23 +1038,27 @@ class Field_Editor {
 	/**
 	 * Keep the rows in the order they were sent; standard fields also save their visibility in
 	 * the options the rest of the editor reads.
+	 *
+	 * @param mixed $value     Value.
+	 * @param mixed $option    Option.
+	 * @param mixed $raw_value Raw value.
 	 */
 	public static function sanitize_layout_field( $value, $option, $raw_value ) {
 		if ( 'nashenski_field_layout' !== ( $option['type'] ?? '' ) ) {
 			return $value;
 		}
 
-		$rows = array();
+		$rows     = array();
 		$standard = array_merge( array( 'email' ), self::KEYS );
-		$saved = array();
+		$saved    = array();
 
 		foreach ( self::layout() as $row ) {
 			$saved[ $row['key'] ] = $row['when'] ?? null;
 		}
 
 		foreach ( (array) $raw_value as $uid => $raw ) {
-			$key = sanitize_key( $raw['key'] ?? '' );
-			$rule = in_array( $raw['rule'] ?? '', array( 'default', 'required', 'optional', 'hidden' ), true ) ? $raw['rule'] : 'default';
+			$key   = sanitize_key( $raw['key'] ?? '' );
+			$rule  = in_array( $raw['rule'] ?? '', array( 'default', 'required', 'optional', 'hidden' ), true ) ? $raw['rule'] : 'default';
 			$width = 'half' === ( $raw['width'] ?? '' ) ? 'half' : 'full';
 			// The table does not post the rules of a row, so a saved table keeps the ones the row had.
 			$when = is_array( $raw ) && array_key_exists( 'when', $raw ) ? $raw['when'] : ( $saved[ $key ] ?? null );
@@ -880,7 +1066,11 @@ class Field_Editor {
 
 			if ( in_array( $key, $standard, true ) ) {
 				nashenski_set_option( 'email' === $key ? self::GROUP_CLASSIC : self::GROUP, $key, $rule );
-				$rows[] = array( 'key' => $key, 'width' => $width, 'when' => $when );
+				$rows[] = array(
+					'key'   => $key,
+					'width' => $width,
+					'when'  => $when,
+				);
 				continue;
 			}
 
@@ -891,13 +1081,13 @@ class Field_Editor {
 			}
 
 			$rows[] = array(
-				'key' => '' !== $key ? $key : 'custom_' . sanitize_key( $uid ),
-				'label' => $label,
-				'type' => isset( self::TYPES[ $raw['type'] ?? '' ] ) ? $raw['type'] : 'text',
+				'key'     => '' !== $key ? $key : 'custom_' . sanitize_key( $uid ),
+				'label'   => $label,
+				'type'    => isset( self::TYPES[ $raw['type'] ?? '' ] ) ? $raw['type'] : 'text',
 				'options' => implode( "\n", array_filter( array_map( array( Conditions::class, 'clean_value' ), explode( "\n", (string) ( $raw['options'] ?? '' ) ) ), 'strlen' ) ),
-				'rule' => 'default' === $rule ? 'optional' : $rule,
-				'width' => $width,
-				'when' => $when,
+				'rule'    => 'default' === $rule ? 'optional' : $rule,
+				'width'   => $width,
+				'when'    => $when,
 			);
 		}
 
@@ -944,7 +1134,7 @@ class Field_Editor {
 
 				if ( ! isset( $seen[ $field ] ) ) {
 					$seen[ $field ] = true;
-					$reads = array_merge( $reads, $deps[ $field ] ?? array() );
+					$reads          = array_merge( $reads, $deps[ $field ] ?? array() );
 				}
 			}
 		}
@@ -985,13 +1175,17 @@ class Field_Editor {
 
 			foreach ( (array) $set as $condition ) {
 				$operator = is_array( $condition ) ? ( $condition['operator'] ?? '' ) : '';
-				$field = is_array( $condition ) ? sanitize_key( $condition['field'] ?? '' ) : '';
+				$field    = is_array( $condition ) ? sanitize_key( $condition['field'] ?? '' ) : '';
 
 				if ( ! in_array( $operator, Conditions::OPERATORS, true ) || '' === $field ) {
 					return null;
 				}
 
-				$conditions[] = array( 'field' => $field, 'operator' => $operator, 'value' => Conditions::clean_value( is_scalar( $condition['value'] ?? '' ) ? $condition['value'] : '' ) );
+				$conditions[] = array(
+					'field'    => $field,
+					'operator' => $operator,
+					'value'    => Conditions::clean_value( is_scalar( $condition['value'] ?? '' ) ? $condition['value'] : '' ),
+				);
 			}
 
 			if ( $conditions ) {
@@ -999,7 +1193,10 @@ class Field_Editor {
 			}
 		}
 
-		return $sets ? array( 'hide' => ! empty( $when['hide'] ), 'sets' => $sets ) : null;
+		return $sets ? array(
+			'hide' => ! empty( $when['hide'] ),
+			'sets' => $sets,
+		) : null;
 	}
 
 	/**

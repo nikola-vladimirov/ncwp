@@ -1,9 +1,12 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- offline test script that declares stub classes, not a plugin class file.
 /**
  * Offline: check_shipments() query (no meta_query on legacy, NOT EXISTS filter instead; kept on HPOS), limit and window, the date cursor rotation, and saves only for changed orders. Run: php tests/shipments-check-query.php
  *
  * @package Nashenski_Commerce
  */
+// phpcs:disable Universal.Namespaces.DisallowCurlyBraceSyntax, Universal.Namespaces.OneDeclarationPerFile, Universal.Namespaces.DisallowDeclarationWithoutName, Generic.Files.OneObjectStructurePerFile, Universal.Files.SeparateFunctionsFromOO -- this offline test stubs WordPress and WooCommerce classes and functions in one file.
+// phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter, WordPress.NamingConventions.ValidFunctionName -- the stubs keep the signatures and method names (getTimestamp) of the WordPress and WooCommerce code they replace.
+// phpcs:disable WordPress.WP.AlternativeFunctions, WordPress.Security.EscapeOutput -- CLI test output, WordPress is not loaded.
 
 namespace Automattic\WooCommerce\Utilities {
 	/**

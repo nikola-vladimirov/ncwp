@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Pigeon Express parcel locker boxes.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Shipping\Pigeon;
 
 use Nashenski\Admin\Fields;
@@ -8,10 +14,18 @@ use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Packs a cart into Pigeon Express parcel locker boxes.
+ */
 class APSBoxes {
-	const OPTION_NAME = 'auto_size';
+	const OPTION_NAME       = 'auto_size';
 	const MAX_LOCKER_WEIGHT = 30;
 
+	/**
+	 * Locker box sizes in cm and kg.
+	 *
+	 * @var array
+	 */
 	private static $box_sizes = array(
 		array(
 			'name'       => 'S',
@@ -36,19 +50,30 @@ class APSBoxes {
 		),
 	);
 
+	/**
+	 * Hooks the label filter when automatic sizes are on.
+	 */
 	public function __construct() {
 		if ( nashenski_get_option( 'pigeon', self::OPTION_NAME ) === 'yes' ) {
 			add_filter( 'nashenski/pigeon/calculate_label', array( __CLASS__, 'calculate_label' ), 20, 2 );
 		}
 	}
 
+	/**
+	 * Sets the label packages from the packed locker boxes.
+	 *
+	 * @param array  $label  Label data.
+	 * @param object $method Shipping method.
+	 * @return array
+	 * @throws Packing_Limit_Exceeded When the cart is over the packing limits.
+	 */
 	public static function calculate_label( $label, $method ) {
 		if ( ! self::should_handle_method( $method ) ) {
 			return $label;
 		}
 
 		try {
-			$budget = $method instanceof Method ? $method->packing_budget() : new Packing_Budget();
+			$budget       = $method instanceof Method ? $method->packing_budget() : new Packing_Budget();
 			$packed_boxes = APSPackage::pack_package( $method->package, self::$box_sizes, null, $budget );
 		} catch ( Packing_Limit_Exceeded $e ) {
 			throw $e;
@@ -65,18 +90,43 @@ class APSBoxes {
 		return $label;
 	}
 
+	/**
+	 * Whether every product fits the largest locker box.
+	 *
+	 * @param array               $package Shipping package.
+	 * @param Packing_Budget|null $budget  Work budget.
+	 * @return bool
+	 */
 	public static function package_fits_largest_locker( $package, ?Packing_Budget $budget = null ) {
 		return APSPackage::package_products_fit_largest_box( $package, self::$box_sizes, $budget );
 	}
 
+	/**
+	 * Whether the package weight fits a locker.
+	 *
+	 * @param array $package Shipping package.
+	 * @return bool
+	 */
 	public static function package_weight_fits_locker( $package ) {
 		return self::get_package_weight( $package ) <= self::MAX_LOCKER_WEIGHT;
 	}
 
+	/**
+	 * Whether the method delivers to a locker and has a package.
+	 *
+	 * @param object $method Shipping method.
+	 * @return bool
+	 */
 	private static function should_handle_method( $method ) {
-		return isset( $method->delivery_type ) && $method->delivery_type === 'locker' && ! empty( $method->package );
+		return isset( $method->delivery_type ) && 'locker' === $method->delivery_type && ! empty( $method->package );
 	}
 
+	/**
+	 * Label packages from the packed boxes.
+	 *
+	 * @param array $packed_boxes Packed boxes.
+	 * @return array
+	 */
 	private static function build_packages( $packed_boxes ) {
 		$packages = array();
 
@@ -94,6 +144,13 @@ class APSBoxes {
 		return $packages;
 	}
 
+	/**
+	 * Package weight in kg.
+	 *
+	 * @param array $package Shipping package.
+	 * @return float
+	 * @throws Packing_Limit_Exceeded When the quantity or weight is not finite.
+	 */
 	private static function get_package_weight( $package ) {
 		$weight = 0;
 

@@ -1,4 +1,12 @@
 <?php
+/**
+ * Countries customers can choose at checkout.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+
 namespace Nashenski\Front_End\Checkout;
 
 defined( 'ABSPATH' ) || exit;
@@ -14,6 +22,9 @@ defined( 'ABSPATH' ) || exit;
  * checkout scripts and shipping zones need, so the field is hidden with CSS, not removed.
  */
 class Countries {
+	/**
+	 * Limits the allowed countries when a mode asks for it.
+	 */
 	public function __construct() {
 		$countries = self::countries();
 
@@ -39,6 +50,11 @@ class Countries {
 		}
 	}
 
+	/**
+	 * Gets the saved country mode.
+	 *
+	 * @return string bg, bg_gr_ro or woocommerce.
+	 */
 	public static function mode() {
 		$mode = nashenski_get_option( 'checkout', 'countries' );
 
@@ -46,6 +62,8 @@ class Countries {
 	}
 
 	/**
+	 * Gets the allowed countries of the saved mode.
+	 *
 	 * @return string[] Allowed country codes, or an empty array to use WooCommerce's settings.
 	 */
 	public static function countries() {
@@ -59,13 +77,24 @@ class Countries {
 		}
 	}
 
+	/**
+	 * Gives the default country.
+	 *
+	 * @return string
+	 */
 	public static function bulgaria() {
 		return 'BG';
 	}
 
+	/**
+	 * Hides the country field with CSS and defaults it to Bulgaria.
+	 *
+	 * @param array $fields Address fields.
+	 * @return array
+	 */
 	public static function hide_country_field( $fields ) {
 		if ( isset( $fields['country'] ) ) {
-			$fields['country']['class'] = array_merge( (array) ( $fields['country']['class'] ?? array() ), array( 'nashenski-hidden-field' ) );
+			$fields['country']['class']   = array_merge( (array) ( $fields['country']['class'] ?? array() ), array( 'nashenski-hidden-field' ) );
 			$fields['country']['default'] = 'BG';
 		}
 
@@ -74,16 +103,28 @@ class Countries {
 
 	/**
 	 * The block checkout reads "hidden" from the country locale.
+	 *
+	 * @param array $locales Country locales.
+	 * @return array
 	 */
 	public static function hide_country_locale( $locales ) {
-		$locales['BG'] = isset( $locales['BG'] ) && is_array( $locales['BG'] ) ? $locales['BG'] : array();
-		$locales['BG']['country'] = array_merge( (array) ( $locales['BG']['country'] ?? array() ), array( 'hidden' => true, 'required' => false ) );
+		$locales['BG']            = isset( $locales['BG'] ) && is_array( $locales['BG'] ) ? $locales['BG'] : array();
+		$locales['BG']['country'] = array_merge(
+			(array) ( $locales['BG']['country'] ?? array() ),
+			array(
+				'hidden'   => true,
+				'required' => false,
+			)
+		);
 
 		return $locales;
 	}
 
 	/**
 	 * Builders and themes that drop the hidden input still end up with Bulgaria.
+	 *
+	 * @param array $data Posted checkout data.
+	 * @return array
 	 */
 	public static function force_posted_country( $data ) {
 		$data['billing_country'] = 'BG';

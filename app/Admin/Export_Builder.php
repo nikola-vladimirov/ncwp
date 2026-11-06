@@ -5,6 +5,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Admin;
 
 use Nashenski\Export\Builder\Builder;
@@ -34,7 +36,7 @@ class Export_Builder {
 	 * Check.
 	 */
 	private static function check() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_ajax_referer( self::NONCE, 'nonce', false ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers this capability.
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
 		}
 	}
@@ -132,7 +134,7 @@ class Export_Builder {
 	 * Download.
 	 */
 	public static function download() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_admin_referer( self::NONCE, 'nonce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_admin_referer( self::NONCE, 'nonce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers this capability.
 			wp_die( esc_html__( 'You do not have permission to do this.', 'nashenski-commerce' ), 403 );
 		}
 

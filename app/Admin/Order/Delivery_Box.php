@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Admin\Order;
 
 use Nashenski\Front_End\Checkout\Pickers;
@@ -15,6 +15,9 @@ defined( 'ABSPATH' ) || exit;
 class Delivery_Box {
 	const NONCE = 'nashenski_delivery';
 
+	/**
+	 * Hooks the meta box, the save and the delivery price email.
+	 */
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_box' ), 20 );
 		add_action( 'woocommerce_process_shop_order_meta', array( __CLASS__, 'save' ), 60 );
@@ -28,6 +31,10 @@ class Delivery_Box {
 	 * The quick order shopper saw no delivery price: once a label sets it, send the order details
 	 * email (WooCommerce "Order details"), with the delivery price and the new total. Again only
 	 * when the price changes.
+	 *
+	 * @param array          $data  Courier label response.
+	 * @param \WC_Order|null $order Order.
+	 * @return void
 	 */
 	public static function email_delivery_price( $data, $order ) {
 		$order = $order ? wc_get_order( $order->get_id() ) : false;
@@ -52,15 +59,22 @@ class Delivery_Box {
 		$order->update_meta_data( '_nashenski_delivery_price_emailed', $price );
 		$order->save();
 		$emails['WC_Email_Customer_Invoice']->trigger( $order->get_id(), $order );
-		$order->add_order_note( sprintf(
+		$order->add_order_note(
+			sprintf(
 			/* translators: 1: delivery price, 2: order total */
-			__( 'Delivery price %1$s and the new total %2$s emailed to the customer.', 'nashenski-commerce' ),
-			html_entity_decode( wp_strip_all_tags( wc_price( $price, array( 'currency' => $order->get_currency() ) ) ) ),
-			html_entity_decode( wp_strip_all_tags( wc_price( $order->get_total(), array( 'currency' => $order->get_currency() ) ) ) )
-		) );
+				__( 'Delivery price %1$s and the new total %2$s emailed to the customer.', 'nashenski-commerce' ),
+				html_entity_decode( wp_strip_all_tags( wc_price( $price, array( 'currency' => $order->get_currency() ) ) ) ),
+				html_entity_decode( wp_strip_all_tags( wc_price( $order->get_total(), array( 'currency' => $order->get_currency() ) ) ) )
+			)
+		);
 		$order->save();
 	}
 
+	/**
+	 * The order on the edit screen.
+	 *
+	 * @return \WC_Order|false
+	 */
 	public static function order() {
 		global $post;
 
@@ -73,6 +87,9 @@ class Delivery_Box {
 
 	/**
 	 * Only quick orders that have no courier shipping line yet.
+	 *
+	 * @param mixed $order Order on the screen.
+	 * @return bool
 	 */
 	private static function applies( $order ) {
 		if ( ! $order instanceof \WC_Order || ! $order->get_meta( Quick_Order::META_CONSENT ) ) {
@@ -95,7 +112,7 @@ class Delivery_Box {
 	public static function options() {
 		$options = array();
 
-		$names   = nashenski_couriers();
+		$names = nashenski_couriers();
 
 		foreach ( Pickers::rate_types() as $id => $rate ) {
 			$courier = $rate['courier'];
@@ -108,16 +125,21 @@ class Delivery_Box {
 				continue;
 			}
 
-			$method = \WC_Shipping_Zones::get_shipping_method( (int) substr( $id, strpos( $id, ':' ) + 1 ) );
+			$method        = \WC_Shipping_Zones::get_shipping_method( (int) substr( $id, strpos( $id, ':' ) + 1 ) );
 			$rate['title'] = $method ? $method->get_title() : $id;
 			// Method titles such as "To an office" repeat between couriers, so the list names the courier.
-			$rate['label'] = false === stripos( $rate['title'], $names[ $courier ] ) ? $names[ $courier ] . ': ' . $rate['title'] : $rate['title'];
+			$rate['label']  = false === stripos( $rate['title'], $names[ $courier ] ) ? $names[ $courier ] . ': ' . $rate['title'] : $rate['title'];
 			$options[ $id ] = $rate;
 		}
 
 		return $options;
 	}
 
+	/**
+	 * Adds the delivery box to the order screen when it applies.
+	 *
+	 * @return void
+	 */
 	public static function add_meta_box() {
 		$order = self::order();
 
@@ -130,6 +152,11 @@ class Delivery_Box {
 		add_meta_box( 'nashenski_delivery', __( 'Delivery', 'nashenski-commerce' ), array( __CLASS__, 'render' ), $screen, 'normal', 'high' );
 	}
 
+	/**
+	 * Prints the delivery box.
+	 *
+	 * @return void
+	 */
 	public static function render() {
 		$order   = self::order();
 		$options = self::options();
@@ -186,6 +213,9 @@ class Delivery_Box {
 
 	/**
 	 * Adds the courier shipping line from the choice, in place of any other shipping line.
+	 *
+	 * @param int $order_id Order ID.
+	 * @return void
 	 */
 	public static function save( $order_id ) {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- checked right below.
@@ -193,7 +223,7 @@ class Delivery_Box {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_nonce'] ) ), self::NONCE ) || ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_nonce'] ) ), self::NONCE ) || ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			return;
 		}
 
@@ -253,17 +283,23 @@ class Delivery_Box {
 		}
 
 		$order->calculate_totals();
-		$order->add_order_note( sprintf(
+		$order->add_order_note(
+			sprintf(
 			/* translators: 1: shipping option, 2: office, locker or address */
-			__( 'Delivery set on the order screen: %1$s, %2$s. The price comes with the label.', 'nashenski-commerce' ),
-			$option['title'],
-			Pickers::describe_choice( $choice, $option['type'] )
-		) );
+				__( 'Delivery set on the order screen: %1$s, %2$s. The price comes with the label.', 'nashenski-commerce' ),
+				$option['title'],
+				Pickers::describe_choice( $choice, $option['type'] )
+			)
+		);
 		$order->save();
 	}
 
 	/**
 	 * Whether the picker finished: the type matches and an office, locker or street was chosen.
+	 *
+	 * @param array $choice Picker choice.
+	 * @param array $option Delivery option.
+	 * @return bool
 	 */
 	private static function complete( $choice, $option ) {
 		if ( 'boxnow' === $option['courier'] ) {

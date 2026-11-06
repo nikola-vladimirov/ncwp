@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Front_End\Checkout;
 
 defined( 'ABSPATH' ) || exit;
@@ -16,6 +16,9 @@ class Conditions {
 	/**
 	 * Plain text rule shared with the classic script: ASCII spaces, tabs and line breaks become one space,
 	 * and the ends are cut (no other whitespace, so NBSP stays).
+	 *
+	 * @param mixed $text Text to clean.
+	 * @return string
 	 */
 	public static function clean_text( $text ) {
 		return trim( preg_replace( '/[ \t\r\n]+/', ' ', (string) $text ), ' ' );
@@ -24,6 +27,9 @@ class Conditions {
 	/**
 	 * A typed or imported condition value or list choice: invalid UTF-8 out, then the plain rule above.
 	 * Tags are kept as text (the value is only compared and escaped on output), so "&lt;18" stays as typed.
+	 *
+	 * @param mixed $text Text to clean.
+	 * @return string
 	 */
 	public static function clean_value( $text ) {
 		return self::clean_text( wp_check_invalid_utf8( (string) $text ) );
@@ -31,6 +37,9 @@ class Conditions {
 
 	/**
 	 * A number as the classic script reads one: a plain decimal, no hex, no Infinity.
+	 *
+	 * @param mixed $text Text to test.
+	 * @return bool
 	 */
 	public static function is_number( $text ) {
 		return 1 === preg_match( '/\A[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?\z/', (string) $text );
@@ -38,6 +47,10 @@ class Conditions {
 
 	/**
 	 * Is the row shown? $values: row key => value as a string ('1' for a ticked checkbox).
+	 *
+	 * @param array $when   Rule: "sets" (lists of conditions) and "hide".
+	 * @param array $values Row key => value as a string.
+	 * @return bool
 	 */
 	public static function shown( $when, $values ) {
 		if ( empty( $when['sets'] ) ) {
@@ -56,6 +69,13 @@ class Conditions {
 		return empty( $when['hide'] ) ? $met : ! $met;
 	}
 
+	/**
+	 * Whether every condition of one set is met.
+	 *
+	 * @param array $set    Conditions.
+	 * @param array $values Row key => value as a string.
+	 * @return bool
+	 */
 	private static function set_met( $set, $values ) {
 		foreach ( $set as $condition ) {
 			if ( ! self::test( $condition, $values[ $condition['field'] ] ?? '' ) ) {
@@ -68,9 +88,13 @@ class Conditions {
 
 	/**
 	 * One condition against a value.
+	 *
+	 * @param array $condition Condition: "operator", "value" and "field".
+	 * @param mixed $value     Value to test.
+	 * @return bool
 	 */
 	public static function test( $condition, $value ) {
-		$value = (string) $value;
+		$value   = (string) $value;
 		$operand = (string) $condition['value'];
 
 		switch ( $condition['operator'] ) {
@@ -96,6 +120,12 @@ class Conditions {
 	 * $types: row key => type of the trigger fields ('checkbox' or other). Returns null when a
 	 * condition cannot be written as a block rule (greater, less, or a trigger that is not an extra
 	 * field, or one a rule of its own can hide: its value stays in the block checkout); the block checkout then ignores the rule and the classic checkout keeps it.
+	 *
+	 * @param array $when     Rule: "sets" (lists of conditions) and "hide".
+	 * @param array $types    Row key => type of the trigger fields.
+	 * @param bool  $required Whether the field is required when shown.
+	 * @param array $derived  Fields that a rule of their own can hide.
+	 * @return array|null
 	 */
 	public static function block_rule( $when, $types, $required, $derived = array() ) {
 		if ( empty( $when['sets'] ) ) {
@@ -129,17 +159,25 @@ class Conditions {
 
 		if ( empty( $when['hide'] ) ) {
 			return array(
-				'hidden' => $wrap( array( 'not' => $met ) ),
+				'hidden'   => $wrap( array( 'not' => $met ) ),
 				'required' => $required ? $wrap( $met ) : false,
 			);
 		}
 
 		return array(
-			'hidden' => $wrap( $met ),
+			'hidden'   => $wrap( $met ),
 			'required' => $required ? $wrap( array( 'not' => $met ) ) : false,
 		);
 	}
 
+	/**
+	 * JSON Schema of one condition, or null when the block checkout cannot express it.
+	 *
+	 * @param array $condition Condition: "operator", "value" and "field".
+	 * @param array $types     Row key => type of the trigger fields.
+	 * @param array $derived   Fields that a rule of their own can hide.
+	 * @return array|null
+	 */
 	private static function block_condition( $condition, $types, $derived = array() ) {
 		$field = $condition['field'];
 
@@ -147,10 +185,13 @@ class Conditions {
 			return null;
 		}
 
-		$id = 'nashenski/' . substr( $field, 7 );
+		$id       = 'nashenski/' . substr( $field, 7 );
 		$checkbox = 'checkbox' === $types[ $field ];
 		// A blank-only text is not filled, as the classic script cleans it to nothing.
-		$filled = array( 'required' => array( $id ), 'properties' => array( $id => $checkbox ? array( 'const' => true ) : array( 'pattern' => '[^ \\t\\r\\n]' ) ) );
+		$filled = array(
+			'required'   => array( $id ),
+			'properties' => array( $id => $checkbox ? array( 'const' => true ) : array( 'pattern' => '[^ \\t\\r\\n]' ) ),
+		);
 
 		if ( 'empty' === $condition['operator'] || 'not_empty' === $condition['operator'] ) {
 			return 'not_empty' === $condition['operator'] ? $filled : array( 'not' => $filled );
@@ -165,11 +206,17 @@ class Conditions {
 		}
 
 		// The classic check cleans the typed value too, so " Sofia" and "Sofia" are the same: spaces around and between the words are allowed.
-		$words = array_map( function ( $word ) {
-			return addcslashes( $word, '\\^$.*+?()[]{}|/' );
-		}, explode( ' ', $text ) );
+		$words = array_map(
+			function ( $word ) {
+				return addcslashes( $word, '\\^$.*+?()[]{}|/' );
+			},
+			explode( ' ', $text )
+		);
 		$match = $checkbox ? array( 'const' => true ) : array( 'pattern' => '^[ \\t\\r\\n]*' . implode( '[ \\t\\r\\n]+', $words ) . '[ \\t\\r\\n]*$' );
-		$equal = '' === $text ? array( 'not' => $filled ) : array( 'required' => array( $id ), 'properties' => array( $id => $match ) );
+		$equal = '' === $text ? array( 'not' => $filled ) : array(
+			'required'   => array( $id ),
+			'properties' => array( $id => $match ),
+		);
 
 		return 'value_eq' === $condition['operator'] ? $equal : array( 'not' => $equal );
 	}

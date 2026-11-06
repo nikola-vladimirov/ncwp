@@ -11,6 +11,7 @@ $checks = array(
 );
 $fail   = array();
 foreach ( $checks as $file => list( $const, $labels ) ) {
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reads a local source file, no WordPress here.
 	$src = file_get_contents( __DIR__ . '/../' . $file );
 	preg_match( '/public function __construct\(\) \{(.*?)\n\t\}\n/s', $src, $m );
 	$body = $m[1] ?? '';
@@ -22,10 +23,11 @@ foreach ( $checks as $file => list( $const, $labels ) ) {
 		$fail[] = "$file: $const missing";
 		continue; }
 	preg_match( '/function ' . $labels . '\(\) \{(.*?)\n\t\}/s', $src, $a );
-	foreach ( explode( ',', $ids[1] ) as $id ) {
-		if ( false === strpos( $a[1] ?? '', trim( $id ) ) ) {
-			$fail[] = "$file: $labels() lacks " . trim( $id ); }
+	foreach ( explode( ',', $ids[1] ) as $const_id ) {
+		if ( false === strpos( $a[1] ?? '', trim( $const_id ) ) ) {
+			$fail[] = "$file: $labels() lacks " . trim( $const_id ); }
 	}
 }
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CLI test output, WordPress is not loaded.
 echo $fail ? 'FAIL: ' . implode( '; ', $fail ) . "\n" : "ok: 2 constructors have no early translation, ids match their label lists\n";
 exit( $fail ? 1 : 0 );

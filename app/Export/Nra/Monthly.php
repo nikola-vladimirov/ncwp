@@ -1,4 +1,12 @@
 <?php
+/**
+ * Monthly email of the NRA audit file.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+
 namespace Nashenski\Export\Nra;
 
 defined( 'ABSPATH' ) || exit;
@@ -10,15 +18,26 @@ defined( 'ABSPATH' ) || exit;
 class Monthly {
 	const HOOK = 'nashenski/nra/monthly';
 
+	/**
+	 * Registers the hooks.
+	 */
 	public function __construct() {
 		add_action( 'admin_init', array( __CLASS__, 'schedule' ) );
 		add_action( self::HOOK, array( __CLASS__, 'send' ) );
 	}
 
+	/**
+	 * Tells whether the monthly email is on and has a recipient.
+	 *
+	 * @return bool
+	 */
 	private static function on() {
 		return 'yes' === nashenski_get_option( 'invoice', 'monthly_nra_email' ) && '' !== trim( (string) nashenski_get_option( 'invoice', 'accountant_email' ) );
 	}
 
+	/**
+	 * Schedules or unschedules the monthly job to match the setting.
+	 */
 	public static function schedule() {
 		if ( ! function_exists( 'as_has_scheduled_action' ) ) {
 			return;
@@ -36,16 +55,19 @@ class Monthly {
 
 	/**
 	 * Send the file of $month ('Y-m', the month before by default). Returns true when sent.
+	 *
+	 * @param string $month Month as Y-m, or empty for the month before.
+	 * @return bool
 	 */
 	public static function send( $month = '' ) {
 		if ( ! self::on() ) {
 			return false;
 		}
 
-		$month = preg_match( '/^\d{4}-\d{2}$/', (string) $month ) ? $month : wp_date( 'Y-m', strtotime( 'first day of last month' ) );
+		$month  = preg_match( '/^\d{4}-\d{2}$/', (string) $month ) ? $month : wp_date( 'Y-m', strtotime( 'first day of last month' ) );
 		$result = ( new Export( $month, '' ) )->get_xml_file();
-		$id = empty( $result['attachment_id'] ) ? 0 : $result['attachment_id'];
-		$path = $id ? get_attached_file( $id ) : '';
+		$id     = empty( $result['attachment_id'] ) ? 0 : $result['attachment_id'];
+		$path   = $id ? get_attached_file( $id ) : '';
 
 		if ( ! $path ) {
 			return false;

@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Metabox.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin\Order;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
@@ -6,11 +12,20 @@ use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableControlle
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Meta box.
+ */
 class MetaBox {
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_boxes' ) );
 	}
 
+	/**
+	 * Add meta boxes.
+	 */
 	public static function add_meta_boxes() {
 		$screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
 		? array( wc_get_page_screen_id( 'shop-order' ) )
@@ -19,24 +34,29 @@ class MetaBox {
 		add_meta_box( 'nashenski_pdf-box', __( 'PDF Files', 'nashenski-commerce' ), array( __CLASS__, 'pdf_actions_meta_box' ), $screen, 'side', 'high' );
 	}
 
+	/**
+	 * Pdf actions meta box.
+	 *
+	 * @param mixed $post Post.
+	 */
 	public static function pdf_actions_meta_box( $post ) {
 		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
 			$order = $post;
-			$ids = [ $order->get_id() ];
+			$ids   = array( $order->get_id() );
 		} else {
-			$ids = [ $post->ID ];
+			$ids   = array( $post->ID );
 			$order = wc_get_order( $post->ID );
 		}
 
 		$files = Documents::get_order_documents( $order );
 		?>
 		<ul class="wpo_wcpdf-actions">
-			<?php foreach ( $files as $file ): ?>
+			<?php foreach ( $files as $file ) : ?>
 				<li>
-					<a target="_blank" href="<?php echo esc_url( $file[ 'file_url' ] ); ?>" class="button">
+					<a target="_blank" href="<?php echo esc_url( $file['file_url'] ); ?>" class="button">
 						<div class="wp-menu-image dashicons-before dashicons-pdf"></div>
 						
-						<?php echo esc_html( $file['name'] ) ?>
+						<?php echo esc_html( $file['name'] ); ?>
 					</a>
 					<?php if ( $file['file_url_en'] ) : ?>
 						<a target="_blank" href="<?php echo esc_url( $file['file_url_en'] ); ?>" class="button" lang="en"><?php esc_html_e( 'EN', 'nashenski-commerce' ); ?></a>
@@ -52,12 +72,20 @@ class MetaBox {
 
 	/**
 	 * Make the invoice by hand, with the number the store chooses (filled in with the next one).
+	 *
+	 * @param mixed $order Order.
 	 */
 	private static function make_invoice_form( $order ) {
-		$next = $order->get_meta( 'nashenski_order_invoice_number' )
-			?: nashenski_get_option( 'invoice', 'next_invoice_separate_number' )
-			?: $order->get_meta( 'nashenski_order_number' )
-			?: nashenski_get_option( 'invoice', 'next_invoice_number' );
+		$next = $order->get_meta( 'nashenski_order_invoice_number' );
+		if ( ! $next ) {
+			$next = nashenski_get_option( 'invoice', 'next_invoice_separate_number' );
+		}
+		if ( ! $next ) {
+			$next = $order->get_meta( 'nashenski_order_number' );
+		}
+		if ( ! $next ) {
+			$next = nashenski_get_option( 'invoice', 'next_invoice_number' );
+		}
 		// Own invoicing program: the number comes from that program, so no website number is suggested.
 		$value = Documents::own_numbering() ? '' : max( 1, (int) $next );
 		?>

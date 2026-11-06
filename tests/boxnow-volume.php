@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName.InvalidClassFileName, Generic.Classes.DuplicateClassName, Generic.Files.OneObjectStructurePerFile.MultipleFound, Universal.Files.SeparateFunctionsFromOO.Mixed, Generic.CodeAnalysis.UnusedFunctionParameter, WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid -- standalone offline test: its stubs live in this file and keep the names and signatures of what they stand in for.
 /**
  * Offline BOX NOW capacity and rate regressions. Run: php -d memory_limit=64M tests/boxnow-volume.php
  *
@@ -201,7 +201,7 @@ function nashenski_get_option( $group, $name ) {
  * @return string Result.
  */
 function wp_json_encode( $data ) {
-	return json_encode( $data ); }
+	return json_encode( $data ); } // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- stub of wp_json_encode itself.
 /**
  * Wc tax enabled.
  */
@@ -251,7 +251,7 @@ $checks = 0;
 function expect( $condition, $message ) {
 	++$GLOBALS['checks'];
 	if ( ! $condition ) {
-		throw new RuntimeException( $message ); }
+		throw new RuntimeException( $message ); } // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- CLI test: the message goes to the terminal, not to a page.
 }
 /**
  * Line.
@@ -382,15 +382,15 @@ foreach ( array(
 	array( 1, true, '', 0 ),
 	array( 1, false, 100, 100 ),
 ) as list( $weight, $oversize, $hide_over, $total ) ) {
-	$m = calculate( array( line( 6 ) ), 'cod', $weight, $oversize, $hide_over, $total );
-	expect( 0 === $m->capacity_checks && ! $m->rates, 'Cheap rejection must precede COD capacity calculation' );
+	$method = calculate( array( line( 6 ) ), 'cod', $weight, $oversize, $hide_over, $total );
+	expect( 0 === $method->capacity_checks && ! $method->rates, 'Cheap rejection must precede COD capacity calculation' );
 }
-$m = calculate( array( line( 5 ) ) );
-expect( 1 === $m->capacity_checks && 1 === count( $m->rates ), 'Normal one-box COD cart must retain its rate' );
-$m = calculate( array( line( '1e300' ) ) );
-expect( 1 === $m->capacity_checks && ! $m->rates, 'Oversize-quantity COD cart must not get a rate' );
-$m = calculate( array( line( 6 ) ), 'card' );
-expect( 0 === $m->capacity_checks && 1 === count( $m->rates ), 'Prepaid multi-box behavior must remain unchanged' );
+$method = calculate( array( line( 5 ) ) );
+expect( 1 === $method->capacity_checks && 1 === count( $method->rates ), 'Normal one-box COD cart must retain its rate' );
+$method = calculate( array( line( '1e300' ) ) );
+expect( 1 === $method->capacity_checks && ! $method->rates, 'Oversize-quantity COD cart must not get a rate' );
+$method = calculate( array( line( 6 ) ), 'card' );
+expect( 0 === $method->capacity_checks && 1 === count( $method->rates ), 'Prepaid multi-box behavior must remain unchanged' );
 // A free shipping threshold that is zero in any spelling is no threshold: a cart of 99.99 does not ship free on it.
 foreach ( array(
 	'0.00' => false,
@@ -399,21 +399,21 @@ foreach ( array(
 	'1'    => true,
 	'100'  => false,
 ) as $threshold => $free ) {
-	$GLOBALS['cookie']     = array( 'payment' => 'card' );
-	$GLOBALS['weight']     = 1;
-	$GLOBALS['oversize']   = false;
-	$GLOBALS['hide_over']  = '';
-	$GLOBALS['cart_total'] = 99.99;
-	$m                     = method( array( line( 1 ) ) );
-	$m->free_shipping_over = $threshold;
-	$m->calculate_shipping(
+	$GLOBALS['cookie']          = array( 'payment' => 'card' );
+	$GLOBALS['weight']          = 1;
+	$GLOBALS['oversize']        = false;
+	$GLOBALS['hide_over']       = '';
+	$GLOBALS['cart_total']      = 99.99;
+	$method                     = method( array( line( 1 ) ) );
+	$method->free_shipping_over = $threshold;
+	$method->calculate_shipping(
 		array(
 			'contents'    => array( line( 1 ) ),
 			'destination' => array( 'country' => 'BG' ),
 		)
 	);
-	$shown_free = ! empty( $m->rates[0]['meta_data']['free_shipping'] );
-	expect( $free === $shown_free, "BOX NOW free shipping at threshold '$threshold' must be " . var_export( $free, true ) );
+	$shown_free = ! empty( $method->rates[0]['meta_data']['free_shipping'] );
+	expect( $free === $shown_free, "BOX NOW free shipping at threshold '$threshold' must be " . var_export( $free, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- builds the failure message text.
 }
 // A stored price row below zero (saved before negatives were refused) gives no rate, not a free one (R41, the old assertion encoded the bug); a typed 0 is a free band.
 foreach ( array(
@@ -433,8 +433,8 @@ foreach ( array(
 			)
 		),
 	);
-	$m                         = calculate( array( line( 1 ) ) );
-	expect( null === $cost ? array() === $m->rates : 1 === count( $m->rates ) && $cost === $m->rates[0]['cost'], "A stored price row of $stored gives " . ( null === $cost ? 'no rate' : "a rate cost of $cost" ) );
+	$method                    = calculate( array( line( 1 ) ) );
+	expect( null === $cost ? array() === $method->rates : 1 === count( $method->rates ) && $cost === $method->rates[0]['cost'], "A stored price row of $stored gives " . ( null === $cost ? 'no rate' : "a rate cost of $cost" ) );
 }
 // A cart that no price band holds gets no BOX NOW rate; a band the owner typed with a price of 0 is a band and gives a free rate.
 /**
@@ -497,13 +497,13 @@ foreach ( array(
 	'weight bands'   => array( 'from_to_kg', $kg_rows, array( 2, 30 ), array( 7, 30 ), array( array( 12, 30 ), array( 0.5, 30 ) ), '3' ),
 	'total bands'    => array( 'from_to_order_total', $total_rows, array( 1, 30 ), array( 1, 60 ), array( array( 1, 150 ), array( 1, 10 ) ), '4' ),
 	'combined bands' => array( 'from_to_kg_and_order_total', $combined_rows, array( 2, 30 ), array( 7, 30 ), array( array( 12, 30 ), array( 2, 60 ), array( 0.5, 30 ) ), '5' ),
-) as $name => list( $type, $rows, $inside, $typed_zero, $outside, $price ) ) {
-	$rates = band_rates( $type, $rows, $inside[0], $inside[1] );
+) as $name => list( $price_type, $rows, $inside, $typed_zero, $outside, $price ) ) {
+	$rates = band_rates( $price_type, $rows, $inside[0], $inside[1] );
 	expect( 1 === count( $rates ) && $price === $rates[0]['cost'], "BOX NOW $name: a cart inside a band gets that band's price $price" );
-	$rates = band_rates( $type, $rows, $typed_zero[0], $typed_zero[1] );
+	$rates = band_rates( $price_type, $rows, $typed_zero[0], $typed_zero[1] );
 	expect( 1 === count( $rates ) && 0 === $rates[0]['cost'], "BOX NOW $name: a band typed with price 0 gives a free rate, not a missing band" );
 	foreach ( $outside as $cart ) {
-		expect( array() === band_rates( $type, $rows, $cart[0], $cart[1] ), "BOX NOW $name: a cart outside every band (weight {$cart[0]}, total {$cart[1]}) gets no rate" );
+		expect( array() === band_rates( $price_type, $rows, $cart[0], $cart[1] ), "BOX NOW $name: a cart outside every band (weight {$cart[0]}, total {$cart[1]}) gets no rate" );
 	}
 }
 // No price type saved: no rate, even with weight rows (B04). No rows: no rate, never a free one.
@@ -520,7 +520,7 @@ $GLOBALS['boxnow_options'] = array();
 foreach ( array( 0, 0.0, '0', '0.0', '', null, 'abc' ) as $zero ) {
 	foreach ( array( array( $zero, 10, 10 ), array( 10, $zero, 10 ), array( 10, 10, $zero ) ) as list( $h, $w, $l ) ) {
 		$size = \Nashenski\Shipping\BoxNow\Method::determine_item_size( $h, $w, $l );
-		expect( 2 === $size['size'] && 40832 === $size['volume'], 'A missing dimension takes the default size: ' . var_export( $zero, true ) );
+		expect( 2 === $size['size'] && 40832 === $size['volume'], 'A missing dimension takes the default size: ' . var_export( $zero, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- builds the failure message text.
 	}
 }
 $size = \Nashenski\Shipping\BoxNow\Method::determine_item_size( 5.5, 10, 20 );
@@ -543,7 +543,7 @@ function allowed_size( $unit, array $lines ) {
 foreach ( array( 'cm', 'mm', 'm', 'in', 'yd' ) as $unit ) {
 	foreach ( array( '', null, '0' ) as $empty ) {
 		$r = allowed_size( $unit, array( line( 1, $empty, $empty, $empty ), line( 1, '', '12', '12' ) ) );
-		expect( 2 === (int) $r['max_size'] && false === $r['has_oversize_item'], 'An empty dimension takes the default size on a ' . $unit . ' store: ' . var_export( $empty, true ) );
+		expect( 2 === (int) $r['max_size'] && false === $r['has_oversize_item'], 'An empty dimension takes the default size on a ' . $unit . ' store: ' . var_export( $empty, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- builds the failure message text.
 	}
 }
 // The same product, on a cm store and on an mm store holding the same size, gives the same box size and oversize flag.
@@ -560,4 +560,4 @@ $r = allowed_size( 'cm', array( line( 1, '100', '100', '100' ) ) );
 expect( 3 === (int) $r['max_size'] && true === $r['has_oversize_item'], 'An oversize product stays oversize on a cm store' );
 $r = allowed_size( 'mm', array( line( 1, '1000', '1000', '1000' ) ) );
 expect( 3 === (int) $r['max_size'] && true === $r['has_oversize_item'], 'An oversize product stays oversize on an mm store' );
-echo 'PASS: ' . $checks . " BOX NOW assertions\n";
+echo 'PASS: ' . (int) $checks . " BOX NOW assertions\n";

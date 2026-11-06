@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * PDF document appearance.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Invoice\PDF;
 
 defined( 'ABSPATH' ) || exit;
@@ -13,23 +19,33 @@ defined( 'ABSPATH' ) || exit;
 class Style {
 	const GROUP = 'pdf';
 
+	/**
+	 * Built-in style values.
+	 *
+	 * @return array
+	 */
 	public static function defaults() {
 		return array(
-			'title_color' => '#1d2327',
-			'accent_color' => '#2271b1',
-			'text_color' => '#2c3338',
-			'table_color' => '#f4f4f4',
-			'font' => 'dejavu sans',
-			'font_size' => 'normal',
-			'paper' => 'A4',
-			'logo_size' => 'medium',
-			'density' => 'compact',
-			'date_format' => 'd.m.Y',
+			'title_color'   => '#1d2327',
+			'accent_color'  => '#2271b1',
+			'text_color'    => '#2c3338',
+			'table_color'   => '#f4f4f4',
+			'font'          => 'dejavu sans',
+			'font_size'     => 'normal',
+			'paper'         => 'A4',
+			'logo_size'     => 'medium',
+			'density'       => 'compact',
+			'date_format'   => 'd.m.Y',
 			'show_contacts' => 'yes',
 			'show_received' => 'yes',
 		);
 	}
 
+	/**
+	 * Whether the TokenForge plugin is active.
+	 *
+	 * @return bool
+	 */
 	public static function tokenforge_active() {
 		return class_exists( '\TokenForge\Palette' );
 	}
@@ -46,7 +62,7 @@ class Style {
 
 		$settings = \TokenForge\Palette::settings();
 		$families = isset( $settings['families'] ) && is_array( $settings['families'] ) ? $settings['families'] : array();
-		$hex = function ( $name ) use ( $families ) {
+		$hex      = function ( $name ) use ( $families ) {
 			$value = $families[ $name ]['hex'] ?? '';
 
 			return preg_match( '/^#[0-9a-f]{6}$/i', (string) $value ) ? strtolower( $value ) : '';
@@ -57,14 +73,16 @@ class Style {
 
 		if ( class_exists( '\TokenForge\Scheme' ) ) {
 			$scheme = \TokenForge\Scheme::settings();
-			$text = self::resolve_tokenforge_color( (string) ( $scheme['text_dark'] ?? '' ), $hex );
+			$text   = self::resolve_tokenforge_color( (string) ( $scheme['text_dark'] ?? '' ), $hex );
 		}
 
-		$colors = array_filter( array(
-			'title_color' => $hex( 'secondary' ) ? $hex( 'secondary' ) : $text,
-			'accent_color' => $hex( 'primary' ),
-			'text_color' => $text,
-		) );
+		$colors = array_filter(
+			array(
+				'title_color'  => $hex( 'secondary' ) ? $hex( 'secondary' ) : $text,
+				'accent_color' => $hex( 'primary' ),
+				'text_color'   => $text,
+			)
+		);
 
 		if ( ! empty( $colors['accent_color'] ) ) {
 			$colors['table_color'] = self::tint( $colors['accent_color'], 0.9 );
@@ -76,7 +94,9 @@ class Style {
 	/**
 	 * "#123456", "var(--black)", "var(--primary-dark)" or "var(--name, #fallback)" to hex, or ''.
 	 *
+	 * @param string   $value  Colour value.
 	 * @param callable $family Returns a palette family's hex by name ('' when unknown).
+	 * @return string
 	 */
 	private static function resolve_tokenforge_color( $value, $family ) {
 		$value = trim( $value );
@@ -89,15 +109,25 @@ class Style {
 			return '';
 		}
 
-		$name = strtolower( $m[1] );
-		$fixed = array( 'black' => '#000000', 'white' => '#ffffff' );
+		$name  = strtolower( $m[1] );
+		$fixed = array(
+			'black' => '#000000',
+			'white' => '#ffffff',
+		);
 
 		if ( isset( $fixed[ $name ] ) ) {
 			return $fixed[ $name ];
 		}
 
 		// Shades: mix the family colour with black or white.
-		$shades = array( '-ultra-dark' => -0.6, '-dark' => -0.35, '-semi-dark' => -0.2, '-ultra-light' => 0.9, '-light' => 0.6, '-semi-light' => 0.3 );
+		$shades = array(
+			'-ultra-dark'  => -0.6,
+			'-dark'        => -0.35,
+			'-semi-dark'   => -0.2,
+			'-ultra-light' => 0.9,
+			'-light'       => 0.6,
+			'-semi-light'  => 0.3,
+		);
 
 		foreach ( $shades as $suffix => $amount ) {
 			if ( substr( $name, -strlen( $suffix ) ) === $suffix ) {
@@ -116,6 +146,10 @@ class Style {
 
 	/**
 	 * Mix a hex colour with black. $amount 0 = colour, 1 = black.
+	 *
+	 * @param string $hex    Colour as #rrggbb.
+	 * @param float  $amount 0 to 1.
+	 * @return string
 	 */
 	public static function shade( $hex, $amount ) {
 		$hex = ltrim( $hex, '#' );
@@ -128,6 +162,11 @@ class Style {
 		return $out;
 	}
 
+	/**
+	 * Whether the colours follow TokenForge.
+	 *
+	 * @return bool
+	 */
 	public static function follows_tokenforge() {
 		return self::tokenforge_active() && 'no' !== nashenski_get_option( self::GROUP, 'follow_tokenforge' );
 	}
@@ -139,6 +178,11 @@ class Style {
 		return array_merge( self::defaults(), self::tokenforge_colors() );
 	}
 
+	/**
+	 * The style in use: saved values over the defaults, checked.
+	 *
+	 * @return array
+	 */
 	public static function get() {
 		$style = self::field_defaults();
 
@@ -164,11 +208,15 @@ class Style {
 			}
 		}
 
-		return apply_filters( 'nashenski/invoice/pdf/style', $style );
+		return apply_filters( 'nashenski/invoice/pdf/style', $style ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 	}
 
 	/**
 	 * Mix a hex colour with white. $amount 0 = colour, 1 = white.
+	 *
+	 * @param string $hex    Colour as #rrggbb.
+	 * @param float  $amount 0 to 1.
+	 * @return string
 	 */
 	public static function tint( $hex, $amount ) {
 		$hex = ltrim( $hex, '#' );
@@ -176,7 +224,7 @@ class Style {
 
 		for ( $i = 0; $i < 3; $i++ ) {
 			$channel = hexdec( substr( $hex, $i * 2, 2 ) );
-			$out .= str_pad( dechex( (int) round( $channel + ( 255 - $channel ) * $amount ) ), 2, '0', STR_PAD_LEFT );
+			$out    .= str_pad( dechex( (int) round( $channel + ( 255 - $channel ) * $amount ) ), 2, '0', STR_PAD_LEFT );
 		}
 
 		return $out;
@@ -198,9 +246,9 @@ class Style {
 	 */
 	public static function logo_box() {
 		$sizes = array(
-			'small' => array( 160, 45 ),
+			'small'  => array( 160, 45 ),
 			'medium' => array( 220, 70 ),
-			'large' => array( 280, 100 ),
+			'large'  => array( 280, 100 ),
 		);
 
 		return $sizes[ self::get()['logo_size'] ] ?? $sizes['medium'];
@@ -210,13 +258,21 @@ class Style {
 	 * CSS printed after the template's own rules.
 	 */
 	public static function css() {
-		$s = self::get();
-		$base = array( 'small' => 9, 'normal' => 10, 'large' => 11.5 );
+		$s    = self::get();
+		$base = array(
+			'small'  => 9,
+			'normal' => 10,
+			'large'  => 11.5,
+		);
 		$size = $base[ $s['font_size'] ] ?? 10;
 		$font = in_array( $s['font'], array( 'dejavu sans', 'dejavu serif', 'dejavu sans mono' ), true ) ? $s['font'] : 'dejavu sans';
 		// Spacing: table cell padding and the line height of the From and To boxes.
-		$densities = array( 'compact' => array( '4px 6px', '1.3' ), 'normal' => array( '6px 8px', '1.45' ), 'spacious' => array( '8px 10px', '1.7' ) );
-		$density = $densities[ $s['density'] ] ?? $densities['compact'];
+		$densities = array(
+			'compact'  => array( '4px 6px', '1.3' ),
+			'normal'   => array( '6px 8px', '1.45' ),
+			'spacious' => array( '8px 10px', '1.7' ),
+		);
+		$density   = $densities[ $s['density'] ] ?? $densities['compact'];
 
 		return sprintf(
 			'body { font-family: "%1$s"; color: %2$s; }

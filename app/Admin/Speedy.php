@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
 /**
  * Speedy admin: the order label, its payment, services and recipient data.
  *
@@ -538,7 +538,7 @@ class Speedy {
 				);
 			}
 
-			if ( ! empty( $order->get_items( 'fee' ) ) && apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) ) {
+			if ( ! empty( $order->get_items( 'fee' ) ) && apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) ) { // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 				foreach ( $order->get_items( 'fee' ) as $item ) {
 					if ( $item->get_total() <= 0 ) {
 						continue;
@@ -607,7 +607,7 @@ class Speedy {
 			return $label;
 		}
 
-		$min_weight = (float) apply_filters( 'nashenski/speedy/min_parcel_weight', 0.100 );
+		$min_weight = (float) apply_filters( 'nashenski/speedy/min_parcel_weight', 0.100 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 		$max_weight = self::get_max_parcel_weight( $label, $context );
 		if ( ! is_finite( $min_weight ) || $min_weight <= 0 || ! is_finite( $max_weight ) ) {
 			throw new Packing_Limit_Exceeded( 'Shipping parcel weights must be finite.' );
@@ -663,7 +663,7 @@ class Speedy {
 	 */
 	private static function get_max_parcel_weight( $label, $context = null ): float {
 		if ( ! empty( $label['service']['additionalServices']['declaredValue'] ) ) {
-			return (float) apply_filters( 'nashenski/speedy/max_parcel_weight', 32, self::get_delivery_type( $label, $context ), self::get_send_from_type( $context ) );
+			return (float) apply_filters( 'nashenski/speedy/max_parcel_weight', 32, self::get_delivery_type( $label, $context ), self::get_send_from_type( $context ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 		}
 
 		return \Nashenski\Shipping\Speedy\Method::get_max_parcel_weight(
@@ -743,7 +743,7 @@ class Speedy {
 			self::update_order_shipping_price( $response, $order_id );
 		}
 
-		do_action( 'nashenski/speedy/after_send_label', $data, $order );
+		do_action( 'nashenski/speedy/after_send_label', $data, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 
 		return $data;
 	}
@@ -1042,7 +1042,7 @@ class Speedy {
 			if ( 'RECIPIENT' === $payment_by['id'] ) {
 				$price = ( wc_tax_enabled() ) ? $response['price']['amount'] : $response['price']['total'];
 			} elseif ( 'fixed' === $payment_by['id'] && '' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' ) ) {
-				$tax_rate = apply_filters( 'nashenski/speedy/fixed_price_tax_rate', 20, $order->get_shipping_country() );
+				$tax_rate = apply_filters( 'nashenski/speedy/fixed_price_tax_rate', 20, $order->get_shipping_country() ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 				$price    = nashenski_tax_based_price( $cookie_data['fixed_price'], $tax_rate );
 			}
 		}
@@ -1090,13 +1090,13 @@ class Speedy {
 				$label['id'] = $shipment_status['id'];
 			}
 
-			$request_body = apply_filters( 'nashenski/speedy/update_label', $label, $order );
+			$request_body = apply_filters( 'nashenski/speedy/update_label', $label, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 
 			$response = $container[ Client::SPEEDY ]->label_request( 'update', $request_body );
 		} else {
 			unset( $label['id'] );
 
-			$request_body = apply_filters( 'nashenski/speedy/create_label', $label, $order );
+			$request_body = apply_filters( 'nashenski/speedy/create_label', $label, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 			$response     = $container[ Client::SPEEDY ]->label_request( 'create', $request_body );
 		}
 
@@ -1110,7 +1110,7 @@ class Speedy {
 	 * Print labels endpoint.
 	 */
 	public static function print_labels_endpoint() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 

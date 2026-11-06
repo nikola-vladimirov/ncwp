@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter, Generic.Files.OneObjectStructurePerFile, Universal.Files.SeparateFunctionsFromOO, WordPress.NamingConventions.ValidFunctionName, WordPress.Security.EscapeOutput, WordPress.WP.AlternativeFunctions -- offline CLI test script: no WordPress, so stubs, unused stub parameters, filesystem calls and plain-text output are on purpose.
 /**
  * Offline test: a BOX NOW band row with no valid price gives no rate, not a free one. Run: php tests/boxnow-band-empty-price.php
  *
@@ -308,36 +308,78 @@ function calculate( $contents, $payment = 'cod', $weight = 1, $oversize = false,
 // An empty, text or negative price in a stored band is not a free rate. A typed 0 still is.
 foreach ( array(
 	'from_to_kg'                 => array(
-		array( 'from' => '0', 'to' => '20', 'price' => '' ),
-		array( 'from' => '0', 'to' => '20', 'price' => 'abc' ),
-		array( 'from' => '0', 'to' => '20', 'price' => '-5' ),
+		array(
+			'from'  => '0',
+			'to'    => '20',
+			'price' => '',
+		),
+		array(
+			'from'  => '0',
+			'to'    => '20',
+			'price' => 'abc',
+		),
+		array(
+			'from'  => '0',
+			'to'    => '20',
+			'price' => '-5',
+		),
 	),
 	'from_to_order_total'        => array(
-		array( 'from' => '0', 'to' => '100', 'price' => '' ),
-		array( 'from' => '0', 'to' => '100', 'price' => 'abc' ),
-		array( 'from' => '0', 'to' => '100', 'price' => '-5' ),
+		array(
+			'from'  => '0',
+			'to'    => '100',
+			'price' => '',
+		),
+		array(
+			'from'  => '0',
+			'to'    => '100',
+			'price' => 'abc',
+		),
+		array(
+			'from'  => '0',
+			'to'    => '100',
+			'price' => '-5',
+		),
 	),
 	'from_to_kg_and_order_total' => array(
-		array( 'from' => '0', 'to' => '20', 'from_price' => '0', 'to_price' => '100', 'price' => '' ),
-		array( 'from' => '0', 'to' => '20', 'from_price' => '0', 'to_price' => '100', 'price' => 'abc' ),
-		array( 'from' => '0', 'to' => '20', 'from_price' => '0', 'to_price' => '100', 'price' => '-5' ),
+		array(
+			'from'       => '0',
+			'to'         => '20',
+			'from_price' => '0',
+			'to_price'   => '100',
+			'price'      => '',
+		),
+		array(
+			'from'       => '0',
+			'to'         => '20',
+			'from_price' => '0',
+			'to_price'   => '100',
+			'price'      => 'abc',
+		),
+		array(
+			'from'       => '0',
+			'to'         => '20',
+			'from_price' => '0',
+			'to_price'   => '100',
+			'price'      => '-5',
+		),
 	),
-) as $type => $bad_rows ) {
+) as $price_type => $bad_rows ) {
 	foreach ( $bad_rows as $row ) {
 		$GLOBALS['boxnow_options'] = array(
-			'price_type' => $type,
-			$type        => wp_json_encode( array( $row ) ),
+			'price_type' => $price_type,
+			$price_type  => wp_json_encode( array( $row ) ),
 		);
 		$rates                     = calculate( array( line( 1 ) ), 'card', 2, false, '', 30 )->rates;
-		expect( array() === $rates, "BOX NOW $type: a band price of '{$row['price']}' gives no rate" );
+		expect( array() === $rates, "BOX NOW $price_type: a band price of '{$row['price']}' gives no rate" );
 	}
 	$row['price']              = '0';
 	$GLOBALS['boxnow_options'] = array(
-		'price_type' => $type,
-		$type        => wp_json_encode( array( $row ) ),
+		'price_type' => $price_type,
+		$price_type  => wp_json_encode( array( $row ) ),
 	);
 	$rates                     = calculate( array( line( 1 ) ), 'card', 2, false, '', 30 )->rates;
-	expect( 1 === count( $rates ) && 0 === $rates[0]['cost'], "BOX NOW $type: a typed price of 0 is still a free rate" );
+	expect( 1 === count( $rates ) && 0 === $rates[0]['cost'], "BOX NOW $price_type: a typed price of 0 is still a free rate" );
 }
 // B04: price rows saved but no price type saved gives no rate; saving the type brings the rate back.
 $GLOBALS['boxnow_options'] = array( 'from_to_kg' => '[{"from":"0","to":"20","price":"3"}]' );

@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable Generic.Classes.DuplicateClassName, Universal.Files.SeparateFunctionsFromOO, WordPress.NamingConventions.ValidFunctionName, WordPress.WP.AlternativeFunctions -- offline CLI test script: no WordPress, so stubs, unused stub parameters, filesystem calls and plain-text output are on purpose.
 /**
  * Offline test: free shipping over a total per country (R63), no price for a foreign order without a widget
  * address (R64), no Pigeon public price above 30 kg (R65). Run: php tests/free-over-by-country.php

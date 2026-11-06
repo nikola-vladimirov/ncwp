@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Export file writer.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Export\Builder;
 
 defined( 'ABSPATH' ) || exit;
@@ -9,12 +15,14 @@ defined( 'ABSPATH' ) || exit;
  */
 class Writer {
 	/**
+	 * Writes the rows to a temporary file in the chosen format.
+	 *
 	 * @param array $config Normalized config.
 	 * @param array $rows   Raw values in column order.
 	 * @return string Path of the temporary file.
 	 */
 	public static function write( $config, $rows ) {
-		$kinds = Fields::kinds( $config );
+		$kinds  = Fields::kinds( $config );
 		$labels = wp_list_pluck( $config['columns'], 'label' );
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -38,22 +46,37 @@ class Writer {
 		return $path;
 	}
 
+	/**
+	 * MIME type of an export format.
+	 *
+	 * @param string $format csv, xlsx, json or xml.
+	 * @return string
+	 */
 	public static function mime( $format ) {
 		$types = array(
-			'csv' => 'text/csv',
+			'csv'  => 'text/csv',
 			'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 			'json' => 'application/json',
-			'xml' => 'application/xml',
+			'xml'  => 'application/xml',
 		);
 
 		return $types[ $format ] ?? 'application/octet-stream';
 	}
 
+	/**
+	 * Writes a CSV file.
+	 *
+	 * @param string $path   Temporary file path.
+	 * @param array  $config Normalized config.
+	 * @param array  $labels Column labels.
+	 * @param array  $kinds  Column kinds.
+	 * @param array  $rows   Raw values in column order.
+	 */
 	private static function csv( $path, $config, $labels, $kinds, $rows ) {
 		// phpcs:disable WordPress.WP.AlternativeFunctions -- streaming a temporary file.
-		$handle = fopen( $path, 'w' );
+		$handle    = fopen( $path, 'w' );
 		$separator = 'tab' === $config['separator'] ? "\t" : $config['separator'];
-		$convert = function ( $text ) use ( $config ) {
+		$convert   = function ( $text ) use ( $config ) {
 			return 'cp1251' === $config['encoding'] && function_exists( 'mb_convert_encoding' ) ? mb_convert_encoding( $text, 'Windows-1251', 'UTF-8' ) : $text;
 		};
 
@@ -99,10 +122,22 @@ class Writer {
 		return 0 === $match ? $text : "'" . $text;
 	}
 
+	/**
+	 * Writes a JSON file.
+	 *
+	 * @param string $path   Temporary file path.
+	 * @param array  $config Normalized config.
+	 * @param array  $labels Column labels.
+	 * @param array  $kinds  Column kinds.
+	 * @param array  $rows   Raw values in column order.
+	 */
 	private static function json( $path, $config, $labels, $kinds, $rows ) {
-		$keys = array_map( function ( $column ) {
-			return $column['field'];
-		}, $config['columns'] );
+		$keys = array_map(
+			function ( $column ) {
+				return $column['field'];
+			},
+			$config['columns']
+		);
 		$data = array();
 
 		foreach ( $rows as $row ) {
@@ -118,12 +153,28 @@ class Writer {
 		file_put_contents( $path, wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 	}
 
+	/**
+	 * A valid XML element name from a field name.
+	 *
+	 * @param string $text     Field name.
+	 * @param string $fallback Name used when none can be made.
+	 * @return string
+	 */
 	private static function xml_name( $text, $fallback ) {
 		$name = preg_replace( '/[^a-zA-Z0-9_\-]/', '_', remove_accents( (string) $text ) );
 
 		return $name && ! preg_match( '/^[0-9\-_]/', $name ) ? $name : $fallback;
 	}
 
+	/**
+	 * Writes an XML file.
+	 *
+	 * @param string $path   Temporary file path.
+	 * @param array  $config Normalized config.
+	 * @param array  $labels Column labels.
+	 * @param array  $kinds  Column kinds.
+	 * @param array  $rows   Raw values in column order.
+	 */
 	private static function xml( $path, $config, $labels, $kinds, $rows ) {
 		$writer = new \XMLWriter();
 		$writer->openUri( $path );
@@ -153,6 +204,12 @@ class Writer {
 		$writer->flush();
 	}
 
+	/**
+	 * Spreadsheet column letter of a zero-based index (0 is A).
+	 *
+	 * @param int $index Column index.
+	 * @return string
+	 */
 	private static function col_letter( $index ) {
 		$letter = '';
 
@@ -165,29 +222,35 @@ class Writer {
 
 	/**
 	 * A minimal Excel workbook: one sheet, text as inline strings, amounts and counts as numbers.
+	 *
+	 * @param string $path   Temporary file path.
+	 * @param array  $config Normalized config.
+	 * @param array  $labels Column labels.
+	 * @param array  $kinds  Column kinds.
+	 * @param array  $rows   Raw values in column order.
 	 */
 	private static function xlsx( $path, $config, $labels, $kinds, $rows ) {
-		$esc = function ( $text ) {
+		$esc   = function ( $text ) {
 			return htmlspecialchars( preg_replace( '/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', (string) $text ), ENT_XML1 | ENT_QUOTES, 'UTF-8' );
 		};
 		$sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
 			. '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
-		$r = 0;
-		$all = $config['header'] ? array_merge( array( $labels ), $rows ) : $rows;
+		$r     = 0;
+		$all   = $config['header'] ? array_merge( array( $labels ), $rows ) : $rows;
 
 		foreach ( $all as $line_index => $row ) {
-			$r++;
+			++$r;
 			$is_header = $config['header'] && 0 === $line_index;
-			$sheet .= '<row r="' . $r . '">';
+			$sheet    .= '<row r="' . $r . '">';
 
 			foreach ( array_values( $row ) as $i => $value ) {
-				$ref = self::col_letter( $i ) . $r;
+				$ref  = self::col_letter( $i ) . $r;
 				$kind = $kinds[ $i ] ?? 'text';
 
 				if ( ! $is_header && in_array( $kind, array( 'money', 'number' ), true ) && is_numeric( $value ) ) {
 					$sheet .= '<c r="' . $ref . '"' . ( 'money' === $kind ? ' s="1"' : '' ) . '><v>' . ( 0 + round( (float) $value, 4 ) ) . '</v></c>';
 				} else {
-					$text = $is_header ? $value : Builder::format( $value, $kind, $config );
+					$text   = $is_header ? $value : Builder::format( $value, $kind, $config );
 					$sheet .= '<c r="' . $ref . '" t="inlineStr"' . ( $is_header ? ' s="2"' : '' ) . '><is><t xml:space="preserve">' . $esc( $text ) . '</t></is></c>';
 				}
 			}

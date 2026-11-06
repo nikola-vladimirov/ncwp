@@ -1,4 +1,12 @@
 <?php
+/**
+ * Public courier price lists.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Pricing;
 
 defined( 'ABSPATH' ) || exit;
@@ -18,13 +26,16 @@ class Public_Price {
 
 	/**
 	 * Delivery type of a shipping method -> price list column.
+	 *
+	 * @param string $delivery_type Delivery type.
+	 * @return string
 	 */
 	public static function kind( $delivery_type ) {
 		$map = array(
-			'office' => 'office',
+			'office'  => 'office',
 			'automat' => 'locker',
-			'locker' => 'locker',
-			'apm' => 'locker',
+			'locker'  => 'locker',
+			'apm'     => 'locker',
 			'address' => 'address',
 		);
 
@@ -47,7 +58,7 @@ class Public_Price {
 		}
 
 		$weight = max( 0.0, (float) $weight );
-		$price = null;
+		$price  = null;
 
 		// The published Pigeon page stops at 30 kg: no rate above it, even from an older saved list with bands to 40 kg.
 		if ( 'pigeon' === $courier && $weight > self::PIGEON_MAX_KG ) {
@@ -73,8 +84,8 @@ class Public_Price {
 		}
 
 		if ( null === $price ) {
-			$last = end( $list['bands'] );
-			$base = $list['over']['base'][ $kind ] ?? $list['over']['base']['address'] ?? null;
+			$last   = end( $list['bands'] );
+			$base   = $list['over']['base'][ $kind ] ?? $list['over']['base']['address'] ?? null;
 			$per_kg = $list['over']['per_kg'][ $kind ] ?? $list['over']['per_kg']['address'] ?? 0;
 
 			// The published Pigeon page stops at 30 kg: no rate above its last band.
@@ -95,6 +106,7 @@ class Public_Price {
 			$price += max( $list['cod']['min'], $cod_amount * $list['cod']['percent'] / 100 );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		$price = round( (float) apply_filters( 'nashenski/public_price', $price, $courier, $kind, $weight, $cod_amount ), 2 );
 
 		// A shipping rate is never negative.
@@ -103,6 +115,9 @@ class Public_Price {
 
 	/**
 	 * Package weight in kg.
+	 *
+	 * @param array $package Shipping package.
+	 * @return float
 	 */
 	public static function package_weight( $package ) {
 		$weight = 0.0;
@@ -118,6 +133,9 @@ class Public_Price {
 
 	/**
 	 * Goods value of a package with tax, the amount collected on delivery.
+	 *
+	 * @param array $package Shipping package.
+	 * @return float
 	 */
 	public static function package_value( $package ) {
 		$value = 0.0;
@@ -147,16 +165,16 @@ class Public_Price {
 		}
 
 		$package = is_array( $method->package ?? null ) ? $method->package : array();
-		$cookie = is_array( $method->cookie_data ?? null ) ? $method->cookie_data : array();
-		$cod = isset( $cookie['payment'] ) && 'cod' === $cookie['payment'] ? self::package_value( $package ) : 0.0;
-		$gross = self::calculate( $courier, self::kind( $method->delivery_type ?? '' ), self::package_weight( $package ), $cod );
+		$cookie  = is_array( $method->cookie_data ?? null ) ? $method->cookie_data : array();
+		$cod     = isset( $cookie['payment'] ) && 'cod' === $cookie['payment'] ? self::package_value( $package ) : 0.0;
+		$gross   = self::calculate( $courier, self::kind( $method->delivery_type ?? '' ), self::package_weight( $package ), $cod );
 
 		if ( null === $gross ) {
 			return $request_data;
 		}
 
 		return array(
-			'price' => nashenski_tax_based_price( $gross ),
+			'price'        => nashenski_tax_based_price( $gross ),
 			'public_price' => true,
 		);
 	}

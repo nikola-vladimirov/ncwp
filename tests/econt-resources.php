@@ -1,9 +1,13 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- offline test script that declares stub classes, not a plugin class file.
 /**
  * Offline regressions: php -d memory_limit=64M tests/econt-resources.php
  *
  * @package Nashenski_Commerce
  */
+// phpcs:disable Universal.Namespaces.DisallowCurlyBraceSyntax, Universal.Namespaces.OneDeclarationPerFile, Universal.Namespaces.DisallowDeclarationWithoutName, Generic.Files.OneObjectStructurePerFile, Universal.Files.SeparateFunctionsFromOO, Generic.Classes.DuplicateClassName -- this offline test stubs WordPress and WooCommerce classes and functions in one file.
+// phpcs:disable WordPress.WP.GlobalVariablesOverride -- WordPress is not loaded here, so $m and $type are plain script variables.
+// phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter, Universal.NamingConventions.NoReservedKeywordParameterNames, WordPress.NamingConventions.ValidFunctionName -- the stubs keep the signatures of the WordPress and WooCommerce functions they replace.
+// phpcs:disable WordPress.PHP.DevelopmentFunctions, WordPress.Security.EscapeOutput, WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- test harness: it turns errors into exceptions, prints to the CLI and reads the L, W and H properties of Size.
 
 namespace Nashenski\Pricing {
 	/**

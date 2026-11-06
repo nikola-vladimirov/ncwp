@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName.InvalidClassFileName, Generic.Classes.DuplicateClassName, Universal.Files.SeparateFunctionsFromOO.Mixed -- standalone offline test: its stubs live in this file.
 /**
  * Offline test: "Free shipping over" and "Fixed price" never take a negative or non-numeric value.
  * Run: php tests/shipping-amounts.php
@@ -188,14 +188,14 @@ $checks = 0;
 function expect( $condition, $message ) {
 	++$GLOBALS['checks'];
 	if ( ! $condition ) {
-		fwrite( STDERR, "FAIL: $message\n" );
+		fwrite( STDERR, "FAIL: $message\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- CLI test writes its failure to standard error.
 		exit( 1 );
 	}
 }
 
 foreach ( array( 'Econt', 'Pigeon', 'Speedy' ) as $courier ) {
-	$class = 'Nashenski\\Shipping\\' . $courier . '\\Method';
-	$m     = ( new ReflectionClass( $class ) )->newInstanceWithoutConstructor();
+	$class  = 'Nashenski\\Shipping\\' . $courier . '\\Method';
+	$method = ( new ReflectionClass( $class ) )->newInstanceWithoutConstructor();
 
 	foreach ( array(
 		'-1'   => '',
@@ -205,16 +205,16 @@ foreach ( array( 'Econt', 'Pigeon', 'Speedy' ) as $courier ) {
 		'12.5' => '12.5',
 		' 7 '  => '7',
 	) as $posted => $saved ) {
-		expect( $saved === $m->validate_number_field( 'fixed_price', $posted ), "$courier saves '$posted' as '$saved'" );
+		expect( $saved === $method->validate_number_field( 'fixed_price', $posted ), "$courier saves '$posted' as '$saved'" );
 	}
 
 	foreach ( array( 'free_shipping_over', 'fixed_price' ) as $key ) {
-		$m->saved = array( $key => '-1' );
-		$m->init();
-		expect( empty( $m->$key ), "$courier ignores a stored negative $key" );
-		$m->saved = array( $key => '25' );
-		$m->init();
-		expect( '25' === $m->$key, "$courier keeps a good $key" );
+		$method->saved = array( $key => '-1' );
+		$method->init();
+		expect( empty( $method->$key ), "$courier ignores a stored negative $key" );
+		$method->saved = array( $key => '25' );
+		$method->init();
+		expect( '25' === $method->$key, "$courier keeps a good $key" );
 	}
 
 	// A fixed price of zero in any spelling means "not set", so the normal rate applies; a real price is kept.
@@ -224,17 +224,17 @@ foreach ( array( 'Econt', 'Pigeon', 'Speedy' ) as $courier ) {
 		''     => '',
 		'4.50' => '4.50',
 	) as $stored => $read ) {
-		$m->saved = array( 'fixed_price' => $stored );
-		$m->init();
-		expect( $read === $m->fixed_price, "$courier reads a stored fixed price '$stored' as '$read'" );
+		$method->saved = array( 'fixed_price' => $stored );
+		$method->init();
+		expect( $read === $method->fixed_price, "$courier reads a stored fixed price '$stored' as '$read'" );
 	}
 }
 
 // The REST API saves zone settings without the form's validators; the filter WooCommerce runs on every save cleans them.
 foreach ( array( 'Econt', 'Pigeon', 'Speedy' ) as $courier ) {
-	$class = 'Nashenski\\Shipping\\' . $courier . '\\Method';
-	$m     = new $class( 7 );
-	$hook  = 'woocommerce_shipping_' . $m->id . '_instance_settings_values';
+	$class  = 'Nashenski\\Shipping\\' . $courier . '\\Method';
+	$method = new $class( 7 );
+	$hook   = 'woocommerce_shipping_' . $method->id . '_instance_settings_values';
 	expect( ! empty( $GLOBALS['filters'][ $hook ] ), "$courier cleans its zone settings on every save" );
 	$settings = array(
 		'title'              => 'Econt',
@@ -242,7 +242,7 @@ foreach ( array( 'Econt', 'Pigeon', 'Speedy' ) as $courier ) {
 		'fixed_price'        => 'abc',
 	);
 	foreach ( $GLOBALS['filters'][ $hook ] as $callback ) {
-		$settings = call_user_func( $callback, $settings, $m );
+		$settings = call_user_func( $callback, $settings, $method );
 	}
 	expect( '' === $settings['free_shipping_over'] && '' === $settings['fixed_price'] && 'Econt' === $settings['title'], "$courier saves a REST -1 as empty and keeps the rest" );
 	$settings = \Nashenski\Pricing\Price_Lists::clean_amounts(
@@ -254,12 +254,12 @@ foreach ( array( 'Econt', 'Pigeon', 'Speedy' ) as $courier ) {
 	expect( '30' === $settings['free_shipping_over'] && '0' === $settings['fixed_price'], "$courier keeps good amounts" );
 }
 
-$m                         = ( new ReflectionClass( 'Nashenski\Shipping\BoxNow\Method' ) )->newInstanceWithoutConstructor();
+$method                    = ( new ReflectionClass( 'Nashenski\Shipping\BoxNow\Method' ) )->newInstanceWithoutConstructor();
 $GLOBALS['boxnow_options'] = array( 'free_shipping_over' => '-1' );
-$m->init();
-expect( empty( $m->free_shipping_over ), 'BOX NOW ignores a stored negative free shipping limit' );
+$method->init();
+expect( empty( $method->free_shipping_over ), 'BOX NOW ignores a stored negative free shipping limit' );
 $GLOBALS['boxnow_options'] = array( 'free_shipping_over' => '80' );
-$m->init();
-expect( '80' === $m->free_shipping_over, 'BOX NOW keeps a good free shipping limit' );
+$method->init();
+expect( '80' === $method->free_shipping_over, 'BOX NOW keeps a good free shipping limit' );
 
-echo 'PASS: ' . $checks . " shipping amount assertions\n";
+echo 'PASS: ' . (int) $checks . " shipping amount assertions\n";

@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Pigeon Express parcels for address and office delivery.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Shipping\Pigeon;
 
 use Nashenski\Shipping\Packer\Carton_Packer;
@@ -9,18 +15,32 @@ use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Packs a cart into Pigeon Express parcels for address and office delivery.
+ */
 class PackageBoxes {
-	const MAX_LENGTH   = 200;
-	const MAX_WIDTH    = 200;
-	const MAX_HEIGHT   = 200;
-	const MAX_WEIGHT   = 30;
+	const MAX_LENGTH          = 200;
+	const MAX_WIDTH           = 200;
+	const MAX_HEIGHT          = 200;
+	const MAX_WEIGHT          = 30;
 	const MAX_SHIPMENT_WEIGHT = 400;
-	const DEFAULT_SIZE = 20;
+	const DEFAULT_SIZE        = 20;
 
+	/**
+	 * Hooks the label filter.
+	 */
 	public function __construct() {
 		add_filter( 'nashenski/pigeon/calculate_label', array( __CLASS__, 'calculate_label' ), 21, 2 );
 	}
 
+	/**
+	 * Sets the label packages from the packed parcels.
+	 *
+	 * @param array  $label  Label data.
+	 * @param object $method Shipping method.
+	 * @return array
+	 * @throws Packing_Limit_Exceeded When the cart is over the packing limits.
+	 */
 	public static function calculate_label( $label, $method ) {
 		if ( ! self::should_handle_method( $method ) ) {
 			return $label;
@@ -45,11 +65,23 @@ class PackageBoxes {
 		return $label;
 	}
 
+	/**
+	 * Whether the package weight fits one shipment.
+	 *
+	 * @param array       $package Shipping package.
+	 * @param object|null $method  Shipping method.
+	 * @return bool
+	 */
 	public static function package_weight_fits_shipment( $package, $method = null ) {
 		return self::get_package_weight( $package, $method ) <= self::MAX_SHIPMENT_WEIGHT;
 	}
 
-	/** Check the full expansion before allocating any unit objects. */
+	/**
+	 * Check the full expansion before allocating any unit objects.
+	 *
+	 * @param array               $package Shipping package.
+	 * @param Packing_Budget|null $budget  Work budget.
+	 */
 	public static function validate_package( $package, ?Packing_Budget $budget = null ): void {
 		$budget = $budget ?? new Packing_Budget();
 		$budget->spend( count( $package['contents'] ?? array() ) );
@@ -66,10 +98,24 @@ class PackageBoxes {
 		}
 	}
 
+	/**
+	 * Whether the method delivers to an address or office and has a package.
+	 *
+	 * @param object $method Shipping method.
+	 * @return bool
+	 */
 	private static function should_handle_method( $method ) {
-		return isset( $method->delivery_type ) && $method->delivery_type !== 'locker' && ! empty( $method->package );
+		return isset( $method->delivery_type ) && 'locker' !== $method->delivery_type && ! empty( $method->package );
 	}
 
+	/**
+	 * Groups the products into parcels, or splits by weight when they cannot be packed.
+	 *
+	 * @param array          $package Shipping package.
+	 * @param object         $method  Shipping method.
+	 * @param Packing_Budget $budget  Work budget.
+	 * @return array
+	 */
 	private static function build_packages( $package, $method, Packing_Budget $budget ) {
 		$items = self::get_product_items( $package, $budget );
 
@@ -127,6 +173,14 @@ class PackageBoxes {
 		}
 	}
 
+	/**
+	 * One item per product unit, with its size and weight.
+	 *
+	 * @param array               $package Shipping package.
+	 * @param Packing_Budget|null $budget  Work budget.
+	 * @return array
+	 * @throws Packing_Limit_Exceeded When a weight is not finite.
+	 */
 	private static function get_product_items( $package, ?Packing_Budget $budget = null ) {
 		$budget = $budget ?? new Packing_Budget();
 		self::validate_package( $package, $budget );
@@ -172,6 +226,15 @@ class PackageBoxes {
 		return $items;
 	}
 
+	/**
+	 * Whether the products fit one parcel.
+	 *
+	 * @param Carton_Packer $packer   Packer.
+	 * @param array         $products Products.
+	 * @param float         $weight   Weight in kg.
+	 * @return bool
+	 * @throws Packing_Limit_Exceeded When the search is over its limits.
+	 */
 	private static function group_fits( $packer, $products, $weight ) {
 		if ( $weight > self::MAX_WEIGHT ) {
 			return false;
@@ -188,6 +251,13 @@ class PackageBoxes {
 		return true;
 	}
 
+	/**
+	 * Label packages from the product groups.
+	 *
+	 * @param Carton_Packer $packer Packer.
+	 * @param array         $groups Product groups.
+	 * @return array
+	 */
 	private static function groups_to_packages( $packer, $groups ) {
 		$packages = array();
 		Packing_Budget::check_parcels( count( $groups ) );
@@ -197,15 +267,20 @@ class PackageBoxes {
 
 			$packages[] = array(
 				'weight' => self::normalize_weight( $group['weight'] ),
-				'width'  => wc_get_dimension( $result->W, 'cm', 'mm' ),
-				'length' => wc_get_dimension( $result->L, 'cm', 'mm' ),
-				'height' => wc_get_dimension( $result->H, 'cm', 'mm' ),
+				'width'  => wc_get_dimension( $result->W, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
+				'length' => wc_get_dimension( $result->L, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
+				'height' => wc_get_dimension( $result->H, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
 			);
 		}
 
 		return $packages;
 	}
 
+	/**
+	 * Largest parcel in mm.
+	 *
+	 * @return array
+	 */
 	private static function get_max_carton() {
 		return array(
 			'length' => wc_get_dimension( self::MAX_LENGTH, 'mm', 'cm' ),
@@ -214,6 +289,13 @@ class PackageBoxes {
 		);
 	}
 
+	/**
+	 * Largest-size parcels for a weight, at most the parcel weight each.
+	 *
+	 * @param float $weight Weight in kg.
+	 * @return array
+	 * @throws Packing_Limit_Exceeded When the weight is not finite.
+	 */
 	private static function split_weight_into_packages( $weight ) {
 		if ( ! is_numeric( $weight ) || ! is_finite( (float) $weight ) ) {
 			throw new Packing_Limit_Exceeded( 'Shipping weight must be finite.' );
@@ -232,6 +314,12 @@ class PackageBoxes {
 		return $packages;
 	}
 
+	/**
+	 * A largest-size parcel.
+	 *
+	 * @param float $weight Weight in kg.
+	 * @return array
+	 */
 	private static function max_size_package( $weight ) {
 		return array(
 			'weight' => self::normalize_weight( $weight ),
@@ -241,6 +329,14 @@ class PackageBoxes {
 		);
 	}
 
+	/**
+	 * Package weight in kg.
+	 *
+	 * @param array  $package Shipping package.
+	 * @param object $method  Shipping method.
+	 * @return float
+	 * @throws Packing_Limit_Exceeded When the weight is not finite.
+	 */
 	private static function get_package_weight( $package, $method ) {
 		$weight = 0;
 
@@ -258,7 +354,7 @@ class PackageBoxes {
 		}
 
 		if ( ! $weight ) {
-			$weight = apply_filters( 'nashenski/pigeon/label/weight', 1, $package, $method );
+			$weight = apply_filters( 'nashenski/pigeon/label/weight', 1, $package, $method ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 		}
 
 		if ( ! is_numeric( $weight ) || ! is_finite( (float) $weight ) ) {
@@ -267,6 +363,14 @@ class PackageBoxes {
 		return (float) $weight;
 	}
 
+	/**
+	 * Item quantity, checked against the budget.
+	 *
+	 * @param array               $item   Cart item.
+	 * @param Packing_Budget|null $budget Work budget.
+	 * @return int
+	 * @throws Packing_Limit_Exceeded When the quantity is not finite.
+	 */
 	private static function get_quantity( $item, ?Packing_Budget $budget = null ): int {
 		$quantity = $item['quantity'] ?? 1;
 		if ( is_float( $quantity ) && ! is_finite( $quantity ) ) {
@@ -284,6 +388,12 @@ class PackageBoxes {
 		return absint( $quantity );
 	}
 
+	/**
+	 * Weight rounded to grams, at least 100 g when above zero.
+	 *
+	 * @param float $weight Weight in kg.
+	 * @return float
+	 */
 	private static function normalize_weight( $weight ) {
 		$weight = (float) $weight;
 

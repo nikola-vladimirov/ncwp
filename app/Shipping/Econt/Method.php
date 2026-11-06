@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
 /**
  * Method.
  *
@@ -148,14 +148,14 @@ class Method extends \WC_Shipping_Method {
 		$this->init_form_fields(); // This is part of the settings API. Override the method to add your own settings.
 		$this->init_settings(); // This is part of the settings API. Loads settings you previously init.
 
-		$this->title              = $this->get_option( 'title' );
-		$this->delivery_type      = $this->get_option( 'delivery_type' );
-		$this->free_shipping_over = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
+		$this->title                    = $this->get_option( 'title' );
+		$this->delivery_type            = $this->get_option( 'delivery_type' );
+		$this->free_shipping_over       = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
 		$this->free_shipping_by_country = $this->get_option( 'free_shipping_by_country' );
-		$this->fixed_price        = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
-		$this->test               = $this->get_option( 'test' );
-		$this->sms                = $this->get_option( 'sms' );
-		$this->tax_status         = ( wc_tax_enabled() ) ? 'taxable' : 'none';
+		$this->fixed_price              = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
+		$this->test                     = $this->get_option( 'test' );
+		$this->sms                      = $this->get_option( 'sms' );
+		$this->tax_status               = ( wc_tax_enabled() ) ? 'taxable' : 'none';
 
 		// Save settings in admin if you have any defined.
 		add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -191,11 +191,11 @@ class Method extends \WC_Shipping_Method {
 		$this->packing_budget()->spend( count( $package['contents'] ?? array() ) );
 		$disable_aps = ( 'automat' === $this->delivery_type && ! APSBoxes::package_fits_largest_automat( $this->package, $this->packing_budget() ) );
 
-		if ( apply_filters( 'nashenski/econt/rate/disable_aps', $disable_aps, $this ) ) {
+		if ( apply_filters( 'nashenski/econt/rate/disable_aps', $disable_aps, $this ) ) { // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 			return;
 		}
 
-		do_action( 'nashenski/econt/rate/before_calculate', $this );
+		do_action( 'nashenski/econt/rate/before_calculate', $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 
 		$rate = array(
 			'label'     => $this->title,
@@ -206,7 +206,7 @@ class Method extends \WC_Shipping_Method {
 		$rate['meta_data']['delivery_type'] = $this->delivery_type;
 		$rate['meta_data']['validated']     = false;
 		$chosen_shippings                   = WC()->session->get( 'chosen_shipping_methods' );
-		$country                            = apply_filters( 'nashenski/econt/country_for_validation', $package['destination']['country'], $this );
+		$country                            = apply_filters( 'nashenski/econt/country_for_validation', $package['destination']['country'], $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 
 		if ( isset( $this->cookie_data['type'] ) &&
 			$this->cookie_data['type'] === $this->delivery_type &&
@@ -255,7 +255,7 @@ class Method extends \WC_Shipping_Method {
 			unset( $rate['taxes'] );
 		}
 
-		$rate = apply_filters( 'nashenski/econt/rate', $rate, $this );
+		$rate = apply_filters( 'nashenski/econt/rate', $rate, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 
 		// Register the rate.
 		$this->packing_budget()->spend( 0 );
@@ -336,14 +336,14 @@ class Method extends \WC_Shipping_Method {
 	 */
 	public function init_form_fields() {
 		$this->instance_form_fields = array(
-			'title'              => array(
+			'title'                    => array(
 				'title'       => __( 'Title', 'nashenski-commerce' ),
 				'type'        => 'text',
 				'description' => __( 'This controls the title which the user sees during checkout.', 'nashenski-commerce' ),
 				'default'     => __( 'Econt', 'nashenski-commerce' ),
 				'desc_tip'    => true,
 			),
-			'delivery_type'      => array(
+			'delivery_type'            => array(
 				'title'   => __( 'Delivery Type', 'nashenski-commerce' ),
 				'type'    => 'select',
 				'css'     => 'width: 400px;',
@@ -354,14 +354,14 @@ class Method extends \WC_Shipping_Method {
 					'address' => __( 'Address', 'nashenski-commerce' ),
 				),
 			),
-			'test'               => array(
+			'test'                     => array(
 				'title'   => __( 'Review and test', 'nashenski-commerce' ),
 				'type'    => 'select',
 				'css'     => 'width: 400px;',
 				'default' => 'no',
 				'options' => nashenski_get_shipping_tests_options(),
 			),
-			'international'      => array(
+			'international'            => array(
 				'title'       => __( 'Ship abroad', 'nashenski-commerce' ),
 				'type'        => 'select',
 				'css'         => 'width: 400px;',
@@ -373,7 +373,7 @@ class Method extends \WC_Shipping_Method {
 				'description' => __( 'Prices for these countries come only from Econt, not from the public price list.', 'nashenski-commerce' ),
 				'desc_tip'    => true,
 			),
-			'sms'                => array(
+			'sms'                      => array(
 				'title'       => __( 'SMS notification', 'nashenski-commerce' ),
 				'type'        => 'select',
 				'css'         => 'width: 400px;',
@@ -384,7 +384,7 @@ class Method extends \WC_Shipping_Method {
 				),
 				'description' => __( 'Send customer notification for delivery.', 'nashenski-commerce' ),
 			),
-			'free_shipping_over' => array(
+			'free_shipping_over'       => array(
 				'title'       => __( 'Free shipping over', 'nashenski-commerce' ),
 				'type'        => 'number',
 				'placeholder' => '0',
@@ -400,7 +400,7 @@ class Method extends \WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
-			'fixed_price'        => array(
+			'fixed_price'              => array(
 				'title'       => __( 'Maximum price payed by the client', 'nashenski-commerce' ),
 				'type'        => 'number',
 				'placeholder' => '0',
@@ -419,7 +419,7 @@ class Method extends \WC_Shipping_Method {
 	 */
 	public function is_available( $package ) {
 		$countries = 'yes' === $this->get_option( 'international', 'no' ) ? array( 'BG', 'RO', 'GR' ) : array( 'BG' );
-		return in_array( $package['destination']['country'] ?? '', apply_filters( 'nashenski/econt/available_countries', $countries ), true );
+		return in_array( $package['destination']['country'] ?? '', apply_filters( 'nashenski/econt/available_countries', $countries ), true ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 	}
 
 	/**
@@ -467,7 +467,7 @@ class Method extends \WC_Shipping_Method {
 
 		$label        = $this->generate_label();
 		$request_body = apply_filters(
-			'nashenski/econt/calculate_label',
+			'nashenski/econt/calculate_label', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 			array(
 				'label' => $label,
 				'mode'  => 'calculate',
@@ -801,7 +801,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		if ( ! $cart['weight'] ) {
-			$cart['weight'] = apply_filters( 'nashenski/econt/label/weight', 1, $this->package, $this );
+			$cart['weight'] = apply_filters( 'nashenski/econt/label/weight', 1, $this->package, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 		}
 
 		if ( ! is_numeric( $cart['weight'] ) || ! is_finite( (float) $cart['weight'] ) ) {
@@ -822,9 +822,9 @@ class Method extends \WC_Shipping_Method {
 				$packer = new Carton_Packer( $this->packing_budget() );
 				$result = $packer->find_best_carton( $sizes );
 
-				$pack['width']  = wc_get_dimension( $result->W, 'cm', 'mm' );
-				$pack['height'] = wc_get_dimension( $result->H, 'cm', 'mm' );
-				$pack['length'] = wc_get_dimension( $result->L, 'cm', 'mm' );
+				$pack['width']  = wc_get_dimension( $result->W, 'cm', 'mm' ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
+				$pack['height'] = wc_get_dimension( $result->H, 'cm', 'mm' ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
+				$pack['length'] = wc_get_dimension( $result->L, 'cm', 'mm' ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- property of the Carton_Packer result, defined outside this file.
 			}
 
 			$cart['packCount'] = 1;
@@ -1072,7 +1072,7 @@ class Method extends \WC_Shipping_Method {
 						$overrides                          = $label[ Service_Policy::OVERRIDES ] ?? array();
 						$label['label']                     = Service_Policy::for_order( $label['label'], $order, nashenski()->container(), $shipping, $overrides );
 						$before_filter                      = $label['label'];
-						$label                              = apply_filters( 'nashenski/econt/label_before_save', $label, $order );
+						$label                              = apply_filters( 'nashenski/econt/label_before_save', $label, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 						$label[ Service_Policy::OVERRIDES ] = Service_Policy::capture_overrides( $before_filter, $label['label'], $overrides );
 						$order->update_meta_data( 'nashenski_econt_label', $label );
 						WC()->session->__unset( 'nashenski-econt-label' );
@@ -1101,7 +1101,7 @@ class Method extends \WC_Shipping_Method {
 			$email_ids_to_send[] = 'customer_on_hold_order';
 		}
 
-		$email_ids_to_send = apply_filters( 'nashenski/econt/emails_to_send_label_number', $email_ids_to_send );
+		$email_ids_to_send = apply_filters( 'nashenski/econt/emails_to_send_label_number', $email_ids_to_send ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 
 		if ( ! in_array( $email->id, $email_ids_to_send, true ) ) {
 			return;
@@ -1127,7 +1127,7 @@ class Method extends \WC_Shipping_Method {
 			)
 		);
 
-		$track_number_text = apply_filters( 'nashenski/econt/track_number_text_in_email', $track_number_text, $url, $order );
+		$track_number_text = apply_filters( 'nashenski/econt/track_number_text_in_email', $track_number_text, $url, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 
 		echo wp_kses_post( wpautop( $track_number_text ) );
 	}

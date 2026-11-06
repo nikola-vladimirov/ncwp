@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
 /**
  * ImpossibleVatPrice.
  *
@@ -45,7 +45,7 @@ class ImpossibleVatPrice {
 			'edit.php?post_type=product',
 			esc_html__( 'Mathematically impossible prices', 'nashenski-commerce' ),
 			esc_html__( 'Mathematically impossible prices', 'nashenski-commerce' ),
-			'manage_woocommerce',
+			'manage_woocommerce', // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			self::PAGE_SLUG,
 			array( __CLASS__, 'render_admin_page' )
 		);
@@ -118,7 +118,7 @@ class ImpossibleVatPrice {
 	 * Render admin page.
 	 */
 	public static function render_admin_page() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			wp_die( esc_html__( 'You do not have permission to access this page.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
@@ -186,7 +186,7 @@ class ImpossibleVatPrice {
 	 * Ajax scan batch.
 	 */
 	public static function ajax_scan_batch() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			wp_send_json_error(
 				array(
 					'message' => esc_html__( 'You do not have permission.', 'nashenski-commerce' ),
@@ -252,7 +252,7 @@ class ImpossibleVatPrice {
 	 * Ajax fix price.
 	 */
 	public static function ajax_fix_price() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			wp_send_json_error(
 				array(
 					'message' => esc_html__( 'You do not have permission.', 'nashenski-commerce' ),

@@ -1,4 +1,12 @@
 <?php
+/**
+ * Abandoned cart reminder email.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Abandoned_Carts;
 
 defined( 'ABSPATH' ) || exit;
@@ -12,12 +20,23 @@ defined( 'ABSPATH' ) || exit;
  * @var array       $data Values for the placeholders (name, items, cart_total, coupon, resume_link).
  */
 class Email extends \WC_Email {
-	/** @var object|null */
+	/**
+	 * The cart row being reminded.
+	 *
+	 * @var object|null
+	 */
 	public $cart = null;
 
-	/** @var array */
+	/**
+	 * Values for the placeholders.
+	 *
+	 * @var array
+	 */
 	public $data = array();
 
+	/**
+	 * Set up the email.
+	 */
 	public function __construct() {
 		$this->id             = 'nashenski_abandoned_cart';
 		$this->customer_email = true;
@@ -28,28 +47,46 @@ class Email extends \WC_Email {
 		$this->template_plain = 'emails/plain/nashenski-abandoned-cart.php';
 		$this->template_base  = nashenski()->plugin_dir_path() . 'templates/';
 
-		$this->placeholders = array_merge( array(
-			'{name}'             => '',
-			'{items}'            => '',
-			'{cart_total}'       => '',
-			'{coupon}'           => '',
-			'{coupon_line}'      => '',
-			'{resume_link}'      => '',
-			'{unsubscribe_link}' => '',
-		), (array) $this->placeholders );
+		$this->placeholders = array_merge(
+			array(
+				'{name}'             => '',
+				'{items}'            => '',
+				'{cart_total}'       => '',
+				'{coupon}'           => '',
+				'{coupon_line}'      => '',
+				'{resume_link}'      => '',
+				'{unsubscribe_link}' => '',
+			),
+			(array) $this->placeholders
+		);
 
 		parent::__construct();
 	}
 
+	/**
+	 * Default subject.
+	 *
+	 * @return string
+	 */
 	public function get_default_subject() {
 		/* translators: %s: site name (the {site_title} placeholder) */
 		return __( 'You left items in your cart at {site_title}', 'nashenski-commerce' );
 	}
 
+	/**
+	 * Default heading.
+	 *
+	 * @return string
+	 */
 	public function get_default_heading() {
 		return __( 'You left something in your cart', 'nashenski-commerce' );
 	}
 
+	/**
+	 * Default body.
+	 *
+	 * @return string
+	 */
 	public function get_default_message() {
 		return __( "Hello {name},\n\nYou left these items in your cart:\n\n{items}\n\nTotal: {cart_total}\n\n{coupon_line}\n\n<a href=\"{resume_link}\">Go back to your cart</a>\n\nDo not want these emails? <a href=\"{unsubscribe_link}\">Unsubscribe here</a>", 'nashenski-commerce' );
 	}
@@ -70,6 +107,11 @@ class Email extends \WC_Email {
 		);
 	}
 
+	/**
+	 * The body with the placeholders filled.
+	 *
+	 * @return string
+	 */
 	public function get_message() {
 		return $this->format_string( (string) $this->get_option( 'message', $this->get_default_message() ) );
 	}
@@ -90,7 +132,7 @@ class Email extends \WC_Email {
 		$this->recipient = isset( $row->email ) ? $row->email : '';
 
 		foreach ( array( '{name}', '{items}', '{cart_total}', '{coupon}', '{coupon_line}', '{resume_link}', '{unsubscribe_link}' ) as $key ) {
-			$name = trim( $key, '{}' );
+			$name                       = trim( $key, '{}' );
 			$this->placeholders[ $key ] = isset( $this->data[ $name ] ) ? $this->data[ $name ] : '';
 		}
 
@@ -105,26 +147,57 @@ class Email extends \WC_Email {
 		return (bool) $sent;
 	}
 
+	/**
+	 * HTML content.
+	 *
+	 * @return string
+	 */
 	public function get_content_html() {
-		return wc_get_template_html( $this->template_html, array_merge( $this->template_args(), array(
-			'email_heading'      => $this->get_heading(),
-			'additional_content' => $this->get_additional_content(),
-			'sent_to_admin'      => false,
-			'plain_text'         => false,
-			'email'              => $this,
-		) ), '', $this->template_base );
+		return wc_get_template_html(
+			$this->template_html,
+			array_merge(
+				$this->template_args(),
+				array(
+					'email_heading'      => $this->get_heading(),
+					'additional_content' => $this->get_additional_content(),
+					'sent_to_admin'      => false,
+					'plain_text'         => false,
+					'email'              => $this,
+				)
+			),
+			'',
+			$this->template_base
+		);
 	}
 
+	/**
+	 * Plain text content.
+	 *
+	 * @return string
+	 */
 	public function get_content_plain() {
-		return wc_get_template_html( $this->template_plain, array_merge( $this->template_args(), array(
-			'email_heading'      => $this->get_heading(),
-			'additional_content' => $this->get_additional_content(),
-			'sent_to_admin'      => false,
-			'plain_text'         => true,
-			'email'              => $this,
-		) ), '', $this->template_base );
+		return wc_get_template_html(
+			$this->template_plain,
+			array_merge(
+				$this->template_args(),
+				array(
+					'email_heading'      => $this->get_heading(),
+					'additional_content' => $this->get_additional_content(),
+					'sent_to_admin'      => false,
+					'plain_text'         => true,
+					'email'              => $this,
+				)
+			),
+			'',
+			$this->template_base
+		);
 	}
 
+	/**
+	 * Template variables shared by both formats.
+	 *
+	 * @return array
+	 */
 	private function template_args() {
 		return array(
 			'message' => $this->get_message(),

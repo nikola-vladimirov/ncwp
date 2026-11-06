@@ -5,6 +5,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName, Universal.Namespaces, Universal.Files.SeparateFunctionsFromOO, Generic.Files.OneObjectStructurePerFile, WordPress.NamingConventions.ValidFunctionName, WordPress.Security.EscapeOutput, WordPress.WP.GlobalVariablesOverride, WordPress.PHP.DevelopmentFunctions, WordPress.PHP.DiscouragedPHPFunctions, Generic.CodeAnalysis.UnusedFunctionParameter -- offline test script: it stubs WordPress in one file, keeps WordPress's own names and signatures, and prints to a terminal.
+
 namespace Nashenski\Front_End\Checkout {
 	/**
 	 * Pickers.
@@ -151,11 +153,11 @@ namespace {
 	 * Get option.
 	 *
 	 * @param mixed  $key Key.
-	 * @param string $default Default.
+	 * @param string $fallback Default.
 	 * @return string Result.
 	 */
-	function get_option( $key, $default = '' ) {
-		return 'woocommerce_dimension_unit' === $key ? 'cm' : $default; }
+	function get_option( $key, $fallback = '' ) {
+		return 'woocommerce_dimension_unit' === $key ? 'cm' : $fallback; }
 	/**
 	 * Wc get weight.
 	 *
@@ -228,11 +230,11 @@ namespace {
 	 * Nashenski label request.
 	 *
 	 * @param mixed  $key Key.
-	 * @param string $default Default.
+	 * @param string $fallback Default.
 	 * @return mixed Result.
 	 */
-	function nashenski_label_request( $key, $default = '' ) {
-		return $GLOBALS['label_request'][ $key ] ?? $default; }
+	function nashenski_label_request( $key, $fallback = '' ) {
+		return $GLOBALS['label_request'][ $key ] ?? $fallback; }
 	/**
 	 * Wc get order.
 	 *
@@ -290,16 +292,16 @@ namespace {
 	/**
 	 * Invoke.
 	 *
-	 * @param mixed   $class Class.
+	 * @param mixed   $target Class or object.
 	 * @param mixed   $method Method.
 	 * @param mixed[] ...$args Args.
 	 * @return mixed Result.
 	 */
-	function invoke( $class, $method, ...$args ) {
-		$r = new ReflectionMethod( $class, $method );
+	function invoke( $target, $method, ...$args ) {
+		$r = new ReflectionMethod( $target, $method );
 		if ( PHP_VERSION_ID < 80100 ) {
 			$r->setAccessible( true ); }
-		return $r->invoke( is_object( $class ) ? $class : null, ...$args );
+		return $r->invoke( is_object( $target ) ? $target : null, ...$args );
 	}
 	/**
 	 * Resource rejected.

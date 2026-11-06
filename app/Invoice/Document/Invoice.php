@@ -1,32 +1,59 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Sale invoice document.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Invoice\Document;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The sale invoice of an order, original and copy.
+ */
 class Invoice extends BaseDocument {
+	/**
+	 * Document title.
+	 *
+	 * @var string
+	 */
 	public $title;
 
-	function __construct( $order ) {
+	/**
+	 * Sets up the invoice.
+	 *
+	 * @param \WC_Order $order The order.
+	 */
+	public function __construct( $order ) {
 		parent::__construct( $order );
 
-		$this->set_title( apply_filters( 'nashenski/admin/invoice/invoice_title', __( 'Sale Invoice - Original', 'nashenski-commerce' ) ) );
+		$this->set_title( apply_filters( 'nashenski/admin/invoice/invoice_title', __( 'Sale Invoice - Original', 'nashenski-commerce' ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 		$this->meta = 'nashenski_invoice_document';
 
 		// Separate invoice numbering, or a number typed in when the invoice was made by hand.
 		if ( nashenski_get_option( 'invoice', 'next_invoice_separate_number' ) || $this->woo_order->get_meta( 'nashenski_order_invoice_number' ) ) {
-			$this->document_number_meta = 'nashenski_order_invoice_number';
+			$this->document_number_meta   = 'nashenski_order_invoice_number';
 			$this->document_number_option = 'next_invoice_separate_number';
 		}
 	}
 
+	/**
+	 * Builds the PDF with the original and the copy.
+	 */
 	protected function build_file() {
-		$this->generate_original_and_copy( apply_filters( 'nashenski/admin/invoice/invoice_title_copy', __( 'Sale Invoice - Copy', 'nashenski-commerce' ) ) );
+		$this->generate_original_and_copy( apply_filters( 'nashenski/admin/invoice/invoice_title_copy', __( 'Sale Invoice - Copy', 'nashenski-commerce' ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 	}
 
+	/**
+	 * Invoice date, saved on first use.
+	 *
+	 * @return string Date as d-m-Y.
+	 */
 	public function get_document_date() {
 		$date = $this->woo_order->get_meta( 'nashenski_invoice_document_date' );
 
-		if ( !$date ) {
+		if ( ! $date ) {
 			$date = current_time( 'd-m-Y' );
 			$this->woo_order->update_meta_data( 'nashenski_invoice_document_date', $date );
 		}
@@ -34,13 +61,19 @@ class Invoice extends BaseDocument {
 		return $date;
 	}
 
+	/**
+	 * Due date: the invoice date plus the due days setting.
+	 *
+	 * @return string Date as d-m-Y.
+	 */
 	public function get_document_due_date() {
-		$date = $this->get_document_date();
+		$date     = $this->get_document_date();
+		$due_days = nashenski_get_option( 'invoice', 'due_days' );
 
-		if ( $due_days = nashenski_get_option( 'invoice', 'due_days' ) ) {
-			$date = date_i18n( 'd-m-Y', strtotime( $date . " + " . $due_days . " days" ) );
+		if ( $due_days ) {
+			$date = date_i18n( 'd-m-Y', strtotime( $date . ' + ' . $due_days . ' days' ) );
 		}
-		
+
 		return $date;
 	}
 }

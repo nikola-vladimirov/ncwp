@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
 /**
  * Method.
  *
@@ -164,13 +164,13 @@ class Method extends \WC_Shipping_Method {
 		$this->init_form_fields(); // This is part of the settings API. Override the method to add your own settings.
 		$this->init_settings(); // This is part of the settings API. Loads settings you previously init.
 
-		$this->title              = $this->get_option( 'title' );
-		$this->delivery_type      = $this->get_option( 'delivery_type' );
-		$this->free_shipping_over = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
+		$this->title                    = $this->get_option( 'title' );
+		$this->delivery_type            = $this->get_option( 'delivery_type' );
+		$this->free_shipping_over       = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
 		$this->free_shipping_by_country = $this->get_option( 'free_shipping_by_country' );
-		$this->fixed_price        = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
-		$this->test               = $this->get_option( 'test' );
-		$this->tax_status         = ( wc_tax_enabled() ) ? 'taxable' : 'none';
+		$this->fixed_price              = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
+		$this->test                     = $this->get_option( 'test' );
+		$this->tax_status               = ( wc_tax_enabled() ) ? 'taxable' : 'none';
 
 		// Save settings in admin if you have any defined.
 		add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -210,7 +210,7 @@ class Method extends \WC_Shipping_Method {
 
 		$disable_aps = ( 'automat' === $this->delivery_type && ! APSPackage::package_fits_largest_box( $this->package, self::$aps_box_sizes, self::VOLUMETRIC_WEIGHT_DIVISOR, $this->packing_budget() ) );
 
-		if ( apply_filters( 'nashenski/speedy/rate/disable_aps', $disable_aps, $this ) ) {
+		if ( apply_filters( 'nashenski/speedy/rate/disable_aps', $disable_aps, $this ) ) { // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 			return;
 		}
 
@@ -218,7 +218,7 @@ class Method extends \WC_Shipping_Method {
 			return;
 		}
 
-		do_action( 'nashenski/speedy/rate/before_calculate', $this );
+		do_action( 'nashenski/speedy/rate/before_calculate', $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		$fixed_price = $this->applicable_fixed_price();
 
@@ -235,7 +235,7 @@ class Method extends \WC_Shipping_Method {
 		$rate['meta_data']['validated']     = false;
 		$payment_by_data                    = $this->generate_payment_by_data();
 		$chosen_shippings                   = WC()->session->get( 'chosen_shipping_methods' );
-		$country                            = apply_filters( 'nashenski/speedy/country_for_validation', $package['destination']['country'], $this );
+		$country                            = apply_filters( 'nashenski/speedy/country_for_validation', $package['destination']['country'], $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		if ( isset( $this->cookie_data['type'] ) &&
 			$this->cookie_data['type'] === $this->delivery_type &&
@@ -282,7 +282,7 @@ class Method extends \WC_Shipping_Method {
 
 		// The fixed price only once the customer has chosen a delivery point (request_data is set then).
 		if ( ! $this->free_shipping && ! empty( $fixed_price ) && isset( $rate['request_data'] ) ) {
-			$tax_rate     = apply_filters( 'nashenski/shipping/fixed_price_tax_rate', 20, $country );
+			$tax_rate     = apply_filters( 'nashenski/shipping/fixed_price_tax_rate', 20, $country ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 			$rate['cost'] = nashenski_tax_based_price( $fixed_price, $tax_rate );
 
 			if ( wc_tax_enabled() ) {
@@ -291,7 +291,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		$rate['meta_data']['cookie_data'] = $this->cookie_data;
-		$rate                             = apply_filters( 'nashenski/speedy/rate', $rate, $this );
+		$rate                             = apply_filters( 'nashenski/speedy/rate', $rate, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		// Register the rate.
 		$this->packing_budget()->spend( 0 );
@@ -329,14 +329,14 @@ class Method extends \WC_Shipping_Method {
 	 */
 	public function init_form_fields() {
 		$this->instance_form_fields = array(
-			'title'              => array(
+			'title'                    => array(
 				'title'       => __( 'Title', 'nashenski-commerce' ),
 				'type'        => 'text',
 				'description' => __( 'This controls the title which the user sees during checkout.', 'nashenski-commerce' ),
 				'default'     => __( 'Speedy', 'nashenski-commerce' ),
 				'desc_tip'    => true,
 			),
-			'delivery_type'      => array(
+			'delivery_type'            => array(
 				'title'   => __( 'Delivery Type', 'nashenski-commerce' ),
 				'type'    => 'select',
 				'css'     => 'width: 400px;',
@@ -347,7 +347,7 @@ class Method extends \WC_Shipping_Method {
 					'address' => __( 'Address', 'nashenski-commerce' ),
 				),
 			),
-			'international'      => array(
+			'international'            => array(
 				'title'       => __( 'Ship abroad', 'nashenski-commerce' ),
 				'type'        => 'select',
 				'css'         => 'width: 400px;',
@@ -359,14 +359,14 @@ class Method extends \WC_Shipping_Method {
 				'description' => __( 'Prices for these countries come only from Speedy, not from the public price list.', 'nashenski-commerce' ),
 				'desc_tip'    => true,
 			),
-			'test'               => array(
+			'test'                     => array(
 				'title'   => __( 'Review and test', 'nashenski-commerce' ),
 				'type'    => 'select',
 				'css'     => 'width: 400px;',
 				'default' => 'no',
 				'options' => nashenski_get_shipping_tests_options(),
 			),
-			'free_shipping_over' => array(
+			'free_shipping_over'       => array(
 				'title'       => __( 'Free shipping over', 'nashenski-commerce' ),
 				'type'        => 'number',
 				'placeholder' => '0',
@@ -382,7 +382,7 @@ class Method extends \WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
-			'fixed_price'        => array(
+			'fixed_price'              => array(
 				'title'       => __( 'Fixed price', 'nashenski-commerce' ),
 				'type'        => 'number',
 				'placeholder' => '0',
@@ -402,7 +402,7 @@ class Method extends \WC_Shipping_Method {
 	public function is_available( $package ) {
 		// Speedy's published CEE price list (services.speedy.bg/pricelist, 06.11.2026). shortcut: other EU countries need their own price rows.
 		$countries = 'yes' === $this->get_option( 'international', 'no' ) ? array( 'BG', 'RO', 'GR', 'CY', 'HU', 'CZ', 'HR', 'PL', 'SK', 'SI' ) : array( 'BG' );
-		return in_array( $package['destination']['country'] ?? '', apply_filters( 'nashenski/speedy/available_countries', $countries ), true );
+		return in_array( $package['destination']['country'] ?? '', apply_filters( 'nashenski/speedy/available_countries', $countries ), true ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 	}
 
 	/**
@@ -461,7 +461,7 @@ class Method extends \WC_Shipping_Method {
 			'price' => '0',
 		);
 
-		$request_body = apply_filters( 'nashenski/speedy/calculate_label', $this->generate_label(), $this );
+		$request_body = apply_filters( 'nashenski/speedy/calculate_label', $this->generate_label(), $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 		$this->packing_budget()->spend( 0 );
 		Packing_Budget::check_parcels( count( $request_body['content']['parcels'] ?? array() ), $this->get_max_parcels() );
 
@@ -559,7 +559,7 @@ class Method extends \WC_Shipping_Method {
 	 * @return int Result.
 	 */
 	public function get_max_parcels(): int {
-		return (int) apply_filters( 'nashenski/speedy/max_parcels', self::MAX_PARCELS, $this->package, $this );
+		return (int) apply_filters( 'nashenski/speedy/max_parcels', self::MAX_PARCELS, $this->package, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 	}
 
 	/**
@@ -777,13 +777,13 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		if ( ! $weigth ) {
-			$weigth = apply_filters( 'nashenski/speedy/label/weight', 1, $this->package, $this );
+			$weigth = apply_filters( 'nashenski/speedy/label/weight', 1, $this->package, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 		}
 
 		$content['contents'] = nashenski_normalize_text_for_label( implode( ',', $names ), 99 );
 
 		$pack_sizes = $auto_sizes ? apply_filters(
-			'nashenski/speedy/label/sizes',
+			'nashenski/speedy/label/sizes', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 			array(
 				'width'  => 17,
 				'depth'  => 17,
@@ -912,9 +912,9 @@ class Method extends \WC_Shipping_Method {
 	 */
 	private static function get_pack_sizes_from_result( $result ): array {
 		return array(
-			'width'  => wc_get_dimension( $result->W, 'cm', 'mm' ),
-			'depth'  => wc_get_dimension( $result->L, 'cm', 'mm' ),
-			'height' => wc_get_dimension( $result->H, 'cm', 'mm' ),
+			'width'  => wc_get_dimension( $result->W, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- W, L and H are the property names of Pack_Result.
+			'depth'  => wc_get_dimension( $result->L, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- W, L and H are the property names of Pack_Result.
+			'height' => wc_get_dimension( $result->H, 'cm', 'mm' ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- W, L and H are the property names of Pack_Result.
 		);
 	}
 
@@ -929,7 +929,7 @@ class Method extends \WC_Shipping_Method {
 	 * @throws Packing_Limit_Exceeded When the packing budget is exceeded.
 	 */
 	private static function generate_parcels( $weight, array $pack_sizes, float $max_weight, int $max_parcels = 0 ): array {
-		$min_weight = (float) apply_filters( 'nashenski/speedy/min_parcel_weight', 0.100 );
+		$min_weight = (float) apply_filters( 'nashenski/speedy/min_parcel_weight', 0.100 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 		$weight     = is_numeric( $weight ) ? (float) $weight : $min_weight;
 		if ( ! is_finite( $min_weight ) || $min_weight <= 0 || ! is_finite( $weight ) || ! is_finite( $max_weight ) ) {
 			throw new Packing_Limit_Exceeded( 'Shipping parcel weights must be finite.' );
@@ -1001,7 +1001,7 @@ class Method extends \WC_Shipping_Method {
 	public static function get_max_parcel_weight( $delivery_type = null, $send_from_type = null ): float {
 		$max_weight = self::use_volumetric_weight_for_parcels() || 'address' !== $delivery_type || 'office' === $send_from_type ? 32 : 50;
 
-		return (float) apply_filters( 'nashenski/speedy/max_parcel_weight', $max_weight, $delivery_type, $send_from_type );
+		return (float) apply_filters( 'nashenski/speedy/max_parcel_weight', $max_weight, $delivery_type, $send_from_type ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 	}
 
 	/**
@@ -1125,7 +1125,7 @@ class Method extends \WC_Shipping_Method {
 					);
 				}
 
-				if ( apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) && WC()->cart->get_fee_total() > 0 ) {
+				if ( apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) && WC()->cart->get_fee_total() > 0 ) { // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 					$total = floatval( WC()->cart->get_fee_total() );
 					$tax   = floatval( WC()->cart->get_fee_tax() );
 					$rate  = round( ( $tax / $total ) * 100 );
@@ -1294,7 +1294,7 @@ class Method extends \WC_Shipping_Method {
 			$email_ids_to_send[] = 'customer_on_hold_order';
 		}
 
-		$email_ids_to_send = apply_filters( 'nashenski/speedy/emails_to_send_label_number', $email_ids_to_send );
+		$email_ids_to_send = apply_filters( 'nashenski/speedy/emails_to_send_label_number', $email_ids_to_send ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		if ( ! in_array( $email->id, $email_ids_to_send, true ) ) {
 			return;
@@ -1320,7 +1320,7 @@ class Method extends \WC_Shipping_Method {
 			)
 		);
 
-		$track_number_text = apply_filters( 'nashenski/speedy/track_number_text_in_email', $track_number_text, $url, $order );
+		$track_number_text = apply_filters( 'nashenski/speedy/track_number_text_in_email', $track_number_text, $url, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		echo wp_kses_post( wpautop( $track_number_text ) );
 	}

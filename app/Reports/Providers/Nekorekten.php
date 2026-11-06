@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Nekorekten.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Reports\Providers;
 
 use Nashenski\Client\Nekorekten as Client;
@@ -6,38 +12,60 @@ use Nashenski\Client\Nekorekten as Client;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * nekorekten.com reports about the customer's phone number.
+ * Reports from nekorekten.com about the customer's phone number.
  */
 class Nekorekten extends Provider_Base {
 	const META_PREFIX = 'nashenski_reports-nekorekten_phone_';
-	const SENT_META = '_nashenski_nk_sent';
+	const SENT_META   = '_nashenski_nk_sent';
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		$this->set_name( __( 'nekorekten.com', 'nashenski-commerce' ) );
 	}
 
+	/**
+	 * Phone.
+	 *
+	 * @param mixed $order Order.
+	 * @return mixed
+	 */
 	private static function phone( $order ) {
 		return $order->get_shipping_phone() ? $order->get_shipping_phone() : $order->get_billing_phone();
 	}
 
 	/**
 	 * The customer fields a report carries, as nekorekten.com names them.
+	 *
+	 * @param mixed $order Order.
 	 */
 	private static function person( $order ) {
 		return array(
 			'firstName' => trim( $order->get_billing_first_name() ),
-			'lastName' => trim( $order->get_billing_last_name() ),
-			'phone' => trim( self::phone( $order ) ),
-			'email' => trim( $order->get_billing_email() ),
+			'lastName'  => trim( $order->get_billing_last_name() ),
+			'phone'     => trim( self::phone( $order ) ),
+			'email'     => trim( $order->get_billing_email() ),
 		);
 	}
 
+	/**
+	 * Threshold.
+	 *
+	 * @return mixed
+	 */
 	private static function threshold() {
 		$threshold = (int) nashenski_get_option( 'nekorekten', 'level_of_warning' );
 
 		return max( 1, $threshold );
 	}
 
+	/**
+	 * To reports.
+	 *
+	 * @param mixed $result Result.
+	 * @return mixed
+	 */
 	private static function to_reports( $result ) {
 		if ( ! is_array( $result ) || ( $result['count'] ?? 0 ) < self::threshold() ) {
 			return array();
@@ -47,10 +75,17 @@ class Nekorekten extends Provider_Base {
 		return array( sprintf( _n( 'nekorekten.com has %d report about this phone number.', 'nekorekten.com has %d reports about this phone number.', $result['count'], 'nashenski-commerce' ), $result['count'] ) );
 	}
 
+	/**
+	 * Get all reports.
+	 *
+	 * @param mixed $order Order.
+	 * @param bool  $force Force.
+	 * @return mixed
+	 */
 	public static function get_all_reports( $order, $force = false ) {
-		$phone = self::phone( $order );
+		$phone    = self::phone( $order );
 		$meta_key = self::META_PREFIX . md5( $phone );
-		$result = $order->get_meta( $meta_key );
+		$result   = $order->get_meta( $meta_key );
 
 		if ( ! $result || $force ) {
 			$fresh = ( new Client() )->find_by_phone( $phone, (bool) $force );
@@ -63,17 +98,29 @@ class Nekorekten extends Provider_Base {
 		}
 
 		return array(
-			'result' => $result,
+			'result'  => $result,
 			'reports' => self::to_reports( $result ),
 		);
 	}
 
+	/**
+	 * Get all reports from meta.
+	 *
+	 * @param mixed $order Order.
+	 * @return mixed
+	 */
 	public static function get_all_reports_from_meta( $order ) {
 		return array( 'reports' => self::to_reports( $order->get_meta( self::META_PREFIX . md5( self::phone( $order ) ) ) ) );
 	}
 
+	/**
+	 * Print reports html.
+	 *
+	 * @param mixed $order Order.
+	 * @return mixed
+	 */
 	public function print_reports_html( $order ) {
-		$data = self::get_all_reports( $order );
+		$data   = self::get_all_reports( $order );
 		$result = $data['result'];
 		?>
 		<div class="order_data_column_container">
@@ -129,6 +176,8 @@ class Nekorekten extends Provider_Base {
 
 	/**
 	 * Reports sent from this order: nekorekten.com id => text.
+	 *
+	 * @param mixed $order Order.
 	 */
 	private static function sent( $order ) {
 		$sent = $order->get_meta( self::SENT_META );
@@ -136,12 +185,20 @@ class Nekorekten extends Provider_Base {
 		return is_array( $sent ) ? $sent : array();
 	}
 
+	/**
+	 * Clean text.
+	 *
+	 * @param mixed $text Text.
+	 * @return mixed
+	 */
 	private static function clean_text( $text ) {
 		return mb_substr( trim( sanitize_textarea_field( (string) $text ) ), 0, 1000 );
 	}
 
 	/**
 	 * The Send, Save and Delete report buttons of the order screen.
+	 *
+	 * @param mixed $order_id Order id.
 	 */
 	public static function handle_form( $order_id ) {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked right below; clean_text and sanitize_text_field sanitize.
@@ -149,7 +206,7 @@ class Nekorekten extends Provider_Base {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_nk_nonce'] ) ), 'nashenski_nk_report' ) || ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_nk_nonce'] ) ), 'nashenski_nk_report' ) || ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers this capability.
 			return;
 		}
 
@@ -172,7 +229,7 @@ class Nekorekten extends Provider_Base {
 		}
 
 		if ( ! empty( $_POST['nashenski_nk_edit'] ) ) {
-			$id = sanitize_text_field( wp_unslash( $_POST['nashenski_nk_edit'] ) );
+			$id   = sanitize_text_field( wp_unslash( $_POST['nashenski_nk_edit'] ) );
 			$text = isset( $_POST['nashenski_nk_edit_text'][ $id ] ) ? self::clean_text( wp_unslash( $_POST['nashenski_nk_edit_text'][ $id ] ) ) : '';
 
 			if ( isset( $sent[ $id ] ) ) {
@@ -187,6 +244,13 @@ class Nekorekten extends Provider_Base {
 		self::send( $order, $text, $sent );
 	}
 
+	/**
+	 * Send.
+	 *
+	 * @param mixed $order Order.
+	 * @param mixed $text  Text.
+	 * @param mixed $sent  Sent.
+	 */
 	private static function send( $order, $text, $sent ) {
 		if ( '' === $text ) {
 			\WC_Admin_Meta_Boxes::add_error( __( 'Report not sent: write what happened first.', 'nashenski-commerce' ) );
@@ -230,6 +294,14 @@ class Nekorekten extends Provider_Base {
 		self::get_all_reports( $order, true );
 	}
 
+	/**
+	 * Edit.
+	 *
+	 * @param mixed $order Order.
+	 * @param mixed $id    Id.
+	 * @param mixed $text  Text.
+	 * @param mixed $sent  Sent.
+	 */
 	private static function edit( $order, $id, $text, $sent ) {
 		if ( '' === $text ) {
 			\WC_Admin_Meta_Boxes::add_error( __( 'Report not saved: the text is empty. Use Delete report to remove it.', 'nashenski-commerce' ) );
@@ -258,6 +330,13 @@ class Nekorekten extends Provider_Base {
 		$order->add_order_note( sprintf( __( 'Report on nekorekten.com changed to: %s', 'nashenski-commerce' ), $text ) );
 	}
 
+	/**
+	 * Delete.
+	 *
+	 * @param mixed $order Order.
+	 * @param mixed $id    Id.
+	 * @param mixed $sent  Sent.
+	 */
 	private static function delete( $order, $id, $sent ) {
 		$result = ( new Client() )->delete_report( $id );
 
@@ -279,6 +358,12 @@ class Nekorekten extends Provider_Base {
 		self::get_all_reports( $order, true );
 	}
 
+	/**
+	 * Check for reports on checkout.
+	 *
+	 * @param mixed $phone Phone.
+	 * @return mixed
+	 */
 	public static function check_for_reports_on_checkout( $phone ) {
 		return self::to_reports( ( new Client() )->find_by_phone( $phone ) );
 	}

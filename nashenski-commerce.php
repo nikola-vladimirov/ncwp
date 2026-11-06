@@ -156,7 +156,7 @@ function nashenski_init() {
 	 * @param \Nashenski\Plugin $plugin    The global instance of the plugin controller
 	 * @param \Pimple\Container   $container The plugin's dependency injection container
 	 */
-	do_action( 'nashenski/init', $plugin, $container );
+	do_action( 'nashenski/init', $plugin, $container ); // phpcs:ignore WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
 
 	return $plugin;
 }

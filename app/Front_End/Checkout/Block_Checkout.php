@@ -1,4 +1,12 @@
 <?php
+/**
+ * WooCommerce block checkout support.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Front_End\Checkout;
 
 defined( 'ABSPATH' ) || exit;
@@ -16,21 +24,29 @@ defined( 'ABSPATH' ) || exit;
 class Block_Checkout {
 	const NAMESPACE_ID = 'nashenski';
 
+	/**
+	 * Hook the block checkout.
+	 */
 	public function __construct() {
 		add_action( 'woocommerce_blocks_loaded', array( __CLASS__, 'register_update_callback' ) );
 		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( __CLASS__, 'validate' ), 5, 2 );
 		add_action( 'woocommerce_store_api_checkout_order_processed', array( __CLASS__, 'order_processed' ) );
 	}
 
+	/**
+	 * Register the "nashenski" cart update callback of the Store API.
+	 */
 	public static function register_update_callback() {
 		if ( ! function_exists( 'woocommerce_store_api_register_update_callback' ) ) {
 			return;
 		}
 
-		woocommerce_store_api_register_update_callback( array(
-			'namespace' => self::NAMESPACE_ID,
-			'callback' => array( __CLASS__, 'refresh_shipping' ),
-		) );
+		woocommerce_store_api_register_update_callback(
+			array(
+				'namespace' => self::NAMESPACE_ID,
+				'callback'  => array( __CLASS__, 'refresh_shipping' ),
+			)
+		);
 	}
 
 	/**
@@ -50,6 +66,9 @@ class Block_Checkout {
 
 	/**
 	 * Nashenski callbacks registered on a classic checkout hook, in priority order.
+	 *
+	 * @param string $hook Hook name.
+	 * @return array
 	 */
 	private static function own_callbacks( $hook ) {
 		global $wp_filter;
@@ -63,7 +82,7 @@ class Block_Checkout {
 		foreach ( $wp_filter[ $hook ]->callbacks as $priority => $items ) {
 			foreach ( $items as $item ) {
 				$function = $item['function'];
-				$class = is_array( $function ) ? ( is_object( $function[0] ) ? get_class( $function[0] ) : (string) $function[0] ) : '';
+				$class    = is_array( $function ) ? ( is_object( $function[0] ) ? get_class( $function[0] ) : (string) $function[0] ) : '';
 
 				if ( 0 === strpos( ltrim( $class, '\\' ), 'Nashenski\\' ) ) {
 					$callbacks[] = $function;
@@ -77,15 +96,17 @@ class Block_Checkout {
 	/**
 	 * Run Nashenski's classic checkout validation (courier choice, address details, ...).
 	 *
+	 * @param \WC_Order        $order   Order.
+	 * @param \WP_REST_Request $request Store API request.
 	 * @throws \Automattic\WooCommerce\StoreApi\Exceptions\RouteException When something is missing.
 	 */
-	public static function validate( $order, $request ) {
+	public static function validate( $order, $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- hook callback signature.
 		$errors = new \WP_Error();
-		$data = array(
+		$data   = array(
 			'billing_country' => $order->get_billing_country(),
-			'billing_phone' => $order->get_billing_phone(),
-			'billing_email' => $order->get_billing_email(),
-			'payment_method' => $order->get_payment_method(),
+			'billing_phone'   => $order->get_billing_phone(),
+			'billing_email'   => $order->get_billing_email(),
+			'payment_method'  => $order->get_payment_method(),
 			'shipping_method' => WC()->session ? (array) WC()->session->get( 'chosen_shipping_methods' ) : array(),
 		);
 
@@ -104,6 +125,8 @@ class Block_Checkout {
 
 	/**
 	 * Run Nashenski's classic "order processed" handlers (save the courier choice, labels, documents).
+	 *
+	 * @param \WC_Order $order Order.
 	 */
 	public static function order_processed( $order ) {
 		foreach ( self::own_callbacks( 'woocommerce_checkout_order_processed' ) as $callback ) {
