@@ -27,6 +27,15 @@ namespace Nashenski\Pricing {
 	 */
 	class Price_Lists {
 		/**
+		 * A price above zero as typed, or an empty string.
+		 *
+		 * @param mixed $value Value.
+		 * @return mixed Result.
+		 */
+		public static function positive( $value ) {
+			return is_numeric( $value ) && (float) $value > 0 ? $value : '';
+		}
+		/**
 		 * Get.
 		 *
 		 * @param mixed $courier Courier.
@@ -857,5 +866,76 @@ namespace {
 		expect( $m->free_shipping === $free, 'Speedy free shipping at threshold "' . $threshold . '" must be ' . var_export( $free, true ) );
 	}
 	unset( $package_total );
+
+	// An old order whose cookie kept a fixed price of "0.00" gets the normal label: no zero delivery line on the cash receipt, the cash on delivery amount unchanged.
+	$GLOBALS['options']['speedy/kb'] = 'yes';
+	if ( ! function_exists( 'nashenski_get_vat_group_from_rate' ) ) {
+		/**
+		 * Vat group.
+		 *
+		 * @param mixed $rate Rate.
+		 * @return string Result.
+		 */
+		function nashenski_get_vat_group_from_rate( $rate ) {
+			return 'A'; }
+	}
+	/**
+	 * Order with an old cookie.
+	 */
+	class SpeedyOldCookieOrder {
+		/**
+		 * Cookie.
+		 *
+		 * @var array
+		 */
+		public $cookie;
+		/**
+		 * Constructor.
+		 *
+		 * @param mixed $price Fixed price in the cookie.
+		 */
+		public function __construct( $price ) {
+			$this->cookie = array( 'fixed_price' => $price );
+		}
+		/**
+		 * Shipping country.
+		 */
+		public function get_shipping_country() {
+			return 'BG'; }
+		/**
+		 * Billing country.
+		 */
+		public function get_billing_country() {
+			return 'BG'; }
+		/**
+		 * Payment method.
+		 */
+		public function get_payment_method() {
+			return 'cod'; }
+		/**
+		 * Items.
+		 */
+		public function get_items() {
+			return array(); }
+		/**
+		 * Meta.
+		 *
+		 * @param mixed $key Key.
+		 */
+		public function get_meta( $key ) {
+			return $this->cookie; }
+	}
+	foreach ( array(
+		'0.00' => array( 0, '10.00' ),
+		'0'    => array( 0, '10.00' ),
+		''     => array( 0, '10.00' ),
+		'4.50' => array( 1, '14.50' ),
+	) as $old => list( $lines, $cod ) ) {
+		$label = array( 'service' => array( 'additionalServices' => array( 'cod' => array( 'amount' => '10.00' ) ) ) );
+		$out   = \Nashenski\Admin\Speedy::update_fiscal_items( $label, new SpeedyOldCookieOrder( $old ) );
+		expect( $lines === count( $out['service']['additionalServices']['cod']['fiscalReceiptItems'] ), "Speedy label with an old cookie price '$old' has $lines delivery lines" );
+		$out = \Nashenski\Admin\Speedy::update_cod( $label, new SpeedyOldCookieOrder( $old ) );
+		expect( $cod === (string) $out['service']['additionalServices']['cod']['amount'], "Speedy label with an old cookie price '$old' has a cash on delivery amount of $cod" );
+	}
 	echo 'PASS: ' . $checks . " Speedy assertions\n";
 }

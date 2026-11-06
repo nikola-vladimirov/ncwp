@@ -1,6 +1,7 @@
 <?php
 namespace Nashenski\Admin;
 use Nashenski\Container\Client;
+use Nashenski\Pricing\Price_Lists;
 use Nashenski\Shipping\Speedy\Address;
 use Nashenski\Shipping\Packer\Packing_Budget;
 use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
@@ -457,7 +458,7 @@ class Speedy {
 				}
 			}
 
-			if ( !empty( $cookie_data['fixed_price'] ) ) {
+			if ( '' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' ) ) {
 				$rate = ( wc_tax_enabled() ) ? 20 : 0;
 
 				$label['service']['additionalServices']['cod']['fiscalReceiptItems'][] = [
@@ -480,7 +481,7 @@ class Speedy {
 		if ( isset( $label['service']['additionalServices']['cod']['amount'] ) ) {
 			if ( 
 				isset( $label['service']['additionalServices']['cod']['amount'] ) && 
-				$cookie_data['fixed_price']
+				'' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' )
 			) {
 				$label['service']['additionalServices']['cod']['amount'] += number_format( $cookie_data['fixed_price'], 2, '.', '' );
 				$label['service']['additionalServices']['cod']['amount'] = number_format( $label['service']['additionalServices']['cod']['amount'], 2, '.', '' );
@@ -774,7 +775,7 @@ class Speedy {
 		if ( isset( $label['service']['additionalServices']['cod']['amount'] ) ) {
 			if ( 
 				isset( $label['service']['additionalServices']['cod']['amount'] ) && 
-				$cookie_data['fixed_price'] && 
+				'' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' ) && 
 				$payment_by['id'] == 'fixed'
 			) {
 				$label['service']['additionalServices']['cod']['amount'] += number_format( $cookie_data['fixed_price'], 2, '.', '' );
@@ -866,7 +867,7 @@ class Speedy {
 
 			if ( $payment_by['id'] == 'RECIPIENT' ) {
 				$price = ( wc_tax_enabled() ) ? $response['price']['amount'] : $response['price']['total'];
-			} else if ( $payment_by['id'] == 'fixed' && $cookie_data['fixed_price'] ) {
+			} else if ( $payment_by['id'] == 'fixed' && '' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' ) ) {
 				$tax_rate = apply_filters('nashenski/speedy/fixed_price_tax_rate', 20, $order->get_shipping_country() );
 				$price = nashenski_tax_based_price( $cookie_data['fixed_price'], $tax_rate );
 			}
