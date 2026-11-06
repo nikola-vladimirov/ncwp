@@ -235,7 +235,7 @@ class Price_Lists {
 			$list['source'] = self::sources()[ $courier ];
 		}
 
-		return apply_filters( 'nashenski/price_list/defaults', $list, $courier ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		return \Nashenski\Hooks::filter( 'nashenski_price_list_defaults', 'nashenski/price_list/defaults', $list, $courier );
 	}
 
 	/**

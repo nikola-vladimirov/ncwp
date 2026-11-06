@@ -57,8 +57,9 @@ class Lockers {
 		$lockers      = File::get_file( $lockers_file );
 
 		if ( ! $lockers ) {
-			$args = apply_filters(
-				'nashenski/pigeon/lockers/api_call_args', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+			$args = \Nashenski\Hooks::filter(
+				'nashenski_pigeon_lockers_api_call_args',
+				'nashenski/pigeon/lockers/api_call_args',
 				array(
 					'city_id' => $city_id,
 					'type'    => 'locker',

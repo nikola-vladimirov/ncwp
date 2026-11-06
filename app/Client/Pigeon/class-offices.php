@@ -5,8 +5,6 @@
  * @package Nashenski
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Client\Pigeon;
 
 use Nashenski\Container\Client;
@@ -59,7 +57,8 @@ class Offices {
 		$offices      = File::get_file( $offices_file );
 
 		if ( ! $offices ) {
-			$args = apply_filters(
+			$args = \Nashenski\Hooks::filter(
+				'nashenski_pigeon_offices_api_call_args',
 				'nashenski/pigeon/offices/api_call_args',
 				array(
 					'city_id' => $city_id,

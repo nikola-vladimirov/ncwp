@@ -5,8 +5,6 @@
  * @package Nashenski
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
@@ -46,7 +44,8 @@ class Connectix_Tab extends Base_Tab {
 	 * Loads the fields of the tab.
 	 */
 	public function load_fields() {
-		$fields = apply_filters(
+		$fields = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_connectix_fields',
 			'nashenski/admin/settings/connectix/fields',
 			array(
 				'connectix' => array(
@@ -107,7 +106,8 @@ class Connectix_Tab extends Base_Tab {
 	 * @return array
 	 */
 	public function get_groups_titles() {
-		$titles = apply_filters(
+		$titles = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_connectix_groups_titles',
 			'nashenski/admin/settings/connectix/groups_titles',
 			array(
 				'connectix' => array(

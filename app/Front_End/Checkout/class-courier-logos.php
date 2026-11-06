@@ -30,7 +30,7 @@ class Courier_Logos {
 			}
 		}
 
-		return apply_filters( 'nashenski/courier_logos', $logos ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		return \Nashenski\Hooks::filter( 'nashenski_courier_logos', 'nashenski/courier_logos', $logos );
 	}
 
 	/**

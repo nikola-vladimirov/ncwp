@@ -5,8 +5,6 @@
  * @package Nashenski
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Admin;
 
 use Nashenski\Container\Client;
@@ -35,9 +33,9 @@ class Econt {
 		add_action( 'wp_ajax_nashenski_econt_delete_label', array( __CLASS__, 'delete_label' ) );
 		add_action( 'wp_ajax_nashenski_econt_update_shipment_status', array( __CLASS__, 'update_shipment_status' ) );
 
-		add_filter( 'nashenski/econt/calculate_label', array( __CLASS__, 'set_min_pack_weight' ), 30 );
-		add_filter( 'nashenski/econt/create_label', array( __CLASS__, 'set_min_pack_weight' ), 30 );
-		add_filter( 'nashenski/econt/update_label', array( __CLASS__, 'set_min_pack_weight' ), 30 );
+		add_filter( 'nashenski_econt_calculate_label', array( __CLASS__, 'set_min_pack_weight' ), 30 );
+		add_filter( 'nashenski_econt_create_label', array( __CLASS__, 'set_min_pack_weight' ), 30 );
+		add_filter( 'nashenski_econt_update_label', array( __CLASS__, 'set_min_pack_weight' ), 30 );
 	}
 
 	/**
@@ -557,7 +555,7 @@ class Econt {
 			self::update_order_shipping_price( $response, $order_id, $label );
 		}
 
-		do_action( 'nashenski/econt/after_send_label', $data, $order );
+		\Nashenski\Hooks::action( 'nashenski_econt_after_send_label', 'nashenski/econt/after_send_label', $data, $order );
 
 		return $data;
 	}
@@ -622,7 +620,7 @@ class Econt {
 
 			$label['weight'] = $weight;
 		} else {
-			$label['weight'] = apply_filters( 'nashenski/econt/default_weight', 0.100 );
+			$label['weight'] = \Nashenski\Hooks::filter( 'nashenski_econt_default_weight', 'nashenski/econt/default_weight', 0.100 );
 		}
 
 		return $label;
@@ -639,7 +637,7 @@ class Econt {
 			return $request_body;
 		}
 
-		$min_weight = (float) apply_filters( 'nashenski/econt/min_pack_weight', 0.100 );
+		$min_weight = (float) \Nashenski\Hooks::filter( 'nashenski_econt_min_pack_weight', 'nashenski/econt/min_pack_weight', 0.100 );
 		$weight     = 0;
 
 		if ( ! empty( $request_body['label']['packs'] ) && is_array( $request_body['label']['packs'] ) ) {
@@ -833,7 +831,7 @@ class Econt {
 						);
 					}
 
-					if ( ! empty( $order->get_items( 'fee' ) ) && apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) ) {
+					if ( ! empty( $order->get_items( 'fee' ) ) && \Nashenski\Hooks::filter( 'nashenski_shipping_package_total_includes_fees', 'nashenski/shipping/package_total_includes_fees', true ) ) {
 						foreach ( $order->get_items( 'fee' ) as $key => $item ) {
 							if ( $item->get_total() <= 0 ) {
 								continue;
@@ -1097,7 +1095,7 @@ class Econt {
 		$payment_by = nashenski_label_request( 'paymentBy', array() );
 
 		if ( ! empty( $payment_by ) ) {
-			$tax_rate = apply_filters( 'nashenski/econt/fixed_price_tax_rate', 20, $order->get_shipping_country() );
+			$tax_rate = \Nashenski\Hooks::filter( 'nashenski_econt_fixed_price_tax_rate', 'nashenski/econt/fixed_price_tax_rate', 20, $order->get_shipping_country() );
 
 			if ( 'buyer' === $payment_by['id'] ) {
 				$price = nashenski_tax_based_price( $response['label']['receiverDueAmount'], $tax_rate );
@@ -1106,7 +1104,7 @@ class Econt {
 			}
 		}
 
-		$price = apply_filters( 'nashenski/admin/econt/price_for_update', $price, $order, nashenski_label_request(), $response, $request_body );
+		$price = \Nashenski\Hooks::filter( 'nashenski_admin_econt_price_for_update', 'nashenski/admin/econt/price_for_update', $price, $order, nashenski_label_request(), $response, $request_body );
 
 		foreach ( $order->get_items( 'shipping' ) as $item_id => $item ) {
 			$item->set_total( $price );
@@ -1158,7 +1156,8 @@ class Econt {
 				$label['shipmentNumber'] = $shipment_status['label']['shipmentNumber'];
 			}
 
-			$request_body = apply_filters(
+			$request_body = \Nashenski\Hooks::filter(
+				'nashenski_econt_update_label',
 				'nashenski/econt/update_label',
 				array(
 					'label' => $label,
@@ -1170,7 +1169,8 @@ class Econt {
 		} else {
 			unset( $label['shipmentNumber'] );
 
-			$request_body = apply_filters(
+			$request_body = \Nashenski\Hooks::filter(
+				'nashenski_econt_create_label',
 				'nashenski/econt/create_label',
 				array(
 					'label' => $label,

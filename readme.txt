@@ -201,6 +201,9 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+= 0.21.0 =
+* Changed: Developer hooks use underscores (nashenski_econt_rate in place of nashenski/econt/rate). The old slash names still work but are deprecated.
+
 = 0.20.4 =
 * Fixed: Bulgarian text in order PDFs no longer prints as question marks.
 * Fixed: BOX NOW gives no rate until the price type is saved, and the BOX NOW tab says so.

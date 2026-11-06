@@ -52,7 +52,7 @@ class CreditNotice extends NRARefunded {
 	public function __construct( $refund_id ) {
 		parent::__construct( $refund_id );
 
-		$this->set_title( apply_filters( 'nashenski/admin/invoice/credit_notice_title', __( 'Credit Notice - Original', 'nashenski-commerce' ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+		$this->set_title( \Nashenski\Hooks::filter( 'nashenski_admin_invoice_credit_notice_title', 'nashenski/admin/invoice/credit_notice_title', __( 'Credit Notice - Original', 'nashenski-commerce' ) ) );
 		$this->meta = 'nashenski_refunded_invoice_document';
 
 		if ( nashenski_get_option( 'invoice', 'next_invoice_separate_number' ) ) {
@@ -67,8 +67,8 @@ class CreditNotice extends NRARefunded {
 	 * @return array
 	 */
 	public function get_head_items() {
-		return apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+		return \Nashenski\Hooks::filter(
+			'nashenski_invoice_head_items',
 			'nashenski/invoice/head_items',
 			array(
 				'parent_reference' => array(
@@ -108,7 +108,7 @@ class CreditNotice extends NRARefunded {
 	 * Builds the original and the copy.
 	 */
 	protected function build_file() {
-		$this->generate_original_and_copy( apply_filters( 'nashenski/admin/invoice/credit_notice_title_copy', __( 'Credit Notice - Copy', 'nashenski-commerce' ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+		$this->generate_original_and_copy( \Nashenski\Hooks::filter( 'nashenski_admin_invoice_credit_notice_title_copy', 'nashenski/admin/invoice/credit_notice_title_copy', __( 'Credit Notice - Copy', 'nashenski-commerce' ) ) );
 	}
 
 	/**

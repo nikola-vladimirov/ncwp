@@ -5,8 +5,6 @@
  * @package Nashenski
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski;
 
 defined( 'ABSPATH' ) || exit;
@@ -179,7 +177,8 @@ class Transliteration {
 	 * @return string
 	 */
 	public static function to_cyrillic( $text ) {
-		$strange_words = apply_filters(
+		$strange_words = \Nashenski\Hooks::filter(
+			'nashenski_transliteration_strange_words',
 			'nashenski/transliteration/strange_words',
 			array(
 				'sofia'    => 'софия',

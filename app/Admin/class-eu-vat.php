@@ -35,7 +35,7 @@ class EU_Vat {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_filter( 'nashenski/admin/nra/fields', array( __CLASS__, 'add_fields_in_settings' ) );
+		add_filter( 'nashenski_admin_nra_fields', array( __CLASS__, 'add_fields_in_settings' ) );
 		add_action( 'woocommerce_admin_billing_fields', array( __CLASS__, 'admin_billing_fields' ) );
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_boxes' ) );
 

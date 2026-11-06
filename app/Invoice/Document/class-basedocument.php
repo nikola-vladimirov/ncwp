@@ -274,8 +274,7 @@ class BaseDocument {
 			)
 		);
 
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		return apply_filters( 'nashenski/invoice/head_items', $items, $this );
+		return \Nashenski\Hooks::filter( 'nashenski_invoice_head_items', 'nashenski/invoice/head_items', $items, $this );
 	}
 
 	/**
@@ -284,8 +283,9 @@ class BaseDocument {
 	 * @return array
 	 */
 	public function get_cart_headers() {
-		return apply_filters(
-			'nashenski/invoice/cart_headers', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+		return \Nashenski\Hooks::filter(
+			'nashenski_invoice_cart_headers',
+			'nashenski/invoice/cart_headers',
 			array(
 				array(
 					'label' => __( 'Product', 'nashenski-commerce' ),
@@ -345,8 +345,9 @@ class BaseDocument {
 	public function get_from_items() {
 		$contacts = 'no' !== \Nashenski\Invoice\PDF\Style::get()['show_contacts'];
 
-		return apply_filters(
-			'nashenski/invoice/from_items', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+		return \Nashenski\Hooks::filter(
+			'nashenski_invoice_from_items',
+			'nashenski/invoice/from_items',
 			self::lines(
 				array(
 					'company_name' => $this->company_name,
@@ -385,8 +386,9 @@ class BaseDocument {
 			$vat = $order->get_meta( '_billing_vat_number' );
 			$mol = $order->get_meta( '_billing_company_mol' );
 
-			$items = apply_filters(
-				'nashenski/invoice/set_to_company', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+			$items = \Nashenski\Hooks::filter(
+				'nashenski_invoice_set_to_company',
+				'nashenski/invoice/set_to_company',
 				array(
 					$order->get_billing_company(),
 					/* translators: %s: company EIK */
@@ -402,8 +404,9 @@ class BaseDocument {
 				$order
 			);
 		} else {
-			$items = apply_filters(
-				'nashenski/invoice/set_to_person', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+			$items = \Nashenski\Hooks::filter(
+				'nashenski_invoice_set_to_person',
+				'nashenski/invoice/set_to_person',
 				array(
 					$order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
 					implode( ', ', self::lines( array( $order->get_billing_address_1() . ' ' . $order->get_billing_address_2(), $order->get_billing_city() . ' ' . $order->get_billing_postcode() ) ) ),
@@ -414,8 +417,7 @@ class BaseDocument {
 			);
 		}
 
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		return apply_filters( 'nashenski/invoice/to_items', self::lines( $items ), $this );
+		return \Nashenski\Hooks::filter( 'nashenski_invoice_to_items', 'nashenski/invoice/to_items', self::lines( $items ), $this );
 	}
 
 	/**
@@ -453,8 +455,7 @@ class BaseDocument {
 			$items[] = __( 'Received', 'nashenski-commerce' );
 		}
 
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		return apply_filters( 'nashenski/invoice/additional_items_labels', $items, $this );
+		return \Nashenski\Hooks::filter( 'nashenski_invoice_additional_items_labels', 'nashenski/invoice/additional_items_labels', $items, $this );
 	}
 
 	/**
@@ -508,8 +509,7 @@ class BaseDocument {
 			$items[] = $this->customer_order()->get_billing_first_name() . ' ' . $this->customer_order()->get_billing_last_name();
 		}
 
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		return apply_filters( 'nashenski/invoice/additional_items', $items, $this );
+		return \Nashenski\Hooks::filter( 'nashenski_invoice_additional_items', 'nashenski/invoice/additional_items', $items, $this );
 	}
 
 	/**
@@ -647,8 +647,7 @@ class BaseDocument {
 	 * @param string $contents PDF contents.
 	 */
 	protected function save_pdf( $contents ) {
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		$name      = apply_filters( 'nashenski/admin/invoice/file_name', uniqid( wp_rand(), true ), $this );
+		$name      = \Nashenski\Hooks::filter( 'nashenski_admin_invoice_file_name', 'nashenski/admin/invoice/file_name', uniqid( wp_rand(), true ), $this );
 		$attach_id = \Nashenski\Document_Storage::save( $name, 'pdf', $contents );
 
 		if ( ! $attach_id ) {
@@ -683,8 +682,7 @@ class BaseDocument {
 			$id = absint( get_option( 'site_icon' ) );
 		}
 
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		return (int) apply_filters( 'nashenski/invoice/logo_id', $id );
+		return (int) \Nashenski\Hooks::filter( 'nashenski_invoice_logo_id', 'nashenski/invoice/logo_id', $id );
 	}
 
 	/**
@@ -723,8 +721,9 @@ class BaseDocument {
 
 		$email = $this->email ? $this->email : get_option( 'woocommerce_email_from_address' );
 
-		return apply_filters(
-			'nashenski/invoice/site_details', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+		return \Nashenski\Hooks::filter(
+			'nashenski_invoice_site_details',
+			'nashenski/invoice/site_details',
 			array_filter(
 				array(
 					'name'  => get_bloginfo( 'name' ),
@@ -763,8 +762,7 @@ class BaseDocument {
 	 * QR code of the N-18 order document (empty for other documents).
 	 */
 	public function render_pdf_qr() {
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		$qr = apply_filters( 'nashenski/invoice/pdf/default_template/qr', $this->qr, $this );
+		$qr = \Nashenski\Hooks::filter( 'nashenski_invoice_pdf_default_template_qr', 'nashenski/invoice/pdf/default_template/qr', $this->qr, $this );
 
 		if ( ! $qr ) {
 			return;

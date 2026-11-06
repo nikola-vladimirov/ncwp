@@ -30,7 +30,7 @@ class PackageBoxes {
 	 * Hooks the label filter.
 	 */
 	public function __construct() {
-		add_filter( 'nashenski/pigeon/calculate_label', array( __CLASS__, 'calculate_label' ), 21, 2 );
+		add_filter( 'nashenski_pigeon_calculate_label', array( __CLASS__, 'calculate_label' ), 21, 2 );
 	}
 
 	/**
@@ -354,7 +354,7 @@ class PackageBoxes {
 		}
 
 		if ( ! $weight ) {
-			$weight = apply_filters( 'nashenski/pigeon/label/weight', 1, $package, $method ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+			$weight = \Nashenski\Hooks::filter( 'nashenski_pigeon_label_weight', 'nashenski/pigeon/label/weight', 1, $package, $method );
 		}
 
 		if ( ! is_numeric( $weight ) || ! is_finite( (float) $weight ) ) {

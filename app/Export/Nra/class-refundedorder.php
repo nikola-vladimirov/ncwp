@@ -58,12 +58,12 @@ class RefundedOrder {
 		foreach ( $refunds as $refund ) {
 			if ( wp_date( 'Y-m', $refund->get_date_created()->getTimestamp() ) === $this->export_date ) {
 				$refund_date = $refund->get_date_created()->format( 'Y-m-d' );
-				$total      += apply_filters( 'nashenski/admin/export/refunded_total', $refund->get_amount(), $refund ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+				$total      += \Nashenski\Hooks::filter( 'nashenski_admin_export_refunded_total', 'nashenski/admin/export/refunded_total', $refund->get_amount(), $refund );
 			}
 		}
 
 		return array(
-			'order_id'      => apply_filters( 'nashenski/admin/export/refunded_order_id', $this->woo_order->get_order_number(), $this->woo_order ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+			'order_id'      => \Nashenski\Hooks::filter( 'nashenski_admin_export_refunded_order_id', 'nashenski/admin/export/refunded_order_id', $this->woo_order->get_order_number(), $this->woo_order ),
 			'total'         => abs( $total ),
 			'date'          => $refund_date,
 			'return_method' => nashenski_get_choice( 'shop', 'return_method', nashenski_get_return_methods() ),

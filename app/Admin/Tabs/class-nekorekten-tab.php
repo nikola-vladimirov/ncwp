@@ -28,8 +28,9 @@ class Nekorekten_Tab extends Base_Tab {
 	 * Load the section's fields.
 	 */
 	public function load_fields() {
-		$fields = apply_filters(
-			'nashenski/admin/settings/nekorekten/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+		$fields = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_nekorekten_fields',
+			'nashenski/admin/settings/nekorekten/fields',
 			array(
 				'nekorekten' => array(
 					new Fields\Text_Field(

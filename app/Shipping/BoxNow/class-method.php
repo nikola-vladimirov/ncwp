@@ -157,9 +157,9 @@ class Method extends \WC_Shipping_Method {
 			return;
 		}
 
-		do_action( 'nashenski/boxnow/rate/before_calculate', $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		\Nashenski\Hooks::action( 'nashenski_boxnow_rate_before_calculate', 'nashenski/boxnow/rate/before_calculate', $this );
 
-		$country = apply_filters( 'nashenski/boxnow/country_for_validation', $package['destination']['country'], $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$country = \Nashenski\Hooks::filter( 'nashenski_boxnow_country_for_validation', 'nashenski/boxnow/country_for_validation', $package['destination']['country'], $this );
 
 		$rate = array(
 			'label'     => $this->title,
@@ -198,7 +198,7 @@ class Method extends \WC_Shipping_Method {
 			}
 
 			if ( (float) $price > 0 ) {
-				$tax_rate     = apply_filters( 'nashenski/shipping/fixed_price_tax_rate', 20, $country ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+				$tax_rate     = \Nashenski\Hooks::filter( 'nashenski_shipping_fixed_price_tax_rate', 'nashenski/shipping/fixed_price_tax_rate', 20, $country );
 				$rate['cost'] = nashenski_tax_based_price( $price, $tax_rate );
 
 				if ( wc_tax_enabled() ) {
@@ -208,7 +208,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		$rate['meta_data']['cookie_data'] = $this->cookie_data;
-		$rate                             = apply_filters( 'nashenski/boxnow/rate', $rate, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$rate                             = \Nashenski\Hooks::filter( 'nashenski_boxnow_rate', 'nashenski/boxnow/rate', $rate, $this );
 
 		// Register the rate.
 		$this->add_rate( $rate );
@@ -236,7 +236,7 @@ class Method extends \WC_Shipping_Method {
 	 * @return bool Result.
 	 */
 	public function is_available( $package ) {
-		return in_array( $package['destination']['country'], apply_filters( 'nashenski/boxnow/available_countries', array( 'BG' ) ), true ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		return in_array( $package['destination']['country'], \Nashenski\Hooks::filter( 'nashenski_boxnow_available_countries', 'nashenski/boxnow/available_countries', array( 'BG' ) ), true );
 	}
 
 	/**
@@ -303,7 +303,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		if ( ! $weight ) {
-			$weight = apply_filters( 'nashenski/boxnow/method/weight', 1, $this->package, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+			$weight = \Nashenski\Hooks::filter( 'nashenski_boxnow_method_weight', 'nashenski/boxnow/method/weight', 1, $this->package, $this );
 		}
 
 		return $weight;
@@ -630,7 +630,7 @@ class Method extends \WC_Shipping_Method {
 			$email_ids_to_send[] = 'customer_on_hold_order';
 		}
 
-		$email_ids_to_send = apply_filters( 'nashenski/boxnow/emails_to_send_label_number', $email_ids_to_send ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$email_ids_to_send = \Nashenski\Hooks::filter( 'nashenski_boxnow_emails_to_send_label_number', 'nashenski/boxnow/emails_to_send_label_number', $email_ids_to_send );
 
 		if ( ! in_array( $email->id, $email_ids_to_send, true ) ) {
 			return;
@@ -661,7 +661,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		$track_number_text = implode( '<br>', $track_numbers );
-		$track_number_text = apply_filters( 'nashenski/boxnow/track_number_text_in_email', $track_number_text, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$track_number_text = \Nashenski\Hooks::filter( 'nashenski_boxnow_track_number_text_in_email', 'nashenski/boxnow/track_number_text_in_email', $track_number_text, $order );
 
 		echo wp_kses_post( wpautop( $track_number_text ) );
 	}

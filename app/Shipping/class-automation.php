@@ -56,7 +56,7 @@ class Automation {
 			foreach ( array_keys( Register::COURIERS ) as $courier ) {
 				foreach ( array( 'create_label', 'update_label' ) as $hook ) {
 					add_filter(
-						"nashenski/{$courier}/{$hook}",
+						"nashenski_{$courier}_{$hook}",
 						function ( $label, $order ) use ( $courier ) {
 							return self::add_order_number( $courier, $label, $order );
 						},
@@ -251,7 +251,7 @@ class Automation {
 	 */
 	public static function check_shipments() {
 		// ponytail: 100 open orders per hour, created in the last 60 days; a busier store can raise it.
-		$limit = (int) apply_filters( 'nashenski/shipments/check_limit', 100 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+		$limit = (int) \Nashenski\Hooks::filter( 'nashenski_shipments_check_limit', 'nashenski/shipments/check_limit', 100 );
 
 		// A value below 1 other than -1 (0, negative, null, text) becomes the default 100: -1 would drop the time budget and load every open order at once.
 		if ( $limit < 1 && -1 !== $limit ) {
@@ -335,7 +335,7 @@ class Automation {
 
 		$dates = array();
 		// Each order is one courier call (up to 60 s when the courier is slow), so a run stops after this many seconds and the next one goes on from there.
-		$budget = (float) apply_filters( 'nashenski/shipments/check_seconds', 20 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+		$budget = (float) \Nashenski\Hooks::filter( 'nashenski_shipments_check_seconds', 'nashenski/shipments/check_seconds', 20 );
 		$began  = microtime( true );
 
 		foreach ( $orders as $order ) {
@@ -674,7 +674,7 @@ class Automation {
 			'pickup',
 			array(
 				'explicitShipmentIdList' => array_values( $numbers ),
-				'visitEndTime'           => (string) apply_filters( 'nashenski/speedy/pickup_until', '17:30' ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+				'visitEndTime'           => (string) \Nashenski\Hooks::filter( 'nashenski_speedy_pickup_until', 'nashenski/speedy/pickup_until', '17:30' ),
 				'autoAdjustPickupDate'   => true,
 			)
 		);

@@ -26,8 +26,9 @@ class Nra_Tab extends Base_Tab {
 	 * Load fields.
 	 */
 	public function load_fields() {
-		$fields = apply_filters(
-			'nashenski/admin/nra/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$fields = \Nashenski\Hooks::filter(
+			'nashenski_admin_nra_fields',
+			'nashenski/admin/nra/fields',
 			array(
 				'nap'     => array(
 					new Fields\Text_Field( 'company_name', __( 'Company Name', 'nashenski-commerce' ), __( 'Your company name.', 'nashenski-commerce' ), 'required' ),
@@ -277,7 +278,7 @@ class Nra_Tab extends Base_Tab {
 		foreach ( $gateways as $slug => $gateway ) {
 			if ( wc_string_to_bool( $gateway->enabled ) ) {
 				add_filter(
-					'nashenski/admin/nra/groups_titles',
+					'nashenski_admin_nra_groups_titles',
 					function ( $groups_titles ) use ( $gateway, $slug ) {
 						$groups_titles[ $slug ] = array(
 							/* translators: %s: payment method name */
@@ -297,8 +298,9 @@ class Nra_Tab extends Base_Tab {
 	public function get_groups_titles() {
 		$this->gateways_titles();
 
-		$titles = apply_filters(
-			'nashenski/admin/nra/groups_titles', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$titles = \Nashenski\Hooks::filter(
+			'nashenski_admin_nra_groups_titles',
+			'nashenski/admin/nra/groups_titles',
 			array(
 				'nap'       => array(
 					'title' => __( 'Company details', 'nashenski-commerce' ),

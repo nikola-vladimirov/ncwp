@@ -210,7 +210,7 @@ class Method extends \WC_Shipping_Method {
 
 		$disable_aps = ( 'automat' === $this->delivery_type && ! APSPackage::package_fits_largest_box( $this->package, self::$aps_box_sizes, self::VOLUMETRIC_WEIGHT_DIVISOR, $this->packing_budget() ) );
 
-		if ( apply_filters( 'nashenski/speedy/rate/disable_aps', $disable_aps, $this ) ) { // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		if ( \Nashenski\Hooks::filter( 'nashenski_speedy_rate_disable_aps', 'nashenski/speedy/rate/disable_aps', $disable_aps, $this ) ) {
 			return;
 		}
 
@@ -218,7 +218,7 @@ class Method extends \WC_Shipping_Method {
 			return;
 		}
 
-		do_action( 'nashenski/speedy/rate/before_calculate', $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		\Nashenski\Hooks::action( 'nashenski_speedy_rate_before_calculate', 'nashenski/speedy/rate/before_calculate', $this );
 
 		$fixed_price = $this->applicable_fixed_price();
 
@@ -235,7 +235,7 @@ class Method extends \WC_Shipping_Method {
 		$rate['meta_data']['validated']     = false;
 		$payment_by_data                    = $this->generate_payment_by_data();
 		$chosen_shippings                   = WC()->session->get( 'chosen_shipping_methods' );
-		$country                            = apply_filters( 'nashenski/speedy/country_for_validation', $package['destination']['country'], $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$country                            = \Nashenski\Hooks::filter( 'nashenski_speedy_country_for_validation', 'nashenski/speedy/country_for_validation', $package['destination']['country'], $this );
 
 		if ( isset( $this->cookie_data['type'] ) &&
 			$this->cookie_data['type'] === $this->delivery_type &&
@@ -282,7 +282,7 @@ class Method extends \WC_Shipping_Method {
 
 		// The fixed price only once the customer has chosen a delivery point (request_data is set then).
 		if ( ! $this->free_shipping && ! empty( $fixed_price ) && isset( $rate['request_data'] ) ) {
-			$tax_rate     = apply_filters( 'nashenski/shipping/fixed_price_tax_rate', 20, $country ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+			$tax_rate     = \Nashenski\Hooks::filter( 'nashenski_shipping_fixed_price_tax_rate', 'nashenski/shipping/fixed_price_tax_rate', 20, $country );
 			$rate['cost'] = nashenski_tax_based_price( $fixed_price, $tax_rate );
 
 			if ( wc_tax_enabled() ) {
@@ -291,7 +291,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		$rate['meta_data']['cookie_data'] = $this->cookie_data;
-		$rate                             = apply_filters( 'nashenski/speedy/rate', $rate, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$rate                             = \Nashenski\Hooks::filter( 'nashenski_speedy_rate', 'nashenski/speedy/rate', $rate, $this );
 
 		// Register the rate.
 		$this->packing_budget()->spend( 0 );
@@ -402,7 +402,7 @@ class Method extends \WC_Shipping_Method {
 	public function is_available( $package ) {
 		// Speedy's published CEE price list (services.speedy.bg/pricelist, 06.11.2026). shortcut: other EU countries need their own price rows.
 		$countries = 'yes' === $this->get_option( 'international', 'no' ) ? array( 'BG', 'RO', 'GR', 'CY', 'HU', 'CZ', 'HR', 'PL', 'SK', 'SI' ) : array( 'BG' );
-		return in_array( $package['destination']['country'] ?? '', apply_filters( 'nashenski/speedy/available_countries', $countries ), true ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		return in_array( $package['destination']['country'] ?? '', \Nashenski\Hooks::filter( 'nashenski_speedy_available_countries', 'nashenski/speedy/available_countries', $countries ), true );
 	}
 
 	/**
@@ -461,7 +461,7 @@ class Method extends \WC_Shipping_Method {
 			'price' => '0',
 		);
 
-		$request_body = apply_filters( 'nashenski/speedy/calculate_label', $this->generate_label(), $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$request_body = \Nashenski\Hooks::filter( 'nashenski_speedy_calculate_label', 'nashenski/speedy/calculate_label', $this->generate_label(), $this );
 		$this->packing_budget()->spend( 0 );
 		Packing_Budget::check_parcels( count( $request_body['content']['parcels'] ?? array() ), $this->get_max_parcels() );
 
@@ -559,7 +559,7 @@ class Method extends \WC_Shipping_Method {
 	 * @return int Result.
 	 */
 	public function get_max_parcels(): int {
-		return (int) apply_filters( 'nashenski/speedy/max_parcels', self::MAX_PARCELS, $this->package, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		return (int) \Nashenski\Hooks::filter( 'nashenski_speedy_max_parcels', 'nashenski/speedy/max_parcels', self::MAX_PARCELS, $this->package, $this );
 	}
 
 	/**
@@ -777,13 +777,14 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		if ( ! $weigth ) {
-			$weigth = apply_filters( 'nashenski/speedy/label/weight', 1, $this->package, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+			$weigth = \Nashenski\Hooks::filter( 'nashenski_speedy_label_weight', 'nashenski/speedy/label/weight', 1, $this->package, $this );
 		}
 
 		$content['contents'] = nashenski_normalize_text_for_label( implode( ',', $names ), 99 );
 
-		$pack_sizes = $auto_sizes ? apply_filters(
-			'nashenski/speedy/label/sizes', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$pack_sizes = $auto_sizes ? \Nashenski\Hooks::filter(
+			'nashenski_speedy_label_sizes',
+			'nashenski/speedy/label/sizes',
 			array(
 				'width'  => 17,
 				'depth'  => 17,
@@ -929,7 +930,7 @@ class Method extends \WC_Shipping_Method {
 	 * @throws Packing_Limit_Exceeded When the packing budget is exceeded.
 	 */
 	private static function generate_parcels( $weight, array $pack_sizes, float $max_weight, int $max_parcels = 0 ): array {
-		$min_weight = (float) apply_filters( 'nashenski/speedy/min_parcel_weight', 0.100 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$min_weight = (float) \Nashenski\Hooks::filter( 'nashenski_speedy_min_parcel_weight', 'nashenski/speedy/min_parcel_weight', 0.100 );
 		$weight     = is_numeric( $weight ) ? (float) $weight : $min_weight;
 		if ( ! is_finite( $min_weight ) || $min_weight <= 0 || ! is_finite( $weight ) || ! is_finite( $max_weight ) ) {
 			throw new Packing_Limit_Exceeded( 'Shipping parcel weights must be finite.' );
@@ -1001,7 +1002,7 @@ class Method extends \WC_Shipping_Method {
 	public static function get_max_parcel_weight( $delivery_type = null, $send_from_type = null ): float {
 		$max_weight = self::use_volumetric_weight_for_parcels() || 'address' !== $delivery_type || 'office' === $send_from_type ? 32 : 50;
 
-		return (float) apply_filters( 'nashenski/speedy/max_parcel_weight', $max_weight, $delivery_type, $send_from_type ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		return (float) \Nashenski\Hooks::filter( 'nashenski_speedy_max_parcel_weight', 'nashenski/speedy/max_parcel_weight', $max_weight, $delivery_type, $send_from_type );
 	}
 
 	/**
@@ -1125,7 +1126,7 @@ class Method extends \WC_Shipping_Method {
 					);
 				}
 
-				if ( apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) && WC()->cart->get_fee_total() > 0 ) { // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+				if ( \Nashenski\Hooks::filter( 'nashenski_shipping_package_total_includes_fees', 'nashenski/shipping/package_total_includes_fees', true ) && WC()->cart->get_fee_total() > 0 ) {
 					$total = floatval( WC()->cart->get_fee_total() );
 					$tax   = floatval( WC()->cart->get_fee_tax() );
 					$rate  = round( ( $tax / $total ) * 100 );
@@ -1294,7 +1295,7 @@ class Method extends \WC_Shipping_Method {
 			$email_ids_to_send[] = 'customer_on_hold_order';
 		}
 
-		$email_ids_to_send = apply_filters( 'nashenski/speedy/emails_to_send_label_number', $email_ids_to_send ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$email_ids_to_send = \Nashenski\Hooks::filter( 'nashenski_speedy_emails_to_send_label_number', 'nashenski/speedy/emails_to_send_label_number', $email_ids_to_send );
 
 		if ( ! in_array( $email->id, $email_ids_to_send, true ) ) {
 			return;
@@ -1320,7 +1321,7 @@ class Method extends \WC_Shipping_Method {
 			)
 		);
 
-		$track_number_text = apply_filters( 'nashenski/speedy/track_number_text_in_email', $track_number_text, $url, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$track_number_text = \Nashenski\Hooks::filter( 'nashenski_speedy_track_number_text_in_email', 'nashenski/speedy/track_number_text_in_email', $track_number_text, $url, $order );
 
 		echo wp_kses_post( wpautop( $track_number_text ) );
 	}

@@ -5,8 +5,6 @@
  * @package Nashenski
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Front_End;
 
 defined( 'ABSPATH' ) || exit;
@@ -138,7 +136,7 @@ class Withdrawal {
 			$in = $in || null !== nashenski_query_arg( $key, null );
 		}
 
-		return (bool) apply_filters( 'nashenski/withdrawal/in_builder', $in );
+		return (bool) \Nashenski\Hooks::filter( 'nashenski_withdrawal_in_builder', 'nashenski/withdrawal/in_builder', $in );
 	}
 
 	/**

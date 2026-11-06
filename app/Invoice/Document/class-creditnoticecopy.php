@@ -21,7 +21,7 @@ class CreditNoticeCopy extends CreditNotice {
 	public function __construct( $refund_id ) {
 		parent::__construct( $refund_id );
 
-		$this->set_title( apply_filters( 'nashenski/admin/invoice/credit_notice_title_copy', __( 'Credit Notice - Copy', 'nashenski-commerce' ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$this->set_title( \Nashenski\Hooks::filter( 'nashenski_admin_invoice_credit_notice_title_copy', 'nashenski/admin/invoice/credit_notice_title_copy', __( 'Credit Notice - Copy', 'nashenski-commerce' ) ) );
 		$this->meta = 'nashenski_refunded_invoice_copy_document';
 	}
 

@@ -28,7 +28,7 @@ class Invoice extends BaseDocument {
 	public function __construct( $order ) {
 		parent::__construct( $order );
 
-		$this->set_title( apply_filters( 'nashenski/admin/invoice/invoice_title', __( 'Sale Invoice - Original', 'nashenski-commerce' ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		$this->set_title( \Nashenski\Hooks::filter( 'nashenski_admin_invoice_invoice_title', 'nashenski/admin/invoice/invoice_title', __( 'Sale Invoice - Original', 'nashenski-commerce' ) ) );
 		$this->meta = 'nashenski_invoice_document';
 
 		// Separate invoice numbering, or a number typed in when the invoice was made by hand.
@@ -42,7 +42,7 @@ class Invoice extends BaseDocument {
 	 * Builds the PDF with the original and the copy.
 	 */
 	protected function build_file() {
-		$this->generate_original_and_copy( apply_filters( 'nashenski/admin/invoice/invoice_title_copy', __( 'Sale Invoice - Copy', 'nashenski-commerce' ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		$this->generate_original_and_copy( \Nashenski\Hooks::filter( 'nashenski_admin_invoice_invoice_title_copy', 'nashenski/admin/invoice/invoice_title_copy', __( 'Sale Invoice - Copy', 'nashenski-commerce' ) ) );
 	}
 
 	/**

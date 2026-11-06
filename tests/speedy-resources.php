@@ -110,6 +110,7 @@ namespace {
 		public function add_rate( $rate ) {
 			$this->rates[] = $rate; }
 	}
+	require_once __DIR__ . '/fixtures/hooks.php';
 	require __DIR__ . '/../vendor/autoload.php';
 	require_once __DIR__ . '/../app/autoload.php';
 

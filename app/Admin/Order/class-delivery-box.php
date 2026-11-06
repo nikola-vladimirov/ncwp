@@ -29,7 +29,7 @@ class Delivery_Box {
 		add_action( 'woocommerce_process_shop_order_meta', array( __CLASS__, 'save' ), 60 );
 
 		foreach ( \Nashenski\Plugin::COURIERS as $courier ) {
-			add_action( "nashenski/{$courier}/after_send_label", array( __CLASS__, 'email_delivery_price' ), 10, 2 );
+			add_action( "nashenski_{$courier}_after_send_label", array( __CLASS__, 'email_delivery_price' ), 10, 2 );
 		}
 	}
 

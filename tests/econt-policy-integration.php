@@ -223,10 +223,10 @@ $test_order = policy_order( 903 );
 $no_fees    = function () {
 	return false;
 };
-add_filter( 'nashenski/shipping/package_total_includes_fees', $no_fees );
+add_filter( 'nashenski_shipping_package_total_includes_fees', $no_fees );
 $label = $test_order->get_meta( 'nashenski_econt_label' )['label'];
 pdf_check( 120.0 === (float) Service_Policy::for_order( $label, $test_order, $pdf_app->container() )['services']['declaredValueAmount'], 'Fee-exclusion filter retained' );
-remove_filter( 'nashenski/shipping/package_total_includes_fees', $no_fees );
+remove_filter( 'nashenski_shipping_package_total_includes_fees', $no_fees );
 $old_cart    = WC()->cart;
 WC()->cart   = null;
 $policy_sent = array();
@@ -288,10 +288,10 @@ $override   = function ( $request ) {
 	$request['label']['services']['declaredValueAmount'] = 88;
 	return $request;
 };
-add_filter( 'nashenski/econt/create_label', $override );
+add_filter( 'nashenski_econt_create_label', $override );
 $policy_sent = array();
 Econt::generate_label_after_order_generated( $test_order->get_id() );
-remove_filter( 'nashenski/econt/create_label', $override );
+remove_filter( 'nashenski_econt_create_label', $override );
 pdf_check( 88 === end( $policy_sent )[1]['label']['services']['declaredValueAmount'], 'Trusted create-label filter remains after policy repair' );
 $test_order    = policy_order( 903 );
 $save_override = function ( $request ) {
@@ -299,10 +299,10 @@ $save_override = function ( $request ) {
 	$request['label']['payAfterTest']                    = false;
 	return $request;
 };
-add_filter( 'nashenski/econt/label_before_save', $save_override );
+add_filter( 'nashenski_econt_label_before_save', $save_override );
 WC()->session->set( 'nashenski-econt-label', $test_order->get_meta( 'nashenski_econt_label' ) );
 Method::save_label_data_to_order( $test_order->get_id() );
-remove_filter( 'nashenski/econt/label_before_save', $save_override );
+remove_filter( 'nashenski_econt_label_before_save', $save_override );
 $policy_sent = array();
 Econt::generate_label_after_order_generated( $test_order->get_id() );
 $sent = end( $policy_sent )[1]['label'];
@@ -312,10 +312,10 @@ $omit       = function ( $request ) {
 	unset( $request['label']['services']['declaredValueAmount'], $request['label']['services']['declaredValueCurrency'], $request['label']['payAfterAccept'], $request['label']['payAfterTest'] );
 	return $request;
 };
-add_filter( 'nashenski/econt/label_before_save', $omit );
+add_filter( 'nashenski_econt_label_before_save', $omit );
 WC()->session->set( 'nashenski-econt-label', $test_order->get_meta( 'nashenski_econt_label' ) );
 Method::save_label_data_to_order( $test_order->get_id() );
-remove_filter( 'nashenski/econt/label_before_save', $omit );
+remove_filter( 'nashenski_econt_label_before_save', $omit );
 $policy_sent = array();
 Econt::generate_label_after_order_generated( $test_order->get_id() );
 $sent = end( $policy_sent )[1]['label'];

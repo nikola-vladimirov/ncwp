@@ -95,8 +95,7 @@ class Payment {
 		if ( $order->meta_exists( self::COD_OVERRIDE_META ) ) {
 			return self::amount( $order->get_meta( self::COD_OVERRIDE_META, true, 'edit' ) ); }
 		$total = 0;
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		$types = apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) ? array( 'line_item', 'fee' ) : array( 'line_item' );
+		$types = \Nashenski\Hooks::filter( 'nashenski_shipping_package_total_includes_fees', 'nashenski/shipping/package_total_includes_fees', true ) ? array( 'line_item', 'fee' ) : array( 'line_item' );
 		foreach ( $order->get_items( $types ) as $item ) {
 			$total += (float) $item->get_total() + (float) $item->get_total_tax();
 		}
@@ -182,8 +181,7 @@ class Payment {
 		self::amount( $shipping );
 		if ( $order->get_payment_method() !== 'cod' || null !== $override || $order->meta_exists( self::COD_OVERRIDE_META ) ) {
 			return; }
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		$types = apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) ? array( 'line_item', 'fee' ) : array( 'line_item' );
+		$types = \Nashenski\Hooks::filter( 'nashenski_shipping_package_total_includes_fees', 'nashenski/shipping/package_total_includes_fees', true ) ? array( 'line_item', 'fee' ) : array( 'line_item' );
 		$total = $shipping;
 		foreach ( $order->get_items( $types ) as $original ) {
 			$item = clone $original;

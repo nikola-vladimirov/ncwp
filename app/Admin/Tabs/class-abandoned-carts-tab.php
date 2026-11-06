@@ -28,8 +28,9 @@ class Abandoned_Carts_Tab extends Base_Tab {
 	 * Load fields.
 	 */
 	public function load_fields() {
-		$fields = apply_filters(
-			'nashenski/admin/settings/abandoned_carts/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$fields = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_abandoned_carts_fields',
+			'nashenski/admin/settings/abandoned_carts/fields',
 			array(
 				'abandoned_carts' => array(
 					( new Fields\Text_Field(

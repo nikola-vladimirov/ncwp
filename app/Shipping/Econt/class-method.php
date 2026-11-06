@@ -191,11 +191,11 @@ class Method extends \WC_Shipping_Method {
 		$this->packing_budget()->spend( count( $package['contents'] ?? array() ) );
 		$disable_aps = ( 'automat' === $this->delivery_type && ! APSBoxes::package_fits_largest_automat( $this->package, $this->packing_budget() ) );
 
-		if ( apply_filters( 'nashenski/econt/rate/disable_aps', $disable_aps, $this ) ) { // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		if ( \Nashenski\Hooks::filter( 'nashenski_econt_rate_disable_aps', 'nashenski/econt/rate/disable_aps', $disable_aps, $this ) ) {
 			return;
 		}
 
-		do_action( 'nashenski/econt/rate/before_calculate', $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		\Nashenski\Hooks::action( 'nashenski_econt_rate_before_calculate', 'nashenski/econt/rate/before_calculate', $this );
 
 		$rate = array(
 			'label'     => $this->title,
@@ -206,7 +206,7 @@ class Method extends \WC_Shipping_Method {
 		$rate['meta_data']['delivery_type'] = $this->delivery_type;
 		$rate['meta_data']['validated']     = false;
 		$chosen_shippings                   = WC()->session->get( 'chosen_shipping_methods' );
-		$country                            = apply_filters( 'nashenski/econt/country_for_validation', $package['destination']['country'], $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		$country                            = \Nashenski\Hooks::filter( 'nashenski_econt_country_for_validation', 'nashenski/econt/country_for_validation', $package['destination']['country'], $this );
 
 		if ( isset( $this->cookie_data['type'] ) &&
 			$this->cookie_data['type'] === $this->delivery_type &&
@@ -255,7 +255,7 @@ class Method extends \WC_Shipping_Method {
 			unset( $rate['taxes'] );
 		}
 
-		$rate = apply_filters( 'nashenski/econt/rate', $rate, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		$rate = \Nashenski\Hooks::filter( 'nashenski_econt_rate', 'nashenski/econt/rate', $rate, $this );
 
 		// Register the rate.
 		$this->packing_budget()->spend( 0 );
@@ -419,7 +419,7 @@ class Method extends \WC_Shipping_Method {
 	 */
 	public function is_available( $package ) {
 		$countries = 'yes' === $this->get_option( 'international', 'no' ) ? array( 'BG', 'RO', 'GR' ) : array( 'BG' );
-		return in_array( $package['destination']['country'] ?? '', apply_filters( 'nashenski/econt/available_countries', $countries ), true ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		return in_array( $package['destination']['country'] ?? '', \Nashenski\Hooks::filter( 'nashenski_econt_available_countries', 'nashenski/econt/available_countries', $countries ), true );
 	}
 
 	/**
@@ -466,8 +466,9 @@ class Method extends \WC_Shipping_Method {
 		);
 
 		$label        = $this->generate_label();
-		$request_body = apply_filters(
-			'nashenski/econt/calculate_label', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		$request_body = \Nashenski\Hooks::filter(
+			'nashenski_econt_calculate_label',
+			'nashenski/econt/calculate_label',
 			array(
 				'label' => $label,
 				'mode'  => 'calculate',
@@ -801,7 +802,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		if ( ! $cart['weight'] ) {
-			$cart['weight'] = apply_filters( 'nashenski/econt/label/weight', 1, $this->package, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+			$cart['weight'] = \Nashenski\Hooks::filter( 'nashenski_econt_label_weight', 'nashenski/econt/label/weight', 1, $this->package, $this );
 		}
 
 		if ( ! is_numeric( $cart['weight'] ) || ! is_finite( (float) $cart['weight'] ) ) {
@@ -1072,7 +1073,7 @@ class Method extends \WC_Shipping_Method {
 						$overrides                          = $label[ Service_Policy::OVERRIDES ] ?? array();
 						$label['label']                     = Service_Policy::for_order( $label['label'], $order, nashenski()->container(), $shipping, $overrides );
 						$before_filter                      = $label['label'];
-						$label                              = apply_filters( 'nashenski/econt/label_before_save', $label, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+						$label                              = \Nashenski\Hooks::filter( 'nashenski_econt_label_before_save', 'nashenski/econt/label_before_save', $label, $order );
 						$label[ Service_Policy::OVERRIDES ] = Service_Policy::capture_overrides( $before_filter, $label['label'], $overrides );
 						$order->update_meta_data( 'nashenski_econt_label', $label );
 						WC()->session->__unset( 'nashenski-econt-label' );
@@ -1101,7 +1102,7 @@ class Method extends \WC_Shipping_Method {
 			$email_ids_to_send[] = 'customer_on_hold_order';
 		}
 
-		$email_ids_to_send = apply_filters( 'nashenski/econt/emails_to_send_label_number', $email_ids_to_send ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		$email_ids_to_send = \Nashenski\Hooks::filter( 'nashenski_econt_emails_to_send_label_number', 'nashenski/econt/emails_to_send_label_number', $email_ids_to_send );
 
 		if ( ! in_array( $email->id, $email_ids_to_send, true ) ) {
 			return;
@@ -1127,7 +1128,7 @@ class Method extends \WC_Shipping_Method {
 			)
 		);
 
-		$track_number_text = apply_filters( 'nashenski/econt/track_number_text_in_email', $track_number_text, $url, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		$track_number_text = \Nashenski\Hooks::filter( 'nashenski_econt_track_number_text_in_email', 'nashenski/econt/track_number_text_in_email', $track_number_text, $url, $order );
 
 		echo wp_kses_post( wpautop( $track_number_text ) );
 	}

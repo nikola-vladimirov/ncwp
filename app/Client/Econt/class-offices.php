@@ -57,8 +57,9 @@ class Offices {
 		$offices      = File::get_file( $offices_file );
 
 		if ( ! $offices ) {
-			$args = apply_filters(
-				'nashenski/econt/offices/api_call_args', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+			$args = \Nashenski\Hooks::filter(
+				'nashenski_econt_offices_api_call_args',
+				'nashenski/econt/offices/api_call_args',
 				array(
 					'countryCode' => 'BGR',
 					'cityID'      => $city_id,

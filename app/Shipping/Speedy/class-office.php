@@ -109,7 +109,7 @@ class Office {
 				}
 			}
 
-			$args['offices'] = apply_filters( 'nashenski/shipping_method/speedy/offices', $offices ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+			$args['offices'] = \Nashenski\Hooks::filter( 'nashenski_shipping_method_speedy_offices', 'nashenski/shipping_method/speedy/offices', $offices );
 			$args['status']  = 'valid-city';
 			$args['cityId']  = $cities_data['cities'][ $cities_data['city_key'] ]['id'];
 		}

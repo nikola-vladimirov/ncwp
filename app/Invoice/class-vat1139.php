@@ -17,9 +17,9 @@ class Vat1139 {
 	 * Registers the hooks.
 	 */
 	public function __construct() {
-		add_filter( 'nashenski/invoice/cart_headers', array( __CLASS__, 'filter_cart_headers' ), 10, 2 );
-		add_action( 'nashenski/invoice/pdf/default_template/additional_css', array( __CLASS__, 'add_filter_for_order_items' ), 10, 2 );
-		add_action( 'nashenski/invoice/pdf/default_template/after_table', array( __CLASS__, 'action_after_table' ), 15, 2 );
+		add_filter( 'nashenski_invoice_cart_headers', array( __CLASS__, 'filter_cart_headers' ), 10, 2 );
+		add_action( 'nashenski_invoice_pdf_default_template_additional_css', array( __CLASS__, 'add_filter_for_order_items' ), 10, 2 );
+		add_action( 'nashenski_invoice_pdf_default_template_after_table', array( __CLASS__, 'action_after_table' ), 15, 2 );
 	}
 
 	/**
@@ -29,11 +29,11 @@ class Vat1139 {
 	 */
 	public static function add_filter_for_order_items( $pdf ) {
 		if ( self::should_hide_vat( $pdf->document ) ) {
-			add_filter( 'nashenski/invoice/order/items', array( __CLASS__, 'filter_order_items' ), 10, 2 );
+			add_filter( 'nashenski_invoice_order_items', array( __CLASS__, 'filter_order_items' ), 10, 2 );
 		}
 
 		if ( self::is_invoice( $pdf->document ) ) {
-			add_filter( 'nashenski/invoice/order/total_items', array( __CLASS__, 'filter_order_totals' ), 10, 2 );
+			add_filter( 'nashenski_invoice_order_total_items', array( __CLASS__, 'filter_order_totals' ), 10, 2 );
 		}
 	}
 
@@ -89,14 +89,14 @@ class Vat1139 {
 	 */
 	public static function action_after_table( $order, $pdf ) {
 		if ( self::is_invoice( $pdf->document ) ) {
-			$text = apply_filters( 'nashenski/invoice/vat_113_9_additional_text', __( 'The invoice has been issued on the basis of Article 113, paragraph 9 of the Bulgarian VAT Act.', 'nashenski-commerce' ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+			$text = \Nashenski\Hooks::filter( 'nashenski_invoice_vat_113_9_additional_text', 'nashenski/invoice/vat_113_9_additional_text', __( 'The invoice has been issued on the basis of Article 113, paragraph 9 of the Bulgarian VAT Act.', 'nashenski-commerce' ) );
 			echo wp_kses_post( '<p class="fz-12">' . $text . '</p>' );
 
-			remove_filter( 'nashenski/invoice/order/total_items', array( __CLASS__, 'filter_order_totals' ), 10, 2 );
+			remove_filter( 'nashenski_invoice_order_total_items', array( __CLASS__, 'filter_order_totals' ), 10, 2 );
 		}
 
 		if ( self::should_hide_vat( $pdf->document ) ) {
-			remove_filter( 'nashenski/invoice/order/items', array( __CLASS__, 'filter_order_items' ), 10, 2 );
+			remove_filter( 'nashenski_invoice_order_items', array( __CLASS__, 'filter_order_items' ), 10, 2 );
 		}
 	}
 

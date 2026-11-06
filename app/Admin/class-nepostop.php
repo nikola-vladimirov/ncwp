@@ -19,8 +19,8 @@ class NepoStop {
 	 * Hooks the label events of the couriers.
 	 */
 	public function __construct() {
-		add_action( 'nashenski/econt/after_send_label', array( __CLASS__, 'send_econt_tracking_code' ), 20, 2 );
-		add_action( 'nashenski/speedy/after_send_label', array( __CLASS__, 'send_speedy_tracking_code' ), 20, 2 );
+		add_action( 'nashenski_econt_after_send_label', array( __CLASS__, 'send_econt_tracking_code' ), 20, 2 );
+		add_action( 'nashenski_speedy_after_send_label', array( __CLASS__, 'send_speedy_tracking_code' ), 20, 2 );
 	}
 
 	/**

@@ -44,8 +44,9 @@ class NepoStop_Tab extends Base_Tab {
 	 * @return void
 	 */
 	public function load_fields() {
-		$fields = apply_filters(
-			'nashenski/admin/settings/nepostop/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$fields = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_nepostop_fields',
+			'nashenski/admin/settings/nepostop/fields',
 			array(
 				'nepostop' => array(
 					new Fields\Text_Field( 'api_key', __( 'API Key', 'nashenski-commerce' ), null, 'required', __( 'Enter the provided API key from nepostop.com.', 'nashenski-commerce' ) ),
@@ -65,8 +66,9 @@ class NepoStop_Tab extends Base_Tab {
 	 * @return array
 	 */
 	public function get_groups_titles() {
-		$titles = apply_filters(
-			'nashenski/admin/settings/nepostop/groups_titles', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$titles = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_nepostop_groups_titles',
+			'nashenski/admin/settings/nepostop/groups_titles',
 			array(
 				'nepostop' => array(
 					'title' => __( 'NepoStop', 'nashenski-commerce' ),

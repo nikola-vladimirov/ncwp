@@ -5,8 +5,6 @@
  * @package Nashenski_Commerce
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
@@ -41,9 +39,9 @@ class Econt_Tab extends Base_Tab {
 		$this->set_name( __( 'Econt', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'econt' );
 
-		add_action( 'nashenski/admin/settings/after_save_fields/' . $this->tab_name, array( $this, 'after_save_fields' ) );
-		add_filter( 'nashenski/admin/settings/econt/fields', array( $this, 'add_profile_data_fields' ), 10 );
-		add_filter( 'nashenski/admin/settings/econt/fields', array( $this, 'add_send_from_fields' ), 20 );
+		add_action( 'nashenski_admin_settings_after_save_fields_' . $this->tab_name, array( $this, 'after_save_fields' ) );
+		add_filter( 'nashenski_admin_settings_econt_fields', array( $this, 'add_profile_data_fields' ), 10 );
+		add_filter( 'nashenski_admin_settings_econt_fields', array( $this, 'add_send_from_fields' ), 20 );
 	}
 
 	/**
@@ -74,7 +72,7 @@ class Econt_Tab extends Base_Tab {
 			),
 		);
 
-		$fields = apply_filters( 'nashenski/admin/settings/econt/fields', $fields );
+		$fields = \Nashenski\Hooks::filter( 'nashenski_admin_settings_econt_fields', 'nashenski/admin/settings/econt/fields', $fields );
 
 		$this->set_fields( $fields );
 	}
@@ -235,7 +233,8 @@ class Econt_Tab extends Base_Tab {
 	 * Get groups titles.
 	 */
 	public function get_groups_titles() {
-		$titles = apply_filters(
+		$titles = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_econt_groups_titles',
 			'nashenski/admin/settings/econt/groups_titles',
 			array(
 				'econt'           => array(

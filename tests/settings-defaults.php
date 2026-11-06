@@ -90,6 +90,7 @@ namespace {
 		return $GLOBALS['saved'][ $name ] ?? $fallback;
 	}
 
+	require_once __DIR__ . '/fixtures/hooks.php';
 	require __DIR__ . '/../app/functions.php';
 	foreach ( array( 'base-field', 'select-field', 'text-field', 'truefalse-field', 'image-field', 'color-field', 'multi-field', 'multi-two-field' ) as $class ) {
 		require __DIR__ . "/../app/Admin/Fields/class-$class.php";

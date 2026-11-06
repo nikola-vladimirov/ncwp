@@ -44,7 +44,7 @@ class Locker {
 		if ( ! \Nashenski\Front_End\Checkout\Pickers::connected( 'pigeon' ) ) {
 			wp_send_json_success(
 				array(
-					'lockers' => apply_filters( 'nashenski/shipping_method/pigeon/lockers', Office::public_list( 'locker', nashenski_picker_request( 'city' ) ) ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+					'lockers' => \Nashenski\Hooks::filter( 'nashenski_shipping_method_pigeon_lockers', 'nashenski/shipping_method/pigeon/lockers', Office::public_list( 'locker', nashenski_picker_request( 'city' ) ) ),
 					'status'  => 'valid-city',
 				)
 			);
@@ -80,7 +80,7 @@ class Locker {
 				$lockers = $lockers;
 			}
 
-			$args['lockers'] = apply_filters( 'nashenski/shipping_method/pigeon/lockers', $lockers ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+			$args['lockers'] = \Nashenski\Hooks::filter( 'nashenski_shipping_method_pigeon_lockers', 'nashenski/shipping_method/pigeon/lockers', $lockers );
 			$args['status']  = 'valid-city';
 		}
 

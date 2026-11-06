@@ -117,7 +117,7 @@ class Reports {
 		$providers = self::services()['ready'];
 
 		$providers = array_filter(
-			apply_filters( 'nashenski/reports/providers', $providers ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+			\Nashenski\Hooks::filter( 'nashenski_reports_providers', 'nashenski/reports/providers', $providers ),
 			function ( $provider ) {
 				return ( is_a( $provider, 'Nashenski\Reports\Providers\Provider_Base' ) );
 			}

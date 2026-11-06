@@ -39,9 +39,9 @@ class Speedy_Tab extends Base_Tab {
 		$this->set_name( __( 'Speedy', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'speedy' );
 
-		add_action( 'nashenski/admin/settings/after_save_fields/' . $this->tab_name, array( $this, 'after_save_fields' ) );
-		add_filter( 'nashenski/admin/settings/speedy/fields', array( $this, 'add_profile_data_fields' ), 10 );
-		add_filter( 'nashenski/admin/settings/speedy/fields', array( $this, 'add_send_from_fields' ), 20 );
+		add_action( 'nashenski_admin_settings_after_save_fields_' . $this->tab_name, array( $this, 'after_save_fields' ) );
+		add_filter( 'nashenski_admin_settings_speedy_fields', array( $this, 'add_profile_data_fields' ), 10 );
+		add_filter( 'nashenski_admin_settings_speedy_fields', array( $this, 'add_send_from_fields' ), 20 );
 	}
 
 	/**
@@ -55,7 +55,7 @@ class Speedy_Tab extends Base_Tab {
 			),
 		);
 
-		$fields = apply_filters( 'nashenski/admin/settings/speedy/fields', $fields ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$fields = \Nashenski\Hooks::filter( 'nashenski_admin_settings_speedy_fields', 'nashenski/admin/settings/speedy/fields', $fields );
 
 		$this->set_fields( $fields );
 	}
@@ -146,8 +146,9 @@ class Speedy_Tab extends Base_Tab {
 	 * Get groups titles.
 	 */
 	public function get_groups_titles() {
-		$titles = apply_filters(
-			'nashenski/admin/settings/speedy/groups_titles', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$titles = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_speedy_groups_titles',
+			'nashenski/admin/settings/speedy/groups_titles',
 			array(
 				'speedy'           => array(
 					'title' => __( 'Speedy account', 'nashenski-commerce' ),

@@ -170,7 +170,7 @@ class Documents {
 			) )
 		);
 
-		return apply_filters( 'nashenski/admin/order/maybe_generate_invoice', $generate_invoice, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		return \Nashenski\Hooks::filter( 'nashenski_admin_order_maybe_generate_invoice', 'nashenski/admin/order/maybe_generate_invoice', $generate_invoice, $order );
 	}
 
 	/**
@@ -180,7 +180,7 @@ class Documents {
 	 * @return mixed Result.
 	 */
 	public static function maybe_generate_proforma( $order ) {
-		return apply_filters( 'nashenski/admin/order/maybe_generate_proforma', self::maybe_generate_invoice( $order ), $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		return \Nashenski\Hooks::filter( 'nashenski_admin_order_maybe_generate_proforma', 'nashenski/admin/order/maybe_generate_proforma', self::maybe_generate_invoice( $order ), $order );
 	}
 
 	/**
@@ -295,6 +295,6 @@ class Documents {
 			}
 		}
 
-		return apply_filters( 'nashenski/admin/order/documents', $files, $main_order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		return \Nashenski\Hooks::filter( 'nashenski_admin_order_documents', 'nashenski/admin/order/documents', $files, $main_order );
 	}
 }

@@ -50,6 +50,7 @@ function apply_filters( $hook, $value ) {
 	return $value;
 }
 
+require_once __DIR__ . '/fixtures/hooks.php';
 require __DIR__ . '/../app/Pricing/class-price-lists.php';
 require __DIR__ . '/../app/Pricing/class-public-price.php';
 

@@ -95,7 +95,7 @@ class Export_Tab extends Base_Tab {
 			$additional_message .= '<br><br>' . ob_get_clean();
 		}
 
-		$additional_message = apply_filters( 'nashenski/admin/export/nra/additional_message', $additional_message, $export ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$additional_message = \Nashenski\Hooks::filter( 'nashenski_admin_export_nra_additional_message', 'nashenski/admin/export/nra/additional_message', $additional_message, $export );
 
 		wp_send_json_success(
 			array(

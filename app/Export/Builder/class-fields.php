@@ -5,8 +5,6 @@
  * @package Nashenski
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Export\Builder;
 
 defined( 'ABSPATH' ) || exit;
@@ -168,7 +166,7 @@ class Fields {
 			array( 'lines' )
 		);
 
-		return apply_filters( 'nashenski/export/builder/fields', $fields );
+		return \Nashenski\Hooks::filter( 'nashenski_export_builder_fields', 'nashenski/export/builder/fields', $fields );
 	}
 
 	/**
@@ -533,6 +531,6 @@ class Fields {
 			}
 		}
 
-		return apply_filters( 'nashenski/export/builder/value', '', $id, $row );
+		return \Nashenski\Hooks::filter( 'nashenski_export_builder_value', 'nashenski/export/builder/value', '', $id, $row );
 	}
 }

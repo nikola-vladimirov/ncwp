@@ -101,7 +101,7 @@ class EU_Vat {
 	 */
 	public static function get_eu_countries() {
 		if ( empty( self::$eu_countries ) ) {
-			self::$eu_countries = apply_filters( 'nashenski/eu_vat_number/country_codes', array( 'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'IM', 'MC' ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+			self::$eu_countries = \Nashenski\Hooks::filter( 'nashenski_eu_vat_number_country_codes', 'nashenski/eu_vat_number/country_codes', array( 'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'IM', 'MC' ) );
 		}
 		return self::$eu_countries;
 	}
@@ -391,7 +391,7 @@ class EU_Vat {
 			}
 		}
 
-		return apply_filters( 'nashenski/eu_vat/cart_has_digital_goods', $has_digital_goods ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		return \Nashenski\Hooks::filter( 'nashenski_eu_vat_cart_has_digital_goods', 'nashenski/eu_vat/cart_has_digital_goods', $has_digital_goods );
 	}
 
 	/**

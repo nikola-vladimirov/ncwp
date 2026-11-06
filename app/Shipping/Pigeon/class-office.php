@@ -45,7 +45,7 @@ class Office {
 		if ( ! \Nashenski\Front_End\Checkout\Pickers::connected( 'pigeon' ) ) {
 			wp_send_json_success(
 				array(
-					'offices' => apply_filters( 'nashenski/shipping_method/pigeon/offices', self::public_list( 'office', nashenski_picker_request( 'city' ) ) ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+					'offices' => \Nashenski\Hooks::filter( 'nashenski_shipping_method_pigeon_offices', 'nashenski/shipping_method/pigeon/offices', self::public_list( 'office', nashenski_picker_request( 'city' ) ) ),
 					'status'  => 'valid-city',
 				)
 			);
@@ -81,8 +81,7 @@ class Office {
 				$offices = $offices;
 			}
 
-			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-			$args['offices'] = apply_filters( 'nashenski/shipping_method/pigeon/offices', $offices );
+			$args['offices'] = \Nashenski\Hooks::filter( 'nashenski_shipping_method_pigeon_offices', 'nashenski/shipping_method/pigeon/offices', $offices );
 			$args['status']  = 'valid-city';
 		}
 

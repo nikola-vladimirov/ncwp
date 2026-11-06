@@ -92,9 +92,8 @@ class Order {
 	 * @param string    $generate_files 'true' to create missing documents.
 	 */
 	public function __construct( $woo_order, $generate_files ) {
-		$this->woo_order = $woo_order;
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		$this->order_id_to_show = apply_filters( 'nashenski/admin/export/order_id', $this->woo_order->get_order_number(), $this->woo_order );
+		$this->woo_order        = $woo_order;
+		$this->order_id_to_show = \Nashenski\Hooks::filter( 'nashenski_admin_export_order_id', 'nashenski/admin/export/order_id', $this->woo_order->get_order_number(), $this->woo_order );
 		$this->load_order_number( $generate_files );
 		$this->load_vat_groups();
 		$this->load_payment_method();
@@ -170,8 +169,9 @@ class Order {
 				continue;
 			}
 
-			$item_vat_rate = apply_filters(
-				'nashenski/admin/export/item_vat', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+			$item_vat_rate = \Nashenski\Hooks::filter(
+				'nashenski_admin_export_item_vat',
+				'nashenski/admin/export/item_vat',
 				nashenski_get_order_item_vat_rate( $item, $this->woo_order ),
 				$item,
 				$this->woo_order
@@ -216,8 +216,8 @@ class Order {
 				}
 			}
 
-			$price    = apply_filters( 'nashenski/admin/export/item_price', $price, $item, $this->woo_order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-			$item_vat = apply_filters( 'nashenski/admin/export/item_vat', $item_vat, $item, $this->woo_order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+			$price    = \Nashenski\Hooks::filter( 'nashenski_admin_export_item_price', 'nashenski/admin/export/item_price', $price, $item, $this->woo_order );
+			$item_vat = \Nashenski\Hooks::filter( 'nashenski_admin_export_item_vat', 'nashenski/admin/export/item_vat', $item_vat, $item, $this->woo_order );
 
 			$items[] = array(
 				/* translators: %s: shipping method name */
@@ -228,8 +228,7 @@ class Order {
 			);
 		}
 
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		return apply_filters( 'nashenski/admin/nra_export/items', $items, $this->woo_order );
+		return \Nashenski\Hooks::filter( 'nashenski_admin_nra_export_items', 'nashenski/admin/nra_export/items', $items, $this->woo_order );
 	}
 
 	/**
@@ -250,8 +249,7 @@ class Order {
 		}
 
 		$discount = ( wc_tax_enabled() ) ? $this->woo_order->get_total_discount() : nashenski_tax_based_price( $this->woo_order->get_total_discount(), $this->vat_groups[ $this->vat_group ], true );
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		$discount = apply_filters( 'nashenski/admin/nra_export/order_total_discount', $discount, $this->woo_order );
+		$discount = \Nashenski\Hooks::filter( 'nashenski_admin_nra_export_order_total_discount', 'nashenski/admin/nra_export/order_total_discount', $discount, $this->woo_order );
 
 		$data = array(
 			'order_id'              => $this->order_id_to_show,

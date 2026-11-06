@@ -6,8 +6,6 @@
  * @version 1.0.0
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Admin;
 
 use Nashenski\Admin\Tabs;
@@ -173,7 +171,7 @@ class Admin_Menus {
 			}
 		}
 
-		return apply_filters( 'nashenski/admin/get_tabs_items', $tabs );
+		return \Nashenski\Hooks::filter( 'nashenski_admin_get_tabs_items', 'nashenski/admin/get_tabs_items', $tabs );
 	}
 
 	/**

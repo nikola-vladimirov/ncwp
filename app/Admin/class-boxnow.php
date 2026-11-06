@@ -554,7 +554,7 @@ class BoxNow {
 	 */
 	public static function send_label_to_boxnow( $label, $order ) {
 		$data         = array();
-		$request_body = apply_filters( 'nashenski/boxnow/create_label', $label, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+		$request_body = \Nashenski\Hooks::filter( 'nashenski_boxnow_create_label', 'nashenski/boxnow/create_label', $label, $order );
 		$orig_items   = $request_body['items'];
 		$other_labels = array();
 
@@ -600,7 +600,7 @@ class BoxNow {
 			nashenski_add_label_order_note( $order, 'BOX NOW', 'created', wp_list_pluck( $response['parcels'] ?? array(), 'id' ) );
 		}
 
-		do_action( 'nashenski/boxnow/after_send_label', $data, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+		\Nashenski\Hooks::action( 'nashenski_boxnow_after_send_label', 'nashenski/boxnow/after_send_label', $data, $order );
 
 		return $data;
 	}

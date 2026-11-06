@@ -39,7 +39,7 @@ class Pigeon {
 		add_action( 'wp_ajax_nashenski_pigeon_update_shipment_status', array( __CLASS__, 'update_shipment_status' ) );
 		add_action( 'wp_ajax_nashenski_pigeon_print_labels', array( __CLASS__, 'print_labels_endpoint' ) );
 
-		add_filter( 'nashenski/pigeon/calculate_label', array( __CLASS__, 'set_min_package_weight' ), 30 );
+		add_filter( 'nashenski_pigeon_calculate_label', array( __CLASS__, 'set_min_package_weight' ), 30 );
 	}
 
 	/**
@@ -674,7 +674,7 @@ class Pigeon {
 			return $label;
 		}
 
-		$min_weight = (float) apply_filters( 'nashenski/pigeon/min_package_weight', 0.100 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$min_weight = (float) \Nashenski\Hooks::filter( 'nashenski_pigeon_min_package_weight', 'nashenski/pigeon/min_package_weight', 0.100 );
 
 		foreach ( $label['packages'] as &$package ) {
 			if ( ! isset( $package['weight'] ) || ! is_numeric( $package['weight'] ) || (float) $package['weight'] < $min_weight ) {
@@ -714,7 +714,7 @@ class Pigeon {
 	public static function send_label_to_pigeon( $label, $order ) {
 		$data         = array();
 		$container    = nashenski()->container();
-		$request_body = apply_filters( 'nashenski/pigeon/create_label', $label, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$request_body = \Nashenski\Hooks::filter( 'nashenski_pigeon_create_label', 'nashenski/pigeon/create_label', $label, $order );
 		if ( isset( $request_body['service_codes']['cod_amount'] ) ) {
 			$request_body['service_codes']['cod_amount'] = Payment::amount( $request_body['service_codes']['cod_amount'] );
 		}
@@ -743,7 +743,7 @@ class Pigeon {
 			nashenski_add_label_order_note( $order, 'Pigeon Express', 'created', $response['data']['reference_number'] ?? '' );
 		}
 
-		do_action( 'nashenski/pigeon/after_send_label', $data, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		\Nashenski\Hooks::action( 'nashenski_pigeon_after_send_label', 'nashenski/pigeon/after_send_label', $data, $order );
 
 		return $data;
 	}

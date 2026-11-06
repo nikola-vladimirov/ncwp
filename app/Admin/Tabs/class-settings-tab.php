@@ -5,8 +5,6 @@
  * @package Nashenski
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
@@ -29,7 +27,8 @@ class Settings_Tab extends Base_Tab {
 	 * Loads the fields of the tab.
 	 */
 	public function load_fields() {
-		$fields = apply_filters(
+		$fields = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_fields',
 			'nashenski/admin/settings/fields',
 			array(
 				'apis'    => array(
@@ -61,7 +60,8 @@ class Settings_Tab extends Base_Tab {
 	 * @return array
 	 */
 	public function get_groups_titles() {
-		$titles = apply_filters(
+		$titles = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_groups_titles',
 			'nashenski/admin/settings/groups_titles',
 			array(
 				'apis'    => array(

@@ -28,8 +28,9 @@ class Shipping_Tab extends Base_Tab {
 	 * @return void
 	 */
 	public function load_fields() {
-		$fields = apply_filters(
-			'nashenski/admin/shipping/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$fields = \Nashenski\Hooks::filter(
+			'nashenski_admin_shipping_fields',
+			'nashenski/admin/shipping/fields',
 			array(
 				'checkout' => array(
 					new Fields\Select_Field(
@@ -89,8 +90,9 @@ class Shipping_Tab extends Base_Tab {
 	 * @return array
 	 */
 	public function get_groups_titles() {
-		$titles = apply_filters(
-			'nashenski/admin/shipping/groups_titles', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$titles = \Nashenski\Hooks::filter(
+			'nashenski_admin_shipping_groups_titles',
+			'nashenski/admin/shipping/groups_titles',
 			array(
 				'checkout' => array(
 					'title' => __( 'Countries and delivery', 'nashenski-commerce' ),

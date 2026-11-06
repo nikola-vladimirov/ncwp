@@ -282,8 +282,9 @@ class Cities {
 	 * @return array
 	 */
 	public function get_regions( $country_id = 100 ) {
-		$regions = apply_filters(
-			'nashenski/speedy/cities/regions', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$regions = \Nashenski\Hooks::filter(
+			'nashenski_speedy_cities_regions',
+			'nashenski/speedy/cities/regions',
 			array(
 				100 => array(
 					'BG-01' => 'BLAGOEVGRAD',

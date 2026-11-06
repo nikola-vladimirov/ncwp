@@ -191,13 +191,13 @@ class Method extends \WC_Shipping_Method {
 		);
 
 		if (
-			apply_filters( 'nashenski/pigeon/rate/disable_aps', $disable_aps, $this ) || // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
-			apply_filters( 'nashenski/pigeon/rate/disable_packages', $disable_packages, $this ) // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+			\Nashenski\Hooks::filter( 'nashenski_pigeon_rate_disable_aps', 'nashenski/pigeon/rate/disable_aps', $disable_aps, $this ) ||
+			\Nashenski\Hooks::filter( 'nashenski_pigeon_rate_disable_packages', 'nashenski/pigeon/rate/disable_packages', $disable_packages, $this )
 		) {
 			return;
 		}
 
-		do_action( 'nashenski/pigeon/rate/before_calculate', $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		\Nashenski\Hooks::action( 'nashenski_pigeon_rate_before_calculate', 'nashenski/pigeon/rate/before_calculate', $this );
 
 		$rate = array(
 			'label'     => $this->title,
@@ -209,7 +209,7 @@ class Method extends \WC_Shipping_Method {
 		$rate['meta_data']['validated']     = false;
 		$payment_by_data                    = $this->generate_payment_by_data();
 		$chosen_shippings                   = WC()->session->get( 'chosen_shipping_methods' );
-		$country                            = apply_filters( 'nashenski/pigeon/country_for_validation', $package['destination']['country'], $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$country                            = \Nashenski\Hooks::filter( 'nashenski_pigeon_country_for_validation', 'nashenski/pigeon/country_for_validation', $package['destination']['country'], $this );
 
 		if ( isset( $this->cookie_data['type'] ) &&
 			$this->cookie_data['type'] === $this->delivery_type &&
@@ -251,7 +251,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		if ( ! $this->free_shipping && ! empty( $this->fixed_price ) ) {
-			$tax_rate     = apply_filters( 'nashenski/shipping/fixed_price_tax_rate', 20, $country ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+			$tax_rate     = \Nashenski\Hooks::filter( 'nashenski_shipping_fixed_price_tax_rate', 'nashenski/shipping/fixed_price_tax_rate', 20, $country );
 			$rate['cost'] = nashenski_tax_based_price( $this->fixed_price, $tax_rate );
 
 			if ( wc_tax_enabled() ) {
@@ -259,7 +259,7 @@ class Method extends \WC_Shipping_Method {
 			}
 		}
 
-		$rate = apply_filters( 'nashenski/pigeon/rate', $rate, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$rate = \Nashenski\Hooks::filter( 'nashenski_pigeon_rate', 'nashenski/pigeon/rate', $rate, $this );
 
 		// Register the rate.
 		$this->packing_budget()->spend( 0 );
@@ -352,7 +352,7 @@ class Method extends \WC_Shipping_Method {
 	 * @return mixed Result.
 	 */
 	public function is_available( $package ) {
-		return in_array( $package['destination']['country'], apply_filters( 'nashenski/pigeon/available_countries', array( 'BG' ) ), true ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		return in_array( $package['destination']['country'], \Nashenski\Hooks::filter( 'nashenski_pigeon_available_countries', 'nashenski/pigeon/available_countries', array( 'BG' ) ), true );
 	}
 
 	/**
@@ -380,7 +380,7 @@ class Method extends \WC_Shipping_Method {
 			'price' => '0',
 		);
 
-		$request_body = apply_filters( 'nashenski/pigeon/calculate_label', $this->generate_label(), $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$request_body = \Nashenski\Hooks::filter( 'nashenski_pigeon_calculate_label', 'nashenski/pigeon/calculate_label', $this->generate_label(), $this );
 		$this->packing_budget()->spend( 0 );
 
 		WC()->session->set( 'nashenski-pigeon-label', $request_body );
@@ -602,7 +602,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		if ( ! $weight ) {
-			$weight = apply_filters( 'nashenski/pigeon/label/weight', 1, $this->package, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+			$weight = \Nashenski\Hooks::filter( 'nashenski_pigeon_label_weight', 'nashenski/pigeon/label/weight', 1, $this->package, $this );
 		}
 		if ( ! is_numeric( $weight ) || ! is_finite( (float) $weight ) ) {
 			throw new Packing_Limit_Exceeded( 'Shipping weight must be finite.' );
@@ -815,7 +815,7 @@ class Method extends \WC_Shipping_Method {
 			$email_ids_to_send[] = 'customer_on_hold_order';
 		}
 
-		$email_ids_to_send = apply_filters( 'nashenski/pigeon/emails_to_send_label_number', $email_ids_to_send ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$email_ids_to_send = \Nashenski\Hooks::filter( 'nashenski_pigeon_emails_to_send_label_number', 'nashenski/pigeon/emails_to_send_label_number', $email_ids_to_send );
 
 		if ( ! in_array( $email->id, $email_ids_to_send, true ) ) {
 			return;
@@ -841,7 +841,7 @@ class Method extends \WC_Shipping_Method {
 			)
 		);
 
-		$track_number_text = apply_filters( 'nashenski/pigeon/track_number_text_in_email', $track_number_text, $url, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$track_number_text = \Nashenski\Hooks::filter( 'nashenski_pigeon_track_number_text_in_email', 'nashenski/pigeon/track_number_text_in_email', $track_number_text, $url, $order );
 
 		echo wp_kses_post( wpautop( $track_number_text ) );
 	}

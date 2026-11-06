@@ -108,9 +108,9 @@ class Export {
 			}
 		}
 
-		if ( has_filter( 'nashenski/admin/delta_export/documents' ) ) {
+		if ( has_filter( 'nashenski_admin_delta_export_documents' ) || has_filter( 'nashenski/admin/delta_export/documents' ) ) {
 			$this->woo_orders = array_filter( array_map( 'wc_get_order', $this->order_ids ) );
-			$this->documents  = apply_filters( 'nashenski/admin/delta_export/documents', $this->documents, $this->woo_orders ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+			$this->documents  = \Nashenski\Hooks::filter( 'nashenski_admin_delta_export_documents', 'nashenski/admin/delta_export/documents', $this->documents, $this->woo_orders );
 		}
 
 		return $this->generate_zip();

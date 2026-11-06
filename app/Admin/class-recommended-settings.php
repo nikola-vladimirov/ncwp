@@ -142,7 +142,7 @@ class Recommended_Settings {
 			);
 		}
 
-		return apply_filters( 'nashenski/recommended_settings', $items ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		return \Nashenski\Hooks::filter( 'nashenski_recommended_settings', 'nashenski/recommended_settings', $items );
 	}
 
 	/**

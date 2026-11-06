@@ -5,8 +5,6 @@
  * @package Nashenski
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Invoice\Order;
 
 use Nashenski\Invoice\CurrencyToString;
@@ -78,7 +76,7 @@ class Order {
 		$this->set_remove_shipping();
 
 		if ( 'yes' === nashenski_get_option( 'invoice', 'total_text' ) ) {
-			add_action( 'nashenski/invoice/pdf/default_template/after_table', array( __CLASS__, 'print_total_in_words' ), 10, 2 );
+			add_action( 'nashenski_invoice_pdf_default_template_after_table', array( __CLASS__, 'print_total_in_words' ), 10, 2 );
 		}
 	}
 
@@ -138,7 +136,7 @@ class Order {
 				$this->order_taxes = $this->woo_order->get_taxes();
 			} else {
 				$items[] = array(
-					'name'     => apply_filters( 'nashenski/invoice/order/item_name', $this->woo_order->get_reason(), null ),
+					'name'     => \Nashenski\Hooks::filter( 'nashenski_invoice_order_item_name', 'nashenski/invoice/order/item_name', $this->woo_order->get_reason(), null ),
 					'quantity' => 1,
 					'vat_rate' => '',
 					'price'    => wc_price( abs( $this->woo_order->get_total() ), array( 'currency' => $this->woo_order->get_currency() ) ),
@@ -153,10 +151,11 @@ class Order {
 
 				$subtotal = ( method_exists( $item, 'get_subtotal' ) ) ? $item->get_subtotal() : $item->get_total();
 
-				$items[] = apply_filters(
+				$items[] = \Nashenski\Hooks::filter(
+					'nashenski_invoice_order_item',
 					'nashenski/invoice/order/item',
 					array(
-						'name'     => apply_filters( 'nashenski/invoice/order/item_name', $item->get_name(), $item ),
+						'name'     => \Nashenski\Hooks::filter( 'nashenski_invoice_order_item_name', 'nashenski/invoice/order/item_name', $item->get_name(), $item ),
 						'quantity' => $qty,
 						'vat_rate' => nashenski_get_order_item_vat_rate( $item, $this->woo_order, 1 ) . '%',
 						'price'    => wc_price( abs( $subtotal / $qty ), array( 'currency' => $this->woo_order->get_currency() ) ),
@@ -214,11 +213,12 @@ class Order {
 
 				$item_total = $item_price * $item->get_quantity();
 
-				$items[] = apply_filters(
+				$items[] = \Nashenski\Hooks::filter(
+					'nashenski_invoice_order_item',
 					'nashenski/invoice/order/item',
 					array(
 						/* translators: %s: shipping method name */
-						'name'     => apply_filters( 'nashenski/invoice/order/item_name', sprintf( __( 'Shipping: %s', 'nashenski-commerce' ), $item->get_name() ), $item ),
+						'name'     => \Nashenski\Hooks::filter( 'nashenski_invoice_order_item_name', 'nashenski/invoice/order/item_name', sprintf( __( 'Shipping: %s', 'nashenski-commerce' ), $item->get_name() ), $item ),
 						'quantity' => abs( $item->get_quantity() ),
 						'vat_rate' => nashenski_maybe_add_rate_group( $item_vat ) . '%',
 						'price'    => wc_price( abs( $item_price ), array( 'currency' => $this->woo_order->get_currency() ) ),
@@ -248,7 +248,7 @@ class Order {
 			$this->woo_order->calculate_totals( true );
 		}
 
-		return apply_filters( 'nashenski/invoice/order/items', $items, $this );
+		return \Nashenski\Hooks::filter( 'nashenski_invoice_order_items', 'nashenski/invoice/order/items', $items, $this );
 	}
 
 	/**
@@ -358,7 +358,7 @@ class Order {
 			$this->woo_order->calculate_totals( true );
 		}
 
-		return apply_filters( 'nashenski/invoice/order/total_items', $items, $this );
+		return \Nashenski\Hooks::filter( 'nashenski_invoice_order_total_items', 'nashenski/invoice/order/total_items', $items, $this );
 	}
 
 	/**

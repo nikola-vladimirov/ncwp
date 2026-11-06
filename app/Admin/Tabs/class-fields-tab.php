@@ -28,8 +28,9 @@ class Fields_Tab extends Base_Tab {
 	 * Load fields.
 	 */
 	public function load_fields() {
-		$fields = apply_filters(
-			'nashenski/admin/settings/fields/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+		$fields = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_fields_fields',
+			'nashenski/admin/settings/fields/fields',
 			array(
 				\Nashenski\Front_End\Checkout\Company_Fields::GROUP => array(
 					( new Fields\TrueFalse_Field( 'fields', __( 'Company invoice fields', 'nashenski-commerce' ), null, null, __( 'Add "I want an invoice for a company" to the checkout. When ticked, the customer fills in company name, EIK, VAT number, MOL, town and address.', 'nashenski-commerce' ) ) )->set_default( \Nashenski\Front_End\Checkout\Company_Fields::enabled() ? 'yes' : 'no' ),

@@ -21,7 +21,7 @@ class Proforma extends BaseDocument {
 	public function __construct( $order ) {
 		parent::__construct( $order );
 
-		$this->set_title( apply_filters( 'nashenski/admin/invoice/order_document_title', __( 'Pro forma', 'nashenski-commerce' ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
+		$this->set_title( \Nashenski\Hooks::filter( 'nashenski_admin_invoice_order_document_title', 'nashenski/admin/invoice/order_document_title', __( 'Pro forma', 'nashenski-commerce' ) ) );
 		$this->meta = 'nashenski_proform_document';
 
 		if ( nashenski_get_option( 'invoice', 'next_invoice_separate_number' ) ) {

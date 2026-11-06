@@ -5,8 +5,6 @@
  * @package Nashenski
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Client\Econt;
 
 use Nashenski\Container\Client;
@@ -279,7 +277,8 @@ class Cities {
 	 * @return array
 	 */
 	public function get_regions( $country_code = 'BG' ) {
-		$regions = apply_filters(
+		$regions = \Nashenski\Hooks::filter(
+			'nashenski_econt_cities_regions',
 			'nashenski/econt/cities/regions',
 			array(
 				'BG' => array(

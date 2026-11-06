@@ -135,6 +135,7 @@ namespace Automattic\WooCommerce\Utilities {
 
 namespace {
 	define( 'ABSPATH', __DIR__ . '/fixtures/' );
+	require_once __DIR__ . '/fixtures/hooks.php';
 	require __DIR__ . '/../vendor/autoload.php';
 	require_once __DIR__ . '/../app/autoload.php';
 	/**

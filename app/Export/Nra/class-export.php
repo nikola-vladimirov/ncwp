@@ -94,11 +94,11 @@ class Export {
 
 		$order_args          = array(
 			'date_paid' => $timespan,
-			'status'    => apply_filters( 'nashenski/admin/export/orders_statuses', array( 'wc-completed', 'wc-processing' ) ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+			'status'    => \Nashenski\Hooks::filter( 'nashenski_admin_export_orders_statuses', 'nashenski/admin/export/orders_statuses', array( 'wc-completed', 'wc-processing' ) ),
 		);
 		$refunded_order_args = array(
 			'date_created' => $timespan,
-			'status'       => apply_filters( 'nashenski/admin/export/refunded_orders_statuses', array( 'wc-completed', 'wc-refunded' ) ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+			'status'       => \Nashenski\Hooks::filter( 'nashenski_admin_export_refunded_orders_statuses', 'nashenski/admin/export/refunded_orders_statuses', array( 'wc-completed', 'wc-refunded' ) ),
 		);
 
 		$this->completed_orders_ids = array();
@@ -150,7 +150,7 @@ class Export {
 	}
 
 	/**
-	 * Orders of the month after the "nashenski/admin/export/orders" or "nashenski/admin/export/refunded_orders" filter.
+	 * Orders of the month after the "nashenski_admin_export_orders" or "nashenski_admin_export_refunded_orders" filter.
 	 *
 	 * @param array  $args Order query arguments.
 	 * @param string $type "refunded" or "orders".
@@ -160,10 +160,10 @@ class Export {
 		$orders = wc_get_orders( array_merge( $args, array( 'limit' => -1 ) ) );
 
 		if ( 'refunded' === $type ) {
-			return apply_filters( 'nashenski/admin/export/refunded_orders', $orders, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+			return \Nashenski\Hooks::filter( 'nashenski_admin_export_refunded_orders', 'nashenski/admin/export/refunded_orders', $orders, $this );
 		}
 
-		return apply_filters( 'nashenski/admin/export/orders', $orders, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		return \Nashenski\Hooks::filter( 'nashenski_admin_export_orders', 'nashenski/admin/export/orders', $orders, $this );
 	}
 
 	/**
@@ -175,7 +175,8 @@ class Export {
 	 * @return void
 	 */
 	protected function walk_orders( $args, $type, $callback ) {
-		if ( has_filter( 'refunded' === $type ? 'nashenski/admin/export/refunded_orders' : 'nashenski/admin/export/orders' ) ) {
+		$hooks = 'refunded' === $type ? array( 'nashenski_admin_export_refunded_orders', 'nashenski/admin/export/refunded_orders' ) : array( 'nashenski_admin_export_orders', 'nashenski/admin/export/orders' );
+		if ( has_filter( $hooks[0] ) || has_filter( $hooks[1] ) ) {
 			$orders = $this->filtered_orders( $args, $type );
 
 			foreach ( $orders as $order ) {
@@ -187,7 +188,7 @@ class Export {
 
 		$page    = 1;
 		$fetched = 0;
-		$limit   = (int) apply_filters( 'nashenski/admin/export/query_batch_size', 100, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$limit   = (int) \Nashenski\Hooks::filter( 'nashenski_admin_export_query_batch_size', 'nashenski/admin/export/query_batch_size', 100, $this );
 		$limit   = max( 1, $limit );
 
 		do {

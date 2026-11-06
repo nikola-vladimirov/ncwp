@@ -24,8 +24,7 @@ class NRA extends BaseDocument {
 	public function __construct( $order ) {
 		parent::__construct( $order );
 
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		$this->set_title( apply_filters( 'nashenski/admin/invoice/order_document_title', __( 'Order - Original', 'nashenski-commerce' ) ) );
+		$this->set_title( \Nashenski\Hooks::filter( 'nashenski_admin_invoice_order_document_title', 'nashenski/admin/invoice/order_document_title', __( 'Order - Original', 'nashenski-commerce' ) ) );
 		$this->meta = 'nashenski_order_document';
 		$this->generate_QR_code();
 	}

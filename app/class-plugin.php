@@ -5,8 +5,6 @@
  * @package Nashenski_Commerce
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski;
 
 defined( 'ABSPATH' ) || exit;
@@ -151,7 +149,7 @@ class Plugin {
 	 * Load classes.
 	 */
 	private function load_classes() {
-		do_action( 'nashenski/before-init-classes', $this, $this->container );
+		\Nashenski\Hooks::action( 'nashenski_before-init-classes', 'nashenski/before-init-classes', $this, $this->container );
 
 		new Admin\Admin_Menus();
 		new Admin\Order\Columns();
@@ -223,7 +221,7 @@ class Plugin {
 			\WP_CLI::add_command( 'nashenski courier', 'Nashenski\CLI\Courier_Command' );
 		}
 
-		do_action( 'nashenski/init-classes' );
+		\Nashenski\Hooks::action( 'nashenski_init-classes', 'nashenski/init-classes' );
 	}
 
 	/**

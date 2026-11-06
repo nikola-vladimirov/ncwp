@@ -190,6 +190,7 @@ function nashenski_get_option() {
 	return '';
 }
 
+require_once __DIR__ . '/fixtures/hooks.php';
 require __DIR__ . '/../app/Shipping/Packer/class-packing-limit-exceeded.php';
 require __DIR__ . '/../app/Shipping/Packer/class-packing-budget.php';
 require __DIR__ . '/../app/Pricing/class-price-lists.php';

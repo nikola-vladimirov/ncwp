@@ -58,7 +58,7 @@ class Transliterate_Address {
 			$fields = array_merge( array( 'first_name', 'last_name' ), $fields );
 		}
 
-		return apply_filters( 'nashenski/transliteration/fields', $fields ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+		return \Nashenski\Hooks::filter( 'nashenski_transliteration_fields', 'nashenski/transliteration/fields', $fields );
 	}
 
 	/**

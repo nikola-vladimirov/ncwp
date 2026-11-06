@@ -5,8 +5,6 @@
  * @package Nashenski_Commerce
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Admin;
 
 defined( 'ABSPATH' ) || exit;
@@ -946,8 +944,8 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @param string $tab_class Tab class name.
 	 */
 	public static function run_after_save_fields( $tab_class ) {
-		do_action( 'nashenski/admin/settings/after_save_fields/' . $tab_class );
-		do_action_deprecated( 'nashenski/admin/settings/afte_save_fields/' . $tab_class, array(), '0.19.9', 'nashenski/admin/settings/after_save_fields/' . $tab_class );
+		\Nashenski\Hooks::action( 'nashenski_admin_settings_after_save_fields_' . $tab_class, 'nashenski/admin/settings/after_save_fields/' . $tab_class );
+		do_action_deprecated( 'nashenski/admin/settings/afte_save_fields/' . $tab_class, array(), '0.19.9', 'nashenski_admin_settings_after_save_fields_' . $tab_class );
 	}
 
 	/**

@@ -16,6 +16,7 @@ define( 'ABSPATH', __DIR__ . '/fixtures/' );
 function apply_filters( $hook, $value ) {
 	return $value; }
 
+require_once __DIR__ . '/fixtures/hooks.php';
 require __DIR__ . '/../app/Pricing/class-price-lists.php';
 require __DIR__ . '/../app/Pricing/class-econt-tariff.php';
 

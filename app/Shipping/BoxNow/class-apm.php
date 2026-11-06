@@ -56,7 +56,7 @@ class Apm {
 
 		$apms = array_values( $apms );
 
-		$args['apms'] = apply_filters( 'nashenski/shipping_method/boxnow/apms', $apms ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		$args['apms'] = \Nashenski\Hooks::filter( 'nashenski_shipping_method_boxnow_apms', 'nashenski/shipping_method/boxnow/apms', $apms );
 
 		wp_send_json_success( $args );
 

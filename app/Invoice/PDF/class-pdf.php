@@ -38,7 +38,7 @@ class PDF {
 	 */
 	public function __construct( $document ) {
 		$this->document   = $document;
-		$default_template = apply_filters( 'nashenski/invoice/pdf/default-template', $this->get_default_template(), $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		$default_template = \Nashenski\Hooks::filter( 'nashenski_invoice_pdf_default-template', 'nashenski/invoice/pdf/default-template', $this->get_default_template(), $this );
 
 		$this->set_template( $default_template );
 	}
@@ -87,7 +87,7 @@ class PDF {
 		$dompdf = new Dompdf( $options );
 		$dompdf->setPaper( 'letter' === Style::get()['paper'] ? 'letter' : 'A4' );
 
-		do_action( 'nashenski/invoice/pdf/dompdf', $dompdf, $options ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		\Nashenski\Hooks::action( 'nashenski_invoice_pdf_dompdf', 'nashenski/invoice/pdf/dompdf', $dompdf, $options );
 
 		ob_start();
 		$this->render_template();

@@ -39,7 +39,7 @@ class BoxNow_Tab extends Base_Tab {
 		$this->set_name( __( 'BOX NOW', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'boxnow' );
 
-		add_filter( 'nashenski/admin/settings/boxnow/fields', array( $this, 'add_send_from_fields' ), 20 );
+		add_filter( 'nashenski_admin_settings_boxnow_fields', array( $this, 'add_send_from_fields' ), 20 );
 	}
 
 	/**
@@ -70,7 +70,7 @@ class BoxNow_Tab extends Base_Tab {
 			),
 		);
 
-		$fields = apply_filters( 'nashenski/admin/settings/boxnow/fields', $fields ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+		$fields = \Nashenski\Hooks::filter( 'nashenski_admin_settings_boxnow_fields', 'nashenski/admin/settings/boxnow/fields', $fields );
 
 		$this->set_fields( $fields );
 	}
@@ -218,8 +218,9 @@ class BoxNow_Tab extends Base_Tab {
 	 * @return mixed Result.
 	 */
 	public function get_groups_titles() {
-		$titles = apply_filters(
-			'nashenski/admin/settings/boxnow/groups_titles', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+		$titles = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_boxnow_groups_titles',
+			'nashenski/admin/settings/boxnow/groups_titles',
 			array(
 				'boxnow'           => array(
 					'title' => __( 'BOX NOW account', 'nashenski-commerce' ),

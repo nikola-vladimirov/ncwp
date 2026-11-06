@@ -5,8 +5,6 @@
  * @package Nashenski_Commerce
  */
 
-// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
-
 namespace Nashenski\Front_End;
 
 use Nashenski\Abandoned_Carts\Tracker;
@@ -856,7 +854,7 @@ document.addEventListener("submit",function(e){
 		$ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
 
 		// Shops behind a proxy can return the real address here.
-		return (string) apply_filters( 'nashenski/quick_order/client_ip', $ip );
+		return (string) \Nashenski\Hooks::filter( 'nashenski_quick_order_client_ip', 'nashenski/quick_order/client_ip', $ip );
 	}
 
 	/**

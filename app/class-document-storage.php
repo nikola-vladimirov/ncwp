@@ -389,7 +389,7 @@ class Document_Storage {
 	 * @param mixed $meta Meta.
 	 */
 	public static function order_document_url( $order, $meta ) {
-		$expires = time() + (int) apply_filters( 'nashenski/documents/guest_link_lifetime', DAY_IN_SECONDS ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		$expires = time() + (int) \Nashenski\Hooks::filter( 'nashenski_documents_guest_link_lifetime', 'nashenski/documents/guest_link_lifetime', DAY_IN_SECONDS );
 
 		return add_query_arg(
 			array(
@@ -493,7 +493,7 @@ class Document_Storage {
 			$allowed = $signed;
 		}
 
-		return (bool) apply_filters( 'nashenski/documents/can_download', $allowed, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		return (bool) \Nashenski\Hooks::filter( 'nashenski_documents_can_download', 'nashenski/documents/can_download', $allowed, $order );
 	}
 
 	/**

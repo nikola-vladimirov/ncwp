@@ -58,7 +58,7 @@ class NRARefunded extends BaseDocument {
 		$this->return_method  = nashenski_get_option( 'shop', 'return_method' );
 		$this->payment_method = $this->return_methods[ $this->return_method ]['label'];
 
-		$this->set_title( apply_filters( 'nashenski/admin/invoice/order_document_title_refunded', __( 'Refunded Order - Original', 'nashenski-commerce' ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+		$this->set_title( \Nashenski\Hooks::filter( 'nashenski_admin_invoice_order_document_title_refunded', 'nashenski/admin/invoice/order_document_title_refunded', __( 'Refunded Order - Original', 'nashenski-commerce' ) ) );
 		$this->meta = 'nashenski_refunded_order_document';
 
 		$this->document_number_meta = 'nashenski_refunded_order_number';
@@ -70,8 +70,8 @@ class NRARefunded extends BaseDocument {
 	 * @return array
 	 */
 	public function get_head_items() {
-		return apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+		return \Nashenski\Hooks::filter(
+			'nashenski_invoice_head_items',
 			'nashenski/invoice/head_items',
 			array(
 				'reference'    => array(

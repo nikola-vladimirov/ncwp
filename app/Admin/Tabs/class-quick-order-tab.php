@@ -79,8 +79,9 @@ class Quick_Order_Tab extends Base_Tab {
 			$rows[] = ( new Fields\TrueFalse_Field( 'field_' . $key, $title, null, null, __( 'Show in the form (Custom template)', 'nashenski-commerce' ) ) )->set_default( 'no' );
 		}
 
-		$fields = apply_filters(
-			'nashenski/admin/settings/quick_order/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
+		$fields = \Nashenski\Hooks::filter(
+			'nashenski_admin_settings_quick_order_fields',
+			'nashenski/admin/settings/quick_order/fields',
 			array(
 				'quick_order' => $rows,
 			)

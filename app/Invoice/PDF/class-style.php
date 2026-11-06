@@ -208,7 +208,7 @@ class Style {
 			}
 		}
 
-		return apply_filters( 'nashenski/invoice/pdf/style', $style ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
+		return \Nashenski\Hooks::filter( 'nashenski_invoice_pdf_style', 'nashenski/invoice/pdf/style', $style );
 	}
 
 	/**

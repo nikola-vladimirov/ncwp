@@ -99,7 +99,7 @@ class Office {
 				}
 			}
 
-			$args['offices'] = apply_filters( 'nashenski/shipping_method/econt/offices', $offices ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+			$args['offices'] = \Nashenski\Hooks::filter( 'nashenski_shipping_method_econt_offices', 'nashenski/shipping_method/econt/offices', $offices );
 			$args['status']  = 'valid-city';
 		}
 

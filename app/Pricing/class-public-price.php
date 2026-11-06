@@ -104,8 +104,7 @@ class Public_Price {
 			$price += max( $list['cod']['min'], $cod_amount * $list['cod']['percent'] / 100 );
 		}
 
-		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-		$price = round( (float) apply_filters( 'nashenski/public_price', $price, $courier, $kind, $weight, $cod_amount ), 2 );
+		$price = round( (float) \Nashenski\Hooks::filter( 'nashenski_public_price', 'nashenski/public_price', $price, $courier, $kind, $weight, $cod_amount ), 2 );
 
 		// A shipping rate is never negative.
 		return $price < 0 ? null : $price;

@@ -37,7 +37,7 @@ class Speedy {
 		add_action( 'wp_ajax_nashenski_speedy_update_shipment_status', array( __CLASS__, 'update_shipment_status' ) );
 		add_action( 'wp_ajax_nashenski_speedy_print_labels', array( __CLASS__, 'print_labels_endpoint' ) );
 
-		add_filter( 'nashenski/speedy/calculate_label', array( __CLASS__, 'set_min_parcel_weight' ), 30, 2 );
+		add_filter( 'nashenski_speedy_calculate_label', array( __CLASS__, 'set_min_parcel_weight' ), 30, 2 );
 		// The minimum parcel weight is applied only when calculating a label, not on the create and update label filters.
 	}
 
@@ -538,7 +538,7 @@ class Speedy {
 				);
 			}
 
-			if ( ! empty( $order->get_items( 'fee' ) ) && apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) ) { // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+			if ( ! empty( $order->get_items( 'fee' ) ) && \Nashenski\Hooks::filter( 'nashenski_shipping_package_total_includes_fees', 'nashenski/shipping/package_total_includes_fees', true ) ) {
 				foreach ( $order->get_items( 'fee' ) as $item ) {
 					if ( $item->get_total() <= 0 ) {
 						continue;
@@ -607,7 +607,7 @@ class Speedy {
 			return $label;
 		}
 
-		$min_weight = (float) apply_filters( 'nashenski/speedy/min_parcel_weight', 0.100 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+		$min_weight = (float) \Nashenski\Hooks::filter( 'nashenski_speedy_min_parcel_weight', 'nashenski/speedy/min_parcel_weight', 0.100 );
 		$max_weight = self::get_max_parcel_weight( $label, $context );
 		if ( ! is_finite( $min_weight ) || $min_weight <= 0 || ! is_finite( $max_weight ) ) {
 			throw new Packing_Limit_Exceeded( 'Shipping parcel weights must be finite.' );
@@ -663,7 +663,7 @@ class Speedy {
 	 */
 	private static function get_max_parcel_weight( $label, $context = null ): float {
 		if ( ! empty( $label['service']['additionalServices']['declaredValue'] ) ) {
-			return (float) apply_filters( 'nashenski/speedy/max_parcel_weight', 32, self::get_delivery_type( $label, $context ), self::get_send_from_type( $context ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+			return (float) \Nashenski\Hooks::filter( 'nashenski_speedy_max_parcel_weight', 'nashenski/speedy/max_parcel_weight', 32, self::get_delivery_type( $label, $context ), self::get_send_from_type( $context ) );
 		}
 
 		return \Nashenski\Shipping\Speedy\Method::get_max_parcel_weight(
@@ -743,7 +743,7 @@ class Speedy {
 			self::update_order_shipping_price( $response, $order_id );
 		}
 
-		do_action( 'nashenski/speedy/after_send_label', $data, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+		\Nashenski\Hooks::action( 'nashenski_speedy_after_send_label', 'nashenski/speedy/after_send_label', $data, $order );
 
 		return $data;
 	}
@@ -1042,7 +1042,7 @@ class Speedy {
 			if ( 'RECIPIENT' === $payment_by['id'] ) {
 				$price = ( wc_tax_enabled() ) ? $response['price']['amount'] : $response['price']['total'];
 			} elseif ( 'fixed' === $payment_by['id'] && '' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' ) ) {
-				$tax_rate = apply_filters( 'nashenski/speedy/fixed_price_tax_rate', 20, $order->get_shipping_country() ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+				$tax_rate = \Nashenski\Hooks::filter( 'nashenski_speedy_fixed_price_tax_rate', 'nashenski/speedy/fixed_price_tax_rate', 20, $order->get_shipping_country() );
 				$price    = nashenski_tax_based_price( $cookie_data['fixed_price'], $tax_rate );
 			}
 		}
@@ -1090,13 +1090,13 @@ class Speedy {
 				$label['id'] = $shipment_status['id'];
 			}
 
-			$request_body = apply_filters( 'nashenski/speedy/update_label', $label, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+			$request_body = \Nashenski\Hooks::filter( 'nashenski_speedy_update_label', 'nashenski/speedy/update_label', $label, $order );
 
 			$response = $container[ Client::SPEEDY ]->label_request( 'update', $request_body );
 		} else {
 			unset( $label['id'] );
 
-			$request_body = apply_filters( 'nashenski/speedy/create_label', $label, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+			$request_body = \Nashenski\Hooks::filter( 'nashenski_speedy_create_label', 'nashenski/speedy/create_label', $label, $order );
 			$response     = $container[ Client::SPEEDY ]->label_request( 'create', $request_body );
 		}
 

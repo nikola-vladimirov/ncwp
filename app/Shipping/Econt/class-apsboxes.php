@@ -53,7 +53,7 @@ class APSBoxes {
 	 */
 	public function __construct() {
 		if ( nashenski_get_option( 'econt', self::OPTION_NAME ) === 'yes' ) {
-			add_filter( 'nashenski/econt/calculate_label', array( __CLASS__, 'calculate_label' ), 20, 2 );
+			add_filter( 'nashenski_econt_calculate_label', array( __CLASS__, 'calculate_label' ), 20, 2 );
 		}
 	}
 

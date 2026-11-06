@@ -53,6 +53,7 @@ namespace {
 			)
 		);
 	}
+	require_once __DIR__ . '/fixtures/hooks.php';
 	require __DIR__ . '/../vendor/autoload.php';
 	require_once __DIR__ . '/../app/autoload.php';
 	require __DIR__ . '/../app/Invoice/PDF/class-pdf.php';

@@ -2,6 +2,11 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.21.0 (unreleased)
+
+### Changes
+- Developer hooks use underscores: `nashenski/econt/rate` is now `nashenski_econt_rate`. The old slash names still work but are deprecated.
+
 ## 0.20.4 (2026-11-06)
 
 ### Fixes
