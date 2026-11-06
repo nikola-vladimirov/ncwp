@@ -1,9 +1,27 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
+/**
+ * Automat package packing.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Shipping\Packer;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Turns a WooCommerce shipping package into products and packs them into automat boxes.
+ */
 class APSPackage {
+	/**
+	 * Packs the package into the given boxes.
+	 *
+	 * @param array               $package                   Shipping package.
+	 * @param array               $box_sizes                 Boxes.
+	 * @param float|null          $volumetric_weight_divisor Volumetric weight divisor.
+	 * @param Packing_Budget|null $budget                    Work limit of the packer.
+	 * @return array
+	 */
 	public static function pack_package( $package, array $box_sizes, $volumetric_weight_divisor = null, ?Packing_Budget $budget = null ): array {
 		$products = self::get_products_from_package( $package, $budget );
 
@@ -14,6 +32,16 @@ class APSPackage {
 		return ( new APSPacker( $volumetric_weight_divisor, $budget ) )->pack( $products, $box_sizes );
 	}
 
+	/**
+	 * Whether the whole package fits one largest box.
+	 *
+	 * @param array               $package                   Shipping package.
+	 * @param array               $box_sizes                 Boxes.
+	 * @param float|null          $volumetric_weight_divisor Volumetric weight divisor.
+	 * @param Packing_Budget|null $budget                    Work limit of the packer.
+	 * @return bool
+	 * @throws Packing_Limit_Exceeded When the package is too big to pack.
+	 */
 	public static function package_fits_largest_box( $package, array $box_sizes, $volumetric_weight_divisor = null, ?Packing_Budget $budget = null ): bool {
 		$products = self::get_products_from_package( $package, $budget );
 
@@ -32,6 +60,15 @@ class APSPackage {
 		return count( $packed_boxes ) === 1;
 	}
 
+	/**
+	 * Whether each product, one at a time, fits the largest box.
+	 *
+	 * @param array               $package   Shipping package.
+	 * @param array               $box_sizes Boxes.
+	 * @param Packing_Budget|null $budget    Work limit of the packer.
+	 * @return bool
+	 * @throws Packing_Limit_Exceeded When the package is too big to pack.
+	 */
 	public static function package_products_fit_largest_box( $package, array $box_sizes, ?Packing_Budget $budget = null ): bool {
 		if ( $budget ) {
 			$contents = self::get_package_contents( $package );
@@ -73,6 +110,12 @@ class APSPackage {
 		return true;
 	}
 
+	/**
+	 * The box with the largest volume.
+	 *
+	 * @param array $box_sizes Boxes.
+	 * @return array
+	 */
 	private static function get_largest_box_size( array $box_sizes ): array {
 		if ( empty( $box_sizes ) ) {
 			return array();
@@ -88,6 +131,13 @@ class APSPackage {
 		return end( $box_sizes );
 	}
 
+	/**
+	 * Products of the package in cm and kg; items without dimensions go into one default product.
+	 *
+	 * @param array               $package Shipping package.
+	 * @param Packing_Budget|null $budget  Work limit of the packer.
+	 * @return array
+	 */
 	private static function get_products_from_package( $package, ?Packing_Budget $budget = null ): array {
 		$products       = array();
 		$default_weight = 0;
@@ -107,7 +157,7 @@ class APSPackage {
 			$product = $cart_item['data'];
 			if ( $budget && $product->get_length() && $product->get_width() && $product->get_height() ) {
 				$raw_quantity = $cart_item['quantity'] ?? 1;
-				$budget->check_units( $raw_quantity === '' ? 1 : $raw_quantity );
+				$budget->check_units( '' === $raw_quantity ? 1 : $raw_quantity );
 			}
 			$weight   = $product->get_weight() ? wc_get_weight( $product->get_weight(), 'kg' ) : 0;
 			$quantity = ! empty( $cart_item['quantity'] ) ? (int) $cart_item['quantity'] : 1;
@@ -141,6 +191,12 @@ class APSPackage {
 		return $products;
 	}
 
+	/**
+	 * Contents of the package, or an empty array.
+	 *
+	 * @param array $package Shipping package.
+	 * @return array
+	 */
 	private static function get_package_contents( $package ): array {
 		if ( empty( $package['contents'] ) || ! is_array( $package['contents'] ) ) {
 			return array();

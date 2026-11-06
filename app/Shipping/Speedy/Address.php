@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
+/**
+ * Speedy address picker.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Shipping\Speedy;
 
 use Nashenski\Container\Client;
@@ -6,9 +12,20 @@ use Nashenski\Transliteration;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * AJAX search of the Speedy streets and quarters of a town.
+ */
 class Address {
+	/**
+	 * Plugin container.
+	 *
+	 * @var mixed
+	 */
 	private static $container = null;
 
+	/**
+	 * Registers the AJAX hooks.
+	 */
 	public function __construct() {
 
 		add_action( 'wp_ajax_nashenski_speedy_load_streets', array( __CLASS__, 'load_streets' ) );
@@ -18,19 +35,22 @@ class Address {
 		add_action( 'wp_ajax_nopriv_nashenski_speedy_search_address', array( __CLASS__, 'search_address' ) );
 	}
 
+	/**
+	 * AJAX: streets and quarters that match the typed text, or the towns when the town is unknown.
+	 */
 	public static function search_address() {
 		nashenski_check_picker_request();
 
 		self::$container = nashenski()->container();
 		$args            = array();
 		$country_id      = self::$container[ Client::SPEEDY_COUNTRIES ]->get_country_id( nashenski_picker_request( 'country' ) );
-		$query           = self::normalize_api_query( nashenski_picker_request( 'query' ), (string) $country_id === '100' );
+		$query           = self::normalize_api_query( nashenski_picker_request( 'query' ), '100' === (string) $country_id );
 
 		$raw_city    = nashenski_picker_request( 'city' );
 		$raw_state   = nashenski_picker_request( 'state' );
 		$cities_data = self::$container[ Client::SPEEDY_CITIES ]->get_filtered_cities( $raw_city, $raw_state, $country_id );
 
-		if ( in_array( $cities_data['city'], $cities_data['cities_only_names'] ) ) {
+		if ( in_array( $cities_data['city'], $cities_data['cities_only_names'], true ) ) {
 			$city_id = $cities_data['cities'][ $cities_data['city_key'] ]['id'];
 
 			$streets  = array();
@@ -47,6 +67,9 @@ class Address {
 		wp_die();
 	}
 
+	/**
+	 * AJAX: all streets and quarters of the town.
+	 */
 	public static function load_streets() {
 		nashenski_check_picker_request();
 
@@ -57,7 +80,7 @@ class Address {
 		$country_id      = self::$container[ Client::SPEEDY_COUNTRIES ]->get_country_id( nashenski_picker_request( 'country' ) );
 		$cities_data     = self::$container[ Client::SPEEDY_CITIES ]->get_filtered_cities( $raw_city, $raw_state, $country_id );
 
-		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'] ) ) {
+		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'], true ) ) {
 			$args['cities'] = nashenski_return_array_for_select( $cities_data['cities_only_names_dropdowns'], 1, array( 'type' => 'city' ) );
 			$args['status'] = 'invalid-city';
 		} else {
@@ -76,6 +99,13 @@ class Address {
 		wp_die();
 	}
 
+	/**
+	 * Streets of a town that match the query, best matches first.
+	 *
+	 * @param int    $city_id Speedy town ID.
+	 * @param string $query   Typed text.
+	 * @return array
+	 */
 	public static function get_streets_for_query( $city_id, $query ) {
 		if ( ! self::$container ) {
 			self::$container = nashenski()->container();
@@ -93,6 +123,13 @@ class Address {
 		return $streets;
 	}
 
+	/**
+	 * Quarters of a town that match the query, best matches first.
+	 *
+	 * @param int    $city_id Speedy town ID.
+	 * @param string $query   Typed text.
+	 * @return array
+	 */
 	public static function get_quarters_for_query( $city_id, $query ) {
 		if ( ! self::$container ) {
 			self::$container = nashenski()->container();
@@ -110,6 +147,13 @@ class Address {
 		return $quarters;
 	}
 
+	/**
+	 * Merges quarters into the streets; a quarter replaces a street of the same name.
+	 *
+	 * @param array $streets  Street options.
+	 * @param array $quarters Quarter options.
+	 * @return array
+	 */
 	public static function merge_options( $streets, $quarters ) {
 		$test_streets = array_map(
 			function ( $street ) {
@@ -121,8 +165,8 @@ class Address {
 		foreach ( $quarters as $quarter ) {
 			$test_label = self::normalize_match_text( $quarter['label'] );
 
-			if ( in_array( $test_label, $test_streets ) ) {
-				$key             = array_search( $test_label, $test_streets );
+			if ( in_array( $test_label, $test_streets, true ) ) {
+				$key             = array_search( $test_label, $test_streets, true );
 				$streets[ $key ] = $quarter;
 			} else {
 				$streets[] = $quarter;
@@ -132,6 +176,13 @@ class Address {
 		return $streets;
 	}
 
+	/**
+	 * Query for the Speedy API: no street prefix, Cyrillic for Bulgaria, single spaces.
+	 *
+	 * @param string $query         Typed text.
+	 * @param bool   $transliterate Whether to turn Latin into Cyrillic.
+	 * @return string
+	 */
 	private static function normalize_api_query( $query, $transliterate ) {
 		$query = nashenski_strip_street_prefix( trim( (string) $query ) );
 
@@ -142,6 +193,12 @@ class Address {
 		return trim( preg_replace( '/[\s\p{Zs}]+/u', ' ', $query ) );
 	}
 
+	/**
+	 * Text for matching: no street prefix, lower case, letters and digits only.
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
 	private static function normalize_match_text( $text ) {
 		$text = nashenski_strip_street_prefix( trim( (string) $text ) );
 		$text = mb_strtolower( $text );
@@ -150,10 +207,17 @@ class Address {
 		return trim( preg_replace( '/\s+/u', ' ', $text ) );
 	}
 
+	/**
+	 * Sorts names: exact match, then starts with the query, then contains it, then the rest.
+	 *
+	 * @param array  $names Names, keyed.
+	 * @param string $query Typed text.
+	 * @return array
+	 */
 	private static function rank_names( $names, $query ) {
 		$query = self::normalize_match_text( $query );
 
-		if ( $query === '' ) {
+		if ( '' === $query ) {
 			return $names;
 		}
 
@@ -163,7 +227,7 @@ class Address {
 		foreach ( $names as $key => $name ) {
 			$normalized_name = self::normalize_match_text( $name );
 			$position        = mb_strpos( $normalized_name, $query );
-			$rank            = $normalized_name === $query ? 0 : ( $position === 0 ? 1 : ( $position !== false ? 2 : 3 ) );
+			$rank            = $normalized_name === $query ? 0 : ( 0 === $position ? 1 : ( false !== $position ? 2 : 3 ) );
 			$ranked[]        = array(
 				'key'   => $key,
 				'name'  => $name,

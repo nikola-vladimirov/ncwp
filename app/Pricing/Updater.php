@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
 namespace Nashenski\Pricing;
 
 defined( 'ABSPATH' ) || exit;
@@ -17,6 +17,9 @@ class Updater {
 	const SEEN_OPTION = 'nashenski_price_updates_seen';
 	const CRON        = 'nashenski/prices/check';
 
+	/**
+	 * Registers the hooks.
+	 */
 	public function __construct() {
 		add_action( 'wp_ajax_nashenski_check_prices', array( __CLASS__, 'ajax_check' ) );
 		add_action( self::CRON, array( __CLASS__, 'weekly_check' ) );
@@ -31,6 +34,9 @@ class Updater {
 	}
 
 	/**
+	 * Reads the courier's published price list.
+	 *
+	 * @param string $courier Courier key.
 	 * @return array|\WP_Error The proposed price list.
 	 */
 	public static function fetch( $courier ) {
@@ -92,6 +98,9 @@ class Updater {
 
 	/**
 	 * Table rows of an HTML page: array of tables, each an array of rows, each an array of cell texts.
+	 *
+	 * @param string $html Page HTML.
+	 * @return array
 	 */
 	public static function html_tables( $html ) {
 		if ( ! class_exists( '\DOMDocument' ) ) {
@@ -112,11 +121,13 @@ class Updater {
 			foreach ( $table->getElementsByTagName( 'tr' ) as $tr ) {
 				$cells = array();
 
+				// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHP DOM property names.
 				foreach ( $tr->childNodes as $cell ) {
 					if ( in_array( strtolower( $cell->nodeName ), array( 'td', 'th' ), true ) ) {
 						$cells[] = trim( preg_replace( '/\s+/u', ' ', $cell->textContent ) );
 					}
 				}
+				// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 				if ( $cells ) {
 					$rows[] = $cells;
@@ -129,6 +140,12 @@ class Updater {
 		return $tables;
 	}
 
+	/**
+	 * Text lines of an HTML page; table cells end with " | ".
+	 *
+	 * @param string $html Page HTML.
+	 * @return array
+	 */
 	private static function html_text( $html ) {
 		$html = preg_replace( '#<(script|style|noscript)[^>]*>.*?</\1>#is', '', (string) $html );
 		$html = preg_replace( '#<(br|tr|p|div|h\d|li|table|section)[^>]*>#i', "\n", $html );
@@ -139,6 +156,12 @@ class Updater {
 		return array_values( array_filter( array_map( 'trim', explode( "\n", $text ) ), 'strlen' ) );
 	}
 
+	/**
+	 * Euro amounts in a text.
+	 *
+	 * @param string $text Text.
+	 * @return float[]
+	 */
 	private static function euros( $text ) {
 		preg_match_all( '/(\d+[.,]\d{2})\s*€/u', $text, $m );
 
@@ -150,16 +173,31 @@ class Updater {
 		);
 	}
 
+	/**
+	 * Upper weight of a "до N кг" band.
+	 *
+	 * @param string $line Text.
+	 * @return float|null
+	 */
 	private static function upper_kg( $line ) {
 		return preg_match( '/до\s*(\d+(?:[.,]\d+)?)\s*кг/u', $line, $m ) ? (float) str_replace( ',', '.', $m[1] ) : null;
 	}
 
+	/**
+	 * A dd.mm.yyyy date as yyyy-mm-dd, or ''.
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
 	private static function valid_from( $text ) {
 		return preg_match( '/(\d{2})\.(\d{2})\.(\d{4})/', $text, $m ) ? "$m[3]-$m[2]-$m[1]" : '';
 	}
 
 	/**
 	 * Econt courier tariff PDF: parcels table with tariff codes 1-4 per weight band.
+	 *
+	 * @param array $raw_lines Text lines of the PDF.
+	 * @return array|null
 	 */
 	public static function parse_econt( $raw_lines ) {
 		// Qt prints each letter separately: join the letters of each word.
@@ -177,10 +215,11 @@ class Updater {
 			return null;
 		}
 
-		$bands = array();
-		$over  = null;
+		$bands      = array();
+		$over       = null;
+		$line_count = count( $lines );
 
-		for ( $i = $start; $i < count( $lines ) && $i < $start + 80; $i++ ) {
+		for ( $i = $start; $i < $line_count && $i < $start + 80; $i++ ) {
 			$line = $lines[ $i ];
 
 			if ( 0 === strpos( $line, 'Посочените цени' ) && $bands && $over ) {
@@ -248,6 +287,9 @@ class Updater {
 
 	/**
 	 * Euro amount in a table cell ("2.69 €", "1.43 € / 2.80 лв."), or null ("-").
+	 *
+	 * @param string $cell Cell text.
+	 * @return float|null
 	 */
 	private static function cell_euro( $cell ) {
 		$euros = self::euros( (string) $cell );
@@ -257,6 +299,9 @@ class Updater {
 
 	/**
 	 * "base € + per_kg €/кг" in a cell: array( base, per_kg ) or null.
+	 *
+	 * @param string $cell Cell text.
+	 * @return array|null
 	 */
 	private static function cell_per_kg( $cell ) {
 		return preg_match( '/([\d.,]+)\s*€\s*\+\s*([\d.,]+)\s*€\s*\/\s*кг/u', (string) $cell, $m )
@@ -266,6 +311,10 @@ class Updater {
 
 	/**
 	 * Speedy price list page, "Стандарт 24 часа": weight | base (office, automat) | pickup add-on | delivery add-on.
+	 *
+	 * @param array $lines  Text lines of the page.
+	 * @param array $tables Tables of the page.
+	 * @return array|null
 	 */
 	public static function parse_speedy( $lines, $tables = array() ) {
 		$bands = array();
@@ -274,7 +323,13 @@ class Updater {
 
 		foreach ( $tables as $rows ) {
 			foreach ( $rows as $cells ) {
-				if ( 4 !== count( $cells ) || null === ( $to = self::upper_kg( $cells[0] ) ) || $to > 31.5 ) {
+				if ( 4 !== count( $cells ) ) {
+					continue;
+				}
+
+				$to = self::upper_kg( $cells[0] );
+
+				if ( null === $to || $to > 31.5 ) {
 					continue;
 				}
 
@@ -351,6 +406,10 @@ class Updater {
 	/**
 	 * Pigeon Express prices page: one table per sender (APS, office, address), columns
 	 * to APS | to office | to address. The shop's "send from" setting picks the table.
+	 *
+	 * @param array $lines  Text lines of the page.
+	 * @param array $tables Tables of the page.
+	 * @return array|null
 	 */
 	public static function parse_pigeon( $lines, $tables = array() ) {
 		$text         = implode( "\n", $lines );
@@ -373,7 +432,13 @@ class Updater {
 		$over  = null;
 
 		foreach ( $price_tables[ $index ] as $cells ) {
-			if ( 4 !== count( $cells ) || null === ( $to = self::upper_kg( $cells[0] ) ) ) {
+			if ( 4 !== count( $cells ) ) {
+				continue;
+			}
+
+			$to = self::upper_kg( $cells[0] );
+
+			if ( null === $to ) {
 				continue;
 			}
 
@@ -459,8 +524,12 @@ class Updater {
 
 	/**
 	 * Values that differ between two lists: array of array( label, old, new ).
+	 *
+	 * @param array $old_list Saved price list.
+	 * @param array $new_list Proposed price list.
+	 * @return array
 	 */
-	public static function changes( $old, $new ) {
+	public static function changes( $old_list, $new_list ) {
 		$changes = array();
 		$add     = function ( $label, $a, $b ) use ( &$changes ) {
 			if ( (string) $a !== (string) $b ) {
@@ -468,18 +537,18 @@ class Updater {
 			}
 		};
 
-		$add( __( 'Valid from', 'nashenski-commerce' ), $old['valid_from'], $new['valid_from'] );
-		$add( __( 'Extra surcharge %', 'nashenski-commerce' ), $old['surcharge'], $new['surcharge'] );
-		$add( __( 'Cash on delivery %', 'nashenski-commerce' ), $old['cod']['percent'], $new['cod']['percent'] );
-		$add( __( 'Cash on delivery minimum', 'nashenski-commerce' ), $old['cod']['min'], $new['cod']['min'] );
+		$add( __( 'Valid from', 'nashenski-commerce' ), $old_list['valid_from'], $new_list['valid_from'] );
+		$add( __( 'Extra surcharge %', 'nashenski-commerce' ), $old_list['surcharge'], $new_list['surcharge'] );
+		$add( __( 'Cash on delivery %', 'nashenski-commerce' ), $old_list['cod']['percent'], $new_list['cod']['percent'] );
+		$add( __( 'Cash on delivery minimum', 'nashenski-commerce' ), $old_list['cod']['min'], $new_list['cod']['min'] );
 
 		$old_bands = array();
 
-		foreach ( $old['bands'] as $band ) {
+		foreach ( $old_list['bands'] as $band ) {
 			$old_bands[ (string) $band['to'] ] = $band;
 		}
 
-		foreach ( $new['bands'] as $band ) {
+		foreach ( $new_list['bands'] as $band ) {
 			foreach ( array( 'office', 'locker', 'address' ) as $kind ) {
 				/* translators: 1: weight in kg, 2: office, locker or address */
 				$add( sprintf( __( 'Up to %1$s kg, %2$s', 'nashenski-commerce' ), $band['to'], $kind ), $old_bands[ (string) $band['to'] ][ $kind ] ?? '', $band[ $kind ] );
@@ -489,8 +558,11 @@ class Updater {
 		return $changes;
 	}
 
+	/**
+	 * AJAX: reads a courier's price list and sends it with the changes.
+	 */
 	public static function ajax_check() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_ajax_referer( 'nashenski_check_prices', 'nonce', false ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_ajax_referer( 'nashenski_check_prices', 'nonce', false ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
 		}
 
@@ -517,6 +589,8 @@ class Updater {
 	/**
 	 * Take couriers off the "new published prices" notice: one when its prices are saved, all when
 	 * the notice is dismissed. The weekly check only brings a courier back for a newer price list.
+	 *
+	 * @param string|null $courier Courier key; all when null.
 	 */
 	public static function forget( $courier = null ) {
 		$found = (array) get_option( self::NOTICE_OPTION, array() );

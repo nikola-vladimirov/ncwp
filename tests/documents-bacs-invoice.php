@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName.InvalidClassFileName, Generic.Classes.DuplicateClassName, Generic.Files.OneObjectStructurePerFile.MultipleFound, Universal.Files.SeparateFunctionsFromOO.Mixed, Universal.Namespaces, Generic.CodeAnalysis.UnusedFunctionParameter -- standalone offline test: stubs of plugin and WooCommerce classes in their own namespaces live in this file and keep the signatures of what they stand in for.
 /**
  * Offline: a bank transfer invoice waits for the payment; other methods unchanged. php tests/documents-bacs-invoice.php
  *
@@ -234,11 +234,11 @@ namespace {
 		 * Constructor.
 		 *
 		 * @param mixed $id Id.
-		 * @param mixed $parent Parent.
+		 * @param mixed $parent_id Parent.
 		 */
-		public function __construct( $id, $parent ) {
+		public function __construct( $id, $parent_id ) {
 			$this->id     = $id;
-			$this->parent = $parent; }
+			$this->parent = $parent_id; }
 		/**
 		 * Get id.
 		 *
@@ -254,7 +254,7 @@ namespace {
 		public function get_parent_id() {
 			return $this->parent; }
 	}
-	$order = null;
+	$test_order = null;
 	/**
 	 * Wc get order.
 	 *
@@ -262,7 +262,7 @@ namespace {
 	 * @return mixed Result.
 	 */
 	function wc_get_order( $id ) {
-		return $GLOBALS['order']; }
+		return $GLOBALS['test_order']; }
 	$trigger = '';
 	$hooks   = array();
 	/**
@@ -318,7 +318,7 @@ namespace {
 	function expect( $c, $m ) {
 		++$GLOBALS['checks'];
 		if ( ! $c ) {
-			throw new RuntimeException( $m ); } }
+			throw new RuntimeException( $m ); } } // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- CLI test: the message goes to the terminal, not to a page.
 	/**
 	 * Made.
 	 *
@@ -329,50 +329,50 @@ namespace {
 		\Nashenski\Invoice\Document\Log::$made = array();
 		return $m; }
 
-	$order = new FakeOrder( 'bacs', false );
+	$test_order = new FakeOrder( 'bacs', false );
 	\Nashenski\Admin\Order\Documents::generate_documents( 1 );
 	expect( array( 'nra', 'proforma' ) === made(), 'Unpaid bacs: order document and proforma, no invoice' );
 	\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 1 );
 	expect( array() === made(), 'Unpaid bacs: still no invoice' );
-	$order->paid = true;
+	$test_order->paid = true;
 	\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 1 );
 	expect( array( 'invoice' ) === made(), 'Paid bacs: invoice made' );
-	$order->has_invoice = true;
+	$test_order->has_invoice = true;
 	\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 1 );
 	expect( array() === made(), 'An existing invoice is not made twice' );
 
-	$order = new FakeOrder( 'cod', false );
+	$test_order = new FakeOrder( 'cod', false );
 	\Nashenski\Admin\Order\Documents::generate_documents( 2 );
 	expect( array( 'nra', 'invoice' ) === made(), 'Non-bacs: invoice at checkout as before' );
 
 	// The paid hook makes nothing for card or cod orders, or a bacs order without a checkout order document (renewal).
 	foreach ( array( 'stripe', 'cod' ) as $method ) {
-		$order = new FakeOrder( $method, true );
+		$test_order = new FakeOrder( $method, true );
 		\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 3 );
 		expect( array() === made(), "Paid $method order: the paid hook makes no invoice" );
 	}
-	$order             = new FakeOrder( 'bacs', true );
-	$order->has_number = false;
+	$test_order             = new FakeOrder( 'bacs', true );
+	$test_order->has_number = false;
 	\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 3 );
 	expect( array() === made(), 'Paid bacs order without an order number (renewal): no invoice' );
 
 	// The order document was deleted (retention) but the number stays: the paid bacs order is still invoiced. The fake order has no order document meta.
-	$order = new FakeOrder( 'bacs', true );
+	$test_order = new FakeOrder( 'bacs', true );
 	\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 3 );
 	expect( array( 'invoice' ) === made(), 'Paid bacs order with its order document deleted but the number kept: invoice made' );
 	// A non-bacs refund still gets its credit notice without the invoice meta check.
-	$order = new FakeOrder( 'stripe', true );
+	$test_order = new FakeOrder( 'stripe', true );
 	\Nashenski\Admin\Order\Documents::generate_refunded_documents( 5, 1 );
 	expect( array( 'nra_refund', 'credit' ) === made(), 'Non-bacs refund: credit notice unchanged' );
 
 	// Regenerate PDF's on an unpaid bacs order rebuilds an existing invoice.
-	$order              = new FakeOrder( 'bacs', false );
-	$order->has_invoice = true;
+	$test_order              = new FakeOrder( 'bacs', false );
+	$test_order->has_invoice = true;
 	\Nashenski\Admin\Order\Documents::generate_documents( 1 );
 	expect( array( 'nra', 'invoice', 'proforma' ) === made(), 'Unpaid bacs order with an invoice: regenerate rebuilds it' );
 	// Under the completed trigger the credit notice is made as before, invoice meta or not.
-	$trigger = 'order_completed';
-	$order   = new FakeOrder( 'bacs', false );
+	$trigger    = 'order_completed';
+	$test_order = new FakeOrder( 'bacs', false );
 	\Nashenski\Admin\Order\Documents::generate_refunded_documents( 5, 1 );
 	expect( array( 'nra_refund', 'credit' ) === made(), 'Completed trigger: credit notice as on main' );
 	$trigger = '';
@@ -381,12 +381,12 @@ namespace {
 	new \Nashenski\Admin\Order\Actions();
 	expect( ! empty( $hooks['woocommerce_payment_complete'] ) && ! empty( $hooks['woocommerce_order_status_changed'] ), 'Default trigger registers the paid hooks' );
 	// WooCommerce fires status_processing, then pending_to_processing (the email sends here), then status_changed. The invoice must exist at the email, so the processing and completed hooks are registered.
-	$names = array_keys( $hooks );
-	expect( in_array( 'woocommerce_order_status_processing', $names, true ) && in_array( 'woocommerce_order_status_completed', $names, true ), 'The processing and completed hooks are registered' );
-	$order            = new FakeOrder( 'bacs', true );
+	$hook_names = array_keys( $hooks );
+	expect( in_array( 'woocommerce_order_status_processing', $hook_names, true ) && in_array( 'woocommerce_order_status_completed', $hook_names, true ), 'The processing and completed hooks are registered' );
+	$test_order       = new FakeOrder( 'bacs', true );
 	$invoice_at_email = null;
-	$email            = function () use ( &$order, &$invoice_at_email ) {
-		$invoice_at_email = $order->has_invoice;
+	$email            = function () use ( &$test_order, &$invoice_at_email ) {
+		$invoice_at_email = $test_order->has_invoice;
 	};
 	foreach ( array( 'woocommerce_order_status_processing', 'woocommerce_order_status_pending_to_processing', 'woocommerce_order_status_changed' ) as $step ) {
 		$callbacks = 'woocommerce_order_status_pending_to_processing' === $step ? array( $email ) : ( $hooks[ $step ] ?? array() );
@@ -396,7 +396,7 @@ namespace {
 	expect( true === $invoice_at_email, 'The invoice exists before the processing email is built' );
 	expect( array( 'invoice' ) === made(), 'Processing makes exactly one invoice, the changed hook adds none' );
 	// Any paid status counts (a custom one from woocommerce_order_is_paid_statuses): the callback checks is_paid(), and a second status change makes nothing.
-	$order = new FakeOrder( 'bacs', true );
+	$test_order = new FakeOrder( 'bacs', true );
 	foreach ( $hooks['woocommerce_order_status_changed'] as $callback ) {
 		call_user_func( $callback, 1, 'pending', 'wc-custom-paid' ); }
 	expect( array( 'invoice' ) === made(), 'A custom paid status makes the invoice' );
@@ -410,23 +410,23 @@ namespace {
 	$trigger = '';
 
 	// A refund of an unpaid bacs order makes no credit notice; a paid and invoiced one does.
-	$order = new FakeOrder( 'bacs', false );
+	$test_order = new FakeOrder( 'bacs', false );
 	\Nashenski\Admin\Order\Documents::generate_refunded_documents( 5, 1 );
 	expect( array( 'nra_refund' ) === made(), 'Unpaid bacs refund: no credit notice' );
-	$order->has_invoice = true;
+	$test_order->has_invoice = true;
 	\Nashenski\Admin\Order\Documents::generate_refunded_documents( 5, 1 );
 	expect( array( 'nra_refund', 'credit' ) === made(), 'Invoiced order refund: credit notice made' );
 
 	// A refund made before the payment gets its credit notice once the invoice is made; a second run adds nothing.
-	$order          = new FakeOrder( 'bacs', false );
-	$order->refunds = array( new FakeRefund( 7, 1 ) );
+	$test_order          = new FakeOrder( 'bacs', false );
+	$test_order->refunds = array( new FakeRefund( 7, 1 ) );
 	\Nashenski\Admin\Order\Documents::generate_refunded_documents( 7, 1 );
 	expect( array( 'nra_refund' ) === made(), 'Refund before payment: no credit notice yet' );
-	$order->paid = true;
+	$test_order->paid = true;
 	\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 1 );
 	expect( array( 'invoice', 'nra_refund', 'credit' ) === made(), 'Payment makes the invoice and the credit notice of the earlier refund' );
 	\Nashenski\Admin\Order\Documents::generate_invoice_when_paid( 1 );
 	expect( array() === made(), 'A second run makes no second credit notice' );
 
-	echo 'PASS: ' . $checks . " bacs invoice assertions\n";
+	echo 'PASS: ' . (int) $checks . " bacs invoice assertions\n";
 }
