@@ -314,8 +314,9 @@ class Automation {
 
 				return $wp_query_args;
 			};
-			$order = function ( $orderby, $query ) {
-				return $query->get( 'nashenski_shipments_check' ) ? 'post_date_gmt ASC' : $orderby;
+			// Some callers pass the order only, with no query: then the order stays as it is.
+			$order = function ( $orderby, $query = null ) {
+				return $query && $query->get( 'nashenski_shipments_check' ) ? 'post_date_gmt ASC' : $orderby;
 			};
 			add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
 			add_filter( 'posts_orderby', $order );
