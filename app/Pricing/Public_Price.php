@@ -53,6 +53,11 @@ class Public_Price {
 					$price = $band['address'] ?? null;
 				}
 
+				// A band covers this weight but has no price: no price, not the over-band formula with a negative gap.
+				if ( null === $price ) {
+					return null;
+				}
+
 				break;
 			}
 		}
@@ -79,7 +84,10 @@ class Public_Price {
 			$price += max( $list['cod']['min'], $cod_amount * $list['cod']['percent'] / 100 );
 		}
 
-		return round( apply_filters( 'nashenski/public_price', $price, $courier, $kind, $weight, $cod_amount ), 2 );
+		$price = round( (float) apply_filters( 'nashenski/public_price', $price, $courier, $kind, $weight, $cod_amount ), 2 );
+
+		// A shipping rate is never negative.
+		return $price < 0 ? null : $price;
 	}
 
 	/**
