@@ -6,8 +6,8 @@
  */
 
 $checks = array(
-	'app/Shipping/Automation.php'   => array( 'ACTION_IDS', 'actions' ),
-	'app/Front_End/Quick_Order.php' => array( 'PLACEMENT_IDS', 'placements' ),
+	'app/Shipping/class-automation.php'   => array( 'ACTION_IDS', 'actions' ),
+	'app/Front_End/class-quick-order.php' => array( 'PLACEMENT_IDS', 'placements' ),
 );
 $fail   = array();
 foreach ( $checks as $file => list( $const, $labels ) ) {

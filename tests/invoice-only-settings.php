@@ -16,7 +16,7 @@ define( 'ABSPATH', __DIR__ . '/fixtures/' );
  */
 class WC_Settings_Page {}
 
-require __DIR__ . '/../app/Admin/Settings_Page.php';
+require __DIR__ . '/../app/Admin/class-settings-page.php';
 
 $checks = 0;
 /**
@@ -78,8 +78,8 @@ foreach ( $manual as $key ) {
 }
 
 // Each manual-use id is a real field with that option name, and the document code reads it.
-$source = file_get_contents( __DIR__ . '/../app/Admin/Tabs/Nra_Tab.php' ) . file_get_contents( __DIR__ . '/../app/Admin/Tabs/Fields_Tab.php' );
-$docs   = file_get_contents( __DIR__ . '/../app/Admin/Order/Documents.php' ) . file_get_contents( __DIR__ . '/../app/Invoice/Document/Invoice.php' ) . file_get_contents( __DIR__ . '/../app/Invoice/Document/BaseDocument.php' );
+$source = file_get_contents( __DIR__ . '/../app/Admin/Tabs/class-nra-tab.php' ) . file_get_contents( __DIR__ . '/../app/Admin/Tabs/class-fields-tab.php' );
+$docs   = file_get_contents( __DIR__ . '/../app/Admin/Order/class-documents.php' ) . file_get_contents( __DIR__ . '/../app/Invoice/Document/class-invoice.php' ) . file_get_contents( __DIR__ . '/../app/Invoice/Document/class-basedocument.php' );
 foreach ( $manual as $key ) {
 	$name = preg_replace( '/^nashenski_settings_(invoice|company)_/', '', $key );
 	expect( false !== strpos( $source, "'$name'" ), "$name is a field of the Documents or Fields tab" );
@@ -89,6 +89,6 @@ foreach ( $manual as $key ) {
 // No live hide toggle is left, and the next number says it also serves hand-made invoices.
 $js = file_get_contents( __DIR__ . '/../assets/js/settings.js' );
 expect( false === strpos( $js, 'nashenski-invoice-only' ), 'settings.js no longer hides invoice rows' );
-expect( false !== strpos( file_get_contents( __DIR__ . '/../app/Admin/Setting_Help.php' ), "'Also used when you make an invoice by hand.'" ), 'next number note is in the help text' );
+expect( false !== strpos( file_get_contents( __DIR__ . '/../app/Admin/class-setting-help.php' ), "'Also used when you make an invoice by hand.'" ), 'next number note is in the help text' );
 
 echo 'PASS: ' . $checks . " invoice-only settings assertions\n";

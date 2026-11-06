@@ -53,8 +53,10 @@ namespace {
 			)
 		);
 	}
+	require_once __DIR__ . '/fixtures/hooks.php';
 	require __DIR__ . '/../vendor/autoload.php';
-	require __DIR__ . '/../app/Invoice/PDF/PDF.php';
+	require_once __DIR__ . '/../app/autoload.php';
+	require __DIR__ . '/../app/Invoice/PDF/class-pdf.php';
 
 	$word     = 'Доставка до офис на Еконт';
 	$template = tempnam( sys_get_temp_dir(), 'nash' );

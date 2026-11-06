@@ -15,7 +15,7 @@ define( 'ABSPATH', __DIR__ . '/fixtures/' );
 function esc_url_raw( $url ) {
 	return $url; }
 
-require __DIR__ . '/../app/Pricing/Price_Lists.php';
+require __DIR__ . '/../app/Pricing/class-price-lists.php';
 
 $checks = 0;
 /**

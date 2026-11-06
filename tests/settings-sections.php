@@ -97,9 +97,10 @@ namespace {
 		return $GLOBALS['documents_on'] ? 'yes' : 'no';
 	}
 
-	require __DIR__ . '/../app/Admin/Settings.php';
-	require __DIR__ . '/../app/Admin/Settings_Page.php';
-	require __DIR__ . '/../app/Admin/Help_Page.php';
+	require_once __DIR__ . '/fixtures/hooks.php';
+	require __DIR__ . '/../app/Admin/class-settings.php';
+	require __DIR__ . '/../app/Admin/class-settings-page.php';
+	require __DIR__ . '/../app/Admin/class-help-page.php';
 	$checks = 0;
 	/**
 	 * Expect.
@@ -178,13 +179,14 @@ namespace {
 	// After a save both hook names fire, once each.
 	$GLOBALS['fired'] = array();
 	\Nashenski\Admin\Settings_Page::run_after_save_fields( 'Nashenski\Admin\Tabs\Econt_Tab' );
-	expect( 1 === ( $GLOBALS['fired']['nashenski/admin/settings/after_save_fields/Nashenski\Admin\Tabs\Econt_Tab'] ?? 0 ), 'the current hook fires once' );
+	expect( 1 === ( $GLOBALS['fired']['nashenski_admin_settings_after_save_fields_Nashenski\Admin\Tabs\Econt_Tab'] ?? 0 ), 'the current hook fires once' );
+	expect( 1 === ( $GLOBALS['fired']['nashenski/admin/settings/after_save_fields/Nashenski\Admin\Tabs\Econt_Tab'] ?? 0 ), 'the old slash hook fires once for add-ons on it' );
 	expect( 1 === ( $GLOBALS['fired']['nashenski/admin/settings/afte_save_fields/Nashenski\Admin\Tabs\Econt_Tab'] ?? 0 ), 'the old misspelt hook fires once for add-ons on it' );
 	// The three callers (the page, and two WP-CLI commands) go through the helper; the helper holds the only do_action of the name.
 	foreach ( array(
-		'app/Admin/Settings_Page.php'  => 'self::',
-		'app/CLI/Courier_Command.php'  => '\Nashenski\Admin\Settings_Page::',
-		'app/CLI/Settings_Command.php' => 'Settings_Page::',
+		'app/Admin/class-settings-page.php'  => 'self::',
+		'app/CLI/class-courier-command.php'  => '\Nashenski\Admin\Settings_Page::',
+		'app/CLI/class-settings-command.php' => 'Settings_Page::',
 	) as $caller => $prefix ) {
 		expect( false !== strpos( file_get_contents( __DIR__ . '/../' . $caller ), $prefix . 'run_after_save_fields(' ), "$caller runs both hook names through run_after_save_fields" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- offline test.
 	}
@@ -198,13 +200,13 @@ namespace {
 		}
 		$text = file_get_contents( $file->getPathname() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- offline test.
 		// Raw calls of the hook anywhere in app/: only the helper may have one.
-		$raw += preg_match_all( '/\bdo_action\(\s*[\'"]nashenski\/admin\/settings\/after_save_fields/', $text );
+		$raw += preg_match_all( '/\bHooks::action\(\s*\'nashenski_admin_settings_after_save_fields_/', $text );
 		// The one do_action_deprecated line keeps the old spelling on purpose.
 		$text   = preg_replace( '/^.*do_action_deprecated.*$/m', '', $text );
 		$wrong += substr_count( $text, 'afte_save_fields' );
-		$right += substr_count( $text, 'settings/after_save_fields/' );
+		$right += substr_count( $text, 'settings_after_save_fields_' );
 	}
-	expect( 1 === $raw, 'exactly one raw do_action of the after-save hook in app/ (the helper), so a caller cannot skip the old name' );
+	expect( 1 === $raw, 'exactly one Hooks::action of the after-save hook in app/ (the helper), so a caller cannot skip the old name' );
 	expect( 0 === $wrong, 'no file spells the hook afte_save_fields' );
 	expect( $right >= 4, 'the caller and the listeners use after_save_fields' );
 

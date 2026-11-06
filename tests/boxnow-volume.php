@@ -32,7 +32,8 @@ class WC_Shipping_Method {
 		$this->rates[] = $rate; }
 }
 
-require __DIR__ . '/../app/Shipping/BoxNow/Method.php';
+require_once __DIR__ . '/fixtures/hooks.php';
+require __DIR__ . '/../app/Shipping/BoxNow/class-method.php';
 
 /**
  * Boxnowproduct.

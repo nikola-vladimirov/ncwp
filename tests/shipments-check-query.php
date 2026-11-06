@@ -127,7 +127,7 @@ namespace {
 	 * @return string Result.
 	 */
 	function apply_filters( $tag, $v ) {
-		return 'nashenski/shipments/check_seconds' === $tag ? $GLOBALS['seconds'] : $GLOBALS['limit']; }
+		return 'nashenski_shipments_check_seconds' === $tag ? $GLOBALS['seconds'] : $GLOBALS['limit']; }
 	/**
 	 * Add filter.
 	 *
@@ -506,7 +506,8 @@ namespace {
 		}
 	}
 
-	require __DIR__ . '/../app/Shipping/Automation.php';
+	require_once __DIR__ . '/fixtures/hooks.php';
+	require __DIR__ . '/../app/Shipping/class-automation.php';
 
 	/**
 	 * Check.

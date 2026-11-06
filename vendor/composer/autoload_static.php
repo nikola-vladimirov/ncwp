@@ -16,10 +16,6 @@ class ComposerStaticInitc99bf7064231b3cd39cfe28b0614d582
             'chillerlan\\Settings\\' => 20,
             'chillerlan\\QRCode\\' => 18,
         ),
-        'N' =>
-        array (
-            'Nashenski\\' => 10,
-        ),
         'S' =>
         array (
             'Svg\\' => 4,
@@ -56,10 +52,6 @@ class ComposerStaticInitc99bf7064231b3cd39cfe28b0614d582
         'chillerlan\\QRCode\\' =>
         array (
             0 => __DIR__ . '/..' . '/chillerlan/php-qrcode/src',
-        ),
-        'Nashenski\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/app',
         ),
         'Svg\\' =>
         array (

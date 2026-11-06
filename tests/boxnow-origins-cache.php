@@ -119,6 +119,17 @@ namespace {
 		public function put_contents( $f, $d, $m = null ) {
 			return false !== file_put_contents( $f, $d ); }
 		/**
+		 * Moves a file.
+		 *
+		 * @param string $a From.
+		 * @param string $b To.
+		 * @param bool   $o Overwrite.
+		 *
+		 * @return bool
+		 */
+		public function move( $a, $b, $o = false ) {
+			return ( $o || ! file_exists( $b ) ) && rename( $a, $b ); }
+		/**
 		 * Reads a file.
 		 *
 		 * @param string $f File.
@@ -172,9 +183,9 @@ namespace Nashenski\Test {
 }
 
 namespace Nashenski {
-	require __DIR__ . '/../app/File.php';
-	require __DIR__ . '/../app/Document_Storage.php';
-	require __DIR__ . '/../app/Client/BoxNow/Origins.php';
+	require __DIR__ . '/../app/class-file.php';
+	require __DIR__ . '/../app/class-document-storage.php';
+	require __DIR__ . '/../app/Client/BoxNow/class-origins.php';
 
 	$checks = 0;
 	/**

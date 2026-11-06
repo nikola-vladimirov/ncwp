@@ -2,6 +2,14 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.21.0 (2026-11-06)
+
+### Changes
+- Developer hooks use underscores: `nashenski/econt/rate` is now `nashenski_econt_rate`. The old slash names still work but are deprecated.
+- Four hook names with a hyphen also use underscores now (`nashenski_init_classes`, `nashenski_before_init_classes`, `nashenski_invoice_pdf_default_template`, `nashenski_admin_export_microinvest_order`). The old names keep working.
+- Every admin action checks its security token in the code that reads the request, and every printed page piece is passed through WordPress escaping.
+- The code follows the WordPress coding standard, so class files are named `class-*.php`. Add-ons that load Nashenski class files by path need the new names.
+
 ## 0.20.4 (2026-11-06)
 
 ### Fixes

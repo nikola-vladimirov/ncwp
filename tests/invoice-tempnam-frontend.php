@@ -17,6 +17,7 @@ namespace {
 	define( 'FS_CHMOD_FILE', 0644 );
 	error_reporting( E_ALL & ~E_DEPRECATED ); // dompdf 3.0 deprecations on PHP 8.4+.
 	require __DIR__ . '/../vendor/autoload.php';
+	require_once __DIR__ . '/../app/autoload.php';
 
 	$temp_files = array();
 	/**
@@ -57,6 +58,17 @@ namespace {
 		 */
 		public function put_contents( $file, $data ) {
 			return false !== file_put_contents( $file, $data );
+		}
+		/**
+		 * Moves a file.
+		 *
+		 * @param string $from From.
+		 * @param string $to   To.
+		 * @param bool   $over Overwrite.
+		 * @return bool
+		 */
+		public function move( $from, $to, $over = false ) {
+			return ( $over || ! file_exists( $to ) ) && rename( $from, $to );
 		}
 		/**
 		 * Deletes a file.

@@ -41,8 +41,9 @@ function apply_filters( $tag, $value ) {
 	return $value;
 }
 
-require __DIR__ . '/../app/Shipping/Econt/Method.php';
-require __DIR__ . '/../app/Shipping/Speedy/Method.php';
+require_once __DIR__ . '/fixtures/hooks.php';
+require __DIR__ . '/../app/Shipping/Econt/class-method.php';
+require __DIR__ . '/../app/Shipping/Speedy/class-method.php';
 
 /**
  * Assert helper.

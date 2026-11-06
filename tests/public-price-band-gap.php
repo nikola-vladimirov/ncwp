@@ -40,8 +40,9 @@ function apply_filters( $hook, $value ) {
 	return $value;
 }
 
-require __DIR__ . '/../app/Pricing/Price_Lists.php';
-require __DIR__ . '/../app/Pricing/Public_Price.php';
+require_once __DIR__ . '/fixtures/hooks.php';
+require __DIR__ . '/../app/Pricing/class-price-lists.php';
+require __DIR__ . '/../app/Pricing/class-public-price.php';
 
 $checks = 0;
 /**

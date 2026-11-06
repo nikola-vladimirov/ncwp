@@ -144,8 +144,8 @@ function nashenski_get_option() {
 	return false;
 }
 
-require __DIR__ . '/../app/Pricing/Price_Lists.php';
-require __DIR__ . '/../app/Shipping/BoxNow/Method.php';
+require __DIR__ . '/../app/Pricing/class-price-lists.php';
+require __DIR__ . '/../app/Shipping/BoxNow/class-method.php';
 
 $method = new Nashenski\Shipping\BoxNow\Method( 7 );
 $hook   = 'woocommerce_shipping_' . $method->id . '_instance_settings_values';

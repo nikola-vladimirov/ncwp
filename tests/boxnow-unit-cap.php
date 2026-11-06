@@ -58,9 +58,9 @@ function wc_get_dimension( $value ) {
 function get_option() {
 	return 'cm'; }
 
-require __DIR__ . '/../app/Shipping/Packer/Packing_Limit_Exceeded.php';
-require __DIR__ . '/../app/Shipping/BoxNow/Method.php';
-require __DIR__ . '/../app/Admin/BoxNow.php';
+require __DIR__ . '/../app/Shipping/Packer/class-packing-limit-exceeded.php';
+require __DIR__ . '/../app/Shipping/BoxNow/class-method.php';
+require __DIR__ . '/../app/Admin/class-boxnow.php';
 
 use Nashenski\Admin\BoxNow;
 

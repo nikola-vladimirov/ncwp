@@ -36,7 +36,7 @@ namespace {
 	 */
 	function add_action() {}
 
-	require __DIR__ . '/../app/Admin/Export_Builder.php';
+	require __DIR__ . '/../app/Admin/class-export-builder.php';
 
 	$checks = 0;
 	foreach ( array(

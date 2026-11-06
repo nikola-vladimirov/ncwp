@@ -6,7 +6,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
-$nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product_name_word_wrap_length', 80, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
+$nashenski_wrap = \Nashenski\Hooks::filter( 'nashenski_invoice_pdf_default_template_product_name_word_wrap_length', 'nashenski/invoice/pdf/default_template/product_name_word_wrap_length', 80, $this );
 ?>
 <!DOCTYPE html>
 <html>
@@ -65,7 +65,7 @@ $nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product
 
 	<?php echo \Nashenski\Invoice\PDF\Style::css(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- validated hex colours and a fixed font list. ?>
 
-	<?php do_action( 'nashenski/invoice/pdf/default_template/additional_css', $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions. ?>
+	<?php \Nashenski\Hooks::action( 'nashenski_invoice_pdf_default_template_additional_css', 'nashenski/invoice/pdf/default_template/additional_css', $this ); ?>
 </style>
 </head>
 <body>
@@ -161,7 +161,7 @@ $nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product
 		</div> 
 	</div>
 
-	<?php do_action( 'nashenski/invoice/pdf/default_template/after_table', $this->document->order->woo_order, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions. ?>
+	<?php \Nashenski\Hooks::action( 'nashenski_invoice_pdf_default_template_after_table', 'nashenski/invoice/pdf/default_template/after_table', $this->document->order->woo_order, $this ); ?>
 
 	<div class="w-100 mt-10">
 		<table class="w-100 mt-10">

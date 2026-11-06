@@ -14,11 +14,6 @@
             "vendor/{$vendor}/{$name}/": ["type:wordpress-plugin"]
         }
     },
-    "autoload": {
-        "psr-4": {
-            "Nashenski\\": "app/"
-        }
-    },
     "config": {
         "platform": {
             "php": "7.4"

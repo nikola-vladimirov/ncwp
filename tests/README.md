@@ -24,7 +24,7 @@ unit expansion and candidate generation plus estimates for sorting and fixed
 orientation checks. They are deterministic accounting units, not elapsed time
 or CPU instructions.
 
-The absolute parcel ceiling is 1,000. The existing `nashenski/speedy/max_parcels`
+The absolute parcel ceiling is 1,000. The existing `nashenski_speedy_max_parcels`
 filter still supplies the commercial limit (10 by default); a nonpositive value
 disables that commercial limit, but not the absolute safety ceiling. Both the
 initial content generator and the later label-normalization filter validate

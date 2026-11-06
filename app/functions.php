@@ -338,8 +338,7 @@ function nashenski_get_order_shipping_vat( $order, $show_group = false ) {
 		$shipping_vat = nashenski_maybe_add_rate_group( $shipping_vat );
 	}
 
-	// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-	return apply_filters( 'nashenski/order_item/shipping_vat_rate', $shipping_vat, $order );
+	return \Nashenski\Hooks::filter( 'nashenski_order_item_shipping_vat_rate', 'nashenski/order_item/shipping_vat_rate', $shipping_vat, $order );
 }
 
 /**
@@ -391,8 +390,7 @@ function nashenski_get_order_item_vat_rate( $item, $order, $show_group = false, 
 		$rate = nashenski_maybe_add_rate_group( $rate );
 	}
 
-	// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-	return apply_filters( 'nashenski/order_item/vat_rate', $rate, $item, $order );
+	return \Nashenski\Hooks::filter( 'nashenski_order_item_vat_rate', 'nashenski/order_item/vat_rate', $rate, $item, $order );
 }
 
 /**
@@ -590,7 +588,7 @@ function nashenski_check_admin_label_actions() {
 		$errors[] = __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' );
 	}
 
-	if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers this capability.
+	if ( ! current_user_can( 'manage_woocommerce' ) ) {
 		$errors[] = __( 'You cannot create labels.', 'nashenski-commerce' );
 	}
 
@@ -779,8 +777,7 @@ function nashenski_prime_cart_fee_totals( WC_Cart $cart ) {
  * @return mixed
  */
 function nashenski_get_package_total() {
-	// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-	$includes_fees = apply_filters( 'nashenski/shipping/package_total_includes_fees', true );
+	$includes_fees = \Nashenski\Hooks::filter( 'nashenski_shipping_package_total_includes_fees', 'nashenski/shipping/package_total_includes_fees', true );
 	$total         = (float) WC()->cart->get_cart_contents_total() + (float) WC()->cart->get_cart_contents_tax();
 
 	if ( $includes_fees ) {
@@ -791,8 +788,7 @@ function nashenski_get_package_total() {
 
 	$total = wc_format_decimal( $total, wc_get_price_decimals() );
 
-	// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-	return apply_filters( 'nashenski/shipping/package_total', $total );
+	return \Nashenski\Hooks::filter( 'nashenski_shipping_package_total', 'nashenski/shipping/package_total', $total );
 }
 
 /**
@@ -844,7 +840,7 @@ function nashenski_courier_cookie( $name ) {
 }
 
 /**
- * After checkout: keep the label priced at checkout (filter nashenski/{courier}/label_before_save)
+ * After checkout: keep the label priced at checkout (filter nashenski_{courier}_label_before_save)
  * and the customer's office or address choice on the order.
  *
  * @param int    $order_id Order id.
@@ -861,8 +857,7 @@ function nashenski_save_checkout_label( $order_id, $courier ) {
 		$label = WC()->session->get( "nashenski-{$courier}-label" );
 
 		if ( $label ) {
-			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-			$order->update_meta_data( "nashenski_{$courier}_label", apply_filters( "nashenski/{$courier}/label_before_save", $label, $order ) );
+			$order->update_meta_data( "nashenski_{$courier}_label", \Nashenski\Hooks::filter( "nashenski_{$courier}_label_before_save", "nashenski/{$courier}/label_before_save", $label, $order ) );
 			WC()->session->__unset( "nashenski-{$courier}-label" );
 		}
 
@@ -1033,8 +1028,7 @@ function nashenski_get_order_label( $order_id ) {
 		}
 	}
 
-	// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
-	return apply_filters( 'nashenski/column/order/shipment_status_data', $data, $order );
+	return \Nashenski\Hooks::filter( 'nashenski_column_order_shipment_status_data', 'nashenski/column/order/shipment_status_data', $data, $order );
 }
 
 /**
@@ -1372,4 +1366,58 @@ function nashenski_chosen_rate( $key, $rate_id ) {
 	$package = WC()->session ? WC()->session->get( 'shipping_for_package_' . $key ) : null;
 
 	return $package['rates'][ $rate_id ] ?? WC()->shipping()->get_packages()[ $key ]['rates'][ $rate_id ] ?? null;
+}
+
+/**
+ * The HTML the plugin's own screens and forms may print: what wp_kses_post allows, plus form controls.
+ *
+ * @return array
+ */
+function nashenski_allowed_html() {
+	$attrs = array(
+		'class'            => true,
+		'id'               => true,
+		'style'            => true,
+		'title'            => true,
+		'data-*'           => true,
+		'role'             => true,
+		'aria-label'       => true,
+		'aria-describedby' => true,
+		'aria-expanded'    => true,
+		'aria-hidden'      => true,
+		'aria-controls'    => true,
+		'aria-live'        => true,
+		'name'             => true,
+		'value'            => true,
+		'type'             => true,
+		'for'              => true,
+		'disabled'         => true,
+		'readonly'         => true,
+		'required'         => true,
+		'checked'          => true,
+		'selected'         => true,
+		'hidden'           => true,
+		'placeholder'      => true,
+		'autocomplete'     => true,
+		'inputmode'        => true,
+		'pattern'          => true,
+		'maxlength'        => true,
+		'min'              => true,
+		'max'              => true,
+		'step'             => true,
+		'rows'             => true,
+		'cols'             => true,
+		'multiple'         => true,
+		'tabindex'         => true,
+		'method'           => true,
+		'action'           => true,
+		'novalidate'       => true,
+	);
+	$tags  = array();
+
+	foreach ( array( 'form', 'input', 'select', 'option', 'optgroup', 'textarea', 'button', 'label', 'fieldset', 'legend', 'template' ) as $tag ) {
+		$tags[ $tag ] = $attrs;
+	}
+
+	return array_merge( wp_kses_allowed_html( 'post' ), $tags );
 }

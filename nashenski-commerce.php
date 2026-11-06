@@ -12,7 +12,7 @@ Description:  WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shippi
 Requires Plugins: woocommerce
 Author:       PristaDigital
 Author URI:   https://pristadigital.com/
-Version:      0.20.4
+Version:      0.21.0
 Requires at least: 6.5
 Requires PHP: 7.4
 WC requires at least: 9.4.0
@@ -135,6 +135,7 @@ function nashenski_init() {
 
 	if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 		require_once __DIR__ . '/vendor/autoload.php';
+		require_once __DIR__ . '/app/autoload.php';
 	} else {
 		add_action(
 			'admin_notices',
@@ -156,7 +157,7 @@ function nashenski_init() {
 	 * @param \Nashenski\Plugin $plugin    The global instance of the plugin controller
 	 * @param \Pimple\Container   $container The plugin's dependency injection container
 	 */
-	do_action( 'nashenski/init', $plugin, $container ); // phpcs:ignore WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
+	\Nashenski\Hooks::action( 'nashenski_init', 'nashenski/init', $plugin, $container );
 
 	return $plugin;
 }
