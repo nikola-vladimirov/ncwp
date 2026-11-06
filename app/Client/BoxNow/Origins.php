@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Origins.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Client\BoxNow;
 
 use Nashenski\Container\Client;
@@ -7,27 +13,57 @@ use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Origins.
+ */
 class Origins {
 	const ORIGINS_ENDPOINT = '/api/v1/origins';
 
+	/**
+	 * Origins.
+	 *
+	 * @var array
+	 */
 	private $origins = array();
+	/**
+	 * Container.
+	 *
+	 * @var mixed
+	 */
 	private $container;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param mixed $container Container.
+	 */
 	public function __construct( $container ) {
 		$this->container = $container;
 	}
 
-	// Sender addresses: kept in the private documents folder (random name, deny rules), not the public cache folder.
+	/**
+	 * Sender addresses: kept in the private documents folder (random name, deny rules), not the public cache folder.
+	 *
+	 * @return string
+	 */
 	private static function file() {
 		return Document_Storage::path() . '/boxnow-origins.json';
 	}
 
+	/**
+	 * Clear.
+	 */
 	public static function clear() {
 		if ( file_exists( self::file() ) ) {
 			wp_delete_file( self::file() );
 		}
 	}
 
+	/**
+	 * Load origins.
+	 *
+	 * @return mixed
+	 */
 	protected function load_origins() {
 		$origins_file    = self::file();
 		$old_public_file = $this->container[ Client::BOXNOW ]::CACHE_FOLDER . 'origins.json';
@@ -61,7 +97,13 @@ class Origins {
 		return $origins;
 	}
 
-	// Getters
+	// Getters.
+
+	/**
+	 * Get origins.
+	 *
+	 * @return mixed
+	 */
 	public function get_origins() {
 		if ( empty( $this->origins ) ) {
 			$this->load_origins();
@@ -70,11 +112,22 @@ class Origins {
 		return $this->origins;
 	}
 
-	// Setters
+	// Setters.
+
+	/**
+	 * Set origins.
+	 *
+	 * @param mixed $origins Origins.
+	 */
 	private function set_origins( $origins ) {
 		$this->origins = $origins;
 	}
 
+	/**
+	 * Get formatted origins.
+	 *
+	 * @return mixed
+	 */
 	public function get_formatted_origins() {
 		$origins = $this->get_origins();
 		$data    = array();

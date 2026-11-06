@@ -1,19 +1,41 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Office.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Shipping\Speedy;
 
 use Nashenski\Container\Client;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Office.
+ */
 class Office {
+	/**
+	 * Container.
+	 *
+	 * @var mixed
+	 */
 	private static $container = null;
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 
 		add_action( 'wp_ajax_nashenski_speedy_load_offices', array( __CLASS__, 'load_offices' ) );
 		add_action( 'wp_ajax_nopriv_nashenski_speedy_load_offices', array( __CLASS__, 'load_offices' ) );
 	}
 
+	/**
+	 * Load offices.
+	 *
+	 * @return mixed
+	 */
 	public static function load_offices() {
 		nashenski_check_picker_request();
 
@@ -34,7 +56,7 @@ class Office {
 			$not_found_message = __( 'No offices were found at %s.', 'nashenski-commerce' );
 		}
 
-		if ( $country_id !== '300' && ! in_array( $cities_data['city'], $cities_data['cities_only_names'] ) || ! $raw_city ) {
+		if ( ( '300' !== $country_id && ! in_array( $cities_data['city'], $cities_data['cities_only_names'], true ) ) || ! $raw_city ) {
 			$args['status'] = 'invalid-city';
 
 			if ( ! $state ) {
@@ -48,7 +70,7 @@ class Office {
 		} else {
 			$city_id = $cities_data['cities'][ $cities_data['city_key'] ]['id'];
 
-			if ( $country_id === '300' ) {
+			if ( '300' === $country_id ) {
 				$city_id = 0;
 			}
 
@@ -61,21 +83,21 @@ class Office {
 			} else {
 				$offices = $offices['offices'];
 
-				if ( $delivery_type === 'automat' ) {
+				if ( 'automat' === $delivery_type ) {
 					$offices = array_values(
 						array_filter(
 							$offices,
 							function ( $office ) {
-								return ( $office['type'] === 'APT' );
+								return ( 'APT' === $office['type'] );
 							}
 						)
 					);
-				} elseif ( $delivery_type === 'office' ) {
+				} elseif ( 'office' === $delivery_type ) {
 					$offices = array_values(
 						array_filter(
 							$offices,
 							function ( $office ) {
-								return ( $office['type'] !== 'APT' );
+								return ( 'APT' !== $office['type'] );
 							}
 						)
 					);
@@ -87,7 +109,7 @@ class Office {
 				}
 			}
 
-			$args['offices'] = apply_filters( 'nashenski/shipping_method/speedy/offices', $offices );
+			$args['offices'] = apply_filters( 'nashenski/shipping_method/speedy/offices', $offices ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 			$args['status']  = 'valid-city';
 			$args['cityId']  = $cities_data['cities'][ $cities_data['city_key'] ]['id'];
 		}

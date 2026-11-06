@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Address.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Shipping\Econt;
 
 use Nashenski\Container\Client;
@@ -6,9 +12,20 @@ use Nashenski\Transliteration;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Address.
+ */
 class Address {
+	/**
+	 * Container.
+	 *
+	 * @var mixed
+	 */
 	private static $container = null;
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 
 		add_action( 'wp_ajax_nashenski_econt_load_streets', array( __CLASS__, 'load_streets' ) );
@@ -18,6 +35,13 @@ class Address {
 		add_action( 'wp_ajax_nopriv_nashenski_econt_search_address', array( __CLASS__, 'search_address' ) );
 	}
 
+	/**
+	 * Format other.
+	 *
+	 * @param mixed $address_data     Address data.
+	 * @param array $additional_parts Additional parts.
+	 * @return mixed
+	 */
 	public static function format_other( $address_data, $additional_parts = array() ) {
 		$labels = array(
 			'blockNumber'     => __( 'Block', 'nashenski-commerce' ),
@@ -30,14 +54,14 @@ class Address {
 		foreach ( $labels as $field => $label ) {
 			$value = isset( $address_data[ $field ] ) ? trim( (string) $address_data[ $field ] ) : '';
 
-			if ( $value !== '' ) {
+			if ( '' !== $value ) {
 				$parts[] = $label . ' ' . sanitize_text_field( $value );
 			}
 		}
 
 		// Preserve the old combined field for orders created before the separate fields existed.
 		$legacy_other = isset( $address_data['other'] ) ? trim( (string) $address_data['other'] ) : '';
-		if ( empty( $parts ) && $legacy_other !== '' ) {
+		if ( empty( $parts ) && '' !== $legacy_other ) {
 			$parts[] = sanitize_text_field( $legacy_other );
 		}
 
@@ -50,6 +74,12 @@ class Address {
 		return implode( ', ', $parts );
 	}
 
+	/**
+	 * Has structured details.
+	 *
+	 * @param mixed $address_data Address data.
+	 * @return mixed
+	 */
 	public static function has_structured_details( $address_data ) {
 		foreach ( array( 'blockNumber', 'entranceNumber', 'floorNumber', 'apartmentNumber' ) as $field ) {
 			if ( isset( $address_data[ $field ] ) && trim( (string) $address_data[ $field ] ) !== '' ) {
@@ -60,6 +90,9 @@ class Address {
 		return false;
 	}
 
+	/**
+	 * Search address.
+	 */
 	public static function search_address() {
 		nashenski_check_picker_request();
 
@@ -67,13 +100,13 @@ class Address {
 		$args            = array();
 		$raw_state       = nashenski_picker_request( 'state' );
 		$country         = nashenski_picker_request( 'country' );
-		$query           = self::normalize_search_text( nashenski_picker_request( 'query' ), $country === 'BG' );
+		$query           = self::normalize_search_text( nashenski_picker_request( 'query' ), 'BG' === $country );
 		$states          = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
 		$state           = $states[ $raw_state ] ?? '';
 		$raw_city        = nashenski_picker_request( 'city' );
 		$cities_data     = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $raw_city, $state, $country );
 
-		if ( in_array( $cities_data['city'], $cities_data['cities_only_names'] ) ) {
+		if ( in_array( $cities_data['city'], $cities_data['cities_only_names'], true ) ) {
 			$streets = nashenski_return_array_for_select(
 				self::get_streets_for_query( $query, $cities_data['city_key'], $cities_data['cities'] ),
 				1,
@@ -96,6 +129,9 @@ class Address {
 		wp_die();
 	}
 
+	/**
+	 * Load streets.
+	 */
 	public static function load_streets() {
 		nashenski_check_picker_request();
 
@@ -109,7 +145,7 @@ class Address {
 		$raw_city    = nashenski_picker_request( 'city' );
 		$cities_data = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $raw_city, $state, $country );
 
-		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'] ) ) {
+		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'], true ) ) {
 			$args['cities'] = nashenski_return_array_for_select( $cities_data['cities_only_names_dropdowns'], 1, array( 'type' => 'city' ) );
 			$args['status'] = 'invalid-city';
 		} else {
@@ -134,6 +170,14 @@ class Address {
 		wp_die();
 	}
 
+	/**
+	 * Get streets for query.
+	 *
+	 * @param mixed $query    Query.
+	 * @param mixed $city_key City key.
+	 * @param mixed $cities   Cities.
+	 * @return mixed
+	 */
 	public static function get_streets_for_query( $query, $city_key, $cities ) {
 		if ( ! self::$container ) {
 			self::$container = nashenski()->container();
@@ -147,6 +191,14 @@ class Address {
 		return self::filter_and_rank_names( $streets_only_names, $query );
 	}
 
+	/**
+	 * Get quarters for query.
+	 *
+	 * @param mixed $query    Query.
+	 * @param mixed $city_key City key.
+	 * @param mixed $cities   Cities.
+	 * @return mixed
+	 */
 	public static function get_quarters_for_query( $query, $city_key, $cities ) {
 		if ( ! self::$container ) {
 			self::$container = nashenski()->container();
@@ -160,10 +212,24 @@ class Address {
 		return self::filter_and_rank_names( $quarters_only_names, $query );
 	}
 
+	/**
+	 * Get cities for query.
+	 *
+	 * @param mixed $query  Query.
+	 * @param mixed $cities Cities.
+	 * @return mixed
+	 */
 	public static function get_cities_for_query( $query, $cities ) {
 		return array_values( self::filter_and_rank_names( $cities, $query ) );
 	}
 
+	/**
+	 * Normalize search text.
+	 *
+	 * @param mixed $text          Text.
+	 * @param bool  $transliterate Transliterate.
+	 * @return mixed
+	 */
 	private static function normalize_search_text( $text, $transliterate = true ) {
 		$text = nashenski_strip_street_prefix( trim( (string) $text ) );
 
@@ -177,10 +243,17 @@ class Address {
 		return trim( preg_replace( '/\s+/u', ' ', $text ) );
 	}
 
+	/**
+	 * Filter and rank names.
+	 *
+	 * @param mixed $names Names.
+	 * @param mixed $query Query.
+	 * @return mixed
+	 */
 	private static function filter_and_rank_names( $names, $query ) {
 		$query = self::normalize_search_text( $query, false );
 
-		if ( $query === '' ) {
+		if ( '' === $query ) {
 			return $names;
 		}
 
@@ -200,11 +273,11 @@ class Address {
 				}
 			}
 
-			if ( $position === false && ! $all_tokens_match ) {
+			if ( false === $position && ! $all_tokens_match ) {
 				continue;
 			}
 
-			$rank     = $normalized_name === $query ? 0 : ( $position === 0 ? 1 : ( $position !== false ? 2 : 3 ) );
+			$rank     = $normalized_name === $query ? 0 : ( 0 === $position ? 1 : ( false !== $position ? 2 : 3 ) );
 			$ranked[] = array(
 				'key'   => $key,
 				'name'  => $name,

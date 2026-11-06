@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
 /**
  * Speedy Tab.
  *
@@ -55,7 +55,7 @@ class Speedy_Tab extends Base_Tab {
 			),
 		);
 
-		$fields = apply_filters( 'nashenski/admin/settings/speedy/fields', $fields );
+		$fields = apply_filters( 'nashenski/admin/settings/speedy/fields', $fields ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		$this->set_fields( $fields );
 	}
@@ -147,7 +147,7 @@ class Speedy_Tab extends Base_Tab {
 	 */
 	public function get_groups_titles() {
 		$titles = apply_filters(
-			'nashenski/admin/settings/speedy/groups_titles',
+			'nashenski/admin/settings/speedy/groups_titles', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 			array(
 				'speedy'           => array(
 					'title' => __( 'Speedy account', 'nashenski-commerce' ),

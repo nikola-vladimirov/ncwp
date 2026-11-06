@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Courier client.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Client;
 
 defined( 'ABSPATH' ) || exit;
@@ -8,14 +14,23 @@ defined( 'ABSPATH' ) || exit;
  * LIVE_URL), the courier's nested error messages and the cache folder.
  */
 trait Courier_Client {
+	/**
+	 * Load base endpoint.
+	 */
 	public function load_base_endpoint() {
-		$this->set_base_endpoint( 'live' == $this->get_env() ? self::LIVE_URL : self::DEMO_URL );
+		$this->set_base_endpoint( 'live' === $this->get_env() ? self::LIVE_URL : self::DEMO_URL );
 	}
 
+	/**
+	 * Add error message.
+	 *
+	 * @param mixed $error Error.
+	 * @return mixed
+	 */
 	public static function add_error_message( $error ) {
 		$message = array();
 
-		if ( ! empty( $error['message'] ) && $error['message'] !== ' ' ) {
+		if ( ! empty( $error['message'] ) && ' ' !== $error['message'] ) {
 			$message[] = $error['message'];
 		}
 
@@ -31,6 +46,8 @@ trait Courier_Client {
 	/**
 	 * Delete the cached cities, offices and so on. With $skip_cached_files, keep the files listed
 	 * in the client's $skip_cached_files.
+	 *
+	 * @param bool $skip_cached_files Skip cached files.
 	 */
 	public static function clear_cache_folder( $skip_cached_files = false ) {
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -40,8 +57,9 @@ trait Courier_Client {
 		$keep = $skip_cached_files && isset( static::$skip_cached_files ) ? static::$skip_cached_files : array();
 
 		// dirlist() is false when the folder was never made (no data loaded yet).
-		foreach ( $wp_filesystem->dirlist( self::CACHE_FOLDER ) ?: array() as $file ) {
-			if ( ! in_array( $file['name'], $keep ) ) {
+		$listing = $wp_filesystem->dirlist( self::CACHE_FOLDER );
+		foreach ( $listing ? $listing : array() as $file ) {
+			if ( ! in_array( $file['name'], $keep, true ) ) {
 				$wp_filesystem->delete( self::CACHE_FOLDER . DIRECTORY_SEPARATOR . $file['name'] );
 			}
 		}

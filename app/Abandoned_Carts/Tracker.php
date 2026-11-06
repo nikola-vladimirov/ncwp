@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Tracker.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Abandoned_Carts;
 
 defined( 'ABSPATH' ) || exit;
@@ -36,6 +42,9 @@ class Tracker {
 	/** Rows handled per send run. */
 	const BATCH = 100;
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'init', array( __CLASS__, 'unsubscribe' ) );
 		add_action( 'template_redirect', array( __CLASS__, 'resume' ) );
@@ -60,6 +69,8 @@ class Tracker {
 
 	/**
 	 * Registers the reminder as a WooCommerce email, so it is edited and sent the WooCommerce way.
+	 *
+	 * @param mixed $emails Emails.
 	 */
 	public static function register_email( $emails ) {
 		$emails[ self::EMAIL_ID ] = new Email();
@@ -67,10 +78,20 @@ class Tracker {
 		return $emails;
 	}
 
+	/**
+	 * Enabled.
+	 *
+	 * @return mixed
+	 */
 	public static function enabled() {
 		return 'yes' === nashenski_get_option( 'apis', 'enable_abandoned_carts' );
 	}
 
+	/**
+	 * Table.
+	 *
+	 * @return mixed
+	 */
 	public static function table() {
 		global $wpdb;
 
@@ -98,6 +119,11 @@ class Tracker {
 		return array_slice( array_values( $hours ), 0, 3 );
 	}
 
+	/**
+	 * Retention days.
+	 *
+	 * @return mixed
+	 */
 	public static function retention_days() {
 		$days = (int) nashenski_get_option( 'abandoned_carts', 'retention_days' );
 
@@ -169,6 +195,11 @@ class Tracker {
 		update_option( self::DB_OPTION, self::DB_VERSION );
 	}
 
+	/**
+	 * Session key.
+	 *
+	 * @return mixed
+	 */
 	private static function session_key() {
 		return WC()->session ? (string) WC()->session->get_customer_id() : '';
 	}
@@ -245,6 +276,8 @@ class Tracker {
 	 * The shopper emptied the cart: it is no longer tracked, so its reminders stop.
 	 * An order placed from the cart is marked recovered first, so this does nothing after it.
 	 * Logging out also empties the cart, but keeps the saved one ($clear_persistent_cart false): that cart is still open.
+	 *
+	 * @param bool $clear_persistent_cart Clear persistent cart.
 	 */
 	public static function mark_emptied( $clear_persistent_cart = true ) {
 		$key = self::session_key();
@@ -260,6 +293,8 @@ class Tracker {
 
 	/**
 	 * Classic checkout sends the whole form on every change (the field values arrive as one string).
+	 *
+	 * @param mixed $post_data Post data.
 	 */
 	public static function capture_from_checkout( $post_data ) {
 		parse_str( (string) $post_data, $data );
@@ -274,6 +309,9 @@ class Tracker {
 
 	/**
 	 * The block checkout sends the billing address with each update.
+	 *
+	 * @param mixed $customer Customer.
+	 * @param mixed $request  Request.
 	 */
 	public static function capture_from_store_api( $customer, $request ) {
 		$billing = $request->get_param( 'billing_address' );
@@ -294,6 +332,11 @@ class Tracker {
 	 * Keeps the email the shopper typed at checkout. A logged-out shopper has no account, so if no row
 	 * was recorded yet the cart is stored right here; the email is never dropped just because the cart
 	 * did not change before checkout.
+	 *
+	 * @param mixed $email Email.
+	 * @param mixed $name  Name.
+	 * @param mixed $phone Phone.
+	 * @param mixed $step  Step.
 	 */
 	private static function save_contact( $email, $name, $phone, $step ) {
 		$key   = self::session_key();
@@ -397,6 +440,8 @@ class Tracker {
 
 	/**
 	 * Sends one reminder now, whatever the schedule says. Used by the "Send reminder" button.
+	 *
+	 * @param mixed $id Id.
 	 */
 	public static function send_now( $id ) {
 		$row = self::get_row( $id );
@@ -420,6 +465,8 @@ class Tracker {
 	/**
 	 * Sends one reminder: through the WooCommerce email when it is registered, through wp_mail() when
 	 * it is not (for example a very old WooCommerce). Returns true when the mailer took it.
+	 *
+	 * @param mixed $row Row.
 	 */
 	private static function send( $row ) {
 		$coupon = self::coupon_for( $row );
@@ -436,6 +483,9 @@ class Tracker {
 
 	/**
 	 * The values the placeholders take in a reminder.
+	 *
+	 * @param mixed $row    Row.
+	 * @param mixed $coupon Coupon.
 	 */
 	public static function email_data( $row, $coupon = null ) {
 		$coupon = null === $coupon ? self::coupon_for( $row ) : $coupon;
@@ -467,6 +517,9 @@ class Tracker {
 
 	/**
 	 * The fallback plain text reminder, used only when the WooCommerce email is not available.
+	 *
+	 * @param mixed $row  Row.
+	 * @param mixed $data Data.
 	 */
 	private static function send_plain( $row, $data ) {
 		$body = array(
@@ -503,6 +556,8 @@ class Tracker {
 	/**
 	 * The coupon code to name in a reminder. With auto coupons on, the cart gets its own single-use
 	 * coupon, made once and kept on the row. Otherwise the manually saved code is used.
+	 *
+	 * @param mixed $row Row.
 	 */
 	public static function coupon_for( $row ) {
 		$amount = (float) str_replace( ',', '.', (string) nashenski_get_option( 'abandoned_carts', 'coupon_amount' ) );
@@ -525,6 +580,8 @@ class Tracker {
 
 	/**
 	 * Whether WooCommerce has a coupon with this code.
+	 *
+	 * @param mixed $code Code.
 	 */
 	private static function coupon_exists( $code ) {
 		if ( '' === $code ) {
@@ -539,10 +596,22 @@ class Tracker {
 		return (int) wc_get_coupon_id_by_code( $code ) > 0;
 	}
 
+	/**
+	 * Manual coupon.
+	 *
+	 * @return mixed
+	 */
 	public static function manual_coupon() {
 		return sanitize_text_field( (string) nashenski_get_option( 'abandoned_carts', 'coupon' ) );
 	}
 
+	/**
+	 * Create coupon.
+	 *
+	 * @param mixed $row    Row.
+	 * @param mixed $amount Amount.
+	 * @return mixed
+	 */
 	private static function create_coupon( $row, $amount ) {
 		if ( ! class_exists( 'WC_Coupon' ) ) {
 			return self::manual_coupon();
@@ -704,10 +773,14 @@ class Tracker {
 		);
 	}
 
-	/*
-	 * The read and write helpers the WooCommerce > Abandoned carts screen uses.
-	 */
+	// The read and write helpers the WooCommerce > Abandoned carts screen uses.
 
+	/**
+	 * Gets one cart row.
+	 *
+	 * @param int $id Row id.
+	 * @return object|null
+	 */
 	public static function get_row( $id ) {
 		global $wpdb;
 
@@ -716,6 +789,10 @@ class Tracker {
 
 	/**
 	 * A page of carts, newest first, optionally only one status.
+	 *
+	 * @param string $status Status.
+	 * @param int    $limit  Limit.
+	 * @param int    $offset Offset.
 	 */
 	public static function get_rows( $status = '', $limit = 20, $offset = 0 ) {
 		global $wpdb;
@@ -728,6 +805,12 @@ class Tracker {
 		return $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY last_activity DESC LIMIT %d OFFSET %d', $table, $limit, $offset ) );
 	}
 
+	/**
+	 * Count rows.
+	 *
+	 * @param string $status Status.
+	 * @return mixed
+	 */
 	public static function count_rows( $status = '' ) {
 		global $wpdb;
 		$table = self::table();
@@ -764,6 +847,15 @@ class Tracker {
 		return $counts;
 	}
 
+	/**
+	 * Update contact.
+	 *
+	 * @param mixed $id    Id.
+	 * @param mixed $email Email.
+	 * @param mixed $name  Name.
+	 * @param mixed $phone Phone.
+	 * @return mixed
+	 */
 	public static function update_contact( $id, $email, $name, $phone ) {
 		global $wpdb;
 
@@ -778,6 +870,12 @@ class Tracker {
 		);
 	}
 
+	/**
+	 * Delete row.
+	 *
+	 * @param mixed $id Id.
+	 * @return mixed
+	 */
 	public static function delete_row( $id ) {
 		global $wpdb;
 
@@ -785,7 +883,9 @@ class Tracker {
 	}
 
 	/**
-	 * @param int[] $ids
+	 * Deletes cart rows.
+	 *
+	 * @param int[] $ids Row ids.
 	 * @return int Rows removed.
 	 */
 	public static function delete_rows( $ids ) {

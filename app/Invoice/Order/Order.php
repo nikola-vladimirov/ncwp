@@ -181,7 +181,7 @@ class Order {
 			if ( $this->woo_order->get_total_discount() > 0 ) {
 				$order_total_items['cart_subtotal'] = array(
 					'type'  => 'subtotal',
-					'label' => __( 'Subtotal:', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'label' => __( 'Subtotal:', 'nashenski-commerce' ),
 				);
 				$order_total_items['discount']      = array();
 			}

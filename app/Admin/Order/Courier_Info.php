@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Courier info.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin\Order;
 
 use Nashenski\Front_End\Checkout\Pickers;
@@ -10,12 +16,17 @@ defined( 'ABSPATH' ) || exit;
  * saved it, the chosen office, locker or address. Orders without a courier say "No courier".
  */
 class Courier_Info {
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_box' ), 20 );
 	}
 
 	/**
 	 * Courier name, delivery type and place of an order, or an empty array when no shipping line is a courier.
+	 *
+	 * @param mixed $order Order.
 	 */
 	public static function summary( $order ) {
 		foreach ( $order->get_items( 'shipping' ) as $item ) {
@@ -46,6 +57,9 @@ class Courier_Info {
 		return array();
 	}
 
+	/**
+	 * Add meta box.
+	 */
 	public static function add_meta_box() {
 		$order = Delivery_Box::order();
 
@@ -59,6 +73,9 @@ class Courier_Info {
 		add_meta_box( 'nashenski_courier_info', __( 'Courier choice', 'nashenski-commerce' ), array( __CLASS__, 'render' ), $screen, 'side', 'high' );
 	}
 
+	/**
+	 * Render.
+	 */
 	public static function render() {
 		$order = Delivery_Box::order();
 		$info  = $order instanceof \WC_Order ? self::summary( $order ) : array();

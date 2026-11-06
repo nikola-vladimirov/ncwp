@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Labels.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin\Order;
 
 use Nashenski\Admin\Speedy;
@@ -9,7 +15,13 @@ use Nashenski\Admin\Admin_Menus;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Labels.
+ */
 class Labels {
+	/**
+	 * Generate label from listing page callback.
+	 */
 	public static function generate_label_from_listing_page_callback() {
 		nashenski_check_admin_label_actions();
 

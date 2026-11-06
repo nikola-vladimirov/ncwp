@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Quarters.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Client\Econt;
 
 use Nashenski\Container\Client;
@@ -6,16 +12,40 @@ use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Quarters.
+ */
 class Quarters {
 	const QUARTERS_ENDPOINT = 'Nomenclatures/NomenclaturesService.getQuarters.json';
 
+	/**
+	 * Quarters.
+	 *
+	 * @var array
+	 */
 	private $quarters = array();
+	/**
+	 * Container.
+	 *
+	 * @var mixed
+	 */
 	private $container;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param mixed $container Container.
+	 */
 	public function __construct( $container ) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Load quarters by city.
+	 *
+	 * @param mixed $city_id City id.
+	 * @return mixed
+	 */
 	protected function load_quarters_by_city( $city_id ) {
 		if ( ! is_dir( $this->container[ Client::ECONT ]::CACHE_FOLDER ) ) {
 			wp_mkdir_p( $this->container[ Client::ECONT ]::CACHE_FOLDER );
@@ -46,7 +76,14 @@ class Quarters {
 		return $quarters;
 	}
 
-	// Getters
+	// Getters.
+
+	/**
+	 * Get quarters by city.
+	 *
+	 * @param mixed $city_id City id.
+	 * @return mixed
+	 */
 	public function get_quarters_by_city( $city_id ) {
 		if ( empty( $this->quarters[ $city_id ] ) ) {
 			$this->load_quarters_by_city( $city_id );
@@ -55,11 +92,25 @@ class Quarters {
 		return $this->quarters[ $city_id ];
 	}
 
-	// Setters
+	// Setters.
+
+	/**
+	 * Set quarters.
+	 *
+	 * @param mixed $quarters Quarters.
+	 * @param mixed $city_id  City id.
+	 */
 	private function set_quarters( $quarters, $city_id ) {
 		$this->quarters[ $city_id ] = $quarters;
 	}
 
+	/**
+	 * Format quarters.
+	 *
+	 * @param mixed $quarters Quarters.
+	 * @param mixed $city_id  City id.
+	 * @return mixed
+	 */
 	public function format_quarters( $quarters, $city_id = null ) {
 		$formatted = array();
 

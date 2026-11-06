@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
 /**
  * Pigeon Tab.
  *
@@ -72,7 +72,7 @@ class Pigeon_Tab extends Base_Tab {
 			),
 		);
 
-		$fields = apply_filters( 'nashenski/admin/settings/pigeon/fields', $fields );
+		$fields = apply_filters( 'nashenski/admin/settings/pigeon/fields', $fields ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		$this->set_fields( $fields );
 	}
@@ -157,7 +157,7 @@ class Pigeon_Tab extends Base_Tab {
 	 */
 	public function get_groups_titles() {
 		$titles = apply_filters(
-			'nashenski/admin/settings/pigeon/groups_titles',
+			'nashenski/admin/settings/pigeon/groups_titles', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 			array(
 				'pigeon'           => array(
 					'title' => __( 'Pigeon Express account', 'nashenski-commerce' ),

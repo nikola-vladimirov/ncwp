@@ -1,15 +1,34 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Nepostop.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Reports\Providers;
 
 defined( 'ABSPATH' ) || exit;
 
 use Nashenski\Container\Client;
 
+/**
+ * Nepo stop.
+ */
 class NepoStop extends Provider_Base {
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		$this->set_name( __( 'NepoStop', 'nashenski-commerce' ) );
 	}
 
+	/**
+	 * Get all reports.
+	 *
+	 * @param mixed $order Order.
+	 * @param bool  $force Force.
+	 * @return mixed
+	 */
 	public static function get_all_reports( $order, $force = false ) {
 		$container = nashenski()->container();
 		$phone     = ( $order->get_shipping_phone() ) ? $order->get_shipping_phone() : $order->get_billing_phone();
@@ -40,6 +59,12 @@ class NepoStop extends Provider_Base {
 		return $args;
 	}
 
+	/**
+	 * Get all reports from meta.
+	 *
+	 * @param mixed $order Order.
+	 * @return mixed
+	 */
 	public static function get_all_reports_from_meta( $order ) {
 		$phone    = ( $order->get_shipping_phone() ) ? $order->get_shipping_phone() : $order->get_billing_phone();
 		$meta_key = 'nashenski_reports-nepostop_phone_' . md5( $phone );
@@ -55,7 +80,12 @@ class NepoStop extends Provider_Base {
 		return $args;
 	}
 
-	function print_reports_html( $order ) {
+	/**
+	 * Print reports html.
+	 *
+	 * @param mixed $order Order.
+	 */
+	public function print_reports_html( $order ) {
 		$reports     = self::get_all_reports( $order );
 		$description = '';
 		$treshold    = nashenski_get_option( 'nepostop', 'level_of_warning' );
@@ -91,6 +121,12 @@ class NepoStop extends Provider_Base {
 		<?php
 	}
 
+	/**
+	 * Check for reports on checkout.
+	 *
+	 * @param mixed $phone Phone.
+	 * @return mixed
+	 */
 	public static function check_for_reports_on_checkout( $phone ) {
 		$container = nashenski()->container();
 		$result    = $container[ Client::NEPOSTOP ]->api_call( $container[ Client::NEPOSTOP ]::CHECK_ENDPOINT, array( 'phone_number' => nashenski_format_phone( $phone ) ) );

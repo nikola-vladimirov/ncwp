@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Export tab.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Order\Documents;
@@ -8,14 +14,23 @@ use Nashenski\Export\InvoiceArchive\Export as InvoiceArchiveExport;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Export tab.
+ */
 class Export_Tab extends Base_Tab {
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		$this->set_name( __( 'Export', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'export' );
 	}
 
+	/**
+	 * Nashenski export nap callback.
+	 */
 	public static function nashenski_export_nap_callback() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ?? '' ) ), 'nashenski_export_nap' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ?? '' ) ), 'nashenski_export_nap' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers manage_woocommerce.
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
 		}
 
@@ -80,7 +95,7 @@ class Export_Tab extends Base_Tab {
 			$additional_message .= '<br><br>' . ob_get_clean();
 		}
 
-		$additional_message = apply_filters( 'nashenski/admin/export/nra/additional_message', $additional_message, $export );
+		$additional_message = apply_filters( 'nashenski/admin/export/nra/additional_message', $additional_message, $export ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 
 		wp_send_json_success(
 			array(
@@ -91,8 +106,11 @@ class Export_Tab extends Base_Tab {
 	}
 
 
+	/**
+	 * Nashenski export microinvest callback.
+	 */
 	public static function nashenski_export_microinvest_callback() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ?? '' ) ), 'nashenski_export_nap' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ?? '' ) ), 'nashenski_export_nap' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers manage_woocommerce.
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
 		}
 
@@ -115,8 +133,11 @@ class Export_Tab extends Base_Tab {
 		);
 	}
 
+	/**
+	 * Nashenski export invoice archive callback.
+	 */
 	public static function nashenski_export_invoice_archive_callback() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ?? '' ) ), 'nashenski_export_nap' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ?? '' ) ), 'nashenski_export_nap' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers manage_woocommerce.
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
 		}
 

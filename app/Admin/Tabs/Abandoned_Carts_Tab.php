@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Abandoned carts tab.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
@@ -10,14 +16,20 @@ defined( 'ABSPATH' ) || exit;
  * Abandoned carts section: reminder times, the coupon the reminder names, and how long carts are kept.
  */
 class Abandoned_Carts_Tab extends Base_Tab {
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		$this->set_name( __( 'Abandoned carts', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'abandoned_carts' );
 	}
 
+	/**
+	 * Load fields.
+	 */
 	public function load_fields() {
 		$fields = apply_filters(
-			'nashenski/admin/settings/abandoned_carts/fields',
+			'nashenski/admin/settings/abandoned_carts/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- the plugin's public hooks are namespaced with slashes (nashenski/...), renaming would break add-ons.
 			array(
 				'abandoned_carts' => array(
 					( new Fields\Text_Field(
@@ -80,6 +92,11 @@ class Abandoned_Carts_Tab extends Base_Tab {
 		$this->set_fields( $fields );
 	}
 
+	/**
+	 * Get groups titles.
+	 *
+	 * @return mixed
+	 */
 	public function get_groups_titles() {
 		return array(
 			'abandoned_carts' => array(

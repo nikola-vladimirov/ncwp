@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Field editor.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Front_End\Checkout;
 
 defined( 'ABSPATH' ) || exit;
@@ -39,6 +45,9 @@ class Field_Editor {
 		'date'     => 'text',
 	);
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		if ( self::custom_rows() ) {
 			add_action( 'woocommerce_init', array( __CLASS__, 'register_block_fields' ) );
@@ -132,6 +141,13 @@ class Field_Editor {
 		);
 	}
 
+	/**
+	 * Hide rendered field.
+	 *
+	 * @param mixed $html Html.
+	 * @param mixed $key  Key.
+	 * @return mixed
+	 */
 	public static function hide_rendered_field( $html, $key ) {
 		// With company invoice fields on, the company name belongs to them.
 		if ( 'billing_company' === $key && Company_Fields::enabled() ) {
@@ -196,6 +212,12 @@ class Field_Editor {
 		);
 	}
 
+	/**
+	 * Rule.
+	 *
+	 * @param mixed $field Field.
+	 * @return mixed
+	 */
 	public static function rule( $field ) {
 		$group = in_array( $field, array( 'email', 'order_comments' ), true ) ? self::GROUP_CLASSIC : self::GROUP;
 		$rule  = nashenski_get_option( $group, $field );
@@ -203,6 +225,11 @@ class Field_Editor {
 		return in_array( $rule, array( 'required', 'optional', 'hidden' ), true ) ? $rule : 'default';
 	}
 
+	/**
+	 * Has rules.
+	 *
+	 * @return mixed
+	 */
 	private static function has_rules() {
 		foreach ( array_merge( self::KEYS, array( 'email', 'order_comments' ) ) as $field ) {
 			if ( 'default' !== self::rule( $field ) ) {
@@ -222,6 +249,11 @@ class Field_Editor {
 		return is_array( $layout ) ? $layout : array();
 	}
 
+	/**
+	 * Custom rows.
+	 *
+	 * @return mixed
+	 */
 	private static function custom_rows() {
 		return array_filter(
 			self::layout(),
@@ -233,6 +265,9 @@ class Field_Editor {
 
 	/**
 	 * Checkout field name of a row: billing_email, shipping_city, billing_nashenski_<slug>.
+	 *
+	 * @param mixed $type Type.
+	 * @param mixed $key  Key.
 	 */
 	public static function field_name( $type, $key ) {
 		return 0 === strpos( $key, 'custom_' ) ? 'billing_nashenski_' . substr( $key, 7 ) : $type . '_' . $key;
@@ -253,6 +288,9 @@ class Field_Editor {
 
 	/**
 	 * Apply a rule to one field definition. Returns null when the field must be removed.
+	 *
+	 * @param mixed $definition Definition.
+	 * @param mixed $rule       Rule.
 	 */
 	private static function apply_rule( $definition, $rule ) {
 		switch ( $rule ) {
@@ -270,6 +308,12 @@ class Field_Editor {
 		return $definition;
 	}
 
+	/**
+	 * Default address fields.
+	 *
+	 * @param mixed $fields Fields.
+	 * @return mixed
+	 */
 	public static function default_address_fields( $fields ) {
 		$priorities = self::priorities();
 
@@ -303,6 +347,8 @@ class Field_Editor {
 	/**
 	 * Country locale entries override the default fields per country, so the rules go there too.
 	 * The block checkout reads "hidden", "required" and the order ("priority") from here.
+	 *
+	 * @param mixed $locale Locale.
 	 */
 	public static function locale_entry( $locale ) {
 		$priorities = self::priorities();
@@ -338,6 +384,12 @@ class Field_Editor {
 		return $locale;
 	}
 
+	/**
+	 * Country locale.
+	 *
+	 * @param mixed $locales Locales.
+	 * @return mixed
+	 */
 	public static function country_locale( $locales ) {
 		foreach ( $locales as $country => $locale ) {
 			$locales[ $country ] = self::locale_entry( is_array( $locale ) ? $locale : array() );
@@ -346,6 +398,12 @@ class Field_Editor {
 		return $locales;
 	}
 
+	/**
+	 * Billing fields.
+	 *
+	 * @param mixed $fields Fields.
+	 * @return mixed
+	 */
 	public static function billing_fields( $fields ) {
 		$rule = self::rule( 'email' );
 
@@ -360,6 +418,8 @@ class Field_Editor {
 
 	/**
 	 * Classic checkout: the final list, after themes and other plugins added theirs.
+	 *
+	 * @param mixed $fields Fields.
 	 */
 	public static function checkout_fields( $fields ) {
 		foreach ( array( 'billing', 'shipping' ) as $type ) {
@@ -472,6 +532,9 @@ class Field_Editor {
 	/**
 	 * Order and width from the layout, and the extra fields in the billing section. Two half-width
 	 * fields in a row share a line.
+	 *
+	 * @param mixed $section Section.
+	 * @param mixed $type    Type.
 	 */
 	private static function arrange( $section, $type ) {
 		$priorities = self::priorities();
@@ -532,6 +595,8 @@ class Field_Editor {
 
 	/**
 	 * An extra field for woocommerce_form_field().
+	 *
+	 * @param mixed $row Row.
 	 */
 	private static function custom_definition( $row ) {
 		$definition = array(
@@ -577,6 +642,12 @@ class Field_Editor {
 		echo '</template>';
 	}
 
+	/**
+	 * Choices.
+	 *
+	 * @param mixed $row Row.
+	 * @return mixed
+	 */
 	private static function choices( $row ) {
 		return array_values( array_filter( array_map( array( Conditions::class, 'clean_text' ), explode( "\n", (string) ( $row['options'] ?? '' ) ) ), 'strlen' ) );
 	}
@@ -642,6 +713,11 @@ class Field_Editor {
 	/**
 	 * Block checkout: keep each extra field also where the classic checkout keeps it, so the order
 	 * screen, emails and exports read one place.
+	 *
+	 * @param mixed $key       Key.
+	 * @param mixed $value     Value.
+	 * @param mixed $group     Group.
+	 * @param mixed $wc_object Wc object.
 	 */
 	public static function save_block_field( $key, $value, $group, $wc_object ) {
 		if ( 0 === strpos( (string) $key, 'nashenski/' ) && $wc_object instanceof \WC_Order && ! in_array( $key, array_keys( Company_Fields::BLOCK_FIELDS ), true ) ) {
@@ -651,6 +727,8 @@ class Field_Editor {
 
 	/**
 	 * The extra fields an order has: label => value.
+	 *
+	 * @param mixed $order Order.
 	 */
 	private static function values( $order ) {
 		$values = array();
@@ -670,12 +748,25 @@ class Field_Editor {
 		return $values;
 	}
 
+	/**
+	 * Admin values.
+	 *
+	 * @param mixed $order Order.
+	 */
 	public static function admin_values( $order ) {
 		foreach ( self::values( $order ) as $label => $value ) {
 			printf( '<p><strong>%1$s:</strong><br>%2$s</p>', esc_html( $label ), nl2br( esc_html( $value ) ) );
 		}
 	}
 
+	/**
+	 * Email values.
+	 *
+	 * @param mixed $fields        Fields.
+	 * @param mixed $sent_to_admin Sent to admin.
+	 * @param mixed $order         Order.
+	 * @return mixed
+	 */
 	public static function email_values( $fields, $sent_to_admin, $order ) {
 		foreach ( self::values( $order ) as $label => $value ) {
 			$fields[] = array(
@@ -710,6 +801,11 @@ class Field_Editor {
 		return $rows;
 	}
 
+	/**
+	 * Settings.
+	 *
+	 * @return mixed
+	 */
 	public static function settings() {
 		return array(
 			array(
@@ -730,6 +826,14 @@ class Field_Editor {
 		);
 	}
 
+	/**
+	 * Select.
+	 *
+	 * @param mixed $name    Name.
+	 * @param mixed $options Options.
+	 * @param mixed $current Current.
+	 * @return mixed
+	 */
 	private static function select( $name, $options, $current ) {
 		$html = '<select name="' . esc_attr( $name ) . '">';
 
@@ -740,6 +844,14 @@ class Field_Editor {
 		return $html . '</select>';
 	}
 
+	/**
+	 * Row html.
+	 *
+	 * @param mixed $name Name.
+	 * @param mixed $uid  Uid.
+	 * @param mixed $row  Row.
+	 * @return mixed
+	 */
 	private static function row_html( $name, $uid, $row ) {
 		$custom = 0 === strpos( $row['key'], 'custom_' ) || '' === $row['key'];
 		$labels = array( 'email' => __( 'Email address', 'nashenski-commerce' ) ) + self::address_fields();
@@ -808,6 +920,8 @@ class Field_Editor {
 
 	/**
 	 * The table: one row per field, in checkout order.
+	 *
+	 * @param mixed $value Value.
 	 */
 	public static function output_layout_field( $value ) {
 		$name = $value['id'];
@@ -836,7 +950,7 @@ class Field_Editor {
 				</table>
 				<template class="nashenski-layout__template">
 				<?php
-				echo self::row_html(
+				echo self::row_html( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in row_html().
 					$name,
 					'__uid__',
 					array(
@@ -845,7 +959,7 @@ class Field_Editor {
 						'rule'  => 'optional',
 						'width' => 'full',
 					)
-				); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in row_html(). 
+				);
 				?>
 				</template>
 				<template class="nashenski-when__template"
@@ -924,6 +1038,10 @@ class Field_Editor {
 	/**
 	 * Keep the rows in the order they were sent; standard fields also save their visibility in
 	 * the options the rest of the editor reads.
+	 *
+	 * @param mixed $value     Value.
+	 * @param mixed $option    Option.
+	 * @param mixed $raw_value Raw value.
 	 */
 	public static function sanitize_layout_field( $value, $option, $raw_value ) {
 		if ( 'nashenski_field_layout' !== ( $option['type'] ?? '' ) ) {

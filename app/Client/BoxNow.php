@@ -1,10 +1,19 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Boxnow.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Client;
 
 use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Box now.
+ */
 class BoxNow {
 	use Courier_Client {
 		clear_cache_folder as protected clear_courier_cache_folder;
@@ -17,12 +26,40 @@ class BoxNow {
 
 	const CACHE_FOLDER = File::CACHE_FOLDER . 'boxnow' . DIRECTORY_SEPARATOR;
 
-	private $env           = '';
-	private $client_id     = '';
+	/**
+	 * Env.
+	 *
+	 * @var string
+	 */
+	private $env = '';
+	/**
+	 * Client id.
+	 *
+	 * @var string
+	 */
+	private $client_id = '';
+	/**
+	 * Client secret.
+	 *
+	 * @var string
+	 */
 	private $client_secret = '';
+	/**
+	 * Base endpoint.
+	 *
+	 * @var mixed
+	 */
 	private $base_endpoint;
+	/**
+	 * Access token.
+	 *
+	 * @var mixed
+	 */
 	private $access_token;
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		$this->set_env( nashenski_get_option( 'boxnow', 'env' ) );
 		$this->load_client_id();
@@ -32,12 +69,25 @@ class BoxNow {
 		$this->load_access_token( true );
 	}
 
-	/** The shared cache clearing, plus the sender addresses kept in the private documents folder. */
+	/**
+	 * The shared cache clearing, plus the sender addresses kept in the private documents folder.
+	 *
+	 * @param bool $skip_cached_files Skip cached files.
+	 */
 	public static function clear_cache_folder( $skip_cached_files = false ) {
 		static::clear_courier_cache_folder( $skip_cached_files );
 		BoxNow\Origins::clear();
 	}
 
+	/**
+	 * Api call.
+	 *
+	 * @param mixed  $endpoint     Endpoint.
+	 * @param mixed  $args         Args.
+	 * @param string $method       Method.
+	 * @param bool   $return_plain Return plain.
+	 * @return mixed
+	 */
 	public function api_call( $endpoint, $args, $method = 'POST', $return_plain = false ) {
 		if ( ! $this->get_access_token() ) {
 			return;
@@ -54,7 +104,7 @@ class BoxNow {
 			'body'    => wp_json_encode( $args ),
 		);
 
-		if ( $method === 'GET' ) {
+		if ( 'GET' === $method ) {
 			unset( $request_args['body'] );
 
 			$request = wp_remote_get( add_query_arg( $args, $url ), $request_args );
@@ -94,6 +144,8 @@ class BoxNow {
 
 	/**
 	 * Error codes from the BOX NOW API integration manual (v1.69, boxnow.bg) that making or cancelling a label can return.
+	 *
+	 * @param mixed $code Code.
 	 */
 	public static function error_text( $code ) {
 		$texts = array(
@@ -119,6 +171,11 @@ class BoxNow {
 		return $texts[ $code ] ?? '';
 	}
 
+	/**
+	 * Load access token.
+	 *
+	 * @param bool $forced Forced.
+	 */
 	public function load_access_token( $forced = false ) {
 		if ( $forced ) {
 			$this->load_client_id();
@@ -164,55 +221,112 @@ class BoxNow {
 		}
 	}
 
-	// Loaders
+	// Loaders.
+
+	/**
+	 * Load client id.
+	 */
 	public function load_client_id() {
 		$this->set_client_id( nashenski_get_option( 'boxnow', 'client_id' ) );
 	}
 
+	/**
+	 * Load client secret.
+	 */
 	public function load_client_secret() {
 		$this->set_client_secret( nashenski_get_option( 'boxnow', 'client_secret' ) );
 	}
 
-	// Getters
+	// Getters.
 
+	/**
+	 * Get client id.
+	 *
+	 * @return mixed
+	 */
 	public function get_client_id() {
 		return $this->client_id;
 	}
 
+	/**
+	 * Get client secret.
+	 *
+	 * @return mixed
+	 */
 	public function get_client_secret() {
 		return $this->client_secret;
 	}
 
+	/**
+	 * Get env.
+	 *
+	 * @return mixed
+	 */
 	public function get_env() {
 		return $this->env;
 	}
 
+	/**
+	 * Get base endpoint.
+	 *
+	 * @return mixed
+	 */
 	public function get_base_endpoint() {
 		return $this->base_endpoint;
 	}
 
+	/**
+	 * Get access token.
+	 *
+	 * @return mixed
+	 */
 	public function get_access_token() {
 		return $this->access_token;
 	}
 
-	// Setters
+	// Setters.
 
+	/**
+	 * Set client id.
+	 *
+	 * @param mixed $user User.
+	 */
 	private function set_client_id( $user ) {
 		$this->client_id = $user;
 	}
 
+	/**
+	 * Set client secret.
+	 *
+	 * @param mixed $password Password.
+	 */
 	private function set_client_secret( $password ) {
 		$this->client_secret = $password;
 	}
 
+	/**
+	 * Set env.
+	 *
+	 * @param mixed $env Env.
+	 */
 	public function set_env( $env ) {
 		$this->env = $env;
 	}
 
+	/**
+	 * Set base endpoint.
+	 *
+	 * @param mixed $endpoint Endpoint.
+	 */
 	private function set_base_endpoint( $endpoint ) {
 		$this->base_endpoint = $endpoint;
 	}
 
+	/**
+	 * Set access token.
+	 *
+	 * @param mixed $access_token Access token.
+	 */
 	private function set_access_token( $access_token ) {
 		$this->access_token = $access_token;
 	}

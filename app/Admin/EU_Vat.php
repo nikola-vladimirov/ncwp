@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Eu vat.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin;
 
 use Nashenski\Admin\Fields;
@@ -7,9 +13,27 @@ use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableControlle
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Eu vat.
+ */
 class EU_Vat {
-	protected $tax_classes, $eu_countries;
+	/**
+	 * Tax classes.
+	 *
+	 * @var mixed
+	 */
+	protected $tax_classes;
 
+	/**
+	 * EU countries.
+	 *
+	 * @var mixed
+	 */
+	protected $eu_countries;
+
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_filter( 'nashenski/admin/nra/fields', array( __CLASS__, 'add_fields_in_settings' ) );
 		add_action( 'woocommerce_admin_billing_fields', array( __CLASS__, 'admin_billing_fields' ) );
@@ -20,6 +44,12 @@ class EU_Vat {
 		}
 	}
 
+	/**
+	 * Add fields in settings.
+	 *
+	 * @param mixed $fields Fields.
+	 * @return mixed
+	 */
 	public static function add_fields_in_settings( $fields ) {
 		if ( extension_loaded( 'soap' ) ) {
 			$fields['invoice'][] = new Fields\TrueFalse_Field( 'enable_vies', __( 'Enable VIES validation', 'nashenski-commerce' ), null, null, __( 'Validate the VAT number with the European VIES system or only with regex.', 'nashenski-commerce' ) );
@@ -30,6 +60,12 @@ class EU_Vat {
 		return $fields;
 	}
 
+	/**
+	 * Admin billing fields.
+	 *
+	 * @param mixed $fields Fields.
+	 * @return mixed
+	 */
 	public static function admin_billing_fields( $fields ) {
 		$theorder = isset( $GLOBALS['theorder'] ) ? $GLOBALS['theorder'] : null;
 
@@ -45,6 +81,9 @@ class EU_Vat {
 		return $fields;
 	}
 
+	/**
+	 * Add meta boxes.
+	 */
 	public static function add_meta_boxes() {
 		$screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
 		? array( wc_get_page_screen_id( 'shop-order' ), wc_get_page_screen_id( 'shop_subscription' ) )
@@ -53,10 +92,19 @@ class EU_Vat {
 		add_meta_box( 'nashenski_eu_vat', __( 'EU VAT', 'nashenski-commerce' ), array( __CLASS__, 'output_meta_box' ), array( 'shop_order', 'shop_subscription' ), 'side' );
 	}
 
+	/**
+	 * Is eu order.
+	 *
+	 * @param mixed $order Order.
+	 * @return mixed
+	 */
 	protected static function is_eu_order( $order ) {
-		return in_array( $order->get_billing_country(), Front_End_EU_Vat::get_eu_countries() );
+		return in_array( $order->get_billing_country(), Front_End_EU_Vat::get_eu_countries(), true );
 	}
 
+	/**
+	 * Output meta box.
+	 */
 	public static function output_meta_box() {
 		global $post;
 		$theorder = isset( $GLOBALS['theorder'] ) ? $GLOBALS['theorder'] : null;
@@ -127,6 +175,12 @@ class EU_Vat {
 		<?php
 	}
 
+	/**
+	 * Get order vat data.
+	 *
+	 * @param mixed $order Order.
+	 * @return mixed
+	 */
 	protected static function get_order_vat_data( $order ) {
 		return (object) array(
 			'vat_number'      => nashenski_get_vat_from_order( $order ),

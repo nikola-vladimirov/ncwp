@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+/**
+ * Destinations.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Client\BoxNow;
 
 use Nashenski\Container\Client;
@@ -6,19 +12,43 @@ use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Destinations.
+ */
 class Destinations {
 	const DESTINATIONS_ENDPOINT = '/api/v1/destinations';
 
 	/** BOX NOW's public locker list (stage or production), no login needed. BOX NOW API manual 4.3.1. */
 	const PUBLIC_URL = 'https://locationapi-%s.boxnow.bg/v1/apms_bg-BG.json';
 
+	/**
+	 * Destinations.
+	 *
+	 * @var array
+	 */
 	private $destinations = array();
+	/**
+	 * Container.
+	 *
+	 * @var mixed
+	 */
 	private $container;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param mixed $container Container.
+	 */
 	public function __construct( $container ) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Load destinations.
+	 *
+	 * @param mixed $size Size.
+	 * @return mixed
+	 */
 	protected function load_destinations( $size ) {
 		$box = $this->container[ Client::BOXNOW ];
 
@@ -37,7 +67,7 @@ class Destinations {
 			$list = array();
 
 			// Only BOX NOW's API filters by compartment size; the public list has no sizes.
-			if ( $size && $size != 'all' ) {
+			if ( $size && 'all' !== $size ) {
 				$api_call = $box->api_call( self::DESTINATIONS_ENDPOINT, array( 'requiredSize' => $size ), 'GET' );
 				$list     = is_array( $api_call ) && ! empty( $api_call['data'] ) ? $api_call['data'] : array();
 			}
@@ -65,7 +95,14 @@ class Destinations {
 		return $destinations;
 	}
 
-	// Getters
+	// Getters.
+
+	/**
+	 * Get destinations.
+	 *
+	 * @param string $size Size.
+	 * @return mixed
+	 */
 	public function get_destinations( $size = '' ) {
 		$size = ( ! $size ) ? 'all' : $size;
 
@@ -76,7 +113,14 @@ class Destinations {
 		return $this->destinations[ $size ];
 	}
 
-	// Setters
+	// Setters.
+
+	/**
+	 * Set destinations.
+	 *
+	 * @param mixed $size         Size.
+	 * @param mixed $destinations Destinations.
+	 */
 	private function set_destinations( $size, $destinations ) {
 		$this->destinations[ $size ] = $destinations;
 	}
