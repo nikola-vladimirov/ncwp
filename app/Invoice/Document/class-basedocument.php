@@ -686,14 +686,14 @@ class BaseDocument {
 	}
 
 	/**
-	 * The logo as an <img> with a data URI, sized to fit 220 x 70, so the PDF never loads files over the web.
+	 * The logo as a data URI with its size, fitted to the logo box, so the PDF never loads files over the web.
 	 */
 	public static function get_logo_img() {
 		$id   = self::get_logo_id();
 		$file = $id ? get_attached_file( $id ) : '';
 
 		if ( ! $file || ! is_readable( $file ) ) {
-			return '';
+			return array();
 		}
 
 		$type                  = wp_check_filetype( $file );
@@ -701,14 +701,19 @@ class BaseDocument {
 		$data                  = base64_encode( (string) File::get_file( $file ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- the logo goes into the PDF as a data URI.
 		$size                  = 'image/svg+xml' === $mime ? false : wp_getimagesize( $file );
 		list( $box_w, $box_h ) = \Nashenski\Invoice\PDF\Style::logo_box();
-		$attrs                 = sprintf( 'height="%d"', $box_h );
+		$width                 = 0;
 
 		if ( $size && $size[0] && $size[1] ) {
 			$scale = min( $box_w / $size[0], $box_h / $size[1], 1 );
-			$attrs = sprintf( 'width="%d" height="%d"', round( $size[0] * $scale ), round( $size[1] * $scale ) );
+			$width = round( $size[0] * $scale );
+			$box_h = round( $size[1] * $scale );
 		}
 
-		return sprintf( '<img class="site-logo" src="data:%s;base64,%s" %s alt="">', esc_attr( $mime ), $data, $attrs );
+		return array(
+			'src'    => 'data:' . $mime . ';base64,' . $data,
+			'width'  => $width,
+			'height' => $box_h,
+		);
 	}
 
 	/**
@@ -744,20 +749,13 @@ class BaseDocument {
 		$details = $this->get_site_details();
 
 		if ( $logo ) {
-			echo wp_kses(
-				$logo,
-				array(
-					'img' => array(
-						'class'  => true,
-						'src'    => true,
-						'width'  => true,
-						'height' => true,
-						'alt'    => true,
-						'style'  => true,
-					),
-				),
-				array( 'data', 'http', 'https' )
-			); // The logo is a data URI of the site's own image.
+			// Not wp_kses: its regex fails on a multi-megabyte data URI and prints nothing.
+			printf(
+				'<img class="site-logo" src="%1$s"%2$s height="%3$d" alt="">',
+				esc_attr( $logo['src'] ),
+				$logo['width'] ? ' width="' . absint( $logo['width'] ) . '"' : '',
+				absint( $logo['height'] )
+			);
 		}
 
 		if ( $details ) {
