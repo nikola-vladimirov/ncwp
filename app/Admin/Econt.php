@@ -1,4 +1,13 @@
 <?php
+/**
+ * Econt label box and label requests in the order screen.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
+
 namespace Nashenski\Admin;
 
 use Nashenski\Container\Client;
@@ -6,9 +15,20 @@ use Nashenski\Shipping\Econt\Address;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Econt label box of the order screen and the requests behind it.
+ */
 class Econt {
+	/**
+	 * Service container.
+	 *
+	 * @var \Pimple\Container|null
+	 */
 	private static $container = null;
 
+	/**
+	 * Registers the hooks.
+	 */
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_boxes' ) );
 
@@ -21,10 +41,16 @@ class Econt {
 		add_filter( 'nashenski/econt/update_label', array( __CLASS__, 'set_min_pack_weight' ), 30 );
 	}
 
+	/**
+	 * Adds the Econt box to the order screen.
+	 */
 	public static function add_meta_boxes() {
 		nashenski_add_courier_meta_box( 'econt', __( 'Econt Delivery', 'nashenski-commerce' ), array( __CLASS__, 'meta_box' ) );
 	}
 
+	/**
+	 * Prints the Econt box and hands the label data to the script.
+	 */
 	public static function meta_box() {
 		global $post;
 		$theorder = isset( $GLOBALS['theorder'] ) ? $GLOBALS['theorder'] : null;
@@ -37,14 +63,16 @@ class Econt {
 
 		if ( ! empty( $theorder->get_items( 'shipping' ) ) ) {
 			foreach ( $theorder->get_items( 'shipping' ) as $shipping ) {
-				if ( $shipping['method_id'] === 'nashenski_econt' ) {
+				if ( 'nashenski_econt' === $shipping['method_id'] ) {
 					echo '<div id="nashenski--econt-admin"></div>';
 
 					$label_data      = array();
 					$cookie_data     = $theorder->get_meta( 'nashenski_econt_cookie_data' );
 					$shipment_status = Courier_Pdf::status( 'econt', $theorder->get_meta( 'nashenski_econt_shipment_status' ) );
 
-					if ( $label = $theorder->get_meta( 'nashenski_econt_label' ) ) {
+					$label = $theorder->get_meta( 'nashenski_econt_label' );
+
+					if ( $label ) {
 						$label_data = $label;
 					}
 
@@ -52,7 +80,7 @@ class Econt {
 						foreach ( $shipping->get_meta_data() as $meta_data ) {
 							$data = $meta_data->get_data();
 
-							if ( $data['key'] == 'cookie_data' ) {
+							if ( 'cookie_data' === $data['key'] ) {
 								$cookie_data = $data['value'];
 							}
 						}
@@ -90,6 +118,11 @@ class Econt {
 		}
 	}
 
+	/**
+	 * Texts of the label box for the script.
+	 *
+	 * @return array
+	 */
 	protected static function get_i18n() {
 		return array(
 			'updateShipmentStatus'  => __( 'Update shipment status', 'nashenski-commerce' ),
@@ -147,6 +180,10 @@ class Econt {
 	/**
 	 * A label draft from the order, as checkout builds one from the cart. Generate label fills
 	 * the sender, address, payment and test options from the box.
+	 *
+	 * @param \WC_Order $order       Order.
+	 * @param array     $cookie_data Saved delivery choice.
+	 * @return array
 	 */
 	protected static function draft_label( $order, $cookie_data ) {
 		$names  = array();
@@ -201,6 +238,11 @@ class Econt {
 		return $label;
 	}
 
+	/**
+	 * Shipment types for the select.
+	 *
+	 * @return array
+	 */
 	protected static function get_shipment_types() {
 		return nashenski_return_array_for_select(
 			array(
@@ -213,6 +255,11 @@ class Econt {
 		);
 	}
 
+	/**
+	 * Where the parcel is sent from: type, offices and addresses.
+	 *
+	 * @return array
+	 */
 	protected static function get_send_from_data() {
 		$container = nashenski()->container();
 		$type      = nashenski_get_option( 'econt', 'send_from' );
@@ -233,6 +280,13 @@ class Econt {
 		return $data;
 	}
 
+	/**
+	 * Offices of the delivery city of an order.
+	 *
+	 * @param mixed     $cookie_data Saved delivery choice, not used.
+	 * @param \WC_Order $order       Order.
+	 * @return array
+	 */
 	protected static function get_offices( $cookie_data, $order ) {
 		$offices = array();
 		$country = $order->get_billing_country();
@@ -249,7 +303,7 @@ class Econt {
 		$state       = $states[ $state ] ?? null; // An order with no region has no key here.
 		$cities_data = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $city, $state, $country );
 
-		if ( $cities_data['city_key'] !== false ) {
+		if ( false !== $cities_data['city_key'] ) {
 			$offices = self::$container[ Client::ECONT_OFFICES ]->get_offices( $cities_data['cities'][ $cities_data['city_key'] ]['id'], $country );
 			$offices = ( isset( $offices['offices'] ) ) ? $offices['offices'] : array();
 		}
@@ -257,6 +311,13 @@ class Econt {
 		return $offices;
 	}
 
+	/**
+	 * Streets and quarters of the delivery city of an order.
+	 *
+	 * @param mixed     $cookie_data Saved delivery choice, not used.
+	 * @param \WC_Order $order       Order.
+	 * @return array
+	 */
 	protected static function get_streets( $cookie_data, $order ) {
 		$streets  = array();
 		$quarters = array();
@@ -275,7 +336,7 @@ class Econt {
 
 		$cities_data = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $city, $state, $country );
 
-		if ( $cities_data['city_key'] !== false ) {
+		if ( false !== $cities_data['city_key'] ) {
 			$streets = nashenski_return_array_for_select(
 				Address::get_streets_for_query( '', $cities_data['city_key'], $cities_data['cities'] ),
 				1,
@@ -292,6 +353,12 @@ class Econt {
 		return array_merge( $streets, $quarters );
 	}
 
+	/**
+	 * The review and test option of a label: no, review or test.
+	 *
+	 * @param array $label Label.
+	 * @return string
+	 */
 	protected static function get_test_option( $label ) {
 		$option = 'no';
 
@@ -304,6 +371,9 @@ class Econt {
 		return $option;
 	}
 
+	/**
+	 * Ajax: deletes the label at Econt.
+	 */
 	public static function delete_label() {
 		nashenski_check_admin_label_actions();
 
@@ -332,6 +402,9 @@ class Econt {
 		wp_die();
 	}
 
+	/**
+	 * Ajax: asks Econt for the status of the shipment.
+	 */
 	public static function update_shipment_status() {
 		nashenski_check_admin_label_actions();
 
@@ -368,10 +441,13 @@ class Econt {
 		wp_die();
 	}
 
+	/**
+	 * Ajax: builds the label from the box and sends it to Econt.
+	 */
 	public static function generate_label() {
 		nashenski_check_admin_label_actions();
 
-		$order_id = $order_id = nashenski_label_request( 'orderId' );
+		$order_id = nashenski_label_request( 'orderId' );
 		$label    = nashenski_label_request( 'label_data', array() );
 
 		$label = self::update_sender( $label );
@@ -390,6 +466,12 @@ class Econt {
 		wp_die();
 	}
 
+	/**
+	 * Makes the label right after checkout.
+	 *
+	 * @param int $order_id Order ID.
+	 * @return array|null
+	 */
 	public static function generate_label_after_order_generated( $order_id ) {
 		$order = wc_get_order( $order_id );
 		$label = $order->get_meta( 'nashenski_econt_label' );
@@ -423,6 +505,9 @@ class Econt {
 
 	/**
 	 * The saved delivery choice of the order, or of its Econt shipping line.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return array
 	 */
 	protected static function cookie_data( $order ) {
 		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
@@ -438,6 +523,13 @@ class Econt {
 		return is_array( $cookie_data ) ? $cookie_data : array();
 	}
 
+	/**
+	 * Sends the label to Econt and saves the answer on the order.
+	 *
+	 * @param array $label    Label.
+	 * @param int   $order_id Order ID.
+	 * @return array
+	 */
 	public static function send_label_to_econt( $label, $order_id ) {
 		$data   = array();
 		$order  = wc_get_order( $order_id );
@@ -471,6 +563,12 @@ class Econt {
 		return $data;
 	}
 
+	/**
+	 * Puts the sender on the label.
+	 *
+	 * @param array $label Label.
+	 * @return array
+	 */
 	public static function update_sender( $label ) {
 		$container = nashenski()->container();
 
@@ -482,7 +580,7 @@ class Econt {
 		$label['senderAddress'] = self::generate_sender_address();
 		$send_from              = nashenski_get_option( 'econt', 'send_from' );
 
-		if ( $send_from == 'office' ) {
+		if ( 'office' === $send_from ) {
 			$office                    = nashenski_get_option( 'econt_send_from', 'office' );
 			$label['senderOfficeCode'] = str_replace( 'officeID-', '', $office );
 		}
@@ -509,6 +607,12 @@ class Econt {
 		return $label;
 	}
 
+	/**
+	 * Sets the weight of the label: the sum of its packs, or the default.
+	 *
+	 * @param array $label Label.
+	 * @return array
+	 */
 	public static function update_weight( $label ) {
 		$weight = 0;
 
@@ -525,6 +629,12 @@ class Econt {
 		return $label;
 	}
 
+	/**
+	 * Raises pack and label weights to the least Econt accepts.
+	 *
+	 * @param array $request_body Request body.
+	 * @return array
+	 */
 	public static function set_min_pack_weight( $request_body ) {
 		if ( empty( $request_body['label'] ) || ! is_array( $request_body['label'] ) ) {
 			return $request_body;
@@ -552,13 +662,18 @@ class Econt {
 		return $request_body;
 	}
 
+	/**
+	 * The sender address chosen in the settings, empty when sending from an office.
+	 *
+	 * @return mixed
+	 */
 	public static function generate_sender_address() {
 		$container = nashenski()->container();
 		$address   = '';
 		$id        = nashenski_get_option( 'econt_send_from', 'address' );
 		$send_from = nashenski_get_option( 'econt', 'send_from' );
 
-		if ( $id !== '' && $send_from === 'address' ) {
+		if ( '' !== $id && 'address' === $send_from ) {
 			$profile_addresses = $container[ Client::ECONT_PROFILE ]->get_profile_data()['addresses'];
 
 			$address = $profile_addresses[ $id ];
@@ -567,6 +682,12 @@ class Econt {
 		return $address;
 	}
 
+	/**
+	 * Puts the receiver office or address of the box on the label.
+	 *
+	 * @param array $label Label.
+	 * @return array
+	 */
 	protected static function update_receiver_address( $label ) {
 		$order               = wc_get_order( nashenski_label_request( 'orderId' ) );
 		$type                = nashenski_label_request( 'type', array() );
@@ -597,6 +718,10 @@ class Econt {
 	/**
 	 * The receiver office or address of the label from the saved delivery choice (cookie data).
 	 * Returns the label and the cookie data with the formatted "other" line.
+	 *
+	 * @param array     $label       Label.
+	 * @param array     $cookie_data Saved delivery choice.
+	 * @param \WC_Order $order       Order.
 	 */
 	protected static function receiver_from_cookie( $label, $cookie_data, $order ) {
 		$container = nashenski()->container();
@@ -626,21 +751,21 @@ class Econt {
 
 			unset( $receiver_address['city']['servingOffices'] );
 
-			if ( $type === 'streets' ) {
+			if ( 'streets' === $type ) {
 				$receiver_address['street'] = $cookie_data['selectedAddress']['label'];
-				if ( trim( (string) $cookie_data['streetNumber'] ) !== '' ) {
+				if ( '' !== trim( (string) $cookie_data['streetNumber'] ) ) {
 					$receiver_address['num'] = $cookie_data['streetNumber'];
 				}
-			} elseif ( $type === 'quarters' ) {
+			} elseif ( 'quarters' === $type ) {
 				$receiver_address['quarter'] = $cookie_data['selectedAddress']['label'];
 			}
 
 			$additional_parts = array();
 			$legacy_other     = trim( (string) ( $cookie_data['other'] ?? '' ) );
 			if (
-				$type === 'quarters' ||
+				'quarters' === $type ||
 				Address::has_structured_details( $cookie_data ) ||
-				$legacy_other === ''
+				'' === $legacy_other
 			) {
 				$additional_parts[] = $cookie_data['otherField'] ?? '';
 			}
@@ -648,7 +773,7 @@ class Econt {
 			$other                = Address::format_other( $cookie_data, $additional_parts );
 			$cookie_data['other'] = $other;
 
-			if ( $other !== '' ) {
+			if ( '' !== $other ) {
 				$receiver_address['other'] = $other;
 			}
 
@@ -658,6 +783,13 @@ class Econt {
 		return array( $label, $cookie_data );
 	}
 
+	/**
+	 * Sets cash on delivery pay options and the packing list or invoice number on the label.
+	 *
+	 * @param array $label    Label.
+	 * @param int   $order_id Order ID.
+	 * @return array
+	 */
 	protected static function update_label_pay_options( $label, $order_id ) {
 		$order       = wc_get_order( $order_id );
 		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
@@ -671,11 +803,11 @@ class Econt {
 		if ( 'cod' === ( is_array( $cookie_data ) && isset( $cookie_data['payment'] ) ? $cookie_data['payment'] : $order->get_payment_method() ) ) {
 			$cd_pay_option = nashenski_get_option( 'econt', 'pay_options' );
 
-			if ( $cd_pay_option && $cd_pay_option !== 'no' ) {
+			if ( $cd_pay_option && 'no' !== $cd_pay_option ) {
 				$packing_list_or_invoice                   = nashenski_get_option( 'econt', 'invoice_or_packing_list' );
 				$label['services']['cdPayOptionsTemplate'] = $cd_pay_option;
 
-				if ( $packing_list_or_invoice === 'packing_list' ) {
+				if ( 'packing_list' === $packing_list_or_invoice ) {
 					unset( $label['services']['invoiceNum'] );
 					$label['packingListType'] = 'digital';
 					$label['packingList']     = array();
@@ -684,12 +816,13 @@ class Econt {
 						if ( $item->get_total() <= 0 ) {
 							continue;
 						}
+
 						/*
 						/ Count is added to the name for a reason.
 						/ When you have discount with more than 1 quantity, the label cannot be generated because of differences in the cents.
 						*/
 
-						$product     = $item->get_product(); // false when the product was deleted
+						$product     = $item->get_product(); // False when the product was deleted.
 						$item_weight = ( $product && $product->get_weight() ) ? wc_get_weight( $product->get_weight(), 'kg' ) * $item['quantity'] : 0.100;
 
 						$label['packingList'][] = array(
@@ -720,7 +853,7 @@ class Econt {
 							);
 						}
 					}
-				} elseif ( ( empty( $packing_list_or_invoice ) || $packing_list_or_invoice === 'invoice' ) && empty( $label['services']['invoiceNum'] ) ) {
+				} elseif ( ( empty( $packing_list_or_invoice ) || 'invoice' === $packing_list_or_invoice ) && empty( $label['services']['invoiceNum'] ) ) {
 					$label['services']['invoiceNum'] = self::get_invoice_number( $order_id );
 				}
 			}
@@ -729,20 +862,26 @@ class Econt {
 		return $label;
 	}
 
+	/**
+	 * The invoice number sent with a cash on delivery label.
+	 *
+	 * @param int $order_id Order ID.
+	 * @return string
+	 */
 	public static function get_invoice_number( $order_id ) {
 		$order       = wc_get_order( $order_id );
 		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
 		$invoice_num = '';
 
-		if ( ! empty( $cookie_data['payment'] ) && $cookie_data['payment'] === 'cod' ) {
+		if ( ! empty( $cookie_data['payment'] ) && 'cod' === $cookie_data['payment'] ) {
 			$cd_pay_option = nashenski_get_option( 'econt', 'pay_options' );
 
-			if ( $cd_pay_option && $cd_pay_option !== 'no' ) {
+			if ( $cd_pay_option && 'no' !== $cd_pay_option ) {
 				if ( self::use_invoice_number() ) {
 					$cd_pay_options = nashenski()->container()[ Client::ECONT_PROFILE ]->get_profile_data()['cdPayOptions'];
 
 					foreach ( $cd_pay_options as $option ) {
-						if ( $option['num'] === $cd_pay_option && $option['method'] != 'office' ) {
+						if ( $option['num'] === $cd_pay_option && 'office' !== $option['method'] ) {
 							$order           = wc_get_order( $order_id );
 							$document_number = $order->get_meta( 'nashenski_order_number' );
 
@@ -763,19 +902,31 @@ class Econt {
 		return $invoice_num;
 	}
 
+	/**
+	 * Tells whether labels carry an invoice number.
+	 *
+	 * @return bool
+	 */
 	public static function use_invoice_number() {
 		$cd_pay_option = nashenski_get_option( 'econt', 'pay_options' );
 		$use           = false;
 
-		if ( $cd_pay_option && $cd_pay_option !== 'no' ) {
+		if ( $cd_pay_option && 'no' !== $cd_pay_option ) {
 			$packing_list_or_invoice = nashenski_get_option( 'econt', 'invoice_or_packing_list' );
 
-			$use = ( ! $packing_list_or_invoice || $packing_list_or_invoice === 'invoice' );
+			$use = ( ! $packing_list_or_invoice || 'invoice' === $packing_list_or_invoice );
 		}
 
 		return $use;
 	}
 
+	/**
+	 * Sets who pays for the delivery.
+	 *
+	 * @param array $label    Label.
+	 * @param int   $order_id Order ID.
+	 * @return array
+	 */
 	protected static function update_payment_by( $label, $order_id ) {
 		$payment_by    = nashenski_label_request( 'paymentBy', array() );
 		$fixed_price   = ( isset( $label['paymentReceiverAmount'] ) ) ? $label['paymentReceiverAmount'] : 0;
@@ -787,11 +938,11 @@ class Econt {
 			$label['paymentReceiverAmount'],
 		);
 
-		if ( $payment_by['id'] == 'buyer' ) {
+		if ( 'buyer' === $payment_by['id'] ) {
 			$label['paymentReceiverMethod'] = 'cash';
-		} elseif ( $payment_by['id'] == 'sender' ) {
+		} elseif ( 'sender' === $payment_by['id'] ) {
 			$label['paymentSenderMethod'] = $sender_method;
-		} elseif ( $payment_by['id'] == 'fixed' ) {
+		} elseif ( 'fixed' === $payment_by['id'] ) {
 			$label['paymentSenderMethod']   = $sender_method;
 			$label['paymentReceiverMethod'] = 'cash';
 			$label['paymentReceiverAmount'] = $fixed_price;
@@ -802,6 +953,12 @@ class Econt {
 		return $label;
 	}
 
+	/**
+	 * Sets the review and test options of the label.
+	 *
+	 * @param array $label Label.
+	 * @return array
+	 */
 	protected static function update_test_options( $label ) {
 		$payment_by              = nashenski_label_request( 'testOption', array() );
 		$payment_by_id           = isset( $payment_by['id'] ) ? $payment_by['id'] : '';
@@ -812,9 +969,9 @@ class Econt {
 			unset( $label['partialDelivery'] );
 		}
 
-		if ( $payment_by_id == 'review' ) {
+		if ( 'review' === $payment_by_id ) {
 			$label['payAfterAccept'] = true;
-		} elseif ( $payment_by_id == 'test' ) {
+		} elseif ( 'test' === $payment_by_id ) {
 			$label['payAfterAccept'] = true;
 			$label['payAfterTest']   = true;
 
@@ -826,6 +983,12 @@ class Econt {
 		return $label;
 	}
 
+	/**
+	 * Sets the shipment type of the label.
+	 *
+	 * @param array $label Label.
+	 * @return array
+	 */
 	protected static function update_shipment_type( $label ) {
 		$shipment_type         = nashenski_label_request( 'shipmentType', array() );
 		$label['shipmentType'] = strtolower( $shipment_type['id'] );
@@ -833,6 +996,13 @@ class Econt {
 		return $label;
 	}
 
+	/**
+	 * Puts the receiver name, phone and company data on the label.
+	 *
+	 * @param array    $label    Label.
+	 * @param int|null $order_id Order ID, or null to read it from the request.
+	 * @return array
+	 */
 	protected static function update_phone_and_names( $label, $order_id = null ) {
 		if ( ! $order_id ) {
 			$order_id = nashenski_label_request( 'orderId' );
@@ -882,6 +1052,12 @@ class Econt {
 		return $label;
 	}
 
+	/**
+	 * Sets the declared value of the label.
+	 *
+	 * @param array $label Label.
+	 * @return array
+	 */
 	protected static function update_os_value( $label ) {
 		if ( isset( $label['services']['declaredValueAmount'] ) ) {
 			unset( $label['services']['declaredValueAmount'] );
@@ -899,6 +1075,13 @@ class Econt {
 		return $label;
 	}
 
+	/**
+	 * Sets the delivery price of the order to what the receiver pays.
+	 *
+	 * @param array $response     Answer of Econt.
+	 * @param int   $order_id     Order ID.
+	 * @param array $request_body Request body.
+	 */
 	protected static function update_order_shipping_price( $response, $order_id, $request_body = array() ) {
 		if ( ( null === nashenski_label_request( 'paymentBy', null ) ) ) {
 			return;
@@ -908,7 +1091,7 @@ class Econt {
 		$price       = 0;
 		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
 
-		if ( $order->get_payment_method() !== 'cod' ) {
+		if ( 'cod' !== $order->get_payment_method() ) {
 			return;
 		}
 
@@ -917,9 +1100,9 @@ class Econt {
 		if ( ! empty( $payment_by ) ) {
 			$tax_rate = apply_filters( 'nashenski/econt/fixed_price_tax_rate', 20, $order->get_shipping_country() );
 
-			if ( $payment_by['id'] == 'buyer' ) {
+			if ( 'buyer' === $payment_by['id'] ) {
 				$price = nashenski_tax_based_price( $response['label']['receiverDueAmount'], $tax_rate );
-			} elseif ( $payment_by['id'] == 'fixed' && ! empty( $request_body['paymentReceiverAmount'] ) ) {
+			} elseif ( 'fixed' === $payment_by['id'] && ! empty( $request_body['paymentReceiverAmount'] ) ) {
 				$price = nashenski_tax_based_price( $request_body['paymentReceiverAmount'], $tax_rate );
 			}
 		}
@@ -937,6 +1120,13 @@ class Econt {
 		$order->save();
 	}
 
+	/**
+	 * Creates or updates the label at Econt.
+	 *
+	 * @param array $label    Label.
+	 * @param int   $order_id Order ID.
+	 * @return array Response and request body.
+	 */
 	protected static function generate_response( $label, $order_id ) {
 		$container       = nashenski()->container();
 		$order           = wc_get_order( $order_id );
@@ -947,10 +1137,14 @@ class Econt {
 			$cookie_data = array();
 		}
 
-		$country     = $order->get_shipping_country() ?: $order->get_billing_country();
-		$city        = $order->get_shipping_city() ?: $order->get_billing_city();
-		$state       = $order->get_shipping_state() ?: $order->get_billing_state();
-		$post_code   = $order->get_shipping_postcode() ?: $order->get_billing_postcode();
+		$country     = $order->get_shipping_country();
+		$city        = $order->get_shipping_city();
+		$state       = $order->get_shipping_state();
+		$post_code   = $order->get_shipping_postcode();
+		$country     = $country ? $country : $order->get_billing_country();
+		$city        = $city ? $city : $order->get_billing_city();
+		$state       = $state ? $state : $order->get_billing_state();
+		$post_code   = $post_code ? $post_code : $order->get_billing_postcode();
 		$destination = array(
 			'country_code' => $cookie_data['country'] ?? $country,
 			'name'         => $cookie_data['city'] ?? $city,

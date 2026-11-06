@@ -1,4 +1,12 @@
 <?php
+/**
+ * Custom export builder.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+
 namespace Nashenski\Export\Builder;
 
 defined( 'ABSPATH' ) || exit;
@@ -18,6 +26,11 @@ defined( 'ABSPATH' ) || exit;
 class Builder {
 	const TEMPLATES_OPTION = 'nashenski_export_templates';
 
+	/**
+	 * The settings of a new export.
+	 *
+	 * @return array
+	 */
 	public static function defaults() {
 		return array(
 			'name'         => '',
@@ -45,6 +58,8 @@ class Builder {
 
 	/**
 	 * Ready-made starting points shown in the builder.
+	 *
+	 * @return array
 	 */
 	public static function presets() {
 		$col = function ( $ids ) {
@@ -91,6 +106,11 @@ class Builder {
 		);
 	}
 
+	/**
+	 * The saved exports.
+	 *
+	 * @return array
+	 */
 	public static function templates() {
 		$saved = get_option( self::TEMPLATES_OPTION, array() );
 
@@ -99,6 +119,9 @@ class Builder {
 
 	/**
 	 * Keep only known keys and safe values.
+	 *
+	 * @param mixed $raw Config as sent or saved.
+	 * @return array
 	 */
 	public static function normalize( $raw ) {
 		$raw    = is_array( $raw ) ? $raw : array();
@@ -131,7 +154,9 @@ class Builder {
 		$config['company_only'] = ! empty( $raw['company_only'] );
 		$config['header']       = ! isset( $raw['header'] ) || ! empty( $raw['header'] );
 		$config['date_format']  = preg_match( '/^[dDjlNSwzWFmMntLoYyaABgGhHisuveIOPTZcrU .\/:\-]{1,20}$/', (string) ( $raw['date_format'] ?? '' ) ) ? $raw['date_format'] : $config['date_format'];
-		$config['filename']     = preg_replace( '/[^a-zA-Z0-9_\-{}.]/', '-', (string) ( $raw['filename'] ?? $config['filename'] ) ) ?: $config['filename'];
+
+		$filename           = preg_replace( '/[^a-zA-Z0-9_\-{}.]/', '-', (string) ( $raw['filename'] ?? $config['filename'] ) );
+		$config['filename'] = $filename ? $filename : $config['filename'];
 
 		foreach ( array( 'xml_root', 'xml_row' ) as $key ) {
 			$name           = preg_replace( '/[^a-zA-Z0-9_\-]/', '', (string) ( $raw[ $key ] ?? '' ) );
@@ -165,6 +190,9 @@ class Builder {
 
 	/**
 	 * IDs of the orders (and refunds, for documents) in the period and filters.
+	 *
+	 * @param array $config Export config.
+	 * @return array
 	 */
 	private static function query_ids( $config ) {
 		$from = strtotime( $config['from'] . ' 00:00:00 ' . wp_timezone_string() );
@@ -195,6 +223,13 @@ class Builder {
 		return wc_get_orders( $args );
 	}
 
+	/**
+	 * Tells whether an order matches the filters of the config.
+	 *
+	 * @param \WC_Order $order  Order.
+	 * @param array     $config Export config.
+	 * @return bool
+	 */
 	private static function order_passes( $order, $config ) {
 		if ( $config['company_only'] && '1' !== (string) $order->get_meta( '_billing_to_company' ) ) {
 			return false;
@@ -222,6 +257,8 @@ class Builder {
 	/**
 	 * Rows as arrays of raw values, in column order. $limit stops early (for the preview).
 	 *
+	 * @param array $config Export config.
+	 * @param int   $limit  Most rows to keep, 0 for all.
 	 * @return array array( 'rows' => array, 'total' => int (rows before the limit, when known) )
 	 */
 	public static function rows( $config, $limit = 0 ) {
@@ -310,6 +347,11 @@ class Builder {
 	/**
 	 * A raw value as text for the file: dates in the chosen format, amounts with two decimals and
 	 * the chosen decimal mark.
+	 *
+	 * @param mixed  $value  Raw value.
+	 * @param string $kind   Kind of the field: date, money, number or text.
+	 * @param array  $config Export config.
+	 * @return string
 	 */
 	public static function format( $value, $kind, $config ) {
 		if ( $value instanceof \WC_DateTime ) {
@@ -333,6 +375,12 @@ class Builder {
 		return (string) $value;
 	}
 
+	/**
+	 * The file name of an export, with its extension.
+	 *
+	 * @param array $config Export config.
+	 * @return string
+	 */
 	public static function filename( $config ) {
 		$name      = strtr(
 			$config['filename'],
@@ -343,7 +391,8 @@ class Builder {
 				'{today}'  => wp_date( 'Y-m-d' ),
 			)
 		);
-		$name      = sanitize_file_name( $name ) ?: 'export';
+		$name      = sanitize_file_name( $name );
+		$name      = $name ? $name : 'export';
 		$extension = array(
 			'csv'  => 'csv',
 			'xlsx' => 'xlsx',

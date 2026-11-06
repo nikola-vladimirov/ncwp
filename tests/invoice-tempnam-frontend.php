@@ -6,6 +6,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName, Universal.Namespaces, Universal.Files.SeparateFunctionsFromOO, Generic.Files.OneObjectStructurePerFile, WordPress.Security.EscapeOutput, WordPress.WP.AlternativeFunctions, WordPress.WP.GlobalVariablesOverride, WordPress.PHP.DevelopmentFunctions, WordPress.PHP.IniSet, WordPress.PHP.DiscouragedPHPFunctions, Generic.CodeAnalysis.UnusedFunctionParameter -- offline test script: it stubs WordPress in one file, keeps WordPress's own names and signatures, and prints to a terminal.
+
 namespace {
 	// A fake WordPress root whose wp-admin/includes/file.php is the only place wp_tempnam() exists.
 	$root = sys_get_temp_dir() . '/nashenski-tempnam-' . uniqid() . '/';
@@ -17,20 +19,51 @@ namespace {
 	require __DIR__ . '/../vendor/autoload.php';
 
 	$temp_files = array();
+	/**
+	 * Option stub.
+	 *
+	 * @param string $group Group.
+	 * @param string $key   Key.
+	 * @return string
+	 */
 	function nashenski_get_option( $group, $key ) {
 		return '';
 	}
+	/**
+	 * Password stub.
+	 *
+	 * @param int $length Length.
+	 * @return string
+	 */
 	function wp_generate_password( $length ) {
 		return 'abcdefgh';
 	}
+	/**
+	 * Delete stub.
+	 *
+	 * @param string $file Path.
+	 */
 	function wp_delete_file( $file ) {
 		@unlink( $file ); // phpcs:ignore
 	}
 	/** Filesystem fixture. */
 	class FakeFilesystem {
+		/**
+		 * Writes a file.
+		 *
+		 * @param string $file Path.
+		 * @param string $data Contents.
+		 * @return bool
+		 */
 		public function put_contents( $file, $data ) {
 			return false !== file_put_contents( $file, $data );
 		}
+		/**
+		 * Deletes a file.
+		 *
+		 * @param string $file Path.
+		 * @return bool
+		 */
 		public function delete( $file ) {
 			return @unlink( $file ); // phpcs:ignore
 		}
@@ -39,8 +72,23 @@ namespace {
 
 	/** PDF fixture: a real one-page PDF per call, so the merge runs for real. */
 	class FakePdf {
+		/**
+		 * Titles generated so far.
+		 *
+		 * @var string[]
+		 */
 		public $titles = array();
+		/**
+		 * Document being made.
+		 *
+		 * @var object
+		 */
 		public $document;
+		/**
+		 * Makes a PDF of the document title.
+		 *
+		 * @return string
+		 */
 		public function generate() {
 			$this->titles[] = $this->document->title;
 			$dompdf         = new \Dompdf\Dompdf();
@@ -51,17 +99,40 @@ namespace {
 	}
 	/** Document under test, skipping the order-loading constructor and the storage step. */
 	class TestDocument extends \Nashenski\Invoice\Document\BaseDocument {
+		/**
+		 * Saved PDF contents.
+		 *
+		 * @var string
+		 */
 		public $saved;
+		/**
+		 * Skips the order-loading constructor.
+		 */
 		public function __construct() {}
+		/**
+		 * Keeps the PDF instead of storing it.
+		 *
+		 * @param string $contents PDF contents.
+		 */
 		protected function save_pdf( $contents ) {
 			$this->saved = $contents;
 		}
+		/**
+		 * Runs the combined original and copy.
+		 */
 		public function run() {
 			$this->generate_original_and_copy( 'Copy' );
 		}
 	}
 
 	$checks = 0;
+	/**
+	 * Throws when a condition is false.
+	 *
+	 * @param mixed  $condition Condition.
+	 * @param string $message   Message.
+	 * @throws RuntimeException When the condition is false.
+	 */
 	function expect( $condition, $message ) {
 		++$GLOBALS['checks'];
 		if ( ! $condition ) {

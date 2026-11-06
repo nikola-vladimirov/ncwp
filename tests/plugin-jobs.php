@@ -5,6 +5,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName, Universal.Namespaces, Universal.Files.SeparateFunctionsFromOO, WordPress.NamingConventions.ValidFunctionName, WordPress.Security.EscapeOutput, WordPress.WP.AlternativeFunctions, WordPress.WP.GlobalVariablesOverride -- offline test script: it stubs WordPress in one file, keeps WordPress's own names and signatures, and prints to a terminal.
+
 namespace Automattic\WooCommerce\Utilities {
 	/**
 	 * Orderutil.

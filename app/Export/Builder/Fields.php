@@ -1,4 +1,13 @@
 <?php
+/**
+ * Columns of the custom export.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
+
 namespace Nashenski\Export\Builder;
 
 defined( 'ABSPATH' ) || exit;
@@ -14,13 +23,15 @@ class Fields {
 
 	/**
 	 * Field ID => array( label, group, kind (text, money, number, date), sources ).
+	 *
+	 * @return array
 	 */
 	public static function all() {
 		$all_sources = self::SOURCES;
 		$fields      = array();
 
-		$add = function ( $group, $list, $sources = null, $kind = 'text' ) use ( &$fields, $all_sources ) {
-			foreach ( $list as $id => $label ) {
+		$add = function ( $group, $labels, $sources = null, $kind = 'text' ) use ( &$fields, $all_sources ) {
+			foreach ( $labels as $id => $label ) {
 				$fields[ $id ]          = array(
 					'label'   => $label,
 					'group'   => $group,
@@ -163,6 +174,9 @@ class Fields {
 
 	/**
 	 * Label and kind of a column ID, including "meta:" columns (order meta of the store's choice).
+	 *
+	 * @param string $id Column ID.
+	 * @return array|null
 	 */
 	public static function get( $id ) {
 		$all = self::all();
@@ -185,6 +199,9 @@ class Fields {
 
 	/**
 	 * Kind of each column of a config (text, money, number or date), in column order.
+	 *
+	 * @param array $config Export config.
+	 * @return array
 	 */
 	public static function kinds( $config ) {
 		return array_map(
@@ -197,22 +214,50 @@ class Fields {
 		);
 	}
 
+	/**
+	 * Name of a state, or its code when there is no name.
+	 *
+	 * @param string $country Country code.
+	 * @param string $state   State code.
+	 * @return string
+	 */
 	private static function region( $country, $state ) {
-		return ( WC()->countries->get_states( $country ) ?: array() )[ $state ] ?? $state;
+		$states = WC()->countries->get_states( $country );
+		$states = $states ? $states : array();
+
+		return $states[ $state ] ?? $state;
 	}
 
+	/**
+	 * Name of a country, or its code when there is no name.
+	 *
+	 * @param string $code Country code.
+	 * @return string
+	 */
 	private static function country( $code ) {
 		$countries = WC()->countries->get_countries();
 
 		return $countries[ $code ] ?? $code;
 	}
 
+	/**
+	 * The first shipping line of an order.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return \WC_Order_Item_Shipping|null
+	 */
 	private static function shipping_item( $order ) {
 		$items = $order->get_items( 'shipping' );
 
 		return $items ? reset( $items ) : null;
 	}
 
+	/**
+	 * The courier of an order, empty when none.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return string
+	 */
 	public static function courier( $order ) {
 		$item = self::shipping_item( $order );
 
@@ -221,6 +266,9 @@ class Fields {
 
 	/**
 	 * Waybill number(s), as the orders list shows them.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return string
 	 */
 	public static function waybill( $order ) {
 		$label = nashenski_get_order_label( $order->get_id() );
@@ -228,49 +276,66 @@ class Fields {
 		return $label['number'] ?? implode( ', ', wp_list_pluck( $label['items'] ?? array(), 'number' ) );
 	}
 
-	private static function document_number( $object, $kind ) {
-		if ( 'refund_document' === $kind && $object->get_meta( 'nashenski_refunded_order_number' ) ) {
-			return $object->get_meta( 'nashenski_refunded_order_number' );
+	/**
+	 * Number of a document of an order or refund.
+	 *
+	 * @param \WC_Order|\WC_Order_Refund $record Order or refund.
+	 * @param string                     $kind   Document kind.
+	 * @return mixed
+	 */
+	private static function document_number( $record, $kind ) {
+		if ( 'refund_document' === $kind && $record->get_meta( 'nashenski_refunded_order_number' ) ) {
+			return $record->get_meta( 'nashenski_refunded_order_number' );
 		}
 
-		if ( in_array( $kind, array( 'invoice', 'credit_note' ), true ) && $object->get_meta( 'nashenski_order_invoice_number' ) ) {
-			return $object->get_meta( 'nashenski_order_invoice_number' );
+		if ( in_array( $kind, array( 'invoice', 'credit_note' ), true ) && $record->get_meta( 'nashenski_order_invoice_number' ) ) {
+			return $record->get_meta( 'nashenski_order_invoice_number' );
 		}
 
-		return $object->get_meta( 'nashenski_order_number' );
+		return $record->get_meta( 'nashenski_order_number' );
 	}
 
 	/**
 	 * Documents of an order or refund: array of array( type, number, date ).
+	 *
+	 * @param \WC_Order|\WC_Order_Refund $record Order or refund.
+	 * @return array
 	 */
-	public static function documents( $object ) {
+	public static function documents( $record ) {
 		$docs    = array();
-		$created = $object->get_date_created();
+		$created = $record->get_date_created();
 
-		if ( $object instanceof \WC_Order_Refund ) {
-			if ( $object->get_meta( 'nashenski_refunded_invoice_document' ) ) {
-				$docs[] = array( 'credit_note', self::document_number( $object, 'credit_note' ), $object->get_meta( 'nashenski_credit_notice_document_date' ) ?: $created );
+		if ( $record instanceof \WC_Order_Refund ) {
+			if ( $record->get_meta( 'nashenski_refunded_invoice_document' ) ) {
+				$date   = $record->get_meta( 'nashenski_credit_notice_document_date' );
+				$docs[] = array( 'credit_note', self::document_number( $record, 'credit_note' ), $date ? $date : $created );
 			}
 
-			if ( $object->get_meta( 'nashenski_refunded_order_document' ) ) {
-				$docs[] = array( 'refund_document', self::document_number( $object, 'refund_document' ), $created );
+			if ( $record->get_meta( 'nashenski_refunded_order_document' ) ) {
+				$docs[] = array( 'refund_document', self::document_number( $record, 'refund_document' ), $created );
 			}
 
 			return $docs;
 		}
 
 		// An order document whose PDF the cleanup deleted keeps its number.
-		if ( $object->get_meta( 'nashenski_order_document' ) || $object->get_meta( \Nashenski\Document_Storage::RECEIPT_DELETED_META ) ) {
-			$docs[] = array( 'order_document', self::document_number( $object, 'order_document' ), $created );
+		if ( $record->get_meta( 'nashenski_order_document' ) || $record->get_meta( \Nashenski\Document_Storage::RECEIPT_DELETED_META ) ) {
+			$docs[] = array( 'order_document', self::document_number( $record, 'order_document' ), $created );
 		}
 
-		if ( $object->get_meta( 'nashenski_invoice_document' ) ) {
-			$docs[] = array( 'invoice', self::document_number( $object, 'invoice' ), $object->get_meta( 'nashenski_invoice_document_date' ) ?: $created );
+		if ( $record->get_meta( 'nashenski_invoice_document' ) ) {
+			$date   = $record->get_meta( 'nashenski_invoice_document_date' );
+			$docs[] = array( 'invoice', self::document_number( $record, 'invoice' ), $date ? $date : $created );
 		}
 
 		return $docs;
 	}
 
+	/**
+	 * Names of the document types.
+	 *
+	 * @return array
+	 */
 	public static function document_types() {
 		return array(
 			'order_document'  => __( 'Order document', 'nashenski-commerce' ),
@@ -282,6 +347,10 @@ class Fields {
 
 	/**
 	 * The raw value of a column for a row: a string, a number, a date (WC_DateTime or string) or ''.
+	 *
+	 * @param string $id  Column ID.
+	 * @param array  $row Row: order, object, item and doc.
+	 * @return mixed
 	 */
 	public static function value( $id, $row ) {
 		$order      = $row['order'];
@@ -318,7 +387,8 @@ class Fields {
 			case 'billing_full_name':
 				return trim( $order->get_formatted_billing_full_name() );
 			case 'shipping_full_name':
-				return trim( $order->get_formatted_shipping_full_name() ) ?: trim( $order->get_formatted_billing_full_name() );
+				$name = trim( $order->get_formatted_shipping_full_name() );
+				return $name ? $name : trim( $order->get_formatted_billing_full_name() );
 			case 'billing_state':
 				return self::region( $order->get_billing_country(), $order->get_billing_state() );
 			case 'shipping_state':
@@ -328,9 +398,11 @@ class Fields {
 			case 'shipping_country':
 				return self::country( $order->get_shipping_country() );
 			case 'shipping_phone':
-				return $order->get_shipping_phone() ?: $order->get_billing_phone();
+				$phone = $order->get_shipping_phone();
+				return $phone ? $phone : $order->get_billing_phone();
 			case 'customer_id':
-				return $order->get_customer_id() ?: '';
+				$customer_id = $order->get_customer_id();
+				return $customer_id ? $customer_id : '';
 			case 'to_company':
 				return $is_company ? __( 'yes', 'nashenski-commerce' ) : __( 'no', 'nashenski-commerce' );
 			case 'company':
@@ -413,7 +485,11 @@ class Fields {
 			case 'invoice_number':
 				return $order->get_meta( 'nashenski_invoice_document' ) ? self::document_number( $order, 'invoice' ) : '';
 			case 'invoice_date':
-				return $order->get_meta( 'nashenski_invoice_document' ) ? ( $order->get_meta( 'nashenski_invoice_document_date' ) ?: $order->get_date_created() ) : '';
+				if ( ! $order->get_meta( 'nashenski_invoice_document' ) ) {
+					return '';
+				}
+				$date = $order->get_meta( 'nashenski_invoice_document_date' );
+				return $date ? $date : $order->get_date_created();
 		}
 
 		// Plain address fields: billing_city, shipping_address_1 and so on. Delivery fields fall back
@@ -441,7 +517,8 @@ class Fields {
 				case 'item_product_id':
 					return $item->get_product_id();
 				case 'item_variation_id':
-					return $item->get_variation_id() ?: '';
+					$variation_id = $item->get_variation_id();
+					return $variation_id ? $variation_id : '';
 				case 'item_quantity':
 					return (float) $item->get_quantity();
 				case 'item_unit_price':
