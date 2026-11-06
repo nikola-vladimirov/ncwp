@@ -941,7 +941,8 @@ namespace {
 	) as $old => list( $lines, $cod ) ) {
 		$label = array( 'service' => array( 'additionalServices' => array( 'cod' => array( 'amount' => '10.00' ) ) ) );
 		$out   = \Nashenski\Admin\Speedy::update_fiscal_items( $label, new SpeedyOldCookieOrder( $old ) );
-		expect( $lines === count( $out['service']['additionalServices']['cod']['fiscalReceiptItems'] ), "Speedy label with an old cookie price '$old' has $lines delivery lines" );
+		$delivery_lines = count( $out['service']['additionalServices']['cod']['fiscalReceiptItems'] );
+		expect( $lines === $delivery_lines, "Speedy label with an old cookie price '$old' has $lines delivery lines" );
 		$out = \Nashenski\Admin\Speedy::update_cod( $label, new SpeedyOldCookieOrder( $old ) );
 		expect( $cod === (string) $out['service']['additionalServices']['cod']['amount'], "Speedy label with an old cookie price '$old' has a cash on delivery amount of $cod" );
 	}
@@ -1012,8 +1013,8 @@ namespace {
 		$shipping->setAccessible( true );
 	}
 	foreach ( array(
-		'0.00' => array( '10.00', 0 ),
-		'0'    => array( '10.00', 0 ),
+		'0.00' => array( '10', 0 ),
+		'0'    => array( '10', 0 ),
 		'4.50' => array( '14.50', '4.50' ),
 	) as $price => list( $cod, $total ) ) {
 		$GLOBALS['label_request'] = array(
@@ -1021,7 +1022,7 @@ namespace {
 			'cookie_data' => array( 'fixed_price' => $price ),
 		);
 		$order                    = new SpeedyRequestOrder();
-		$label                    = array( 'service' => array( 'additionalServices' => array( 'cod' => array( 'amount' => '10.00' ) ) ) );
+		$label                    = array( 'service' => array( 'additionalServices' => array( 'cod' => array( 'amount' => '10' ) ) ) );
 		$out                      = $services->invoke( null, $label, $order );
 		expect( $cod === (string) $out['service']['additionalServices']['cod']['amount'], "Speedy services with a staff fixed price '$price' give a cash on delivery amount of $cod" );
 		$GLOBALS['label_order'] = $order;

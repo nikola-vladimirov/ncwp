@@ -407,7 +407,8 @@ foreach ( array(
 			'destination' => array( 'country' => 'BG' ),
 		)
 	);
-	expect( $free === ! empty( $m->rates[0]['meta_data']['free_shipping'] ), "BOX NOW free shipping at threshold '$threshold' must be " . var_export( $free, true ) );
+	$shown_free = ! empty( $m->rates[0]['meta_data']['free_shipping'] );
+	expect( $free === $shown_free, "BOX NOW free shipping at threshold '$threshold' must be " . var_export( $free, true ) );
 }
 // A stored price row below zero (saved before negatives were refused) gives no charge, never a negative rate.
 foreach ( array(
