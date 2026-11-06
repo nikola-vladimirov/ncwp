@@ -6,6 +6,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName, Universal.Namespaces, Universal.Files.SeparateFunctionsFromOO, WordPress.Security.EscapeOutput, WordPress.WP.AlternativeFunctions -- offline test script: it stubs WordPress in one file, keeps WordPress's own names and signatures, and prints to a terminal.
+
 namespace Nashenski\Export\Builder {
 	/**
 	 * Writer fixture.
@@ -46,14 +48,14 @@ namespace {
 		array( 'xlsx', 'utf8', 'application/vnd.ms-excel' ),
 	) as $case ) {
 		++$checks;
-		$type = Nashenski\Admin\Export_Builder::content_type(
+		$content = Nashenski\Admin\Export_Builder::content_type(
 			array(
 				'format'   => $case[0],
 				'encoding' => $case[1],
 			)
 		);
-		if ( $case[2] !== $type ) {
-			fwrite( STDERR, "FAIL: {$case[0]} {$case[1]} gave '$type', wanted '{$case[2]}'\n" );
+		if ( $case[2] !== $content ) {
+			fwrite( STDERR, "FAIL: {$case[0]} {$case[1]} gave '$content', wanted '{$case[2]}'\n" );
 			exit( 1 );
 		}
 	}

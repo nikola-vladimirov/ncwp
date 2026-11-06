@@ -1,4 +1,12 @@
 <?php
+/**
+ * Speedy quarters (complexes) lookup.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+
 namespace Nashenski\Client\Speedy;
 
 use Nashenski\Container\Client;
@@ -7,16 +15,42 @@ use Nashenski\Transliteration;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Finds the quarters of a Speedy city and keeps the answers in a cache file.
+ */
 class Quarters {
 	const QUARTERS_ENDPOINT = 'location/complex/';
 
+	/**
+	 * Loaded quarters by city and query hash.
+	 *
+	 * @var array
+	 */
 	private $quarters = array();
+
+	/**
+	 * Service container.
+	 *
+	 * @var \Pimple\Container
+	 */
 	private $container;
 
+	/**
+	 * Keeps the container.
+	 *
+	 * @param \Pimple\Container $container Service container.
+	 */
 	public function __construct( $container ) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Loads the quarters of a city that match a query, from the cache file or from Speedy.
+	 *
+	 * @param int    $city_id City id.
+	 * @param string $query   Name typed by the shopper.
+	 * @return array
+	 */
 	protected function load_quarters_by_city( $city_id, $query ) {
 		if ( ! is_dir( $this->container[ Client::SPEEDY ]::CACHE_FOLDER ) ) {
 			wp_mkdir_p( $this->container[ Client::SPEEDY ]::CACHE_FOLDER );
@@ -57,7 +91,13 @@ class Quarters {
 		return $quarters;
 	}
 
-	// Getters
+	/**
+	 * Gets the quarters of a city that match a query.
+	 *
+	 * @param int    $city_id City id.
+	 * @param string $query   Name typed by the shopper.
+	 * @return array
+	 */
 	public function get_quarters_by_city( $city_id, $query ) {
 		$query = mb_substr( (string) $query, 0, 64 );
 		$hash  = md5( $query );
@@ -69,11 +109,25 @@ class Quarters {
 		return $this->quarters[ $city_id ][ $hash ];
 	}
 
-	// Setters
+	/**
+	 * Remembers the quarters of a city and query.
+	 *
+	 * @param array  $quarters Quarters.
+	 * @param int    $city_id  City id.
+	 * @param string $hash     Query hash.
+	 */
 	private function set_quarters( $quarters, $city_id, $hash ) {
 		$this->quarters[ $city_id ][ $hash ] = $quarters;
 	}
 
+	/**
+	 * Formats quarters as id => label.
+	 *
+	 * @param array    $quarters Quarters from Speedy.
+	 * @param int|null $city_id  City to forget after formatting.
+	 * @param string   $query    Query used to find them.
+	 * @return array
+	 */
 	public function format_quarters( $quarters, $city_id = null, $query = '' ) {
 		$formatted = array();
 

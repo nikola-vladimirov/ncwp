@@ -5,6 +5,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+
 namespace Nashenski\Front_End\Checkout;
 
 defined( 'ABSPATH' ) || exit;

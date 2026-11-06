@@ -1,46 +1,125 @@
 <?php
+/**
+ * Order data for invoice documents.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
+
 namespace Nashenski\Invoice\Order;
 
 use Nashenski\Invoice\CurrencyToString;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The lines and totals of an order, as the invoice prints them.
+ */
 class Order {
+	/**
+	 * The WooCommerce order or refund.
+	 *
+	 * @var \WC_Order|\WC_Order_Refund
+	 */
 	public $woo_order;
-	private $vat_group, $vat_percentages, $_tax, $vat, $order_taxes, $remove_shipping;
 
-	function __construct( $order ) {
+	/**
+	 * VAT group chosen in the settings.
+	 *
+	 * @var string
+	 */
+	private $vat_group;
+
+	/**
+	 * VAT percentage of each VAT group.
+	 *
+	 * @var array
+	 */
+	private $vat_percentages;
+
+	/**
+	 * Tax calculator.
+	 *
+	 * @var \WC_Tax
+	 */
+	private $wc_tax;
+
+	/**
+	 * VAT percentage of the chosen group.
+	 *
+	 * @var float|int|null
+	 */
+	private $vat;
+
+	/**
+	 * Taxes of the order.
+	 *
+	 * @var array
+	 */
+	private $order_taxes;
+
+	/**
+	 * Whether delivery is left out of the documents (yes or no).
+	 *
+	 * @var string
+	 */
+	private $remove_shipping;
+
+	/**
+	 * Takes the order and reads its VAT settings.
+	 *
+	 * @param \WC_Order|\WC_Order_Refund $order Order or refund.
+	 */
+	public function __construct( $order ) {
 		$this->woo_order = $order;
 
 		$this->set_vat_and_taxes();
 		$this->set_remove_shipping();
 
-		if ( nashenski_get_option( 'invoice', 'total_text' ) === 'yes' ) {
+		if ( 'yes' === nashenski_get_option( 'invoice', 'total_text' ) ) {
 			add_action( 'nashenski/invoice/pdf/default_template/after_table', array( __CLASS__, 'print_total_in_words' ), 10, 2 );
 		}
 	}
 
+	/**
+	 * Shipping methods whose price counts as taxable by default.
+	 *
+	 * @return string[]
+	 */
 	public static function get_default_taxable_shipping_rates() {
 		return array( 'local_pickup', 'flat_rate' );
 	}
 
+	/**
+	 * Reads the VAT group, its percentage and the taxes of the order.
+	 */
 	private function set_vat_and_taxes() {
 		$this->vat_group       = nashenski_get_option( 'shop', 'vat_group' );
 		$this->vat_percentages = nashenski_get_vat_groups();
-		$this->_tax            = new \WC_Tax();
+		$this->wc_tax          = new \WC_Tax();
 		// No VAT group chosen yet (Settings > Shop): same null as before, without the PHP warning.
 		$this->vat         = $this->vat_percentages[ $this->vat_group ] ?? null;
 		$this->order_taxes = $this->woo_order->get_taxes();
 	}
 
+	/**
+	 * Reads whether delivery is left out of the documents.
+	 */
 	private function set_remove_shipping() {
 		$this->remove_shipping = nashenski_maybe_remove_shipping( $this->woo_order );
 	}
 
+	/**
+	 * The lines of the document: products, fees and delivery. Delivery lines are taken out and put back when the setting asks to leave them out.
+	 *
+	 * @return array
+	 */
 	public function get_items() {
 		$shipping_items = $this->woo_order->get_items( 'shipping' );
 
-		if ( sizeof( $shipping_items ) > 0 && $this->remove_shipping === 'yes' ) {
+		if ( count( $shipping_items ) > 0 && 'yes' === $this->remove_shipping ) {
 			foreach ( $shipping_items as $item_id => $item ) {
 				$this->woo_order->remove_item( $item_id );
 			}
@@ -90,7 +169,7 @@ class Order {
 			}
 		}
 
-		if ( sizeof( $this->woo_order->get_items( 'shipping' ) ) > 0 && $this->remove_shipping !== 'yes' ) {
+		if ( count( $this->woo_order->get_items( 'shipping' ) ) > 0 && 'yes' !== $this->remove_shipping ) {
 			$shipping_vat = nashenski_get_order_shipping_vat( $this->woo_order );
 
 			foreach ( $this->woo_order->get_items( 'shipping' ) as $item ) {
@@ -104,21 +183,23 @@ class Order {
 				$item_tax        = $item->get_total_tax();
 				$item_tax_status = 'taxable';
 
-				if ( in_array( $item->get_method_id(), self::get_default_taxable_shipping_rates() ) ) {
-					if ( $instance = \WC_Shipping_Zones::get_shipping_method( $item->get_instance_id() ) ) {
+				if ( in_array( $item->get_method_id(), self::get_default_taxable_shipping_rates(), true ) ) {
+					$instance = \WC_Shipping_Zones::get_shipping_method( $item->get_instance_id() );
+
+					if ( $instance ) {
 						$item_tax_status = $instance->get_instance_option( 'tax_status' );
 
-						if ( $item_tax_status === 'none' ) {
+						if ( 'none' === $item_tax_status ) {
 							$item_vat = 0;
 						}
 					}
 				}
 
-				if ( wc_tax_enabled() && $item_tax_status === 'taxable' ) {
+				if ( wc_tax_enabled() && 'taxable' === $item_tax_status ) {
 					if ( $item->get_total_tax() ) {
 						$item_vat = $shipping_vat;
 					} else {
-						$item_tax   = $this->_tax::calc_tax(
+						$item_tax   = $this->wc_tax::calc_tax(
 							$item_price,
 							array(
 								array(
@@ -150,9 +231,11 @@ class Order {
 			}
 		}
 
-		if ( sizeof( $shipping_items ) > 0 && $this->remove_shipping === 'yes' ) {
+		if ( count( $shipping_items ) > 0 && 'yes' === $this->remove_shipping ) {
 			foreach ( $shipping_items as $item_id => $item ) {
-				if ( $metas = $item->get_meta_data() ) {
+				$metas = $item->get_meta_data();
+
+				if ( $metas ) {
 					foreach ( $metas as $meta ) {
 						$data = $meta->get_data();
 
@@ -169,6 +252,11 @@ class Order {
 		return apply_filters( 'nashenski/invoice/order/items', $items, $this );
 	}
 
+	/**
+	 * The total rows of the document: subtotal, discount, taxes and the total due.
+	 *
+	 * @return array
+	 */
 	public function get_total_items() {
 		$shipping_items = $this->woo_order->get_items( 'shipping' );
 		$shipping_total = $this->woo_order->get_shipping_total();
@@ -189,23 +277,25 @@ class Order {
 			$order_total_items = $this->woo_order->get_order_item_totals();
 		}
 
-		if ( method_exists( $this->woo_order, 'get_reason' ) && $this->woo_order->get_reason() && $subtotal == 0 ) {
+		if ( method_exists( $this->woo_order, 'get_reason' ) && $this->woo_order->get_reason() && 0.0 === (float) $subtotal ) {
 			$subtotal = abs( $this->woo_order->get_total() );
 		}
 
 		foreach ( $shipping_items as $item ) {
-			if ( in_array( $item->get_method_id(), self::get_default_taxable_shipping_rates() ) ) {
-				if ( $instance = \WC_Shipping_Zones::get_shipping_method( $item->get_instance_id() ) ) {
+			if ( in_array( $item->get_method_id(), self::get_default_taxable_shipping_rates(), true ) ) {
+				$instance = \WC_Shipping_Zones::get_shipping_method( $item->get_instance_id() );
+
+				if ( $instance ) {
 					$item_tax_status = $instance->get_instance_option( 'tax_status' );
 
-					if ( $item_tax_status === 'none' ) {
+					if ( 'none' === $item_tax_status ) {
 						$shipping_total = 0;
 					}
 				}
 			}
 		}
 
-		if ( sizeof( $shipping_items ) > 0 && $this->remove_shipping === 'yes' ) {
+		if ( count( $shipping_items ) > 0 && 'yes' === $this->remove_shipping ) {
 			foreach ( $shipping_items as $item_id => $item ) {
 				$this->woo_order->remove_item( $item_id );
 			}
@@ -251,9 +341,11 @@ class Order {
 			'value_number' => abs( $this->woo_order->get_total() ),
 		);
 
-		if ( sizeof( $shipping_items ) > 0 && $this->remove_shipping === 'yes' ) {
+		if ( count( $shipping_items ) > 0 && 'yes' === $this->remove_shipping ) {
 			foreach ( $shipping_items as $item_id => $item ) {
-				if ( $metas = $item->get_meta_data() ) {
+				$metas = $item->get_meta_data();
+
+				if ( $metas ) {
 					foreach ( $metas as $meta ) {
 						$data = $meta->get_data();
 
@@ -270,6 +362,12 @@ class Order {
 		return apply_filters( 'nashenski/invoice/order/total_items', $items, $this );
 	}
 
+	/**
+	 * Prints the total due in words under the table.
+	 *
+	 * @param \WC_Order|\WC_Order_Refund $woo_order Order or refund.
+	 * @param object                     $pdf       PDF being made.
+	 */
 	public static function print_total_in_words( $woo_order, $pdf ) {
 		$total_items = $pdf->document->order->get_total_items();
 		$words       = CurrencyToString::amount_in_words( $total_items['total']['value_number'], $woo_order->get_currency() );

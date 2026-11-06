@@ -1,4 +1,13 @@
 <?php
+/**
+ * EU withdrawal function.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
+
 namespace Nashenski\Front_End;
 
 defined( 'ABSPATH' ) || exit;
@@ -25,6 +34,9 @@ class Withdrawal {
 	/** What the customer submitted, kept on the order. */
 	const META = '_nashenski_withdrawal';
 
+	/**
+	 * Registers the hooks.
+	 */
 	public function __construct() {
 		add_filter( 'gettext_woocommerce', array( __CLASS__, 'translate' ), 10, 2 );
 
@@ -62,6 +74,11 @@ class Withdrawal {
 		return class_exists( '\Automattic\WooCommerce\Internal\OrderWithdrawal\OrderWithdrawalController' );
 	}
 
+	/**
+	 * Tells whether WooCommerce's withdrawal feature is on.
+	 *
+	 * @return bool
+	 */
 	public static function enabled() {
 		return self::available() && 'yes' === get_option( self::FEATURE_OPTION );
 	}
@@ -77,6 +94,11 @@ class Withdrawal {
 		return $order ? add_query_arg( 'order', rawurlencode( $order->get_order_number() ), $url ) : $url;
 	}
 
+	/**
+	 * The text of the withdrawal link.
+	 *
+	 * @return string
+	 */
 	public static function label() {
 		return __( 'Withdraw from contract here', 'nashenski-commerce' );
 	}
@@ -84,6 +106,9 @@ class Withdrawal {
 	/**
 	 * An order whose withdrawal period runs: paid or on its way, and at most the set number of
 	 * days after it was completed (delivered). Not when a withdrawal was already sent.
+	 *
+	 * @param mixed $order Order.
+	 * @return bool
 	 */
 	public static function in_period( $order ) {
 		if ( ! $order instanceof \WC_Order || ! $order->has_status( array( 'processing', 'on-hold', 'completed' ) ) || 'yes' === $order->get_meta( '_order_withdrawal_requested' ) ) {
@@ -91,7 +116,8 @@ class Withdrawal {
 		}
 
 		$completed = $order->get_date_completed();
-		$days      = absint( nashenski_get_option( self::GROUP, 'days' ) ) ?: 14;
+		$days      = absint( nashenski_get_option( self::GROUP, 'days' ) );
+		$days      = $days ? $days : 14;
 
 		return ! $completed || time() <= $completed->getTimestamp() + $days * DAY_IN_SECONDS;
 	}
@@ -116,6 +142,13 @@ class Withdrawal {
 		return (bool) apply_filters( 'nashenski/withdrawal/in_builder', $in );
 	}
 
+	/**
+	 * The withdrawal link as escaped HTML.
+	 *
+	 * @param string $url    Form address.
+	 * @param bool   $button Style as a button.
+	 * @return string
+	 */
 	public static function link( $url, $button = false ) {
 		self::style();
 
@@ -130,6 +163,9 @@ class Withdrawal {
 	/**
 	 * [nashenski_withdrawal_link] or [nashenski_withdrawal_link button="yes"], for any page, footer
 	 * or builder template.
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string
 	 */
 	public static function shortcode( $atts ) {
 		$atts = shortcode_atts( array( 'button' => 'no' ), $atts, 'nashenski_withdrawal_link' );
@@ -148,6 +184,10 @@ class Withdrawal {
 
 	/**
 	 * My Account > Orders: a button next to "View".
+	 *
+	 * @param array     $actions Order actions.
+	 * @param \WC_Order $order   Order.
+	 * @return array
 	 */
 	public static function order_action( $actions, $order ) {
 		if ( self::in_period( $order ) ) {
@@ -172,6 +212,8 @@ class Withdrawal {
 
 	/**
 	 * Order view and order received pages.
+	 *
+	 * @param \WC_Order $order Order.
 	 */
 	public static function order_link( $order ) {
 		if ( self::in_period( $order ) && ! self::in_builder() ) {
@@ -181,6 +223,11 @@ class Withdrawal {
 
 	/**
 	 * Customer order emails.
+	 *
+	 * @param \WC_Order      $order         Order.
+	 * @param bool           $sent_to_admin Whether the email goes to the admin.
+	 * @param bool           $plain_text    Whether the email is plain text.
+	 * @param \WC_Email|null $email         Email.
 	 */
 	public static function email_link( $order, $sent_to_admin, $plain_text, $email = null ) {
 		if ( $sent_to_admin || ! $email || ! in_array( $email->id, self::EMAILS, true ) || ! self::in_period( $order ) ) {
@@ -237,6 +284,9 @@ class Withdrawal {
 	/**
 	 * Keep what the customer submitted on the order. WooCommerce adds its order note right after it
 	 * accepted a withdrawal (emails sent, order marked), while the form is still in this request.
+	 *
+	 * @param int       $note_id Order note ID.
+	 * @param \WC_Order $order   Order.
 	 */
 	public static function record( $note_id, $order ) {
 		$nonce = isset( $_POST['woocommerce-order-withdrawal-nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['woocommerce-order-withdrawal-nonce'] ) ) : '';
@@ -275,6 +325,9 @@ class Withdrawal {
 	 * order_number, withdrawal_type, additional_details. Withdrawals sent before Nashenski Commerce
 	 * kept them only have WooCommerce's order note: its date and type (from_note). Null when the
 	 * order has none.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return array|null
 	 */
 	public static function request( $order ) {
 		if ( ! $order instanceof \WC_Order || 'yes' !== $order->get_meta( '_order_withdrawal_requested' ) ) {
@@ -308,6 +361,12 @@ class Withdrawal {
 		return array( 'from_note' => true );
 	}
 
+	/**
+	 * The type of withdrawal as text.
+	 *
+	 * @param array $request Withdrawal.
+	 * @return string
+	 */
 	private static function type_label( $request ) {
 		$types = array(
 			'full_order'          => __( 'The full order', 'nashenski-commerce' ),
@@ -317,16 +376,30 @@ class Withdrawal {
 		return $request['type_text'] ?? ( $types[ $request['withdrawal_type'] ?? '' ] ?? '' );
 	}
 
+	/**
+	 * The date and time of a withdrawal as text.
+	 *
+	 * @param array $request Withdrawal.
+	 * @return string
+	 */
 	private static function date( $request ) {
 		return empty( $request['submitted'] ) ? '' : wp_date( wc_date_format() . ' ' . wc_time_format(), $request['submitted'] );
 	}
 
+	/**
+	 * The "Withdrawal requested" pill as escaped HTML.
+	 *
+	 * @return string
+	 */
 	private static function pill() {
 		return '<mark class="nashenski-report-pill nashenski-withdrawal-pill"><span>' . esc_html__( 'Withdrawal requested', 'nashenski-commerce' ) . '</span></mark>';
 	}
 
 	/**
 	 * Orders list: a "Withdrawal" column after the status.
+	 *
+	 * @param array $columns Columns.
+	 * @return array
 	 */
 	public static function add_column( $columns ) {
 		$out = array();
@@ -342,6 +415,12 @@ class Withdrawal {
 		return $out;
 	}
 
+	/**
+	 * Prints the cell of the "Withdrawal" column.
+	 *
+	 * @param string        $column Column key.
+	 * @param \WC_Order|int $order  Order or its ID.
+	 */
 	public static function column( $column, $order ) {
 		if ( 'nashenski_withdrawal' !== $column ) {
 			return;
@@ -367,6 +446,8 @@ class Withdrawal {
 
 	/**
 	 * Order screen: a pill under the customer, like the reports pill, pointing to the box below.
+	 *
+	 * @param \WC_Order $order Order.
 	 */
 	public static function order_pill( $order ) {
 		$request = self::request( $order );
@@ -386,6 +467,9 @@ class Withdrawal {
 		}
 	}
 
+	/**
+	 * Adds the box with the submitted withdrawal on the order screen.
+	 */
 	public static function add_meta_box() {
 		$order = isset( $GLOBALS['theorder'] ) && $GLOBALS['theorder'] instanceof \WC_Order ? $GLOBALS['theorder'] : wc_get_order( get_the_ID() );
 
@@ -400,17 +484,21 @@ class Withdrawal {
 
 	/**
 	 * Everything the customer submitted.
+	 *
+	 * @param \WC_Order|\WP_Post $post_or_order Order or its post.
 	 */
 	public static function meta_box( $post_or_order ) {
 		$order   = $post_or_order instanceof \WC_Order ? $post_or_order : wc_get_order( $post_or_order->ID );
 		$request = self::request( $order );
+		$details = $request['additional_details'] ?? '';
+		$details = $details ? $details : __( 'None provided', 'nashenski-commerce' );
 		$rows    = array(
 			__( 'Submitted', 'nashenski-commerce' )     => self::date( $request ),
 			__( 'Name', 'nashenski-commerce' )          => trim( ( $request['first_name'] ?? '' ) . ' ' . ( $request['last_name'] ?? '' ) ),
 			__( 'Email address', 'nashenski-commerce' ) => $request['email'] ?? '',
 			__( 'Order number', 'nashenski-commerce' )  => $request['order_number'] ?? '',
 			__( 'Withdrawing', 'nashenski-commerce' )   => self::type_label( $request ),
-			__( 'Additional details', 'nashenski-commerce' ) => empty( $request['from_note'] ) ? ( ( $request['additional_details'] ?? '' ) ?: __( 'None provided', 'nashenski-commerce' ) ) : '',
+			__( 'Additional details', 'nashenski-commerce' ) => empty( $request['from_note'] ) ? $details : '',
 		);
 
 		echo '<table class="widefat striped nashenski-withdrawal-details"><tbody>';
@@ -432,6 +520,10 @@ class Withdrawal {
 
 	/**
 	 * Bulgarian for WooCommerce's withdrawal texts while its own language pack has none.
+	 *
+	 * @param string $translation Translation so far.
+	 * @param string $text        Original text.
+	 * @return string
 	 */
 	public static function translate( $translation, $text ) {
 		static $bg = null;

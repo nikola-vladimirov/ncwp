@@ -1,4 +1,13 @@
 <?php
+/**
+ * Econt cities lookup.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
+
 namespace Nashenski\Client\Econt;
 
 use Nashenski\Container\Client;
@@ -7,16 +16,41 @@ use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Econt cities, kept in a cache file per country.
+ */
 class Cities {
 	const CITIES_ENDPOINT = 'Nomenclatures/NomenclaturesService.getCities.json';
 
+	/**
+	 * Loaded cities by country.
+	 *
+	 * @var array
+	 */
 	private $cities = array();
+
+	/**
+	 * Service container.
+	 *
+	 * @var \Pimple\Container
+	 */
 	private $container;
 
+	/**
+	 * Keeps the container.
+	 *
+	 * @param \Pimple\Container $container Service container.
+	 */
 	public function __construct( $container ) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Loads the cities of a country from the cache file or from Econt.
+	 *
+	 * @param string $country_code Country code.
+	 * @return array|null
+	 */
 	protected function load_cities( $country_code = 'BG' ) {
 		if ( ! is_dir( $this->container[ Client::ECONT ]::CACHE_FOLDER ) ) {
 			wp_mkdir_p( $this->container[ Client::ECONT ]::CACHE_FOLDER );
@@ -52,6 +86,12 @@ class Cities {
 		return $cities;
 	}
 
+	/**
+	 * Gets the cities of a country as id and label, sorted by label.
+	 *
+	 * @param string $country_code Country code.
+	 * @return array
+	 */
 	public function get_formatted_cities( $country_code = 'BG' ) {
 		$cities    = $this->container[ Client::ECONT_CITIES ]->get_cities( $country_code );
 		$formatted = array();
@@ -86,7 +126,12 @@ class Cities {
 		return $formatted;
 	}
 
-	// Getters
+	/**
+	 * Gets the cities of a country.
+	 *
+	 * @param string $country_code Country code.
+	 * @return array
+	 */
 	public function get_cities( $country_code = 'BG' ) {
 		if ( empty( $this->cities[ $country_code ] ) ) {
 			$this->load_cities( $country_code );
@@ -95,10 +140,22 @@ class Cities {
 		return $this->cities[ $country_code ];
 	}
 
+	/**
+	 * Forgets the loaded cities of a country.
+	 *
+	 * @param string $country_code Country code.
+	 */
 	public function release_cities( $country_code = 'BG' ) {
 		unset( $this->cities[ $country_code ] );
 	}
 
+	/**
+	 * Gets the cities of a region.
+	 *
+	 * @param string $region       Region name.
+	 * @param string $country_code Country code.
+	 * @return array
+	 */
 	public function get_cities_by_region( $region, $country_code = 'BG' ) {
 		$cities = $this->get_cities( $country_code );
 
@@ -120,6 +177,13 @@ class Cities {
 		return array_values( $cities );
 	}
 
+	/**
+	 * Gets the name of a state.
+	 *
+	 * @param string $state_code   State code.
+	 * @param string $country_code Country code.
+	 * @return string
+	 */
 	public function get_state_name( $state_code, $country_code = 'BG' ) {
 		$countries = new \WC_Countries();
 		$states    = $countries->get_states( $country_code );
@@ -127,15 +191,28 @@ class Cities {
 		return $states[ $state_code ];
 	}
 
-	// Setters
+	/**
+	 * Remembers the cities of a country.
+	 *
+	 * @param array  $cities       Cities.
+	 * @param string $country_code Country code.
+	 */
 	private function set_cities( $cities, $country_code = 'BG' ) {
 		$this->cities[ $country_code ] = $cities;
 	}
 
+	/**
+	 * Finds a city among the cities of a state.
+	 *
+	 * @param string $city         City name.
+	 * @param string $state        State, or comma-separated regions for Greece.
+	 * @param string $country_code Country code.
+	 * @return array
+	 */
 	public function get_filtered_cities( $city, $state, $country_code = 'BG' ) {
 		$city = $this->normalize_city_name( $city, $country_code );
 
-		if ( $country_code === 'GR' ) {
+		if ( 'GR' === $country_code ) {
 			$regions = explode( ',', $state );
 			$cities  = array();
 
@@ -151,7 +228,7 @@ class Cities {
 		$cities_only_names_dropdowns = array();
 		$key                         = 'name';
 
-		if ( $country_code !== 'BG' ) {
+		if ( 'BG' !== $country_code ) {
 			$key = 'nameEn';
 		}
 
@@ -164,7 +241,7 @@ class Cities {
 			}
 		}
 
-		$city_key = array_search( $city, array_column( $cities_search_names, $key ) );
+		$city_key = array_search( $city, array_column( $cities_search_names, $key ), true );
 
 		return array(
 			'city'                        => $city,
@@ -176,10 +253,17 @@ class Cities {
 		);
 	}
 
+	/**
+	 * Lower-cases a city name and removes prefixes and stray punctuation.
+	 *
+	 * @param string $city         City name.
+	 * @param string $country_code Country code.
+	 * @return string
+	 */
 	private function normalize_city_name( $city, $country_code ) {
 		$city = nashenski_remove_city_prefix( $city );
 
-		if ( $country_code === 'BG' ) {
+		if ( 'BG' === $country_code ) {
 			$city = Transliteration::latin2cyrillic( $city );
 		}
 
@@ -189,6 +273,12 @@ class Cities {
 		return trim( $city, " \t\n\r\0\x0B.,-" );
 	}
 
+	/**
+	 * Gets the regions of a country.
+	 *
+	 * @param string $country_code Country code.
+	 * @return array
+	 */
 	public function get_regions( $country_code = 'BG' ) {
 		$regions = apply_filters(
 			'nashenski/econt/cities/regions',

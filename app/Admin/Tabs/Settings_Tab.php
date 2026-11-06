@@ -1,15 +1,34 @@
 <?php
+/**
+ * Settings tab: what the plugin does in this store.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
+
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
 
 defined( 'ABSPATH' ) || exit;
+
+/**
+ * Settings tab.
+ */
 class Settings_Tab extends Base_Tab {
+	/**
+	 * Names the tab.
+	 */
 	public function __construct() {
 		$this->set_name( __( 'Settings', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'settings' );
 	}
 
+	/**
+	 * Loads the fields of the tab.
+	 */
 	public function load_fields() {
 		$fields = apply_filters(
 			'nashenski/admin/settings/fields',
@@ -37,6 +56,11 @@ class Settings_Tab extends Base_Tab {
 		$this->set_fields( $fields );
 	}
 
+	/**
+	 * Gets the titles and descriptions of the field groups.
+	 *
+	 * @return array
+	 */
 	public function get_groups_titles() {
 		$titles = apply_filters(
 			'nashenski/admin/settings/groups_titles',

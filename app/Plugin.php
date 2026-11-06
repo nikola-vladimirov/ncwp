@@ -5,6 +5,9 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
+
 namespace Nashenski;
 
 defined( 'ABSPATH' ) || exit;

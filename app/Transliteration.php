@@ -1,4 +1,13 @@
 <?php
+/**
+ * Bulgarian Latin and Cyrillic transliteration.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
+
 namespace Nashenski;
 
 defined( 'ABSPATH' ) || exit;
@@ -11,6 +20,11 @@ defined( 'ABSPATH' ) || exit;
  * Latin to Cyrillic is the reverse with the common spellings people type (sht, zh, ts, ch, yu, ya, ...).
  */
 class Transliteration {
+	/**
+	 * Cyrillic letter => Latin spelling.
+	 *
+	 * @var string[]
+	 */
 	private static $to_latin = array(
 		'А' => 'A',
 		'Б' => 'B',
@@ -74,7 +88,11 @@ class Transliteration {
 		'я' => 'ya',
 	);
 
-	// Longest Latin spellings first, so "sht" wins over "sh" and "s".
+	/**
+	 * Latin spelling => Cyrillic letters. Longest Latin spellings first, so "sht" wins over "sh" and "s".
+	 *
+	 * @var string[]
+	 */
 	private static $to_cyrillic = array(
 		'sht' => 'щ',
 		'zh'  => 'ж',
@@ -114,14 +132,32 @@ class Transliteration {
 		'y'   => 'ъ',
 	);
 
+	/**
+	 * Tells whether the text has a Cyrillic letter.
+	 *
+	 * @param string $text Text.
+	 * @return bool
+	 */
 	public static function has_cyrillic( $text ) {
 		return (bool) preg_match( '/\p{Cyrillic}/u', (string) $text );
 	}
 
+	/**
+	 * Tells whether the text has a Latin letter.
+	 *
+	 * @param string $text Text.
+	 * @return bool
+	 */
 	public static function has_latin( $text ) {
 		return (bool) preg_match( '/[A-Za-z]/', (string) $text );
 	}
 
+	/**
+	 * Turns Cyrillic into Latin by the Bulgarian Transliteration Act.
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
 	public static function to_latin( $text ) {
 		// The Act keeps the established spelling of the country name.
 		$text = str_replace( array( 'България', 'БЪЛГАРИЯ' ), array( 'Bulgaria', 'BULGARIA' ), (string) $text );
@@ -137,6 +173,12 @@ class Transliteration {
 		return strtr( $text, self::$to_latin );
 	}
 
+	/**
+	 * Turns Latin spellings into Cyrillic.
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
 	public static function to_cyrillic( $text ) {
 		$strange_words = apply_filters(
 			'nashenski/transliteration/strange_words',
@@ -168,6 +210,12 @@ class Transliteration {
 		);
 	}
 
+	/**
+	 * Turns one lower-case Latin word into Cyrillic, longest match first.
+	 *
+	 * @param string $word Word.
+	 * @return string
+	 */
 	private static function word_to_cyrillic( $word ) {
 		$out    = '';
 		$length = strlen( $word );
@@ -203,6 +251,13 @@ class Transliteration {
 		return $out;
 	}
 
+	/**
+	 * Gives the converted word the letter case of the original.
+	 *
+	 * @param string $original  Original word.
+	 * @param string $converted Converted word.
+	 * @return string
+	 */
 	private static function match_case( $original, $converted ) {
 		if ( strtoupper( $original ) === $original && strlen( $original ) > 1 ) {
 			return mb_strtoupper( $converted, 'UTF-8' );
@@ -217,6 +272,9 @@ class Transliteration {
 
 	/**
 	 * Old name, still used for matching city names with the couriers.
+	 *
+	 * @param string $word Word.
+	 * @return string
 	 */
 	public static function latin2cyrillic( $word ) {
 		return self::to_cyrillic( $word );

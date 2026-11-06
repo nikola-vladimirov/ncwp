@@ -5,6 +5,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName, Universal.Namespaces, Universal.Files.SeparateFunctionsFromOO, WordPress.Security.EscapeOutput, WordPress.WP.GlobalVariablesOverride, Generic.CodeAnalysis.UnusedFunctionParameter -- offline test script: it stubs WordPress in one file, keeps WordPress's own names and signatures, and prints to a terminal.
+
 namespace {
 	define( 'ABSPATH', __DIR__ . '/fixtures/' );
 	/**
@@ -46,11 +48,11 @@ namespace {
 	 * Get option.
 	 *
 	 * @param mixed $key Key.
-	 * @param bool  $default Default.
+	 * @param bool  $fallback Default.
 	 * @return mixed Result.
 	 */
-	function get_option( $key, $default = false ) {
-		return $GLOBALS['options'][ $key ] ?? $default; }
+	function get_option( $key, $fallback = false ) {
+		return $GLOBALS['options'][ $key ] ?? $fallback; }
 	/**
 	 * Update option.
 	 *

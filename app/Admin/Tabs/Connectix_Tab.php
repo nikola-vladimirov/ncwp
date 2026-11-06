@@ -1,13 +1,41 @@
 <?php
+/**
+ * Connectix settings tab.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+// phpcs:disable WordPress.NamingConventions.ValidHookName -- the plugin's public hooks use "nashenski/area/name".
+
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
 use Nashenski\Container\Client;
 
 defined( 'ABSPATH' ) || exit;
-class Connectix_Tab extends Base_Tab {
-	protected $tab_name, $container;
 
+/**
+ * Connectix settings tab.
+ */
+class Connectix_Tab extends Base_Tab {
+	/**
+	 * Class name of the tab.
+	 *
+	 * @var string
+	 */
+	protected $tab_name;
+
+	/**
+	 * Service container.
+	 *
+	 * @var \Pimple\Container
+	 */
+	protected $container;
+
+	/**
+	 * Sets the tab up.
+	 */
 	public function __construct() {
 		$this->container = nashenski()->container();
 		$this->tab_name  = get_called_class();
@@ -15,6 +43,9 @@ class Connectix_Tab extends Base_Tab {
 		$this->set_tab_slug( 'connectix' );
 	}
 
+	/**
+	 * Loads the fields of the tab.
+	 */
 	public function load_fields() {
 		$fields = apply_filters(
 			'nashenski/admin/settings/connectix/fields',
@@ -71,6 +102,11 @@ class Connectix_Tab extends Base_Tab {
 		$this->set_fields( $fields );
 	}
 
+	/**
+	 * Gets the titles of the field groups.
+	 *
+	 * @return array
+	 */
 	public function get_groups_titles() {
 		$titles = apply_filters(
 			'nashenski/admin/settings/connectix/groups_titles',
@@ -84,6 +120,11 @@ class Connectix_Tab extends Base_Tab {
 		return $titles;
 	}
 
+	/**
+	 * Checks the saved token.
+	 *
+	 * @return string Error message as HTML, empty when the token works.
+	 */
 	public function auth_test() {
 		$error = '';
 

@@ -1,4 +1,12 @@
 <?php
+/**
+ * NRA audit file builder.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file named after its class.
+
 namespace Nashenski\Export\Nra;
 
 defined( 'ABSPATH' ) || exit;
@@ -21,6 +29,9 @@ class XmlBuilder {
 	const ENCODING = 'windows-1251';
 
 	/**
+	 * Builds the audit file.
+	 *
+	 * @param array $args Shop, orders and refunded orders, as Export::get_xml_file() collects them.
 	 * @return array { content: string, totals: array }
 	 */
 	public static function build( array $args ) {
@@ -88,6 +99,10 @@ class XmlBuilder {
 	}
 
 	/**
+	 * Writes one order.
+	 *
+	 * @param \XMLWriter $xml   Writer.
+	 * @param array      $order Order.
 	 * @return array { total: float, vat: float } after discount.
 	 */
 	protected static function write_order( \XMLWriter $xml, array $order ) {
@@ -150,9 +165,13 @@ class XmlBuilder {
 
 	/**
 	 * Split a line total with VAT into its parts.
+	 *
+	 * @param array $item Order line.
+	 * @return array
 	 */
 	protected static function item_amounts( array $item ) {
-		$qty   = (float) $item['qty'] ?: 1;
+		$qty   = (float) $item['qty'];
+		$qty   = $qty ? $qty : 1;
 		$rate  = (float) $item['vat_rate'];
 		$gross = self::money( $item['total'] );
 		$net   = $rate ? self::money( $gross / ( 1 + $rate / 100 ) ) : $gross;
@@ -167,10 +186,22 @@ class XmlBuilder {
 		);
 	}
 
+	/**
+	 * Rounds an amount to two decimals.
+	 *
+	 * @param mixed $value Amount.
+	 * @return float
+	 */
 	public static function money( $value ) {
 		return round( (float) $value, 2 );
 	}
 
+	/**
+	 * Formats an amount with two decimals and a dot.
+	 *
+	 * @param mixed $value Amount.
+	 * @return string
+	 */
 	protected static function format( $value ) {
 		return number_format( (float) $value, 2, '.', '' );
 	}
