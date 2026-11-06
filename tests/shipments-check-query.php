@@ -212,8 +212,8 @@ namespace {
 		$wp                   = array();
 		foreach ( $GLOBALS['filters']['woocommerce_order_data_store_cpt_get_orders_query'] ?? array() as $cb ) {
 			$wp = $cb( $wp, $a, null ); }
-		$GLOBALS['wp_args'][] = $wp;
-		$orderby              = ! empty( $GLOBALS['filters']['posts_orderby'] ) ? $GLOBALS['filters']['posts_orderby'][0]( '' ) : ''; // What the posts_orderby filter returns while the query runs.
+		$GLOBALS['wp_args'][]  = $wp;
+		$orderby               = ! empty( $GLOBALS['filters']['posts_orderby'] ) ? $GLOBALS['filters']['posts_orderby'][0]( '' ) : ''; // What the posts_orderby filter returns while the query runs.
 		$GLOBALS['orderbys'][] = $orderby;
 		if ( $GLOBALS['throw'] ) {
 			throw new RuntimeException( 'query failed' ); }
@@ -572,8 +572,8 @@ namespace {
 	check( array( 'processing', 'on-hold' ) === $q['status'] && 'ASC' === $q['order'] && 100 === $q['limit'], 'status, order direction and limit unchanged' );
 	check( abs( qfrom( 0 ) - ( $before - 60 * 86400 ) ) <= 2 && ! isset( $q['date_modified'] ), 'the window starts now - 60 days (date_created), not date_modified' );
 	// Note 23: the legacy store filters on post_date_gmt with the six-key array form (no timezone step) and sorts by post_date_gmt, so a clock change cannot skip an order.
-	$dq = $GLOBALS['wp_args'][0]['date_query'] ?? null;
-	$f  = gmdate( 'Y n j G i s', qfrom( 0 ) );
+	$dq                               = $GLOBALS['wp_args'][0]['date_query'] ?? null;
+	$f                                = gmdate( 'Y n j G i s', qfrom( 0 ) );
 	list( $y, $mo, $d, $h, $mi, $se ) = array_map( 'intval', explode( ' ', $f ) );
 	check( ! isset( $q['date_created'] ), 'legacy: no date_created argument (its filter is on the local date)' );
 	check(
@@ -712,8 +712,8 @@ namespace {
 	$GLOBALS['result'][0]->date = day( 1 );
 	$GLOBALS['result'][1]->date = day( 1 );
 	run();
-	$late               = new FakeOrder( 9 );
-	$late->date         = day( 1 );
+	$late                = new FakeOrder( 9 );
+	$late->date          = day( 1 );
 	$GLOBALS['result'][] = $late;
 	check( array( 9, 3 ) === run(), 'later order: an order created in the cursor second after the run is read as the next order (9, then 3)' );
 	check( 0 === $late->saves, 'later order: the new order is not saved' );
