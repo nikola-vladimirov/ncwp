@@ -12,6 +12,11 @@ defined( 'ABSPATH' ) || exit;
  */
 class Public_Price {
 	/**
+	 * Highest weight in kg on the published Pigeon price page.
+	 */
+	const PIGEON_MAX_KG = 30;
+
+	/**
 	 * Delivery type of a shipping method -> price list column.
 	 */
 	public static function kind( $delivery_type ) {
@@ -43,6 +48,11 @@ class Public_Price {
 
 		$weight = max( 0.0, (float) $weight );
 		$price = null;
+
+		// The published Pigeon page stops at 30 kg: no rate above it, even from an older saved list with bands to 40 kg.
+		if ( 'pigeon' === $courier && $weight > self::PIGEON_MAX_KG ) {
+			return null;
+		}
 
 		foreach ( $list['bands'] as $band ) {
 			if ( $weight <= $band['to'] ) {

@@ -429,12 +429,12 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	/**
-	 * Fixed price for this order: like Econt, it applies to Bulgaria only.
+	 * Fixed price for this order: like Econt, it applies to a Bulgarian delivery point only (the label country).
 	 *
 	 * @return mixed The fixed price, or '' when none applies.
 	 */
 	public function applicable_fixed_price() {
-		return 'BG' === $this->courier_country() ? $this->fixed_price : '';
+		return 'BG' === $this->label_country() ? $this->fixed_price : '';
 	}
 
 	/**

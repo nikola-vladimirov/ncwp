@@ -126,4 +126,4 @@ foreach ( array( $econt, $speedy ) as $class ) {
 nashenski_intl_assert( '' === nashenski_intl_method( $speedy, null, 'GR' )->applicable_fixed_price(), 'Speedy: fixed price 5 not used for Greece' );
 nashenski_intl_assert( '' === nashenski_intl_method( $speedy, 'GR', 'BG' )->applicable_fixed_price(), 'Speedy: fixed price 5 not used for a Greek widget' );
 nashenski_intl_assert( 5 === nashenski_intl_method( $speedy, 'BG', 'BG' )->applicable_fixed_price(), 'Speedy: fixed price 5 used for Bulgaria' );
-nashenski_intl_assert( '' === nashenski_intl_method( $speedy, 'BG', 'GR' )->applicable_fixed_price(), 'Speedy: fixed price 5 not used for a Bulgarian widget with a Greek package' );
+nashenski_intl_assert( 5 === nashenski_intl_method( $speedy, 'BG', 'RO' )->applicable_fixed_price(), 'Speedy: fixed price 5 used for a Bulgarian office with a Romanian package, like Econt' );
