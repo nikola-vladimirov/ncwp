@@ -299,7 +299,7 @@ class Automation {
 				array_map( 'intval', explode( ' ', gmdate( 'Y n j G i s', $from ) ) )
 			);
 			// The window goes on the first query built only: a nested query in the same run (refunds, inside compile_orders) must not get it.
-			$add   = function ( $wp_query_args ) use ( $open, $parts, &$add ) {
+			$add = function ( $wp_query_args ) use ( $open, $parts, &$add ) {
 				remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
 				$wp_query_args['meta_query'] = array_merge( isset( $wp_query_args['meta_query'] ) ? (array) $wp_query_args['meta_query'] : array(), array( $open ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				$wp_query_args['date_query'] = array(
