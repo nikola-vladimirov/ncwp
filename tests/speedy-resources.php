@@ -222,7 +222,15 @@ namespace {
 	 * @return mixed Result.
 	 */
 	function nashenski_label_request( $key, $default = '' ) {
-		return $default; }
+		return $GLOBALS['label_request'][ $key ] ?? $default; }
+	/**
+	 * Wc get order.
+	 *
+	 * @param mixed $id Id.
+	 * @return mixed Result.
+	 */
+	function wc_get_order( $id ) {
+		return $GLOBALS['label_order']; }
 	/**
 	 * Wc tax enabled.
 	 *
@@ -937,5 +945,89 @@ namespace {
 		$out = \Nashenski\Admin\Speedy::update_cod( $label, new SpeedyOldCookieOrder( $old ) );
 		expect( $cod === (string) $out['service']['additionalServices']['cod']['amount'], "Speedy label with an old cookie price '$old' has a cash on delivery amount of $cod" );
 	}
+	// The request-time checks (staff create a label for an old order): a fixed price of "0.00" or "0" is not a price.
+	/**
+	 * Shipping item that keeps the total it was given.
+	 */
+	class SpeedyShippingItem {
+		/**
+		 * Total.
+		 *
+		 * @var mixed
+		 */
+		public $total = 'untouched';
+		/**
+		 * Set total.
+		 *
+		 * @param mixed $total Total.
+		 */
+		public function set_total( $total ) {
+			$this->total = $total; }
+		/**
+		 * Calculate taxes.
+		 */
+		public function calculate_taxes() {}
+		/**
+		 * Save.
+		 */
+		public function save() {}
+	}
+	/**
+	 * Cash on delivery order with one shipping item.
+	 */
+	class SpeedyRequestOrder extends SpeedyOldCookieOrder {
+		/**
+		 * Shipping item.
+		 *
+		 * @var SpeedyShippingItem
+		 */
+		public $item;
+		/**
+		 * Constructor.
+		 */
+		public function __construct() {
+			parent::__construct( '' );
+			$this->item = new SpeedyShippingItem();
+		}
+		/**
+		 * Items.
+		 *
+		 * @param mixed $type Type.
+		 */
+		public function get_items( $type = 'line_item' ) {
+			return array( 1 => $this->item ); }
+		/**
+		 * Calculate totals.
+		 */
+		public function calculate_totals() {}
+		/**
+		 * Save.
+		 */
+		public function save() {}
+	}
+	$services = new ReflectionMethod( '\Nashenski\Admin\Speedy', 'update_services' );
+	$shipping = new ReflectionMethod( '\Nashenski\Admin\Speedy', 'update_order_shipping_price' );
+	if ( PHP_VERSION_ID < 80100 ) {
+		$services->setAccessible( true );
+		$shipping->setAccessible( true );
+	}
+	foreach ( array(
+		'0.00' => array( '10.00', 0 ),
+		'0'    => array( '10.00', 0 ),
+		'4.50' => array( '14.50', '4.50' ),
+	) as $price => list( $cod, $total ) ) {
+		$GLOBALS['label_request'] = array(
+			'paymentBy'   => array( 'id' => 'fixed' ),
+			'cookie_data' => array( 'fixed_price' => $price ),
+		);
+		$order                    = new SpeedyRequestOrder();
+		$label                    = array( 'service' => array( 'additionalServices' => array( 'cod' => array( 'amount' => '10.00' ) ) ) );
+		$out                      = $services->invoke( null, $label, $order );
+		expect( $cod === (string) $out['service']['additionalServices']['cod']['amount'], "Speedy services with a staff fixed price '$price' give a cash on delivery amount of $cod" );
+		$GLOBALS['label_order'] = $order;
+		$shipping->invoke( null, array(), 5 );
+		expect( $total === $order->item->total, "Speedy shipping price with a staff fixed price '$price' is set to " . var_export( $total, true ) );
+	}
+	$GLOBALS['label_request'] = array();
 	echo 'PASS: ' . $checks . " Speedy assertions\n";
 }
