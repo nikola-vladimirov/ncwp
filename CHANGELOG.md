@@ -2,6 +2,11 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.21.1 (2026-11-07)
+
+### Fixes
+- Nine texts that had no Bulgarian translation are translated now.
+
 ## 0.21.0 (2026-11-06)
 
 ### Changes
