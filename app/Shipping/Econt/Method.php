@@ -441,7 +441,8 @@ class Method extends \WC_Shipping_Method {
 	 * @return string ISO code.
 	 */
 	public function label_country() {
-		return $this->cookie_data['country'] ?? $this->courier_country();
+		$widget = $this->cookie_data['country'] ?? '';
+		return '' !== $widget ? $widget : $this->courier_country();
 	}
 
 	/**
@@ -924,7 +925,7 @@ class Method extends \WC_Shipping_Method {
 			$payment_by_data['paymentReceiverAmount'] = $this->fixed_price;
 		}
 
-		$free_over = Price_Lists::free_over( $this->courier_country(), $this->free_shipping_over, $this->free_shipping_by_country );
+		$free_over = Price_Lists::free_over( $this->label_country(), $this->free_shipping_over, $this->free_shipping_by_country );
 
 		if ( nashenski_has_free_shipping_coupon_in_cart() ||
 			( (float) $free_over > 0 && nashenski_get_package_total() >= $free_over )

@@ -163,11 +163,39 @@ function WC() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.Fu
 	);
 }
 
+/**
+ * No free shipping coupon.
+ *
+ * @return bool
+ */
+function nashenski_has_free_shipping_coupon_in_cart() {
+	return false;
+}
+
+/**
+ * Cart total the test sets.
+ *
+ * @return float
+ */
+function nashenski_get_package_total() {
+	return $GLOBALS['package_total'];
+}
+
+/**
+ * Plugin option stub: nothing set.
+ *
+ * @return string
+ */
+function nashenski_get_option() {
+	return '';
+}
+
 require __DIR__ . '/../app/Shipping/Packer/Packing_Limit_Exceeded.php';
 require __DIR__ . '/../app/Shipping/Packer/Packing_Budget.php';
 require __DIR__ . '/../app/Pricing/Price_Lists.php';
 require __DIR__ . '/../app/Pricing/Public_Price.php';
 require __DIR__ . '/../app/Shipping/Econt/Method.php';
+require __DIR__ . '/../app/Shipping/Speedy/Method.php';
 
 use Nashenski\Pricing\Price_Lists;
 
@@ -204,7 +232,7 @@ $decimal = array(
 	'HU' => '1000.5',
 	'DE' => '1.5',
 );
-expect( Price_Lists::free_over_list( 'GR=150,50, RO=1,000; HU=1000.5, DE=1,5' ) === $decimal, 'a comma before 1 or 2 final digits is the decimal point, before 3 a thousands separator, as in normalize()' );
+expect( Price_Lists::free_over_list( 'GR=150,50, RO=1,000; HU=1000.5, DE=1,5' ) === $decimal, 'a comma before 1 or 2 final digits is the decimal point, before 3 a thousands separator' );
 expect( array() === Price_Lists::free_over_list( '' ) && array() === Price_Lists::free_over_list( null ) && array() === Price_Lists::free_over_list( array( 'RO' ) ), 'empty or non-text gives no list' );
 $saving = new WC_Shipping_Method();
 expect( 'RO=150, GR=200' === Price_Lists::clean_amounts( array( 'free_shipping_by_country' => ' ro=150 ,bad, GR=200 ' ), $saving )['free_shipping_by_country'], 'the saved text is cleaned to valid pairs' );
@@ -219,6 +247,35 @@ expect( '100' === Price_Lists::free_over( 'BG', '100', 'BG=5, RO=150' ), 'Bulgar
 expect( '150' === Price_Lists::free_over( 'RO', '100', 'RO=150' ), 'Romania uses its listed amount' );
 expect( '' === Price_Lists::free_over( 'GR', '100', 'RO=150' ), 'an unlisted country gets no free shipping, not the Bulgarian amount' );
 expect( '' === Price_Lists::free_over( 'GR', '100', '' ), 'an empty list gives no free shipping abroad' );
+
+// The threshold follows the label's delivery country: the widget country when set, else the package country.
+foreach ( array( 'Econt', 'Speedy' ) as $courier ) {
+	foreach (
+		array(
+			array( 'BG', 'BG', 250, true, 'a Bulgarian order over the Bulgarian field is free' ),
+			array( 'BG', 'BG', 160, false, 'a Bulgarian order below the Bulgarian field is not free' ),
+			array( null, 'BG', 250, true, 'a Bulgarian package with no widget keeps the Bulgarian field' ),
+			array( 'BG', 'RO', 160, false, 'a Bulgarian office with a Romanian package uses the Bulgarian field, not RO=150' ),
+			array( 'BG', 'RO', 250, true, 'a Bulgarian office with a Romanian package over the Bulgarian field is free' ),
+			array( 'RO', 'BG', 120, false, 'a Romanian widget below the Romanian amount is not free' ),
+			array( 'RO', 'BG', 160, true, 'a Romanian widget uses the Romanian amount, not the Bulgarian one' ),
+			array( '', 'RO', 160, true, 'an empty widget country falls back to the package country' ),
+		) as list( $widget, $package, $total, $free, $label )
+	) {
+		if ( 'Econt' === $courier && $free ) {
+			continue; // The Econt free path needs the API container; the not-free cases still prove the country it reads.
+		}
+		$courier_method                           = ( new ReflectionClass( "Nashenski\\Shipping\\$courier\\Method" ) )->newInstanceWithoutConstructor();
+		$courier_method->cookie_data              = null === $widget ? null : array( 'country' => $widget );
+		$courier_method->package                  = array( 'destination' => array( 'country' => $package ) );
+		$courier_method->free_shipping_over       = '200';
+		$courier_method->free_shipping_by_country = 'RO=150';
+		$courier_method->fixed_price              = '';
+		$GLOBALS['package_total']                 = $total;
+		( new ReflectionMethod( $courier_method, 'generate_payment_by_data' ) )->invoke( $courier_method );
+		expect( $free === $courier_method->free_shipping, "$courier: $label" );
+	}
+}
 
 // R65: Pigeon has no price above its 30 kg band; the bands below stay priced with the 17% fuel surcharge.
 expect( null === \Nashenski\Pricing\Public_Price::calculate( 'pigeon', 'office', 31 ), 'Pigeon above 30 kg gives no rate' );

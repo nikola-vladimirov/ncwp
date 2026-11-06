@@ -334,8 +334,9 @@ class Price_Lists {
 	public static function free_over_list( $value, &$rejected = array() ) {
 		$list = array();
 
-		// A comma before a digit stays inside the amount, as in normalize(): before exactly 3 digits it separates thousands
-		// (1,000 = 1000), before 1 or 2 final digits it is the decimal point (150,50 = 150.50); any other comma rejects the pair.
+		// A comma before a digit stays inside the amount (unlike normalize(), which reads every comma as a decimal point):
+		// before exactly 3 digits it separates thousands (1,000 = 1000), before 1 or 2 final digits it is the decimal point
+		// (150,50 = 150.50); any other comma rejects the pair.
 		foreach ( preg_split( '/[,;\n]+(?!\s*\d)/', strtoupper( is_string( $value ) ? $value : '' ) ) as $pair ) {
 			$typed = preg_replace( '/\s+/', '', $pair );
 			$pair  = preg_replace( '/(?<=\d),(?=\d{1,2}$)/', '.', preg_replace( '/(?<=\d),(?=\d{3}(?!\d))/', '', $typed ) );

@@ -119,6 +119,8 @@ foreach ( array( $econt, $speedy ) as $class ) {
 	nashenski_intl_assert( 'BG' === nashenski_intl_method( $class, 'BG', 'BG' )->label_country(), "$name: a domestic Bulgarian office labels as Bulgarian" );
 	nashenski_intl_assert( 'RO' === nashenski_intl_method( $class, 'RO', 'BG' )->label_country(), "$name: a Romanian widget labels as Romanian" );
 	nashenski_intl_assert( 'GR' === nashenski_intl_method( $class, null, 'GR' )->label_country(), "$name: no widget labels with the package country" );
+	nashenski_intl_assert( 'GR' === nashenski_intl_method( $class, '', 'GR' )->label_country(), "$name: an empty widget country labels with the package country" );
+	nashenski_intl_assert( 'BG' === nashenski_intl_method( $class, '', 'BG' )->label_country(), "$name: an empty widget country with a Bulgarian package labels as Bulgarian" );
 }
 
 nashenski_intl_assert( '' === nashenski_intl_method( $speedy, null, 'GR' )->applicable_fixed_price(), 'Speedy: fixed price 5 not used for Greece' );
