@@ -261,7 +261,7 @@ class BoxNow {
 			$width  = $_product->get_width() ? wc_get_dimension( (float) $_product->get_width(), 'cm', $unit ) : 44;
 			$length = $_product->get_length() ? wc_get_dimension( (float) $_product->get_length(), 'cm', $unit ) : 58;
 
-			$item_sizes = Method::determine_item_size( $height, $width, $length );
+			$item_sizes      = Method::determine_item_size( $height, $width, $length );
 			$current_volume += $item_sizes['volume'];
 
 			if ( $item_sizes['oversize'] || $item_sizes['volume'] > 89320 || $current_volume > 89320 ) {
