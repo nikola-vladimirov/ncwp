@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * PDF document appearance.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Invoice\PDF;
 
 defined( 'ABSPATH' ) || exit;
@@ -13,6 +19,11 @@ defined( 'ABSPATH' ) || exit;
 class Style {
 	const GROUP = 'pdf';
 
+	/**
+	 * Built-in style values.
+	 *
+	 * @return array
+	 */
 	public static function defaults() {
 		return array(
 			'title_color'   => '#1d2327',
@@ -30,6 +41,11 @@ class Style {
 		);
 	}
 
+	/**
+	 * Whether the TokenForge plugin is active.
+	 *
+	 * @return bool
+	 */
 	public static function tokenforge_active() {
 		return class_exists( '\TokenForge\Palette' );
 	}
@@ -78,7 +94,9 @@ class Style {
 	/**
 	 * "#123456", "var(--black)", "var(--primary-dark)" or "var(--name, #fallback)" to hex, or ''.
 	 *
+	 * @param string   $value  Colour value.
 	 * @param callable $family Returns a palette family's hex by name ('' when unknown).
+	 * @return string
 	 */
 	private static function resolve_tokenforge_color( $value, $family ) {
 		$value = trim( $value );
@@ -128,6 +146,10 @@ class Style {
 
 	/**
 	 * Mix a hex colour with black. $amount 0 = colour, 1 = black.
+	 *
+	 * @param string $hex    Colour as #rrggbb.
+	 * @param float  $amount 0 to 1.
+	 * @return string
 	 */
 	public static function shade( $hex, $amount ) {
 		$hex = ltrim( $hex, '#' );
@@ -140,6 +162,11 @@ class Style {
 		return $out;
 	}
 
+	/**
+	 * Whether the colours follow TokenForge.
+	 *
+	 * @return bool
+	 */
 	public static function follows_tokenforge() {
 		return self::tokenforge_active() && 'no' !== nashenski_get_option( self::GROUP, 'follow_tokenforge' );
 	}
@@ -151,6 +178,11 @@ class Style {
 		return array_merge( self::defaults(), self::tokenforge_colors() );
 	}
 
+	/**
+	 * The style in use: saved values over the defaults, checked.
+	 *
+	 * @return array
+	 */
 	public static function get() {
 		$style = self::field_defaults();
 
@@ -176,11 +208,15 @@ class Style {
 			}
 		}
 
-		return apply_filters( 'nashenski/invoice/pdf/style', $style );
+		return apply_filters( 'nashenski/invoice/pdf/style', $style ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 	}
 
 	/**
 	 * Mix a hex colour with white. $amount 0 = colour, 1 = white.
+	 *
+	 * @param string $hex    Colour as #rrggbb.
+	 * @param float  $amount 0 to 1.
+	 * @return string
 	 */
 	public static function tint( $hex, $amount ) {
 		$hex = ltrim( $hex, '#' );

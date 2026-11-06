@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName, Universal.Namespaces, Generic.Files.OneObjectStructurePerFile, Universal.Files.SeparateFunctionsFromOO -- offline test: WordPress stubs and the test share one file.
 /**
  * Offline test: the Documents section leaves the settings menu when documents are off, and the
  * after-save hook is spelled the same by its caller and its listeners.
@@ -91,12 +91,9 @@ namespace {
 		return $text;
 	}
 	/**
-	 * Nashenski get option.
-	 *
-	 * @param string $group Group.
-	 * @param string $name  Name.
+	 * Nashenski get option: documents on or off.
 	 */
-	function nashenski_get_option( $group, $name ) {
+	function nashenski_get_option() {
 		return $GLOBALS['documents_on'] ? 'yes' : 'no';
 	}
 
@@ -113,22 +110,22 @@ namespace {
 	function expect( $condition, $message ) {
 		++$GLOBALS['checks'];
 		if ( ! $condition ) {
-			fwrite( STDERR, "FAIL: $message\n" );
+			fwrite( STDERR, "FAIL: $message\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- offline test.
 			exit( 1 );
 		}
 	}
 
-	$page   = ( new ReflectionClass( 'Nashenski\Admin\Settings_Page' ) )->newInstanceWithoutConstructor();
-	$tabs   = new ReflectionProperty( $page, 'tabs' );
-	$layout = new ReflectionMethod( $page, 'layout' );
+	$settings_page = ( new ReflectionClass( 'Nashenski\Admin\Settings_Page' ) )->newInstanceWithoutConstructor();
+	$tabs_prop     = new ReflectionProperty( $settings_page, 'tabs' );
+	$layout        = new ReflectionMethod( $settings_page, 'layout' );
 	if ( PHP_VERSION_ID < 80100 ) {
-		$tabs->setAccessible( true );
+		$tabs_prop->setAccessible( true );
 		$layout->setAccessible( true );
 	}
 
 	// Documents on: the tab exists. Documents off: only the always-present checkout fields tab.
-	$tabs->setValue(
-		$page,
+	$tabs_prop->setValue(
+		$settings_page,
 		array(
 			'settings'  => 1,
 			'documents' => 1,
@@ -136,17 +133,17 @@ namespace {
 			'shipping'  => 1,
 		)
 	);
-	expect( isset( $layout->invoke( $page )['documents'] ), 'the Documents section is in the menu when documents are on' );
-	$tabs->setValue(
-		$page,
+	expect( isset( $layout->invoke( $settings_page )['documents'] ), 'the Documents section is in the menu when documents are on' );
+	$tabs_prop->setValue(
+		$settings_page,
 		array(
 			'settings' => 1,
 			'fields'   => 1,
 			'shipping' => 1,
 		)
 	);
-	expect( ! isset( $layout->invoke( $page )['documents'] ), 'the Documents section is not in the menu when documents are off' );
-	expect( isset( $layout->invoke( $page )['checkout'] ), 'the Checkout section stays when documents are off' );
+	expect( ! isset( $layout->invoke( $settings_page )['documents'] ), 'the Documents section is not in the menu when documents are off' );
+	expect( isset( $layout->invoke( $settings_page )['checkout'] ), 'the Checkout section stays when documents are off' );
 	$excluded = function ( $page_layout ) {
 		foreach ( $page_layout['checkout']['parts'] as $part ) {
 			if ( 'fields' === $part[0] ) {
@@ -155,9 +152,9 @@ namespace {
 		}
 		return null;
 	};
-	expect( array() === $excluded( $layout->invoke( $page ) ), 'with documents off the company invoice switch stays in Checkout' );
-	$tabs->setValue(
-		$page,
+	expect( array() === $excluded( $layout->invoke( $settings_page ) ), 'with documents off the company invoice switch stays in Checkout' );
+	$tabs_prop->setValue(
+		$settings_page,
 		array(
 			'settings'  => 1,
 			'documents' => 1,
@@ -165,18 +162,18 @@ namespace {
 			'shipping'  => 1,
 		)
 	);
-	expect( array( 'company' ) === $excluded( $layout->invoke( $page ) ), 'with documents on the company group moves to Documents' );
+	expect( array( 'company' ) === $excluded( $layout->invoke( $settings_page ) ), 'with documents on the company group moves to Documents' );
 
 	// The Help page links to the Documents section only while it is in the menu.
-	$link = new ReflectionMethod( 'Nashenski\Admin\Help_Page', 'link' );
+	$help_link = new ReflectionMethod( 'Nashenski\Admin\Help_Page', 'link' );
 	if ( PHP_VERSION_ID < 80100 ) {
-		$link->setAccessible( true );
+		$help_link->setAccessible( true );
 	}
 	$GLOBALS['documents_on'] = false;
-	expect( 'Documents' === $link->invoke( null, 'documents', 'Documents' ), 'with documents off the Help page shows the plain label' );
-	expect( false !== strpos( $link->invoke( null, 'checkout', 'Checkout' ), 'section=checkout' ), 'other Help links are unchanged' );
+	expect( 'Documents' === $help_link->invoke( null, 'documents', 'Documents' ), 'with documents off the Help page shows the plain label' );
+	expect( false !== strpos( $help_link->invoke( null, 'checkout', 'Checkout' ), 'section=checkout' ), 'other Help links are unchanged' );
 	$GLOBALS['documents_on'] = true;
-	expect( false !== strpos( $link->invoke( null, 'documents', 'Documents' ), 'section=documents' ), 'with documents on the Help page links to Documents' );
+	expect( false !== strpos( $help_link->invoke( null, 'documents', 'Documents' ), 'section=documents' ), 'with documents on the Help page links to Documents' );
 
 	// After a save both hook names fire, once each.
 	$GLOBALS['fired'] = array();
@@ -189,7 +186,7 @@ namespace {
 		'app/CLI/Courier_Command.php'  => '\Nashenski\Admin\Settings_Page::',
 		'app/CLI/Settings_Command.php' => 'Settings_Page::',
 	) as $caller => $prefix ) {
-		expect( false !== strpos( file_get_contents( __DIR__ . '/../' . $caller ), $prefix . 'run_after_save_fields(' ), "$caller runs both hook names through run_after_save_fields" );
+		expect( false !== strpos( file_get_contents( __DIR__ . '/../' . $caller ), $prefix . 'run_after_save_fields(' ), "$caller runs both hook names through run_after_save_fields" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- offline test.
 	}
 	// One spelling of the hook everywhere.
 	$wrong = 0;
@@ -199,7 +196,7 @@ namespace {
 		if ( 'php' !== $file->getExtension() ) {
 			continue;
 		}
-		$text = file_get_contents( $file->getPathname() );
+		$text = file_get_contents( $file->getPathname() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- offline test.
 		// Raw calls of the hook anywhere in app/: only the helper may have one.
 		$raw += preg_match_all( '/\bdo_action\(\s*[\'"]nashenski\/admin\/settings\/after_save_fields/', $text );
 		// The one do_action_deprecated line keeps the old spelling on purpose.
@@ -211,5 +208,5 @@ namespace {
 	expect( 0 === $wrong, 'no file spells the hook afte_save_fields' );
 	expect( $right >= 4, 'the caller and the listeners use after_save_fields' );
 
-	echo 'PASS: ' . $checks . " settings section assertions\n";
+	echo 'PASS: ' . (int) $checks . " settings section assertions\n";
 }

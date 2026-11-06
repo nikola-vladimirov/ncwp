@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Changelog link and popup on the Plugins screen.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin;
 
 defined( 'ABSPATH' ) || exit;
@@ -10,11 +16,21 @@ defined( 'ABSPATH' ) || exit;
 class Changelog {
 	const ACTION = 'nashenski_changelog';
 
+	/**
+	 * Hooks the row link and the popup.
+	 */
 	public function __construct() {
 		add_filter( 'plugin_row_meta', array( __CLASS__, 'row_link' ), 10, 2 );
 		add_action( 'wp_ajax_' . self::ACTION, array( __CLASS__, 'render' ) );
 	}
 
+	/**
+	 * Adds the Changelog link to this plugin's row.
+	 *
+	 * @param array  $links Row meta links.
+	 * @param string $file  Plugin file of the row.
+	 * @return array
+	 */
 	public static function row_link( $links, $file ) {
 		if ( plugin_basename( nashenski()->plugin_dir_path() . 'nashenski-commerce.php' ) !== $file || ! current_user_can( 'activate_plugins' ) ) {
 			return $links;
@@ -38,6 +54,9 @@ class Changelog {
 		return $links;
 	}
 
+	/**
+	 * Prints the changelog popup page.
+	 */
 	public static function render() {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			wp_die( esc_html__( 'Sorry, you are not allowed to view this page.', 'nashenski-commerce' ), 403 );
@@ -77,6 +96,9 @@ p { margin: 0 0 8px; }
 	/**
 	 * CHANGELOG.md as HTML: version and section headings, lists, paragraphs and **bold**.
 	 * Only tags the WordPress update details popup allows, so it shows there too.
+	 *
+	 * @param string $md Markdown text.
+	 * @return string
 	 */
 	public static function html( $md ) {
 		$html = '';
@@ -111,6 +133,12 @@ p { margin: 0 0 8px; }
 		return $html . ( $list ? "</ul>\n" : '' );
 	}
 
+	/**
+	 * Escapes a line and turns **bold** into strong tags.
+	 *
+	 * @param string $text Line of text.
+	 * @return string
+	 */
 	private static function inline( $text ) {
 		return preg_replace( '/\*\*(.+?)\*\*/', '<strong>$1</strong>', esc_html( $text ) );
 	}

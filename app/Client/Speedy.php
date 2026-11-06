@@ -1,10 +1,19 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Speedy API client.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Client;
 
 use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Talks to the Speedy courier API.
+ */
 class Speedy {
 	use Courier_Client;
 
@@ -17,19 +26,47 @@ class Speedy {
 	const TRACK_ENDPOINT         = 'track';
 	const CACHE_FOLDER           = File::CACHE_FOLDER . 'speedy' . DIRECTORY_SEPARATOR;
 
-	private $user                    = '';
-	private $password                = '';
+	/**
+	 * API user name.
+	 *
+	 * @var string
+	 */
+	private $user = '';
+
+	/**
+	 * API password.
+	 *
+	 * @var string
+	 */
+	private $password = '';
+
+	/**
+	 * Cache files that are not kept.
+	 *
+	 * @var array
+	 */
 	public static $skip_cached_files = array(
 		'cities-100.csv',
 		'cities-642.csv',
 		'cities-300.csv',
 	);
 
+	/**
+	 * Loads the login.
+	 */
 	public function __construct() {
 		$this->load_user();
 		$this->load_password();
 	}
 
+	/**
+	 * Posts a request to the API.
+	 *
+	 * @param string $endpoint     Endpoint path.
+	 * @param array  $args         Request body, the login is added.
+	 * @param bool   $return_plain Return the raw body (CSV lists) instead of decoded JSON.
+	 * @return array|string
+	 */
 	public function api_call( $endpoint, $args, $return_plain = false ) {
 		// Without a login Speedy answers with an error page; never call it, so nothing wrong gets cached.
 		if ( '' === trim( (string) $this->get_user() ) || '' === trim( (string) $this->get_password() ) ) {
@@ -74,6 +111,13 @@ class Speedy {
 		return json_decode( wp_remote_retrieve_body( $request ), 1 );
 	}
 
+	/**
+	 * Calculates, creates, updates or cancels a shipment.
+	 *
+	 * @param string $type         One of calculate, create, update, delete.
+	 * @param array  $request_body Request body.
+	 * @return array|null
+	 */
 	public function label_request( $type, $request_body ) {
 		$endpoints = array(
 			'calculate' => self::CALC_LABELS_ENDPOINT,
@@ -89,39 +133,69 @@ class Speedy {
 		return $this->api_call( $endpoints[ $type ], $request_body );
 	}
 
+	/**
+	 * Whether an API answer means the login works.
+	 *
+	 * @param mixed $api_call API answer.
+	 * @return bool
+	 */
 	public static function validate_access( $api_call ) {
-		return is_array( $api_call ) && ! ( isset( $api_call['error'] ) && $api_call['error']['code'] === 1 );
+		return is_array( $api_call ) && ! ( isset( $api_call['error'] ) && 1 === $api_call['error']['code'] );
 	}
 
-	// Loaders
+	/**
+	 * Loads the user name from the settings.
+	 */
 	public function load_user() {
 		$this->set_user( nashenski_get_option( 'speedy', 'user' ) );
 	}
 
+	/**
+	 * Loads the password from the settings.
+	 */
 	public function load_password() {
 		$this->set_password( nashenski_get_option( 'speedy', 'password' ) );
 	}
 
-	// Getters
-
+	/**
+	 * API user name.
+	 *
+	 * @return string
+	 */
 	public function get_user() {
 		return $this->user;
 	}
 
+	/**
+	 * API password.
+	 *
+	 * @return string
+	 */
 	public function get_password() {
 		return $this->password;
 	}
 
-	// Setters
-
+	/**
+	 * Sets the user name.
+	 *
+	 * @param string $user User name.
+	 */
 	private function set_user( $user ) {
 		$this->user = $user;
 	}
 
+	/**
+	 * Sets the password.
+	 *
+	 * @param string $password Password.
+	 */
 	private function set_password( $password ) {
 		$this->password = $password;
 	}
 
+	/**
+	 * Forgets the cached profile and clients.
+	 */
 	public static function clear_profile_data() {
 		nashenski_set_option( 'speedy', 'profile_data', '' );
 		nashenski_set_option( 'speedy', 'clients', '' );

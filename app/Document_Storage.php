@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
 /**
  * Document storage.
  *
@@ -257,7 +257,7 @@ class Document_Storage {
 	 * The "Delete all now" button of the documents settings.
 	 */
 	public static function delete_receipts_now() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			wp_die( esc_html__( 'You cannot do this.', 'nashenski-commerce' ), 403 );
 		}
 
@@ -278,7 +278,7 @@ class Document_Storage {
 	 * Receipts deleted notice.
 	 */
 	public static function receipts_deleted_notice() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only shows a notice.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended , WordPress.WP.Capabilities.Unknown -- only shows a notice; manage_woocommerce is a WooCommerce capability.
 		if ( empty( $_GET['nashenski-receipts-deleted'] ) || ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
@@ -389,7 +389,7 @@ class Document_Storage {
 	 * @param mixed $meta Meta.
 	 */
 	public static function order_document_url( $order, $meta ) {
-		$expires = time() + (int) apply_filters( 'nashenski/documents/guest_link_lifetime', DAY_IN_SECONDS );
+		$expires = time() + (int) apply_filters( 'nashenski/documents/guest_link_lifetime', DAY_IN_SECONDS ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 
 		return add_query_arg(
 			array(
@@ -452,7 +452,7 @@ class Document_Storage {
 			if ( $main_order && self::is_document_meta( $meta ) && self::can_download( $main_order, $signed ) ) {
 				$attach_id = absint( $order->get_meta( $meta ) );
 			}
-		} elseif ( $file_id && current_user_can( 'manage_woocommerce' ) ) {
+		} elseif ( $file_id && current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			$attach_id = $file_id;
 		}
 
@@ -485,15 +485,15 @@ class Document_Storage {
 	 * @param bool      $signed The link's signature is valid and not expired.
 	 */
 	private static function can_download( $order, $signed ) {
-		if ( current_user_can( 'manage_woocommerce' ) || current_user_can( 'edit_shop_orders' ) ) {
+		if ( current_user_can( 'manage_woocommerce' ) || current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			$allowed = true;
 		} elseif ( $order->get_customer_id() ) {
-			$allowed = current_user_can( 'view_order', $order->get_id() );
+			$allowed = current_user_can( 'view_order', $order->get_id() ); // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 		} else {
 			$allowed = $signed;
 		}
 
-		return (bool) apply_filters( 'nashenski/documents/can_download', $allowed, $order );
+		return (bool) apply_filters( 'nashenski/documents/can_download', $allowed, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 	}
 
 	/**
