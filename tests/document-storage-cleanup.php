@@ -5,6 +5,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName, Universal.Namespaces, Universal.Files.SeparateFunctionsFromOO.Mixed, Generic.Files.OneObjectStructurePerFile.MultipleFound -- an offline test script: it stubs WooCommerce classes and WordPress functions in one file.
+
 namespace Automattic\WooCommerce\Utilities {
 	/**
 	 * Orderutil.
@@ -39,7 +41,7 @@ namespace {
 	 * @param mixed $k K.
 	 * @return int Result.
 	 */
-	function get_option( $k ) {
+	function get_option( $k ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- the stub keeps WordPress's signature.
 		return 30; }
 	/**
 	 * Add filter.
@@ -95,7 +97,7 @@ namespace {
 	 * @param mixed $id Id.
 	 * @return string Result.
 	 */
-	function get_post_type( $id ) {
+	function get_post_type( $id ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- the stub keeps WordPress's signature.
 		return 'attachment'; }
 	/**
 	 * Wp delete attachment.
@@ -173,9 +175,9 @@ namespace {
 	 */
 	function check( $ok, $what ) {
 		if ( ! $ok ) {
-			fwrite( STDERR, "FAIL: $what\n" );
+			fwrite( STDERR, "FAIL: $what\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- offline test, WordPress is not loaded.
 			exit( 1 );
-		} echo "ok - $what\n"; }
+		} echo "ok - $what\n"; } // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- offline CLI test output, not HTML; WordPress (esc_html) is not loaded.
 	/**
 	 * Has doc query.
 	 *

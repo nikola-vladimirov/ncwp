@@ -5,6 +5,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Shipping;
 
 use Nashenski\Container\Client;
@@ -251,7 +253,7 @@ class Automation {
 	 */
 	public static function check_shipments() {
 		// ponytail: 100 open orders per hour, created in the last 60 days; a busier store can raise it.
-		$limit = (int) apply_filters( 'nashenski/shipments/check_limit', 100 );
+		$limit = (int) apply_filters( 'nashenski/shipments/check_limit', 100 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 
 		// A value below 1 other than -1 (0, negative, null, text) becomes the default 100: -1 would drop the time budget and load every open order at once.
 		if ( $limit < 1 && -1 !== $limit ) {
@@ -335,7 +337,7 @@ class Automation {
 
 		$dates = array();
 		// Each order is one courier call (up to 60 s when the courier is slow), so a run stops after this many seconds and the next one goes on from there.
-		$budget = (float) apply_filters( 'nashenski/shipments/check_seconds', 20 );
+		$budget = (float) apply_filters( 'nashenski/shipments/check_seconds', 20 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		$began  = microtime( true );
 
 		foreach ( $orders as $order ) {
@@ -495,7 +497,7 @@ class Automation {
 	 * @return mixed Result.
 	 */
 	public static function handle_bulk_action( $redirect, $action, $ids ) {
-		if ( isset( self::actions()[ $action ] ) && current_user_can( 'edit_shop_orders' ) ) {
+		if ( isset( self::actions()[ $action ] ) && current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers this capability.
 			self::notice( self::run( $action, array_filter( array_map( 'wc_get_order', (array) $ids ) ) ) );
 		}
 
@@ -674,7 +676,7 @@ class Automation {
 			'pickup',
 			array(
 				'explicitShipmentIdList' => array_values( $numbers ),
-				'visitEndTime'           => (string) apply_filters( 'nashenski/speedy/pickup_until', '17:30' ),
+				'visitEndTime'           => (string) apply_filters( 'nashenski/speedy/pickup_until', '17:30' ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 				'autoAdjustPickupDate'   => true,
 			)
 		);

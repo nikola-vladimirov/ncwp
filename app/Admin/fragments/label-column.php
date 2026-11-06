@@ -1,4 +1,12 @@
-<?php defined( 'ABSPATH' ) || exit; ?>
+<?php
+/**
+ * Label column of the orders list.
+ *
+ * @package Nashenski
+ */
+
+defined( 'ABSPATH' ) || exit;
+?>
 <p>
 	<?php if ( ! empty( $data['number'] ) && is_array( $data ) ) : ?>
 		<a target="_blank" href="<?php echo esc_url( $data['link'] ); ?>">

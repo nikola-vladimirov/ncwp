@@ -1,8 +1,19 @@
 <?php
+/**
+ * Courier registration and checkout shipping checks.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Shipping;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Registers the turned-on couriers and checks the checkout shipping choice.
+ */
 class Register {
 	/**
 	 * Per courier: class folder, the classes that serve its checkout lists, the settings group of
@@ -15,7 +26,10 @@ class Register {
 		'pigeon' => array( 'Pigeon', array( 'Address', 'Office', 'Locker', 'APSBoxes', 'PackageBoxes' ), 'pigeon', 200 ),
 	);
 
-	public function __construct( $container ) {
+	/**
+	 * Register the turned-on couriers and the checkout hooks.
+	 */
+	public function __construct() {
 		foreach ( self::COURIERS as $slug => list( $name, $parts, $label_group, $save_priority ) ) {
 			if ( 'yes' === nashenski_get_option( 'apis', 'enable_' . $slug ) ) {
 				self::register_courier( $slug, $name, $parts, $label_group, $save_priority );
@@ -31,7 +45,11 @@ class Register {
 		}
 	}
 
-	/** Package key => courier price the customer saw (null while it said "Complete the fields"). */
+	/**
+	 * Package key => courier price the customer saw (null while it said "Complete the fields").
+	 *
+	 * @var array
+	 */
 	private static $shown = array();
 
 	/**
@@ -49,6 +67,12 @@ class Register {
 		}
 	}
 
+	/**
+	 * Stop the order when a courier price changed from the one on screen.
+	 *
+	 * @param array     $data   Posted checkout data.
+	 * @param \WP_Error $errors Checkout errors.
+	 */
 	public static function validate_shown_prices( $data, $errors ) {
 		foreach ( self::$shown as $key => $cost ) {
 			$rate = nashenski_chosen_rate( $key, ( (array) WC()->session->get( 'chosen_shipping_methods' ) )[ $key ] ?? '' );
@@ -70,6 +94,9 @@ class Register {
 	 * the payment method saved in the courier cookie. The order must be placed with a payment method
 	 * of the same kind, or the waybill would not collect the cash (or the price would be wrong).
 	 * On a mismatch the rates are calculated again and the customer is asked to check the total.
+	 *
+	 * @param array     $data   Posted checkout data.
+	 * @param \WP_Error $errors Checkout errors.
 	 */
 	public static function validate_cod_choice( $data, $errors ) {
 		if ( ! WC()->cart || ! WC()->session || ! WC()->cart->needs_shipping() ) {
@@ -104,6 +131,15 @@ class Register {
 		}
 	}
 
+	/**
+	 * Load a courier's classes and hook its shipping method.
+	 *
+	 * @param string $slug          Courier slug.
+	 * @param string $name          Class folder.
+	 * @param array  $parts         Classes of the checkout lists.
+	 * @param string $label_group   Settings group of "Generate label after checkout".
+	 * @param int    $save_priority Priority that saves the label data of a new order.
+	 */
 	private static function register_courier( $slug, $name, $parts, $label_group, $save_priority ) {
 		$method = __NAMESPACE__ . '\\' . $name . '\\Method';
 		$admin  = 'Nashenski\\Admin\\' . $name;
@@ -136,6 +172,9 @@ class Register {
 		add_action( 'woocommerce_email_order_details', array( $method, 'add_label_number_to_email' ), 1, 4 );
 	}
 
+	/**
+	 * Classic checkout "update order review": save the posted address and price the shipping again.
+	 */
 	public static function update_order_review() {
 		self::update_session();
 
@@ -147,10 +186,14 @@ class Register {
 		}
 
 		WC()->cart->calculate_shipping();
-
-		return;
 	}
 
+	/**
+	 * Courier shipping taxes when an order is recalculated.
+	 *
+	 * @param \WC_Order_Item_Shipping $method            Shipping line.
+	 * @param array                   $calculate_tax_for Location.
+	 */
 	public static function set_shipping_rate_taxes_for_recalculation( $method, $calculate_tax_for ) {
 		if ( strpos( $method['method_id'], 'nashenski' ) === false ) {
 			return;
@@ -162,6 +205,9 @@ class Register {
 		}
 	}
 
+	/**
+	 * Save the posted payment method, shipping methods and address in the session and customer.
+	 */
 	private static function update_session() {
 		$wc = WC();
 
@@ -221,6 +267,12 @@ class Register {
 		return self::normalize_checkout_post_data( array_replace_recursive( nashenski_order_review_data(), $posted ) );
 	}
 
+	/**
+	 * Fill the billing_ and shipping_ address keys from their short aliases.
+	 *
+	 * @param array $post_data Posted data.
+	 * @return array
+	 */
 	private static function normalize_checkout_post_data( $post_data ) {
 		$aliases = array(
 			'billing_country'    => 'country',
@@ -249,6 +301,11 @@ class Register {
 		return $post_data;
 	}
 
+	/**
+	 * Save the posted shipping methods as the chosen ones.
+	 *
+	 * @param mixed $posted_shipping_methods Posted shipping methods.
+	 */
 	private static function update_chosen_shipping_methods( $posted_shipping_methods ) {
 		if ( is_string( $posted_shipping_methods ) ) {
 			$posted_shipping_methods = array( 0 => $posted_shipping_methods );
@@ -284,8 +341,16 @@ class Register {
 		}
 	}
 
+	/**
+	 * Customer address props from the posted fields.
+	 *
+	 * @param array       $post_data     Posted data.
+	 * @param string      $source_prefix billing or shipping, in the posted data.
+	 * @param string|null $target_prefix billing or shipping, on the customer; the source prefix when empty.
+	 * @return array
+	 */
 	private static function get_customer_address_props( $post_data, $source_prefix, $target_prefix = null ) {
-		$target_prefix = $target_prefix ?: $source_prefix;
+		$target_prefix = $target_prefix ? $target_prefix : $source_prefix;
 		$props         = array();
 		$fields        = array( 'country', 'state', 'postcode', 'city', 'address_1', 'address_2' );
 

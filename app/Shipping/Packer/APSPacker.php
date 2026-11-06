@@ -1,12 +1,40 @@
 <?php
+/**
+ * Box packer for the courier parcels.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Shipping\Packer;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Packs products into the smallest boxes that fit, on shelves and rows.
+ */
 class APSPacker {
+	/**
+	 * Divisor for the volumetric weight, or null to use the real weight.
+	 *
+	 * @var float|null
+	 */
 	private $volumetric_weight_divisor;
+
+	/**
+	 * Work limit, or null for none.
+	 *
+	 * @var Packing_Budget|null
+	 */
 	private $budget;
 
+	/**
+	 * Set the volumetric weight divisor and the work limit.
+	 *
+	 * @param mixed               $volumetric_weight_divisor Divisor for the volumetric weight.
+	 * @param Packing_Budget|null $budget                    Work limit.
+	 */
 	public function __construct( $volumetric_weight_divisor = null, ?Packing_Budget $budget = null ) {
 		$this->budget                    = $budget;
 		$this->volumetric_weight_divisor = ( is_numeric( $volumetric_weight_divisor ) && (float) $volumetric_weight_divisor > 0 )
@@ -14,6 +42,15 @@ class APSPacker {
 			: null;
 	}
 
+	/**
+	 * Pack the products into boxes.
+	 *
+	 * @param array $products  Products with size, weight and quantity.
+	 * @param array $box_sizes Boxes with size and max weight.
+	 * @return array
+	 * @throws \InvalidArgumentException When there are no boxes.
+	 * @throws \RuntimeException When a product fits in no box.
+	 */
 	public function pack( array $products, array $box_sizes ): array {
 		$products = $this->normalize_products( $products );
 
@@ -32,14 +69,16 @@ class APSPacker {
 		$current_box_index  = 0;
 		$current_placements = array();
 		$product_index      = 0;
+		$product_count      = count( $products );
+		$box_count          = count( $boxes );
 
-		while ( $product_index < count( $products ) ) {
+		while ( $product_index < $product_count ) {
 			$product        = $products[ $product_index ];
 			$candidate_list = array_merge( $current_products, array( $product ) );
 			$start_index    = empty( $current_products ) ? 0 : $current_box_index;
 			$fit            = null;
 
-			for ( $box_index = $start_index; $box_index < count( $boxes ); $box_index++ ) {
+			for ( $box_index = $start_index; $box_index < $box_count; $box_index++ ) {
 				$placements = $this->pack_in_box( $candidate_list, $boxes[ $box_index ] );
 
 				if ( null !== $placements ) {
@@ -87,6 +126,12 @@ class APSPacker {
 		return $result;
 	}
 
+	/**
+	 * One item per unit, smallest first.
+	 *
+	 * @param array $products Products.
+	 * @return array
+	 */
 	private function normalize_products( array $products ): array {
 		$normalized = array();
 
@@ -124,6 +169,12 @@ class APSPacker {
 		return $normalized;
 	}
 
+	/**
+	 * Boxes, smallest first.
+	 *
+	 * @param array $box_sizes Boxes.
+	 * @return array
+	 */
 	private function normalize_boxes( array $box_sizes ): array {
 		$boxes = array();
 
@@ -152,6 +203,14 @@ class APSPacker {
 		return $boxes;
 	}
 
+	/**
+	 * Name, dimensions, volume and longest side of a product or box.
+	 *
+	 * @param array|object $item  Product or box.
+	 * @param int          $index Position in the list.
+	 * @param string       $type  Product or Box, for messages.
+	 * @return array
+	 */
 	private function normalize_item( $item, int $index, string $type ): array {
 		$size = $this->get_nested_size( $item );
 
@@ -174,6 +233,12 @@ class APSPacker {
 		);
 	}
 
+	/**
+	 * The size or dimensions part of an item, or the item itself.
+	 *
+	 * @param array|object $item Product or box.
+	 * @return mixed
+	 */
 	private function get_nested_size( $item ) {
 		$size = $this->get_value( $item, array( 'size', 'dimensions' ) );
 
@@ -184,6 +249,13 @@ class APSPacker {
 		return $item;
 	}
 
+	/**
+	 * Quantity of a product, 1 when not set.
+	 *
+	 * @param array|object $item Product.
+	 * @return int
+	 * @throws \InvalidArgumentException When the quantity is not a positive number.
+	 */
 	private function get_quantity( $item ): int {
 		$quantity = $this->get_value( $item, array( 'quantity', 'qty' ) );
 
@@ -202,6 +274,14 @@ class APSPacker {
 		return (int) $quantity;
 	}
 
+	/**
+	 * Weight of a product, 0 when not set.
+	 *
+	 * @param array|object $item  Product.
+	 * @param int          $index Position in the list.
+	 * @return float
+	 * @throws \InvalidArgumentException When the weight is not valid.
+	 */
 	private function get_weight( $item, int $index ): float {
 		$weight = $this->get_value( $item, array( 'weight', 'kg' ) );
 
@@ -222,6 +302,13 @@ class APSPacker {
 		return (float) $weight;
 	}
 
+	/**
+	 * The larger of the real and the volumetric weight.
+	 *
+	 * @param array $item   Normalized product.
+	 * @param float $weight Real weight.
+	 * @return float
+	 */
 	private function get_chargeable_weight( array $item, float $weight ): float {
 		if ( null === $this->volumetric_weight_divisor ) {
 			return $weight;
@@ -230,6 +317,14 @@ class APSPacker {
 		return max( $weight, $item['volume'] / $this->volumetric_weight_divisor );
 	}
 
+	/**
+	 * Max weight of a box.
+	 *
+	 * @param array|object $item  Box.
+	 * @param int          $index Position in the list.
+	 * @return float
+	 * @throws \InvalidArgumentException When the max weight is not valid.
+	 */
 	private function get_max_weight( $item, int $index ): float {
 		$weight = $this->get_value( $item, array( 'max_weight', 'maxWeight', 'max_weight_kg', 'maxWeightKg', 'weight', 'kg' ) );
 
@@ -246,6 +341,17 @@ class APSPacker {
 		return (float) $weight;
 	}
 
+	/**
+	 * A positive dimension, under any of the keys.
+	 *
+	 * @param array|object $item      Size.
+	 * @param array        $keys      Accepted keys.
+	 * @param string       $type      Product or Box, for messages.
+	 * @param int          $index     Position in the list.
+	 * @param string       $dimension Dimension name, for messages.
+	 * @return float
+	 * @throws \InvalidArgumentException When the dimension is not valid.
+	 */
 	private function get_dimension( $item, array $keys, string $type, int $index, string $dimension ): float {
 		$value = $this->get_value( $item, $keys );
 
@@ -258,6 +364,13 @@ class APSPacker {
 		return (float) $value;
 	}
 
+	/**
+	 * The first value found under the keys, or null.
+	 *
+	 * @param array|object $item Item.
+	 * @param array        $keys Keys.
+	 * @return mixed
+	 */
 	private function get_value( $item, array $keys ) {
 		foreach ( $keys as $key ) {
 			if ( is_array( $item ) && array_key_exists( $key, $item ) ) {
@@ -272,6 +385,13 @@ class APSPacker {
 		return null;
 	}
 
+	/**
+	 * Placements of the products in the box, or null when they do not fit.
+	 *
+	 * @param array $products Normalized products.
+	 * @param array $box      Normalized box.
+	 * @return array|null
+	 */
 	private function pack_in_box( array $products, array $box ): ?array {
 		if ( $this->budget ) {
 			$this->budget->spend( count( $products ) * ( 10 + (int) ceil( log( count( $products ) + 1, 2 ) ) ) );
@@ -455,6 +575,12 @@ class APSPacker {
 		return $placements;
 	}
 
+	/**
+	 * Total volume of the products.
+	 *
+	 * @param array $products Normalized products.
+	 * @return float
+	 */
 	private function products_volume( array $products ): float {
 		$volume = 0.0;
 
@@ -465,6 +591,13 @@ class APSPacker {
 		return $volume;
 	}
 
+	/**
+	 * Total weight of the products.
+	 *
+	 * @param array $products   Normalized products.
+	 * @param bool  $chargeable Use the chargeable weight.
+	 * @return float
+	 */
 	private function products_weight( array $products, bool $chargeable = true ): float {
 		$weight = 0.0;
 
@@ -475,6 +608,12 @@ class APSPacker {
 		return $weight;
 	}
 
+	/**
+	 * The distinct orientations of an item.
+	 *
+	 * @param array $item Normalized item.
+	 * @return array
+	 */
 	private function orientations( array $item ): array {
 		$orientations = array(
 			array( $item['length'], $item['width'], $item['height'] ),
@@ -495,6 +634,16 @@ class APSPacker {
 		return array_values( $unique );
 	}
 
+	/**
+	 * One product's placement in the box.
+	 *
+	 * @param array $product     Normalized product.
+	 * @param array $dimensions  Placed length, width and height.
+	 * @param array $origin      Corner position.
+	 * @param int   $shelf_index Shelf.
+	 * @param int   $row_index   Row.
+	 * @return array
+	 */
 	private function build_placement( array $product, array $dimensions, array $origin, int $shelf_index, int $row_index ): array {
 		return array(
 			'name'           => $product['name'],
@@ -516,6 +665,14 @@ class APSPacker {
 		);
 	}
 
+	/**
+	 * A packed box with its products, weight and fill rate.
+	 *
+	 * @param array $box        Normalized box.
+	 * @param array $products   Normalized products.
+	 * @param array $placements Placements.
+	 * @return array
+	 */
 	private function build_packed_box( array $box, array $products, array $placements ): array {
 		$total_volume = $this->products_volume( $products );
 		$total_weight = $this->products_weight( $products, false );

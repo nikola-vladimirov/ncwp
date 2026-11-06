@@ -1,4 +1,12 @@
 <?php
+/**
+ * Speedy streets.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Client\Speedy;
 
 use Nashenski\Container\Client;
@@ -7,16 +15,42 @@ use Nashenski\Transliteration;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Speedy streets of a city, cached in files.
+ */
 class Streets {
 	const STREETS_ENDPOINT = 'location/street';
 
+	/**
+	 * Streets by city id and query hash.
+	 *
+	 * @var array
+	 */
 	private $streets = array();
+
+	/**
+	 * Client container.
+	 *
+	 * @var \Pimple\Container
+	 */
 	private $container;
 
+	/**
+	 * Keep the client container.
+	 *
+	 * @param \Pimple\Container $container Client container.
+	 */
 	public function __construct( $container ) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Load the streets of a city matching the query, from the cache or the API.
+	 *
+	 * @param int|string $city_id City id.
+	 * @param string     $query   Query.
+	 * @return array|null
+	 */
 	protected function load_streets_by_city( $city_id, $query ) {
 		if ( ! is_dir( $this->container[ Client::SPEEDY ]::CACHE_FOLDER ) ) {
 			wp_mkdir_p( $this->container[ Client::SPEEDY ]::CACHE_FOLDER );
@@ -57,7 +91,13 @@ class Streets {
 		return $streets;
 	}
 
-	// Getters
+	/**
+	 * Streets of a city matching the query.
+	 *
+	 * @param int|string $city_id City id.
+	 * @param string     $query   Query.
+	 * @return array|null
+	 */
 	public function get_streets_by_city( $city_id, $query ) {
 		$query = mb_substr( (string) $query, 0, 64 );
 		$hash  = md5( $query );
@@ -69,11 +109,25 @@ class Streets {
 		return $this->streets[ $city_id ][ $hash ];
 	}
 
-	// Setters
+	/**
+	 * Keep the streets of a city and query.
+	 *
+	 * @param array|null $streets Streets.
+	 * @param int|string $city_id City id.
+	 * @param string     $hash    Query hash.
+	 */
 	private function set_streets( $streets, $city_id, $hash ) {
 		$this->streets[ $city_id ][ $hash ] = $streets;
 	}
 
+	/**
+	 * Streets as "street-id" => "type name"; with a city, its kept copy is dropped.
+	 *
+	 * @param array           $streets Streets.
+	 * @param int|string|null $city_id City id.
+	 * @param string          $query   Query.
+	 * @return array
+	 */
 	public function format_streets( $streets, $city_id = null, $query = '' ) {
 		$formatted = array();
 
