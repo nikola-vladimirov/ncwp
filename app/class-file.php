@@ -37,7 +37,7 @@ class File {
 			return false;
 		}
 
-		if ( ! $wp_filesystem->move( $tmp, $file, true ) ) {
+		if ( ! @rename( $tmp, $file ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename -- the rename replaces the file in one step; WP_Filesystem::move() deletes the target first, so a reader could see no file. Windows may refuse; the fallback below writes it directly.
 			$wp_filesystem->delete( $tmp );
 			return $wp_filesystem->put_contents( $file, $data, FS_CHMOD_FILE );
 		}

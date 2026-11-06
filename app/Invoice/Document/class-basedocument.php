@@ -744,7 +744,20 @@ class BaseDocument {
 		$details = $this->get_site_details();
 
 		if ( $logo ) {
-			echo wp_kses_post( $logo );
+			echo wp_kses(
+				$logo,
+				array(
+					'img' => array(
+						'class'  => true,
+						'src'    => true,
+						'width'  => true,
+						'height' => true,
+						'alt'    => true,
+						'style'  => true,
+					),
+				),
+				array( 'data', 'http', 'https' )
+			); // The logo is a data URI of the site's own image.
 		}
 
 		if ( $details ) {
