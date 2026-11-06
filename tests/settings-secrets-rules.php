@@ -298,6 +298,7 @@ namespace {
 	expect( '4' === $saved_rows[0]['price'] && '7.5' === $saved_rows[1]['price'] && ! WC_Admin_Settings::$errors, 'a good list is saved without a notice' );
 	$bad_rows[1]['price'] = '';
 	$saved_rows           = json_decode( Settings_Page::sanitize_rows_field( '', $rows_option, $bad_rows ), true );
-	expect( '' === $saved_rows[1]['price'] && ! WC_Admin_Settings::$errors, 'a price left empty on purpose is saved as it is, without a notice' );
+	// R41: a band with a range and no price would be a free band, so it is refused with a notice (the old assertion saved it).
+	expect( '3' === $saved_rows[0]['price'] && 1 === count( WC_Admin_Settings::$errors ), 'a band with a range and no price keeps the saved list, with a notice' );
 	echo 'PASS: ' . $checks . " settings secret and rule assertions\n";
 }

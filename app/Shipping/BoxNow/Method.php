@@ -188,7 +188,8 @@ class Method extends \WC_Shipping_Method {
 			}
 
 			// No band holds this cart: no rate. A band the owner typed with a price of 0 is a band, and gives a free rate.
-			if ( null === $price ) {
+			// A band with an empty, text or negative price (saved by an older version) is not a typed 0: no rate, never a free one.
+			if ( null === $price || ! is_numeric( $price ) || (float) $price < 0 ) {
 				return;
 			}
 

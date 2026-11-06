@@ -415,9 +415,9 @@ foreach ( array(
 	$shown_free = ! empty( $m->rates[0]['meta_data']['free_shipping'] );
 	expect( $free === $shown_free, "BOX NOW free shipping at threshold '$threshold' must be " . var_export( $free, true ) );
 }
-// A stored price row below zero (saved before negatives were refused) gives no charge, never a negative rate.
+// A stored price row below zero (saved before negatives were refused) gives no rate, not a free one (R41, the old assertion encoded the bug); a typed 0 is a free band.
 foreach ( array(
-	'-5' => 0,
+	'-5' => null,
 	'0'  => 0,
 	'5'  => '5',
 ) as $stored => $cost ) {
@@ -434,7 +434,7 @@ foreach ( array(
 		),
 	);
 	$m                         = calculate( array( line( 1 ) ) );
-	expect( 1 === count( $m->rates ) && $cost === $m->rates[0]['cost'], "A stored price row of $stored gives a rate cost of $cost" );
+	expect( null === $cost ? array() === $m->rates : 1 === count( $m->rates ) && $cost === $m->rates[0]['cost'], "A stored price row of $stored gives " . ( null === $cost ? 'no rate' : "a rate cost of $cost" ) );
 }
 // A cart that no price band holds gets no BOX NOW rate; a band the owner typed with a price of 0 is a band and gives a free rate.
 /**

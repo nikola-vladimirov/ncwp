@@ -1115,6 +1115,9 @@ class Settings_Page extends \WC_Settings_Page {
 				$refused = $refused || ( isset( $row[ $column ] ) && '' !== $row[ $column ] && '' === $clean[ $column ] );
 			}
 
+			// A row with a range but no price would be a free band: refuse it.
+			$refused = $refused || ( '' === $clean['price'] && '' !== implode( '', $clean ) );
+
 			if ( implode( '', $clean ) !== '' ) {
 				$rows[] = $clean;
 			}
@@ -1123,7 +1126,7 @@ class Settings_Page extends \WC_Settings_Page {
 		if ( $refused ) {
 			if ( class_exists( 'WC_Admin_Settings' ) ) {
 				/* translators: %s: name of the setting */
-				\WC_Admin_Settings::add_error( sprintf( __( '"%s" was not saved: a weight or price must be a number from zero up, so the earlier list stays.', 'nashenski-commerce' ), $option['title'] ?? $option['id'] ) );
+				\WC_Admin_Settings::add_error( sprintf( __( '"%s" was not saved: a weight or price must be a number from zero up, and every band needs a price, so the earlier list stays.', 'nashenski-commerce' ), $option['title'] ?? $option['id'] ) );
 			}
 
 			return get_option( $option['id'], '' );
