@@ -1,18 +1,29 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
 
 defined( 'ABSPATH' ) || exit;
+/**
+ * Shipping section of the Nashenski settings.
+ */
 class Shipping_Tab extends Base_Tab {
+	/**
+	 * Names the section.
+	 */
 	public function __construct() {
 		$this->set_name( __( 'Shipping', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'shipping' );
 	}
 
+	/**
+	 * Builds the fields of the section.
+	 *
+	 * @return void
+	 */
 	public function load_fields() {
 		$fields = apply_filters(
-			'nashenski/admin/shipping/fields',
+			'nashenski/admin/shipping/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 			array(
 				'checkout' => array(
 					new Fields\Select_Field(
@@ -66,9 +77,14 @@ class Shipping_Tab extends Base_Tab {
 		$this->set_fields( $fields );
 	}
 
+	/**
+	 * The titles of the field groups.
+	 *
+	 * @return array
+	 */
 	public function get_groups_titles() {
 		$titles = apply_filters(
-			'nashenski/admin/shipping/groups_titles',
+			'nashenski/admin/shipping/groups_titles', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 			array(
 				'checkout' => array(
 					'title' => __( 'Countries and delivery', 'nashenski-commerce' ),

@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Client\Econt;
 
 use Nashenski\Container\Client;
@@ -6,16 +6,40 @@ use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The Econt countries, cached in a file.
+ */
 class Countries {
 	const COUNTRIES_ENDPOINT = 'Nomenclatures/NomenclaturesService.getCountries.json';
 
+	/**
+	 * Countries, loaded on first use.
+	 *
+	 * @var array
+	 */
 	private $countries = array();
+
+	/**
+	 * Dependency container.
+	 *
+	 * @var object
+	 */
 	private $container;
 
+	/**
+	 * Keeps the container.
+	 *
+	 * @param object $container Dependency container.
+	 */
 	public function __construct( $container ) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Reads the countries from the cache file, or from Econt when there is none.
+	 *
+	 * @return array
+	 */
 	protected function load_countries() {
 		if ( ! is_dir( $this->container[ Client::ECONT ]::CACHE_FOLDER ) ) {
 			wp_mkdir_p( $this->container[ Client::ECONT ]::CACHE_FOLDER );
@@ -43,7 +67,11 @@ class Countries {
 		return $countries;
 	}
 
-	// Getters
+	/**
+	 * The countries.
+	 *
+	 * @return array
+	 */
 	public function get_countries() {
 		if ( empty( $this->countries ) ) {
 			$this->load_countries();
@@ -52,7 +80,12 @@ class Countries {
 		return $this->countries;
 	}
 
-	// Setters
+	/**
+	 * Keeps the countries.
+	 *
+	 * @param array $countries Countries.
+	 * @return void
+	 */
 	private function set_countries( $countries ) {
 		$this->countries = $countries;
 	}

@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Admin\Fields;
 
 defined( 'ABSPATH' ) || exit;
@@ -8,8 +8,23 @@ defined( 'ABSPATH' ) || exit;
  * ("method_id:instance_id"), the same key the checkout rates have.
  */
 class Methods_Field extends Base_Field {
+	/**
+	 * Method choices.
+	 *
+	 * @var array
+	 */
 	protected $choices;
 
+	/**
+	 * Sets up the field.
+	 *
+	 * @param array  $choices          Method choices.
+	 * @param string $name             Field name.
+	 * @param string $title            Field title.
+	 * @param string $help_text        Help text.
+	 * @param string $validation_rules Validation rules.
+	 * @param string $desc             Description.
+	 */
 	public function __construct( array $choices, $name, $title, $help_text = '', $validation_rules = '', $desc = '' ) {
 		$this->set_type( 'methods' );
 		$this->set_choices( $choices );
@@ -20,10 +35,22 @@ class Methods_Field extends Base_Field {
 		$this->set_validation_rules( $validation_rules );
 	}
 
+	/**
+	 * The method choices.
+	 *
+	 * @return array
+	 */
 	public function get_choices() {
 		return $this->choices;
 	}
 
+	/**
+	 * Sets the method choices.
+	 *
+	 * @param array $choices Method choices.
+	 *
+	 * @return void
+	 */
 	public function set_choices( $choices ) {
 		$this->choices = $choices;
 	}

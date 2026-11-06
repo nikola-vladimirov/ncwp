@@ -1,8 +1,11 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Shipping\Packer;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * A parcel size in millimetres, with its orientations and face areas.
+ */
 class Size {
 	/**
 	 * Length (X), width (Y), height (Z) in millimetres.
@@ -12,19 +15,26 @@ class Size {
 	public int $l;
 
 	/**
+	 * Width (Y) in millimetres.
+	 *
 	 * @var int
 	 */
 	public int $w;
 
 	/**
+	 * Height (Z) in millimetres.
+	 *
 	 * @var int
 	 */
 	public int $h;
 
 	/**
+	 * Sets the three dimensions.
+	 *
 	 * @param int $l Length.
 	 * @param int $w Width.
 	 * @param int $h Height.
+	 * @throws InvalidArgumentException When a dimension is not positive.
 	 */
 	public function __construct( int $l, int $w, int $h ) {
 		if ( $l <= 0 || $w <= 0 || $h <= 0 ) {
@@ -76,6 +86,11 @@ class Size {
 		return $min;
 	}
 
+	/**
+	 * Volume in cubic millimetres.
+	 *
+	 * @return int
+	 */
 	public function volume(): int {
 		return $this->l * $this->w * $this->h;
 	}

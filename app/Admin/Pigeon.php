@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Admin;
 
 use Nashenski\Container\Client;
@@ -11,9 +11,20 @@ use function PHPSTORM_META\map;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The Pigeon Express box on the order screen: label, tracking and the AJAX actions behind it.
+ */
 class Pigeon {
+	/**
+	 * Dependency container.
+	 *
+	 * @var object|null
+	 */
 	private static $container = null;
 
+	/**
+	 * Hooks the order box, the AJAX actions and the minimum parcel weight.
+	 */
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_boxes' ) );
 
@@ -25,10 +36,20 @@ class Pigeon {
 		add_filter( 'nashenski/pigeon/calculate_label', array( __CLASS__, 'set_min_package_weight' ), 30 );
 	}
 
+	/**
+	 * Adds the Pigeon Express box to the order screen.
+	 *
+	 * @return void
+	 */
 	public static function add_meta_boxes() {
 		nashenski_add_courier_meta_box( 'pigeon', __( 'Pigeon Express', 'nashenski-commerce' ), array( __CLASS__, 'meta_box' ) );
 	}
 
+	/**
+	 * Prints the Pigeon Express box and gives the script its data.
+	 *
+	 * @return void
+	 */
 	public static function meta_box() {
 		global $post;
 		$theorder = isset( $GLOBALS['theorder'] ) ? $GLOBALS['theorder'] : null;
@@ -41,13 +62,15 @@ class Pigeon {
 
 		if ( ! empty( $theorder->get_items( 'shipping' ) ) ) {
 			foreach ( $theorder->get_items( 'shipping' ) as $shipping ) {
-				if ( $shipping['method_id'] === 'nashenski_pigeon' ) {
+				if ( 'nashenski_pigeon' === $shipping['method_id'] ) {
 					$label_data      = array();
 					$cookie_data     = $theorder->get_meta( 'nashenski_pigeon_cookie_data' );
 					$shipment_status = $theorder->get_meta( 'nashenski_pigeon_shipment_status' );
 					$operations      = $theorder->get_meta( 'nashenski_pigeon_operations' );
 
-					if ( $label = $theorder->get_meta( 'nashenski_pigeon_label' ) ) {
+					$label = $theorder->get_meta( 'nashenski_pigeon_label' );
+
+					if ( $label ) {
 						$label_data = $label;
 					}
 
@@ -55,7 +78,7 @@ class Pigeon {
 						foreach ( $shipping->get_meta_data() as $meta_data ) {
 							$data = $meta_data->get_data();
 
-							if ( $data['key'] == 'nashenski_pigeon_cookie_data' ) {
+							if ( 'nashenski_pigeon_cookie_data' === $data['key'] ) {
 								$cookie_data = $data['value'];
 							}
 						}
@@ -103,6 +126,11 @@ class Pigeon {
 		}
 	}
 
+	/**
+	 * Where the parcel is sent from: the saved type, office and address.
+	 *
+	 * @return array
+	 */
 	protected static function get_send_from_data() {
 		$container = nashenski()->container();
 		$type      = nashenski_get_option( 'pigeon', 'send_from' );
@@ -121,6 +149,9 @@ class Pigeon {
 	/**
 	 * City and region the receiver is in: the shipping address when it differs from the billing one. When that
 	 * address has no region, the other address is used, so an order with only one region filled in still finds its city.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return array City and state.
 	 */
 	public static function receiver_place( $order ) {
 		$prefix = nashenski_is_different_shipping_address( $order ) ? 'shipping' : 'billing';
@@ -139,6 +170,13 @@ class Pigeon {
 
 		return $place;
 	}
+
+	/**
+	 * Pigeon city ID of the receiver, or false when the city is not found.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return mixed
+	 */
 	private static function get_city_id( $order ) {
 		if ( ! self::$container ) {
 			self::$container = nashenski()->container();
@@ -150,35 +188,54 @@ class Pigeon {
 		$city        = Transliteration::latin2cyrillic( $place['city'] );
 		$cities_data = self::$container[ Client::PIGEON_CITIES ]->get_filtered_cities( $city, $state );
 
-		if ( $cities_data['city_key'] !== false ) {
+		if ( false !== $cities_data['city_key'] ) {
 			$city_id = $cities_data['cities_search_names'][ $cities_data['city_key'] ]['id'];
 		}
 
 		return $city_id;
 	}
 
+	/**
+	 * Offices in the city of the receiver.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return array
+	 */
 	protected static function get_offices( $order ) {
 		$offices = array();
 		$city_id = self::get_city_id( $order );
 
-		if ( ! ( $city_id === false || $city_id === null ) ) {
+		if ( ! ( false === $city_id || null === $city_id ) ) {
 			$offices = self::$container[ Client::PIGEON_OFFICES ]->get_formatted_offices( $city_id );
 		}
 
 		return $offices;
 	}
 
+	/**
+	 * Lockers in the city of the receiver.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return array
+	 */
 	protected static function get_lockers( $order ) {
 		$lockers = array();
 		$city_id = self::get_city_id( $order );
 
-		if ( ! ( $city_id === false || $city_id === null ) ) {
+		if ( ! ( false === $city_id || null === $city_id ) ) {
 			$lockers = self::$container[ Client::PIGEON_LOCKERS ]->get_formatted_lockers( $city_id );
 		}
 
 		return $lockers;
 	}
 
+	/**
+	 * Streets in the city of the receiver.
+	 *
+	 * @param array    $cookie_data Checkout data of the order.
+	 * @param WC_Order $order       Order.
+	 * @return array
+	 */
 	protected static function get_streets( $cookie_data, $order ) {
 		$streets     = array();
 		$place       = self::receiver_place( $order );
@@ -186,10 +243,10 @@ class Pigeon {
 		$city        = Transliteration::latin2cyrillic( $place['city'] );
 		$cities_data = self::$container[ Client::PIGEON_CITIES ]->get_filtered_cities( $city, $state );
 
-		if ( $cities_data['city_key'] !== false ) {
+		if ( false !== $cities_data['city_key'] ) {
 			$city_id = self::get_city_id( $order );
 
-			if ( ! ( $city_id === false || $city_id === null ) ) {
+			if ( ! ( false === $city_id || null === $city_id ) ) {
 				$streets = nashenski_return_array_for_select( Address::get_streets_for_query( $city_id, '' ), 1, array( 'type' => 'streets' ) );
 			}
 		}
@@ -197,6 +254,11 @@ class Pigeon {
 		return $streets;
 	}
 
+	/**
+	 * Texts for the box script.
+	 *
+	 * @return array
+	 */
 	protected static function get_i18n() {
 		return array(
 			'updateShipmentStatus' => __( 'Update shipment status', 'nashenski-commerce' ),
@@ -248,12 +310,23 @@ class Pigeon {
 		);
 	}
 
+	/**
+	 * Whether the label asks to test the parcel before payment.
+	 *
+	 * @param array $label Label data.
+	 * @return string "yes" or "no".
+	 */
 	protected static function get_test_option( $label ) {
 		return ( ! empty( $label['service_codes']['shipment_test_before_payment'] ) ) ? 'yes' : 'no';
 	}
 
+	/**
+	 * Remembers that the Pigeon Express message was dismissed.
+	 *
+	 * @return void
+	 */
 	public static function message_dismiss_callback() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			wp_die( -1, 403 );
 		}
 
@@ -262,6 +335,12 @@ class Pigeon {
 		update_option( 'nashenski_pigeon_express_message_dismiss', true );
 	}
 
+	/**
+	 * Sends the label saved on a new order to Pigeon.
+	 *
+	 * @param int $order_id Order ID.
+	 * @return void
+	 */
 	public static function generate_label_after_order_generated( $order_id ) {
 		$order = wc_get_order( $order_id );
 		$label = $order->get_meta( 'nashenski_pigeon_label' );
@@ -277,6 +356,11 @@ class Pigeon {
 		self::send_label_to_pigeon( $label, $order );
 	}
 
+	/**
+	 * AJAX: creates the label at Pigeon from the box data.
+	 *
+	 * @return void
+	 */
 	public static function generate_label() {
 		nashenski_check_admin_label_actions();
 
@@ -295,7 +379,7 @@ class Pigeon {
 			$label = self::update_customer_note( $label, $order );
 
 			$data = self::send_label_to_pigeon( $label, $order );
-			if ( isset( $data['shipmentStatus'] ) && $payment['override'] !== null ) {
+			if ( isset( $data['shipmentStatus'] ) && null !== $payment['override'] ) {
 				$order->update_meta_data( Payment::COD_OVERRIDE_META, $payment['override'] );
 				$order->save();
 			}
@@ -304,11 +388,17 @@ class Pigeon {
 			wp_die();
 	}
 
+	/**
+	 * Sets where the parcel is picked up: the saved setting, or the choice made in the box.
+	 *
+	 * @param array $label Label data.
+	 * @return array
+	 */
 	public static function update_sender( $label ) {
 		$send_from            = nashenski_get_option( 'pigeon', 'send_from' );
 		$label['pickup_type'] = $send_from;
 
-		if ( $send_from == 'office' ) {
+		if ( 'office' === $send_from ) {
 			$label['pickup_office_id'] = str_replace( 'officeID-', '', nashenski_get_option( 'pigeon_send_from', 'office' ) );
 		} else {
 			$label['pickup_address'] = array(
@@ -346,6 +436,12 @@ class Pigeon {
 		return $label;
 	}
 
+	/**
+	 * Sets the receiver (name, phone, email and delivery place) from the order and the box.
+	 *
+	 * @param array $label Label data.
+	 * @return array
+	 */
 	public static function update_receiver_data( $label ) {
 		$order_id = nashenski_label_request( 'orderId' );
 		$order    = wc_get_order( $order_id );
@@ -374,17 +470,23 @@ class Pigeon {
 		unset( $label['delivery_address'] );
 		unset( $label['delivery_office_id'] );
 
-		if ( $label['delivery_type'] === 'address' ) {
+		if ( 'address' === $label['delivery_type'] ) {
 			$label['delivery_address'] = self::generate_receiver_address( $order );
-		} elseif ( $label['delivery_type'] === 'office' ) {
+		} elseif ( 'office' === $label['delivery_type'] ) {
 			$label['delivery_office_id'] = absint( self::generate_receiver_office_code() );
-		} elseif ( $label['delivery_type'] === 'locker' ) {
+		} elseif ( 'locker' === $label['delivery_type'] ) {
 			$label['delivery_office_id'] = absint( self::generate_receiver_locker_code() );
 		}
 
 		return $label;
 	}
 
+	/**
+	 * Delivery address of the label: city, street and extra text.
+	 *
+	 * @param WC_Order $order Order.
+	 * @return array
+	 */
 	private static function generate_receiver_address( $order ) {
 		$street = nashenski_label_request( 'street', array() );
 
@@ -397,26 +499,51 @@ class Pigeon {
 		return $receiver_address;
 	}
 
+	/**
+	 * Office code chosen in the box.
+	 *
+	 * @return string
+	 */
 	private static function generate_receiver_office_code() {
 		$office = nashenski_label_request( 'office', array() );
 
 		return str_replace( 'officeID-', '', $office['id'] );
 	}
 
+	/**
+	 * Locker code chosen in the box.
+	 *
+	 * @return string
+	 */
 	private static function generate_receiver_locker_code() {
 		$locker = nashenski_label_request( 'locker', array() );
 
 		return str_replace( 'lockerID-', '', $locker['id'] );
 	}
 
+	/**
+	 * Sets who pays for the delivery and the cash on delivery amount.
+	 *
+	 * @param array      $label   Label data.
+	 * @param WC_Order   $order   Order.
+	 * @param array|null $payment Payment request, read from the box when empty.
+	 * @return array
+	 */
 	private static function update_payment_by( $label, $order, $payment = null ) {
 		$payment = $payment ?? Payment::request( $order );
-		if ( $payment['mode'] === 'fixed' ) {
+		if ( 'fixed' === $payment['mode'] ) {
 			self::update_order_shipping_price( $payment['price'], $order ); }
-		$label['who_pays'] = $payment['mode'] === 'fixed' ? 'sender' : $payment['mode'];
+		$label['who_pays'] = 'fixed' === $payment['mode'] ? 'sender' : $payment['mode'];
 		return Payment::label( $label, $order, $payment['override'], true );
 	}
 
+	/**
+	 * Saves a fixed delivery price on the shipping line of the order.
+	 *
+	 * @param mixed    $price Price.
+	 * @param WC_Order $order Order.
+	 * @return void
+	 */
 	private static function update_order_shipping_price( $price, $order ) {
 		$item = Payment::shipping_item( $order );
 		$item->set_total( Payment::amount( $price ) );
@@ -427,6 +554,12 @@ class Pigeon {
 		$order->save();
 	}
 
+	/**
+	 * Sets the additional services from the settings and the box.
+	 *
+	 * @param array $label Label data.
+	 * @return array
+	 */
 	private static function update_services( $label ) {
 		if ( ( null !== nashenski_label_request( 'declaredValue', null ) ) ) {
 			$declared_value = nashenski_label_request( 'declaredValue' );
@@ -490,8 +623,8 @@ class Pigeon {
 			$type = nashenski_label_request( 'type', array() );
 			$type = $type['id'];
 
-			if ( $type !== 'locker' ) {
-				if ( $test === 'yes' ) {
+			if ( 'locker' !== $type ) {
+				if ( 'yes' === $test ) {
 					$label['service_codes']['shipment_test_before_payment'] = true;
 				} elseif ( isset( $label['service_codes']['shipment_test_before_payment'] ) ) {
 					unset( $label['service_codes']['shipment_test_before_payment'] );
@@ -504,6 +637,13 @@ class Pigeon {
 		return $label;
 	}
 
+	/**
+	 * Lists the order items on the label.
+	 *
+	 * @param array    $label Label data.
+	 * @param WC_Order $order Order.
+	 * @return array
+	 */
 	private static function update_items( $label, $order ) {
 		$label['inventory_items'] = array();
 
@@ -517,12 +657,18 @@ class Pigeon {
 		return $label;
 	}
 
+	/**
+	 * Raises the weight of each parcel to the minimum.
+	 *
+	 * @param array $label Label data.
+	 * @return array
+	 */
 	public static function set_min_package_weight( $label ) {
 		if ( empty( $label['packages'] ) || ! is_array( $label['packages'] ) ) {
 			return $label;
 		}
 
-		$min_weight = (float) apply_filters( 'nashenski/pigeon/min_package_weight', 0.100 );
+		$min_weight = (float) apply_filters( 'nashenski/pigeon/min_package_weight', 0.100 ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 
 		foreach ( $label['packages'] as &$package ) {
 			if ( ! isset( $package['weight'] ) || ! is_numeric( $package['weight'] ) || (float) $package['weight'] < $min_weight ) {
@@ -535,6 +681,13 @@ class Pigeon {
 		return $label;
 	}
 
+	/**
+	 * Puts the customer note on the label, or removes the note when there is none.
+	 *
+	 * @param array    $label Label data.
+	 * @param WC_Order $order Order.
+	 * @return array
+	 */
 	protected static function update_customer_note( $label, $order ) {
 		if ( $order->get_customer_note() ) {
 			$label['note'] = nashenski_normalize_text_for_label( $order->get_customer_note(), 1000 );
@@ -545,10 +698,17 @@ class Pigeon {
 		return $label;
 	}
 
+	/**
+	 * Sends the label to Pigeon and saves the answer on the order.
+	 *
+	 * @param array    $label Label data.
+	 * @param WC_Order $order Order.
+	 * @return array The label and shipment status, or a message.
+	 */
 	public static function send_label_to_pigeon( $label, $order ) {
 		$data         = array();
 		$container    = nashenski()->container();
-		$request_body = apply_filters( 'nashenski/pigeon/create_label', $label, $order );
+		$request_body = apply_filters( 'nashenski/pigeon/create_label', $label, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 		if ( isset( $request_body['service_codes']['cod_amount'] ) ) {
 			$request_body['service_codes']['cod_amount'] = Payment::amount( $request_body['service_codes']['cod_amount'] );
 		}
@@ -568,7 +728,6 @@ class Pigeon {
 			$data['message'] = implode( ', ', $errors );
 		} else {
 			unset( $response['data']['label_pdf'] );
-			// $data['price'] = nashenski_tax_based_price( $response['data']['total_price'] );
 			$data['label']          = $request_body;
 			$data['shipmentStatus'] = $response;
 
@@ -578,13 +737,18 @@ class Pigeon {
 			nashenski_add_label_order_note( $order, 'Pigeon Express', 'created', $response['data']['reference_number'] ?? '' );
 		}
 
-		do_action( 'nashenski/pigeon/after_send_label', $data, $order );
+		do_action( 'nashenski/pigeon/after_send_label', $data, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 
 		return $data;
 	}
 
+	/**
+	 * Prints the label PDF of the order.
+	 *
+	 * @return void
+	 */
 	public static function print_labels_endpoint() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
@@ -615,6 +779,11 @@ class Pigeon {
 		wp_die();
 	}
 
+	/**
+	 * AJAX: cancels the label at Pigeon and clears it from the order.
+	 *
+	 * @return void
+	 */
 	public static function delete_label() {
 		nashenski_check_admin_label_actions();
 
@@ -634,6 +803,11 @@ class Pigeon {
 		wp_die();
 	}
 
+	/**
+	 * AJAX: reads the tracking events from Pigeon and saves them on the order.
+	 *
+	 * @return void
+	 */
 	public static function update_shipment_status() {
 		nashenski_check_admin_label_actions();
 

@@ -1,13 +1,30 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
 use Nashenski\Container\Client;
 
 defined( 'ABSPATH' ) || exit;
+/**
+ * NepoStop section: the API key, the level of warning and the payment methods to hide.
+ */
 class NepoStop_Tab extends Base_Tab {
-	protected $tab_name, $container;
+	/**
+	 * Name of this tab class.
+	 *
+	 * @var string
+	 */
+	protected $tab_name;
+	/**
+	 * Dependency container.
+	 *
+	 * @var object
+	 */
+	protected $container;
 
+	/**
+	 * Names the section.
+	 */
 	public function __construct() {
 		$this->container = nashenski()->container();
 		$this->tab_name  = get_called_class();
@@ -15,9 +32,14 @@ class NepoStop_Tab extends Base_Tab {
 		$this->set_tab_slug( 'nepostop' );
 	}
 
+	/**
+	 * Builds the fields of the section.
+	 *
+	 * @return void
+	 */
 	public function load_fields() {
 		$fields = apply_filters(
-			'nashenski/admin/settings/nepostop/fields',
+			'nashenski/admin/settings/nepostop/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 			array(
 				'nepostop' => array(
 					new Fields\Text_Field( 'api_key', __( 'API Key', 'nashenski-commerce' ), null, 'required', __( 'Enter the provided API key from nepostop.com.', 'nashenski-commerce' ) ),
@@ -31,9 +53,14 @@ class NepoStop_Tab extends Base_Tab {
 		$this->set_fields( $fields );
 	}
 
+	/**
+	 * The title of the section.
+	 *
+	 * @return array
+	 */
 	public function get_groups_titles() {
 		$titles = apply_filters(
-			'nashenski/admin/settings/nepostop/groups_titles',
+			'nashenski/admin/settings/nepostop/groups_titles', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 			array(
 				'nepostop' => array(
 					'title' => __( 'NepoStop', 'nashenski-commerce' ),
@@ -44,6 +71,11 @@ class NepoStop_Tab extends Base_Tab {
 		return $titles;
 	}
 
+	/**
+	 * Checks the API key against NepoStop.
+	 *
+	 * @return string Error message as HTML, empty when the key works.
+	 */
 	public function auth_test() {
 		$error = '';
 

@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Client\Econt;
 
 use Nashenski\Container\Client;
@@ -6,16 +6,42 @@ use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The Econt offices of a city, cached in a file per city.
+ */
 class Offices {
 	const OFFICES_ENDPOINT = 'Nomenclatures/NomenclaturesService.getOffices.json';
 
+	/**
+	 * Offices by city ID, loaded on first use.
+	 *
+	 * @var array
+	 */
 	private $offices = array();
+
+	/**
+	 * Dependency container.
+	 *
+	 * @var object
+	 */
 	private $container;
 
+	/**
+	 * Keeps the container.
+	 *
+	 * @param object $container Dependency container.
+	 */
 	public function __construct( $container ) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Reads the offices of a city from the cache file, or from Econt when there is none.
+	 *
+	 * @param string $city_id      Econt city ID.
+	 * @param string $country_code Country code.
+	 * @return array
+	 */
 	protected function load_offices( $city_id, $country_code = 'BG' ) {
 		if ( ! is_dir( $this->container[ Client::ECONT ]::CACHE_FOLDER ) ) {
 			wp_mkdir_p( $this->container[ Client::ECONT ]::CACHE_FOLDER );
@@ -26,7 +52,7 @@ class Offices {
 
 		if ( ! $offices ) {
 			$args = apply_filters(
-				'nashenski/econt/offices/api_call_args',
+				'nashenski/econt/offices/api_call_args', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 				array(
 					'countryCode' => 'BGR',
 					'cityID'      => $city_id,
@@ -56,7 +82,13 @@ class Offices {
 		return $offices;
 	}
 
-	// Getters
+	/**
+	 * The offices of a city.
+	 *
+	 * @param string $city_id      Econt city ID.
+	 * @param string $country_code Country code.
+	 * @return array
+	 */
 	public function get_offices( $city_id, $country_code = 'BG' ) {
 		if ( empty( $this->offices[ $city_id ] ) ) {
 			$this->load_offices( $city_id, $country_code );
@@ -65,11 +97,24 @@ class Offices {
 		return $this->offices[ $city_id ];
 	}
 
-	// Setters
+	/**
+	 * Keeps the offices of a city.
+	 *
+	 * @param string $city_id Econt city ID.
+	 * @param array  $offices Offices.
+	 * @return void
+	 */
 	private function set_offices( $city_id, $offices ) {
 		$this->offices[ $city_id ] = $offices;
 	}
 
+	/**
+	 * The offices of a city as picker choices: shops and automatic parcel stations (APS).
+	 *
+	 * @param string $city         City value as "cityID-<ID>".
+	 * @param string $country_code Country code.
+	 * @return array
+	 */
 	public function get_formatted_offices( $city, $country_code = 'BG' ) {
 		$city_id = str_replace( 'cityID-', '', $city );
 		$offices = $this->get_offices( $city_id, $country_code );

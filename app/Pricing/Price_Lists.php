@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 /**
  * Price Lists.
  *
@@ -235,7 +235,7 @@ class Price_Lists {
 			$list['source'] = self::sources()[ $courier ];
 		}
 
-		return apply_filters( 'nashenski/price_list/defaults', $list, $courier );
+		return apply_filters( 'nashenski/price_list/defaults', $list, $courier ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 	}
 
 	/**

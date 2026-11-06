@@ -1,16 +1,30 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Admin;
 
 use Nashenski\Container\Client;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Sends the tracking code of a new Econt or Speedy shipment to NepoStop.
+ */
 class NepoStop {
+	/**
+	 * Hooks the label events of the couriers.
+	 */
 	public function __construct() {
 		add_action( 'nashenski/econt/after_send_label', array( __CLASS__, 'send_econt_tracking_code' ), 20, 2 );
 		add_action( 'nashenski/speedy/after_send_label', array( __CLASS__, 'send_speedy_tracking_code' ), 20, 2 );
 	}
 
+	/**
+	 * Sends one tracking code and the shopper phone to NepoStop.
+	 *
+	 * @param string $tracking_code Courier tracking code.
+	 * @param string $phone         Shopper phone number.
+	 *
+	 * @return void
+	 */
 	public static function send_tracking_code( $tracking_code, $phone ) {
 		$container = nashenski()->container();
 
@@ -23,6 +37,14 @@ class NepoStop {
 		);
 	}
 
+	/**
+	 * Sends the Econt tracking code after a label is created.
+	 *
+	 * @param array    $data  Econt label response.
+	 * @param WC_Order $order Order.
+	 *
+	 * @return void
+	 */
 	public static function send_econt_tracking_code( $data, $order ) {
 		if ( empty( $data['label']['shipmentNumber'] ) ) {
 			return;
@@ -36,6 +58,14 @@ class NepoStop {
 		}
 	}
 
+	/**
+	 * Sends the Speedy tracking code after a label is created.
+	 *
+	 * @param array    $data  Speedy shipment response.
+	 * @param WC_Order $order Order.
+	 *
+	 * @return void
+	 */
 	public static function send_speedy_tracking_code( $data, $order ) {
 		if ( empty( $data['shipmentStatus']['id'] ) ) {
 			return;

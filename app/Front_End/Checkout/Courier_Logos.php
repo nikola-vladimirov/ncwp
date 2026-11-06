@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Front_End\Checkout;
 
 defined( 'ABSPATH' ) || exit;
@@ -24,7 +24,7 @@ class Courier_Logos {
 			}
 		}
 
-		return apply_filters( 'nashenski/courier_logos', $logos );
+		return apply_filters( 'nashenski/courier_logos', $logos ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 	}
 
 	/**

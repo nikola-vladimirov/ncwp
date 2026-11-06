@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.WP.AlternativeFunctions -- offline CLI test script: no WordPress, so stubs, unused stub parameters, filesystem calls and plain-text output are on purpose.
 /**
  * Offline test: Pigeon gives no public price above 30 kg, even from an older saved list with bands to 40 kg.
  * Run: php tests/pigeon-max-weight.php

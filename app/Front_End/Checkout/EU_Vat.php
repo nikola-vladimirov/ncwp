@@ -1,13 +1,26 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- class files are named after the class and autoloaded by namespace.
 namespace Nashenski\Front_End\Checkout;
 
 use Ddeboer\Vatin\Validator;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * EU VAT number: the checkout field, its check (pattern or VIES) and the VAT exemption for another EU country.
+ */
 class EU_Vat {
+	/**
+	 * EU country codes, filled on first use.
+	 *
+	 * @var array
+	 */
 	private static $eu_countries = array();
 
+	/**
+	 * VAT number pattern per country code.
+	 *
+	 * @var array
+	 */
 	private static $country_codes_patterns = array(
 		'AT' => 'U[A-Z\d]{8}',
 		'BE' => '0\d{9}',
@@ -39,13 +52,26 @@ class EU_Vat {
 		'SK' => '\d{10}',
 	);
 
+	/**
+	 * Number and check result of the current checkout.
+	 *
+	 * @var array
+	 */
 	private static $data = array(
 		'vat_number' => false,
 		'validation' => false,
 	);
 
+	/**
+	 * Country of the shopper IP, false until looked up.
+	 *
+	 * @var string|bool
+	 */
 	private static $ip_country = false;
 
+	/**
+	 * Hooks the checkout field, the check and the order data.
+	 */
 	public function __construct() {
 		add_action( 'woocommerce_checkout_fields', array( __CLASS__, 'vat_number_field' ) );
 		add_action( 'woocommerce_checkout_process', array( __CLASS__, 'process_checkout' ) );
@@ -62,13 +88,23 @@ class EU_Vat {
 		add_filter( 'woocommerce_rest_prepare_shop_order', array( __CLASS__, 'add_vat_number_to_order_response' ) );
 	}
 
+	/**
+	 * Country codes treated as EU.
+	 *
+	 * @return array
+	 */
 	public static function get_eu_countries() {
 		if ( empty( self::$eu_countries ) ) {
-			self::$eu_countries = apply_filters( 'nashenski/eu_vat_number/country_codes', array( 'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'IM', 'MC' ) );
+			self::$eu_countries = apply_filters( 'nashenski/eu_vat_number/country_codes', array( 'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'IM', 'MC' ) ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 		}
 		return self::$eu_countries;
 	}
 
+	/**
+	 * Clears the check result and the VAT exemption of the customer.
+	 *
+	 * @return void
+	 */
 	public static function reset() {
 		WC()->customer->set_is_vat_exempt( false );
 		self::$data = array(
@@ -77,6 +113,13 @@ class EU_Vat {
 		);
 	}
 
+	/**
+	 * Adds the VAT number to the billing fields.
+	 *
+	 * @param array $fields Checkout fields.
+	 *
+	 * @return array
+	 */
 	public static function vat_number_field( $fields ) {
 		$fields['billing']['billing_vat_number'] = array(
 			'label'    => __( 'VAT number', 'nashenski-commerce' ),
@@ -92,6 +135,13 @@ class EU_Vat {
 		return $fields;
 	}
 
+	/**
+	 * VAT number prefix of a country (Greece is EL, the Isle of Man GB, Monaco FR).
+	 *
+	 * @param string $country Country code.
+	 *
+	 * @return string
+	 */
 	public static function get_vat_number_prefix( $country ) {
 		switch ( $country ) {
 			case 'GR':
@@ -110,16 +160,28 @@ class EU_Vat {
 		return $vat_prefix;
 	}
 
+	/**
+	 * VAT number without spaces, dashes and the country prefix.
+	 *
+	 * @param string $vat VAT number as typed.
+	 *
+	 * @return string
+	 */
 	public static function get_formatted_vat_number( $vat ) {
 		$vat = strtoupper( str_replace( array( ' ', '-', '_', '.' ), '', $vat ) );
 
-		if ( in_array( substr( $vat, 0, 2 ), array_merge( self::get_eu_countries(), array( 'EL' ) ) ) ) {
+		if ( in_array( substr( $vat, 0, 2 ), array_merge( self::get_eu_countries(), array( 'EL' ) ), true ) ) {
 			$vat = substr( $vat, 2 );
 		}
 
 		return $vat;
 	}
 
+	/**
+	 * Country of the shopper IP address.
+	 *
+	 * @return string|bool
+	 */
 	public static function get_ip_country() {
 		if ( false === self::$ip_country ) {
 			$geoip            = \WC_Geolocation::geolocate_ip();
@@ -128,6 +190,14 @@ class EU_Vat {
 		return self::$ip_country;
 	}
 
+	/**
+	 * Whether the VAT number is valid: pattern only, or VIES when it is on. The result is cached.
+	 *
+	 * @param string $vat_number VAT number.
+	 * @param string $country    Billing country code.
+	 *
+	 * @return bool|WP_Error
+	 */
 	public static function vat_number_is_valid( $vat_number, $country ) {
 		$required_number = nashenski_get_option( 'nap', 'dds_number_required' );
 
@@ -166,6 +236,15 @@ class EU_Vat {
 
 		return false;
 	}
+
+	/**
+	 * Checks the number and keeps the result for the order.
+	 *
+	 * @param string $vat_number      VAT number.
+	 * @param string $billing_country Billing country code.
+	 *
+	 * @return void
+	 */
 	public static function validate( $vat_number, $billing_country ) {
 		$vat_numer = self::get_formatted_vat_number( $vat_number );
 		$valid     = self::vat_number_is_valid( $vat_number, $billing_country );
@@ -185,7 +264,15 @@ class EU_Vat {
 		}
 	}
 
-	public static function is_base_country_match( $billing_country, $shipping_country ) {
+	/**
+	 * Whether the billing country is the shop country (the UK and the Isle of Man count as one).
+	 *
+	 * @param string $billing_country  Billing country code.
+	 * @param string $shipping_country Shipping country code.
+	 *
+	 * @return bool
+	 */
+	public static function is_base_country_match( $billing_country, $shipping_country ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- public signature, called with both countries.
 		if ( 'GB' === WC()->countries->get_base_country() && 'IM' === $billing_country ) {
 			return true;
 		}
@@ -197,6 +284,15 @@ class EU_Vat {
 		return ( WC()->countries->get_base_country() === $billing_country );
 	}
 
+	/**
+	 * Marks the customer VAT exempt when the billing country is not the shop country.
+	 *
+	 * @param bool   $exempt           Whether to exempt.
+	 * @param string $billing_country  Billing country code.
+	 * @param string $shipping_country Shipping country code.
+	 *
+	 * @return void
+	 */
 	public static function maybe_set_vat_exempt( $exempt, $billing_country, $shipping_country ) {
 		$base_country_match = self::is_base_country_match( $billing_country, $shipping_country );
 
@@ -206,6 +302,11 @@ class EU_Vat {
 		}
 	}
 
+	/**
+	 * Checks the VAT number at checkout and adds a notice when it is wrong.
+	 *
+	 * @return void
+	 */
 	public static function process_checkout() {
 		self::reset();
 
@@ -230,6 +331,13 @@ class EU_Vat {
 		}
 	}
 
+	/**
+	 * Checks the VAT number when the checkout totals are refreshed, and exempts a valid one.
+	 *
+	 * @param string $form_data Posted checkout form as a query string.
+	 *
+	 * @return string
+	 */
 	public static function ajax_update_checkout_totals( $form_data ) {
 		// If order total is zero (free), don't need to proceed.
 		if ( WC()->cart && ! WC()->cart->needs_payment() ) {
@@ -245,7 +353,7 @@ class EU_Vat {
 		}
 
 		if ( nashenski_get_option( 'invoice', 'enable_vies' ) !== 'no' ) {
-			if ( in_array( $form_data['billing_country'], self::get_eu_countries() ) && ! empty( $form_data['billing_vat_number'] ) ) {
+			if ( in_array( $form_data['billing_country'], self::get_eu_countries(), true ) && ! empty( $form_data['billing_vat_number'] ) ) {
 				$shipping_country = sanitize_text_field( ! empty( $form_data['shipping_country'] ) && ! empty( $form_data['ship_to_different_address'] ) ? $form_data['shipping_country'] : $form_data['billing_country'] );
 
 				self::validate( sanitize_text_field( $form_data['billing_vat_number'] ), $form_data['billing_country'] );
@@ -260,6 +368,11 @@ class EU_Vat {
 		}
 	}
 
+	/**
+	 * Whether the cart has a product that needs no shipping.
+	 *
+	 * @return bool
+	 */
 	public static function cart_has_digital_goods() {
 		$has_digital_goods = false;
 
@@ -272,9 +385,17 @@ class EU_Vat {
 			}
 		}
 
-		return apply_filters( 'nashenski/eu_vat/cart_has_digital_goods', $has_digital_goods );
+		return apply_filters( 'nashenski/eu_vat/cart_has_digital_goods', $has_digital_goods ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- slash-separated hook names are the plugin's public API.
 	}
 
+	/**
+	 * Taxes digital goods by the billing address of the customer.
+	 *
+	 * @param array  $location  Tax location.
+	 * @param string $tax_class Tax class.
+	 *
+	 * @return array
+	 */
 	public static function woocommerce_get_tax_location( $location, $tax_class = '' ) {
 		if ( ! empty( WC()->customer ) && sanitize_title( $tax_class ) === nashenski_get_option( 'invoice', 'digital_tax_classes' ) ) {
 			return array(
@@ -288,6 +409,13 @@ class EU_Vat {
 		return $location;
 	}
 
+	/**
+	 * Adds the VAT number to the order in the REST API.
+	 *
+	 * @param WP_REST_Response|array $response Order response.
+	 *
+	 * @return WP_REST_Response|array
+	 */
 	public static function add_vat_number_to_order_response( $response ) {
 		if ( is_a( $response, 'WP_REST_Response' ) ) {
 			$response->data['vat_number'] = get_post_meta( $response->data['id'], '_billing_vat_number', true );
@@ -299,6 +427,13 @@ class EU_Vat {
 		return $response;
 	}
 
+	/**
+	 * Saves the VAT number, its check result and the IP country on the order.
+	 *
+	 * @param WC_Order $order Order.
+	 *
+	 * @return void
+	 */
 	public static function set_order_data( $order ) {
 		if ( isset( self::$data['vat_number'] ) ) {
 			$order->update_meta_data( '_billing_vat_number', self::$data['vat_number'] );
@@ -315,6 +450,13 @@ class EU_Vat {
 		}
 	}
 
+	/**
+	 * Copies the VAT number of the order to the refund.
+	 *
+	 * @param WC_Refund $refund Refund.
+	 *
+	 * @return void
+	 */
 	public static function set_refund_data( $refund ) {
 		$order = wc_get_order( $refund->get_parent_id() );
 		$refund->update_meta_data( '_billing_vat_number', nashenski_get_vat_from_order( $order ) );

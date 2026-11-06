@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable Generic.Files.OneObjectStructurePerFile, Universal.Files.SeparateFunctionsFromOO, Universal.Namespaces, Universal.NamingConventions.NoReservedKeywordParameterNames, WordPress.Security.EscapeOutput, WordPress.WP.AlternativeFunctions -- offline CLI test script: no WordPress, so stubs, unused stub parameters, filesystem calls and plain-text output are on purpose.
 /**
  * Offline test: saved logins and keys never go into the page, and the rules a field declares are checked on the server.
  * Run: php tests/settings-secrets-rules.php
@@ -243,7 +243,7 @@ namespace {
 	);
 	expect( ! Settings_Page::is_secret( 'woocommerce_stripe_secret_key', 'password' ), 'a secret of another plugin is not ours to mask' );
 	expect( '********' === Settings_Page::keep_secret( '********', $foreign, '********' ), 'the mask is not swapped for another plugin\'s saved value' );
-	WC_Admin_Settings::$errors = array();
+	WC_Admin_Settings::$errors = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- a static property of the settings stub, not a global.
 	$number                    = array(
 		'id'    => 'woocommerce_price_decimals',
 		'title' => 'Number',
@@ -262,16 +262,16 @@ namespace {
 		'nashenski_settings_econt_user'     => true,
 		'nashenski_settings_pigeon_api_key' => true,
 		'nashenski_settings_econt_name'     => false,
-	) as $id => $hidden ) {
+	) as $option_id => $hidden ) {
 		expect(
 			$hidden === $cli_secret->invoke(
 				null,
 				array(
-					'id'   => $id,
+					'id'   => $option_id,
 					'type' => 'text',
 				)
 			),
-			'the command line ' . ( $hidden ? 'hides' : 'shows' ) . " $id"
+			'the command line ' . ( $hidden ? 'hides' : 'shows' ) . " $option_id"
 		);
 	}
 	expect(
@@ -377,10 +377,10 @@ namespace {
 			'price' => '7.5',
 		),
 	);
-	WC_Admin_Settings::$errors = array();
+	WC_Admin_Settings::$errors = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- a static property of the settings stub, not a global.
 	expect( '[{"from":"0","to":"5","price":"3"}]' === Settings_Page::sanitize_rows_field( '', $rows_option, $bad_rows ), 'a list with a negative price keeps the saved list' );
 	expect( 1 === count( WC_Admin_Settings::$errors ), 'a refused list says so' );
-	WC_Admin_Settings::$errors = array();
+	WC_Admin_Settings::$errors = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- a static property of the settings stub, not a global.
 	$bad_rows[0]['price']      = '4';
 	$saved_rows                = json_decode( Settings_Page::sanitize_rows_field( '', $rows_option, $bad_rows ), true );
 	expect( '4' === $saved_rows[0]['price'] && '7.5' === $saved_rows[1]['price'] && ! WC_Admin_Settings::$errors, 'a good list is saved without a notice' );
