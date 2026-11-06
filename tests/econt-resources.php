@@ -11,6 +11,16 @@ namespace Nashenski\Pricing {
 	 */
 	class Price_Lists {
 		/**
+		 * Free shipping threshold: these tests price Bulgaria only.
+		 *
+		 * @param string $country  Country.
+		 * @param mixed  $bulgaria Bulgarian amount.
+		 * @return mixed Result.
+		 */
+		public static function free_over( $country, $bulgaria ) {
+			return 'BG' === $country ? $bulgaria : '';
+		}
+		/**
 		 * Get.
 		 *
 		 * @param mixed $courier Courier.

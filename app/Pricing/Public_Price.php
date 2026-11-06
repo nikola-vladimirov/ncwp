@@ -67,7 +67,8 @@ class Public_Price {
 			$base = $list['over']['base'][ $kind ] ?? $list['over']['base']['address'] ?? null;
 			$per_kg = $list['over']['per_kg'][ $kind ] ?? $list['over']['per_kg']['address'] ?? 0;
 
-			if ( null === $base ) {
+			// The published Pigeon page stops at 30 kg: no rate above its last band.
+			if ( null === $base || 'pigeon' === $courier ) {
 				return null;
 			}
 

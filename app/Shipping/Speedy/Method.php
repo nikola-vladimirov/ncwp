@@ -63,6 +63,13 @@ class Method extends \WC_Shipping_Method {
 	public $free_shipping_over;
 
 	/**
+	 * Free shipping over, abroad: the owner's "RO=150, GR=200" text.
+	 *
+	 * @var mixed
+	 */
+	public $free_shipping_by_country;
+
+	/**
 	 * Fixed price.
 	 *
 	 * @var mixed
@@ -160,6 +167,7 @@ class Method extends \WC_Shipping_Method {
 		$this->title              = $this->get_option( 'title' );
 		$this->delivery_type      = $this->get_option( 'delivery_type' );
 		$this->free_shipping_over = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
+		$this->free_shipping_by_country = $this->get_option( 'free_shipping_by_country' );
 		$this->fixed_price        = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
 		$this->test               = $this->get_option( 'test' );
 		$this->tax_status         = ( wc_tax_enabled() ) ? 'taxable' : 'none';
@@ -260,6 +268,10 @@ class Method extends \WC_Shipping_Method {
 					$rate['taxes'] = nashenski_get_shipping_rate_taxes( $request_data['price'], $country );
 				}
 			}
+		} elseif ( 'BG' !== $this->courier_country() ) {
+			// No widget address: a foreign order gets no price, not even "Free", and the checkout asks for the address.
+			$rate['meta_data']['address_missing'] = true;
+			$this->free_shipping                  = false;
 		}
 
 		if ( $this->free_shipping ) {
@@ -268,7 +280,8 @@ class Method extends \WC_Shipping_Method {
 			unset( $rate['taxes'] );
 		}
 
-		if ( ! $this->free_shipping && ! empty( $fixed_price ) ) {
+		// The fixed price only once the customer has chosen a delivery point (request_data is set then).
+		if ( ! $this->free_shipping && ! empty( $fixed_price ) && isset( $rate['request_data'] ) ) {
 			$tax_rate     = apply_filters( 'nashenski/shipping/fixed_price_tax_rate', 20, $country );
 			$rate['cost'] = nashenski_tax_based_price( $fixed_price, $tax_rate );
 
@@ -361,6 +374,14 @@ class Method extends \WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
+			'free_shipping_by_country' => array(
+				'title'       => __( 'Free shipping over, abroad', 'nashenski-commerce' ),
+				'type'        => 'text',
+				'placeholder' => 'RO=150, GR=200',
+				'description' => __( 'Country code and order total, for example RO=150, GR=200. Countries not listed get no free shipping.', 'nashenski-commerce' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
 			'fixed_price'        => array(
 				'title'       => __( 'Fixed price', 'nashenski-commerce' ),
 				'type'        => 'number',
@@ -385,12 +406,15 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	/**
-	 * Country the courier prices for: the widget's choice, else the package destination.
+	 * Country the courier prices for: 'BG' (the Bulgarian rules) only when the widget and the package agree,
+	 * otherwise the foreign one of the two (the package when the widget gives none).
 	 *
 	 * @return string ISO code, or '' when none is known.
 	 */
 	public function courier_country() {
-		return $this->cookie_data['country'] ?? ( $this->package['destination']['country'] ?? '' );
+		$widget  = (string) ( $this->cookie_data['country'] ?? '' );
+		$package = (string) ( $this->package['destination']['country'] ?? '' );
+		return '' !== $widget && 'BG' !== $widget ? $widget : $package;
 	}
 
 	/**
@@ -419,7 +443,7 @@ class Method extends \WC_Shipping_Method {
 	public function calculate_shipping_price_from_api() {
 		// No login: the public price list prices the order (Public_Price::fallback).
 		if ( ! \Nashenski\Front_End\Checkout\Pickers::connected( 'speedy' ) ) {
-			return array( 'errors' => array( 'not_connected' ) );
+			return array( 'errors' => __( 'This delivery cannot be priced now. Choose another delivery method.', 'nashenski-commerce' ) );
 		}
 
 		$data = array(
@@ -472,10 +496,7 @@ class Method extends \WC_Shipping_Method {
 
 		$services_data   = '';
 		$payment_by_data = '';
-		$country         = '';
-		if ( $this->cookie_data && isset( $this->cookie_data['country'] ) ) {
-			$country = $this->cookie_data['country'];
-		}
+		$country         = $this->courier_country();
 
 		if ( 'BG' !== $country ) {
 			$services_data   = $this->generate_services_data( '202', $country );
@@ -1156,8 +1177,10 @@ class Method extends \WC_Shipping_Method {
 			$payment['courierServicePayer'] = 'SENDER';
 		}
 
+		$free_over = Price_Lists::free_over( $this->courier_country(), $this->free_shipping_over, $this->free_shipping_by_country );
+
 		if ( nashenski_has_free_shipping_coupon_in_cart() ||
-			( (float) $this->free_shipping_over > 0 && nashenski_get_package_total() >= $this->free_shipping_over )
+			( (float) $free_over > 0 && nashenski_get_package_total() >= $free_over )
 		) {
 			$this->free_shipping = true;
 
@@ -1208,6 +1231,8 @@ class Method extends \WC_Shipping_Method {
 					if ( ! empty( $meta_data['errors'] ) ) {
 						/* translators: %s: error message from the courier */
 						$errors->add( 'validation', sprintf( __( 'Speedy - %s', 'nashenski-commerce' ), $meta_data['errors'] ) );
+					} elseif ( ! empty( $meta_data['address_missing'] ) ) {
+						$errors->add( 'validation', __( 'Please fill in your delivery address.', 'nashenski-commerce' ) );
 					} else {
 						$errors->add( 'validation', __( 'Please choose delivery option!', 'nashenski-commerce' ) );
 					}

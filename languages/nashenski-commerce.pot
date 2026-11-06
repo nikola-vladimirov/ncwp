@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.19.9\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-06 13:21+0000\n"
-"PO-Revision-Date: 2026-11-06 13:21+0000\n"
+"POT-Creation-Date: 2026-11-06 13:47+0000\n"
+"PO-Revision-Date: 2026-11-06 13:47+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -322,7 +322,7 @@ msgstr ""
 msgid "Warehouse/Automat"
 msgstr ""
 
-#: app/Admin/BoxNow.php:94 app/Admin/Econt.php:113 app/Admin/Speedy.php:207 app/Shipping/Econt/Method.php:342 app/Shipping/Speedy/Method.php:331
+#: app/Admin/BoxNow.php:94 app/Admin/Econt.php:113 app/Admin/Speedy.php:207 app/Shipping/Econt/Method.php:353 app/Shipping/Speedy/Method.php:346
 msgid "Automat"
 msgstr ""
 
@@ -540,11 +540,11 @@ msgstr ""
 msgid "Apartment"
 msgstr ""
 
-#: app/Admin/Econt.php:109 app/Shipping/Econt/Method.php:938
+#: app/Admin/Econt.php:109 app/Shipping/Econt/Method.php:973
 msgid "Street number is required."
 msgstr ""
 
-#: app/Admin/Econt.php:110 app/Shipping/Econt/Method.php:940
+#: app/Admin/Econt.php:110 app/Shipping/Econt/Method.php:975
 msgid "Fill in at least one of block, entrance, floor or apartment."
 msgstr ""
 
@@ -572,7 +572,7 @@ msgstr ""
 msgid "Sender"
 msgstr ""
 
-#: app/Admin/Econt.php:120 app/Admin/Pigeon.php:220 app/Admin/Speedy.php:216 app/Shipping/Pigeon/Method.php:338 app/Shipping/Speedy/Method.php:363
+#: app/Admin/Econt.php:120 app/Admin/Pigeon.php:220 app/Admin/Speedy.php:216 app/Shipping/Pigeon/Method.php:338 app/Shipping/Speedy/Method.php:386
 msgid "Fixed price"
 msgstr ""
 
@@ -596,7 +596,7 @@ msgstr ""
 msgid "Details:"
 msgstr ""
 
-#: app/Admin/Econt.php:127 app/Admin/Pigeon.php:229 app/Admin/Speedy.php:223 app/functions.php:223 app/Shipping/Econt/Method.php:347 app/Shipping/Pigeon/Method.php:320
+#: app/Admin/Econt.php:127 app/Admin/Pigeon.php:229 app/Admin/Speedy.php:223 app/functions.php:223 app/Shipping/Econt/Method.php:358 app/Shipping/Pigeon/Method.php:320
 msgid "Review and test"
 msgstr ""
 
@@ -2249,11 +2249,11 @@ msgstr ""
 msgid "Prices in Bulgaria are shown and entered with VAT included."
 msgstr ""
 
-#: app/Admin/Recommended_Settings.php:139 app/Front_End/Checkout/Field_Editor.php:629 app/Shipping/Econt/Method.php:372 app/Shipping/Pigeon/Method.php:326
+#: app/Admin/Recommended_Settings.php:139 app/Front_End/Checkout/Field_Editor.php:629 app/Shipping/Econt/Method.php:383 app/Shipping/Pigeon/Method.php:326
 msgid "Yes"
 msgstr ""
 
-#: app/Admin/Recommended_Settings.php:140 app/Front_End/Checkout/Field_Editor.php:629 app/functions.php:221 app/Shipping/Econt/Method.php:359 app/Shipping/Econt/Method.php:371 app/Shipping/Pigeon/Method.php:325
+#: app/Admin/Recommended_Settings.php:140 app/Front_End/Checkout/Field_Editor.php:629 app/functions.php:221 app/Shipping/Econt/Method.php:370 app/Shipping/Econt/Method.php:382 app/Shipping/Pigeon/Method.php:325
 msgid "No"
 msgstr ""
 
@@ -3215,11 +3215,11 @@ msgstr ""
 msgid "If filled will hide the shipping method if the cart total price is over the sum."
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:184 app/Shipping/Econt/Method.php:377 app/Shipping/Pigeon/Method.php:330 app/Shipping/Speedy/Method.php:355
+#: app/Admin/Tabs/BoxNow_Tab.php:184 app/Shipping/Econt/Method.php:388 app/Shipping/Pigeon/Method.php:330 app/Shipping/Speedy/Method.php:370
 msgid "Free shipping over"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:184 app/Shipping/Econt/Method.php:380 app/Shipping/Pigeon/Method.php:333 app/Shipping/Speedy/Method.php:358
+#: app/Admin/Tabs/BoxNow_Tab.php:184 app/Shipping/Econt/Method.php:391 app/Shipping/Pigeon/Method.php:333 app/Shipping/Speedy/Method.php:373
 msgid "Free shipping at or above total cart price."
 msgstr ""
 
@@ -3307,7 +3307,7 @@ msgstr ""
 msgid "Token is incorrect."
 msgstr ""
 
-#: app/Admin/Tabs/Econt_Tab.php:39 app/functions.php:612 app/Shipping/Econt/Method.php:332
+#: app/Admin/Tabs/Econt_Tab.php:39 app/functions.php:612 app/Shipping/Econt/Method.php:343
 msgid "Econt"
 msgstr ""
 
@@ -4189,7 +4189,7 @@ msgstr ""
 msgid "Delivery to Econt offices, lockers and addresses"
 msgstr ""
 
-#: app/Admin/Tabs/Settings_Tab.php:17 app/Admin/Tabs/Speedy_Tab.php:39 app/functions.php:613 app/Shipping/Speedy/Method.php:321
+#: app/Admin/Tabs/Settings_Tab.php:17 app/Admin/Tabs/Speedy_Tab.php:39 app/functions.php:613 app/Shipping/Speedy/Method.php:336
 msgid "Speedy"
 msgstr ""
 
@@ -4619,7 +4619,7 @@ msgstr ""
 msgid "Discount"
 msgstr ""
 
-#: app/Export/Builder/Fields.php:101 app/Shipping/Speedy/Method.php:1081
+#: app/Export/Builder/Fields.php:101 app/Shipping/Speedy/Method.php:1122
 msgid "Fees"
 msgstr ""
 
@@ -6082,89 +6082,101 @@ msgstr ""
 msgid "Enables BOX NOW delivery."
 msgstr ""
 
-#: app/Shipping/BoxNow/Method.php:222 app/Shipping/Econt/Method.php:329 app/Shipping/Pigeon/Method.php:302 app/Shipping/Speedy/Method.php:318
+#: app/Shipping/BoxNow/Method.php:222 app/Shipping/Econt/Method.php:340 app/Shipping/Pigeon/Method.php:302 app/Shipping/Speedy/Method.php:333
 msgid "Title"
 msgstr ""
 
-#: app/Shipping/BoxNow/Method.php:224 app/Shipping/Econt/Method.php:331 app/Shipping/Pigeon/Method.php:304 app/Shipping/Speedy/Method.php:320
+#: app/Shipping/BoxNow/Method.php:224 app/Shipping/Econt/Method.php:342 app/Shipping/Pigeon/Method.php:304 app/Shipping/Speedy/Method.php:335
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
-#: app/Shipping/BoxNow/Method.php:462 app/Shipping/Econt/Method.php:963 app/Shipping/Speedy/Method.php:1208
+#: app/Shipping/BoxNow/Method.php:462 app/Shipping/Econt/Method.php:998 app/Shipping/Speedy/Method.php:1253
 msgid "Please choose a automat."
 msgstr ""
 
 #. translators: 1: waybill number, 2: tracking link
-#: app/Shipping/BoxNow/Method.php:652 app/Shipping/Econt/Method.php:1074 app/Shipping/Pigeon/Method.php:835 app/Shipping/Speedy/Method.php:1257
+#: app/Shipping/BoxNow/Method.php:652 app/Shipping/Econt/Method.php:1109 app/Shipping/Pigeon/Method.php:835 app/Shipping/Speedy/Method.php:1302
 #, php-format
 msgid "Label number: %1$s. %2$s"
 msgstr ""
 
-#: app/Shipping/BoxNow/Method.php:657 app/Shipping/Econt/Method.php:1079 app/Shipping/Pigeon/Method.php:840 app/Shipping/Speedy/Method.php:1262
+#: app/Shipping/BoxNow/Method.php:657 app/Shipping/Econt/Method.php:1114 app/Shipping/Pigeon/Method.php:840 app/Shipping/Speedy/Method.php:1307
 msgid "Track your order."
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:118
+#: app/Shipping/Econt/Method.php:125
 msgid "Nashenski Commerce - Econt"
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:119
+#: app/Shipping/Econt/Method.php:126
 msgid "Enables econt delivery and automatically calculate shipping price."
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:336 app/Shipping/Pigeon/Method.php:309 app/Shipping/Speedy/Method.php:325
+#: app/Shipping/Econt/Method.php:347 app/Shipping/Pigeon/Method.php:309 app/Shipping/Speedy/Method.php:340
 msgid "Delivery Type"
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:354 app/Shipping/Speedy/Method.php:336
+#: app/Shipping/Econt/Method.php:365 app/Shipping/Speedy/Method.php:351
 msgid "Ship abroad"
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:360
+#: app/Shipping/Econt/Method.php:371
 msgid "Yes, to Romania and Greece"
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:362
+#: app/Shipping/Econt/Method.php:373
 msgid "Prices for these countries come only from Econt, not from the public price list."
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:366
+#: app/Shipping/Econt/Method.php:377
 msgid "SMS notification"
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:374
+#: app/Shipping/Econt/Method.php:385
 msgid "Send customer notification for delivery."
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:385
+#: app/Shipping/Econt/Method.php:396 app/Shipping/Speedy/Method.php:378
+msgid "Free shipping over, abroad"
+msgstr ""
+
+#: app/Shipping/Econt/Method.php:399 app/Shipping/Speedy/Method.php:381
+msgid "Country code and order total, for example RO=150, GR=200. Countries not listed get no free shipping."
+msgstr ""
+
+#: app/Shipping/Econt/Method.php:404
 msgid "Maximum price payed by the client"
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:388
+#: app/Shipping/Econt/Method.php:407
 msgid "Enter a fixed price that the users will pay. The remaining will be payed by you."
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:388
+#: app/Shipping/Econt/Method.php:407
 msgid "Can be used only in Bulgaria"
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:458 app/Shipping/Speedy/Method.php:418
+#: app/Shipping/Econt/Method.php:489 app/Shipping/Speedy/Method.php:462
 msgid "Calculation failed. Please try again."
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:925
+#: app/Shipping/Econt/Method.php:958
 msgid "Econt - "
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:943 app/Shipping/Pigeon/Method.php:760 app/Shipping/Speedy/Method.php:1192
+#: app/Shipping/Econt/Method.php:961 app/Shipping/Speedy/Method.php:1235
+msgid "Please fill in your delivery address."
+msgstr ""
+
+#: app/Shipping/Econt/Method.php:978 app/Shipping/Pigeon/Method.php:760 app/Shipping/Speedy/Method.php:1237
 msgid "Please choose delivery option!"
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:955 app/Shipping/Speedy/Method.php:1201
+#: app/Shipping/Econt/Method.php:990 app/Shipping/Speedy/Method.php:1246
 msgid "Please choose a office."
 msgstr ""
 
-#: app/Shipping/Econt/Method.php:971
+#: app/Shipping/Econt/Method.php:1006
 msgid "Please choose address."
 msgstr ""
 
@@ -6213,7 +6225,7 @@ msgstr ""
 msgid "APS"
 msgstr ""
 
-#: app/Shipping/Pigeon/Method.php:341 app/Shipping/Speedy/Method.php:366
+#: app/Shipping/Pigeon/Method.php:341 app/Shipping/Speedy/Method.php:389
 msgid "Enter a fixed price that will be payed by the client, and will be included in the COD."
 msgstr ""
 
@@ -6265,24 +6277,28 @@ msgstr ""
 msgid "The payment method changed after the shipping price was calculated. Please check the updated total and place the order again."
 msgstr ""
 
-#: app/Shipping/Speedy/Method.php:134
+#: app/Shipping/Speedy/Method.php:141
 msgid "Nashenski Commerce - Speedy"
 msgstr ""
 
-#: app/Shipping/Speedy/Method.php:135
+#: app/Shipping/Speedy/Method.php:142
 msgid "Enables Speedy delivery and automatically calculate shipping price."
 msgstr ""
 
-#: app/Shipping/Speedy/Method.php:342
+#: app/Shipping/Speedy/Method.php:357
 msgid "Yes, to the Speedy price list countries"
 msgstr ""
 
-#: app/Shipping/Speedy/Method.php:344
+#: app/Shipping/Speedy/Method.php:359
 msgid "Prices for these countries come only from Speedy, not from the public price list."
 msgstr ""
 
+#: app/Shipping/Speedy/Method.php:446
+msgid "This delivery cannot be priced now. Choose another delivery method."
+msgstr ""
+
 #. translators: %s: error message from the courier
-#: app/Shipping/Speedy/Method.php:1190
+#: app/Shipping/Speedy/Method.php:1233
 #, php-format
 msgid "Speedy - %s"
 msgstr ""

@@ -60,6 +60,13 @@ class Method extends \WC_Shipping_Method {
 	public $free_shipping_over;
 
 	/**
+	 * Free shipping over, abroad: the owner's "RO=150, GR=200" text.
+	 *
+	 * @var mixed
+	 */
+	public $free_shipping_by_country;
+
+	/**
 	 * Fixed price.
 	 *
 	 * @var mixed
@@ -144,6 +151,7 @@ class Method extends \WC_Shipping_Method {
 		$this->title              = $this->get_option( 'title' );
 		$this->delivery_type      = $this->get_option( 'delivery_type' );
 		$this->free_shipping_over = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
+		$this->free_shipping_by_country = $this->get_option( 'free_shipping_by_country' );
 		$this->fixed_price        = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
 		$this->test               = $this->get_option( 'test' );
 		$this->sms                = $this->get_option( 'sms' );
@@ -236,6 +244,9 @@ class Method extends \WC_Shipping_Method {
 			if ( ! $rate['cost'] && $rate['meta_data']['validated'] ) {
 				$this->free_shipping = true;
 			}
+		} elseif ( 'BG' !== $this->courier_country() ) {
+			// No widget address: a foreign order gets no price, and the checkout asks for the address.
+			$rate['meta_data']['address_missing'] = true;
 		}
 
 		if ( $this->free_shipping ) {
@@ -381,6 +392,14 @@ class Method extends \WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
+			'free_shipping_by_country' => array(
+				'title'       => __( 'Free shipping over, abroad', 'nashenski-commerce' ),
+				'type'        => 'text',
+				'placeholder' => 'RO=150, GR=200',
+				'description' => __( 'Country code and order total, for example RO=150, GR=200. Countries not listed get no free shipping.', 'nashenski-commerce' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
 			'fixed_price'        => array(
 				'title'       => __( 'Maximum price payed by the client', 'nashenski-commerce' ),
 				'type'        => 'number',
@@ -404,12 +423,15 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	/**
-	 * Country the courier prices for: the widget's choice, else the package destination.
+	 * Country the courier prices for: 'BG' (the Bulgarian rules) only when the widget and the package agree,
+	 * otherwise the foreign one of the two (the package when the widget gives none).
 	 *
 	 * @return string ISO code, or '' when none is known.
 	 */
 	public function courier_country() {
-		return $this->cookie_data['country'] ?? ( $this->package['destination']['country'] ?? '' );
+		$widget  = (string) ( $this->cookie_data['country'] ?? '' );
+		$package = (string) ( $this->package['destination']['country'] ?? '' );
+		return '' !== $widget && 'BG' !== $widget ? $widget : $package;
 	}
 
 	/**
@@ -479,7 +501,7 @@ class Method extends \WC_Shipping_Method {
 			)
 		) {
 			$data['errors'] = $request;
-		} elseif ( 'BG' !== $this->cookie_data['country'] ) {
+		} elseif ( 'BG' !== $this->courier_country() ) {
 			$data['price'] = nashenski_tax_based_price( $request['label']['senderDueAmount'] );
 		} elseif ( isset( $request['label']['receiverDueAmount'] ) ) {
 			$data['price'] = nashenski_tax_based_price( $request['label']['receiverDueAmount'] );
@@ -539,7 +561,7 @@ class Method extends \WC_Shipping_Method {
 		$other_data      = $this->generate_other_data();
 		$payment_by_data = $this->generate_payment_by_data();
 
-		if ( isset( $this->cookie_data['country'] ) && 'BG' !== $this->cookie_data['country'] ) {
+		if ( 'BG' !== $this->courier_country() ) {
 			unset( $payment_by_data['paymentReceiverMethod'] );
 			unset( $payment_by_data['paymentReceiverAmount'] );
 
@@ -892,8 +914,10 @@ class Method extends \WC_Shipping_Method {
 			$payment_by_data['paymentReceiverAmount'] = $this->fixed_price;
 		}
 
+		$free_over = Price_Lists::free_over( $this->courier_country(), $this->free_shipping_over, $this->free_shipping_by_country );
+
 		if ( nashenski_has_free_shipping_coupon_in_cart() ||
-			( (float) $this->free_shipping_over > 0 && nashenski_get_package_total() >= $this->free_shipping_over )
+			( (float) $free_over > 0 && nashenski_get_package_total() >= $free_over )
 		) {
 			$this->free_shipping = true;
 
@@ -933,6 +957,8 @@ class Method extends \WC_Shipping_Method {
 					if ( ! empty( $meta_data['errors'] ) && ! empty( array_filter( $meta_data['errors'] ) ) ) {
 						$message = array_merge( array( __( 'Econt - ', 'nashenski-commerce' ) ), nashenski()->container()[ Client::ECONT ]::add_error_message( $meta_data['errors'] ) );
 						$errors->add( 'validation', implode( ' ', $message ) );
+					} elseif ( ! empty( $meta_data['address_missing'] ) ) {
+						$errors->add( 'validation', __( 'Please fill in your delivery address.', 'nashenski-commerce' ) );
 					} else {
 						$cookie_data  = self::get_cookie_data();
 						$address_type = $cookie_data['selectedAddress']['type'] ?? '';

@@ -154,7 +154,7 @@ class Price_Lists {
 				),
 			),
 			// Pigeon Express public prices, source: the published Pigeon page, dated 06.11.2026 (to an APS, to an office,
-			// to an address); no price above 30 kg, so heavier parcels use the over formula; fuel surcharge 17%
+			// to an address); no price above 30 kg, so heavier parcels get no rate (Public_Price); fuel surcharge 17%
 			// (changes monthly); COD 1.5%, at least 0.40.
 			'pigeon' => array(
 				'valid_from'   => '2026-11-06',
@@ -297,7 +297,47 @@ class Price_Lists {
 			}
 		}
 
+		if ( isset( $settings['free_shipping_by_country'] ) ) {
+			$pairs = array();
+
+			foreach ( self::free_over_list( $settings['free_shipping_by_country'] ) as $country => $amount ) {
+				$pairs[] = $country . '=' . $amount;
+			}
+
+			$settings['free_shipping_by_country'] = implode( ', ', $pairs );
+		}
+
 		return $settings;
+	}
+
+	/**
+	 * The owner's "RO=150, GR=200" list as country => amount. Malformed pairs and BG (it has its own field) are skipped.
+	 *
+	 * @param mixed $value Saved text.
+	 * @return array
+	 */
+	public static function free_over_list( $value ) {
+		$list = array();
+
+		foreach ( preg_split( '/[,;\n]+/', strtoupper( is_string( $value ) ? $value : '' ) ) as $pair ) {
+			if ( preg_match( '/^([A-Z]{2})=(\d+(?:\.\d+)?)$/', preg_replace( '/\s+/', '', $pair ), $m ) && 'BG' !== $m[1] ) {
+				$list[ $m[1] ] = $m[2];
+			}
+		}
+
+		return $list;
+	}
+
+	/**
+	 * Free shipping threshold for a country: Bulgaria uses the main field, other countries only the owner's list.
+	 *
+	 * @param string $country    ISO code.
+	 * @param mixed  $bulgaria   The "Free shipping over" value.
+	 * @param mixed  $by_country The "Free shipping over, abroad" text.
+	 * @return mixed The amount, or '' when none is set.
+	 */
+	public static function free_over( $country, $bulgaria, $by_country ) {
+		return 'BG' === $country ? $bulgaria : ( self::free_over_list( $by_country )[ $country ] ?? '' );
 	}
 
 	/**
