@@ -76,17 +76,16 @@ class Abandoned_Carts_Page {
 	 * Bulk action. The handlers check the capability and the nonce, do their work and go back.
 	 */
 	public static function handle_bulk() {
-		self::guard( self::ACTION_BULK );
+		self::guard();
+		check_admin_referer( self::ACTION_BULK );
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
-		$bulk = isset( $_POST['bulk'] ) ? sanitize_key( wp_unslash( $_POST['bulk'] ) ) : '';
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
+		$bulk  = isset( $_POST['bulk'] ) ? sanitize_key( wp_unslash( $_POST['bulk'] ) ) : '';
 		$ids   = isset( $_POST['carts'] ) ? array_map( 'absint', (array) wp_unslash( $_POST['carts'] ) ) : array();
 		$count = 0;
 
 		if ( $ids && 'delete' === $bulk ) {
 			$count = Tracker::delete_rows( $ids );
-			self::back( 'deleted_many', $count );
+			self::back( self::ACTION_BULK, 'deleted_many', $count );
 		}
 
 		if ( $ids && 'remind' === $bulk ) {
@@ -95,82 +94,76 @@ class Abandoned_Carts_Page {
 					++$count;
 				}
 			}
-			self::back( 'reminded_many', $count );
+			self::back( self::ACTION_BULK, 'reminded_many', $count );
 		}
 
-		self::back( 'no_selection', 0 );
+		self::back( self::ACTION_BULK, 'no_selection', 0 );
 	}
 
 	/**
 	 * Handle remind.
 	 */
 	public static function handle_remind() {
-		self::guard( self::ACTION_REMIND );
+		self::guard();
+		check_admin_referer( self::ACTION_REMIND );
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- checked in guard().
 		$id = isset( $_GET['cart'] ) ? absint( $_GET['cart'] ) : 0;
 
-		self::back( Tracker::send_now( $id ) ? 'reminded' : 'send_failed', 0 );
+		self::back( self::ACTION_REMIND, Tracker::send_now( $id ) ? 'reminded' : 'send_failed', 0 );
 	}
 
 	/**
 	 * Handle delete.
 	 */
 	public static function handle_delete() {
-		self::guard( self::ACTION_DELETE );
+		self::guard();
+		check_admin_referer( self::ACTION_DELETE );
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- checked in guard().
 		$id = isset( $_GET['cart'] ) ? absint( $_GET['cart'] ) : 0;
 
-		self::back( Tracker::delete_row( $id ) ? 'deleted' : 'no_selection', 0 );
+		self::back( self::ACTION_DELETE, Tracker::delete_row( $id ) ? 'deleted' : 'no_selection', 0 );
 	}
 
 	/**
 	 * Handle update.
 	 */
 	public static function handle_update() {
-		self::guard( self::ACTION_UPDATE );
+		self::guard();
+		check_admin_referer( self::ACTION_UPDATE );
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
-		$id = isset( $_POST['cart'] ) ? absint( $_POST['cart'] ) : 0;
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
+		$id    = isset( $_POST['cart'] ) ? absint( $_POST['cart'] ) : 0;
 		$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
-		$name = isset( $_POST['first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['first_name'] ) ) : '';
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in guard().
+		$name  = isset( $_POST['first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['first_name'] ) ) : '';
 		$phone = isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '';
 
 		if ( ! $id || ! is_email( $email ) ) {
-			self::back( 'update_invalid', 0 );
+			self::back( self::ACTION_UPDATE, 'update_invalid', 0 );
 		}
 
-		self::back( Tracker::update_contact( $id, $email, $name, $phone ) ? 'updated' : 'update_invalid', 0 );
+		self::back( self::ACTION_UPDATE, Tracker::update_contact( $id, $email, $name, $phone ) ? 'updated' : 'update_invalid', 0 );
 	}
 
 	/**
-	 * Guard.
-	 *
-	 * @param mixed $action Action.
+	 * Guard: the capability. Each handler checks its own nonce.
 	 */
-	private static function guard( $action ) {
+	private static function guard() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
-
-		check_admin_referer( $action );
 	}
 
 	/**
 	 * Goes back to the list with a notice code.
 	 *
-	 * @param mixed $notice Notice.
-	 * @param mixed $count Count.
+	 * @param string $action The nonce action of the handler.
+	 * @param mixed  $notice Notice.
+	 * @param mixed  $count Count.
 	 */
-	private static function back( $notice, $count ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended -- the nonce was checked above; these only carry the filter back.
+	private static function back( $action, $notice, $count ) {
+		check_admin_referer( $action );
+
 		$status = isset( $_REQUEST['status'] ) ? sanitize_key( wp_unslash( $_REQUEST['status'] ) ) : '';
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended -- see above.
-		$paged = isset( $_REQUEST['paged'] ) ? max( 1, absint( wp_unslash( $_REQUEST['paged'] ) ) ) : 1;
+		$paged  = isset( $_REQUEST['paged'] ) ? max( 1, absint( wp_unslash( $_REQUEST['paged'] ) ) ) : 1;
 
 		wp_safe_redirect(
 			add_query_arg(

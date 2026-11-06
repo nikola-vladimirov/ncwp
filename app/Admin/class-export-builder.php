@@ -43,8 +43,11 @@ class Export_Builder {
 	 * Posted config.
 	 */
 	private static function posted_config() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- checked in check(); normalized below.
-		$raw = isset( $_POST['config'] ) ? json_decode( wp_unslash( $_POST['config'] ), true ) : array();
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ?? '' ) ), self::NONCE ) ) {
+			return Builder::normalize( array() );
+		}
+
+		$raw = isset( $_POST['config'] ) ? json_decode( wp_unslash( $_POST['config'] ), true ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON, normalized value by value in Builder::normalize().
 
 		return Builder::normalize( $raw );
 	}
@@ -118,8 +121,8 @@ class Export_Builder {
 	 */
 	public static function delete() {
 		self::check();
+		check_ajax_referer( self::NONCE, 'nonce' );
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked in check().
 		$key       = isset( $_POST['key'] ) ? sanitize_title( wp_unslash( $_POST['key'] ) ) : '';
 		$templates = Builder::templates();
 		unset( $templates[ $key ] );

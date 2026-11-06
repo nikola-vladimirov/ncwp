@@ -201,12 +201,11 @@ class Nekorekten extends Provider_Base {
 	 * @param mixed $order_id Order id.
 	 */
 	public static function handle_form( $order_id ) {
-		// phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked right below; clean_text and sanitize_text_field sanitize.
-		if ( empty( $_POST['nashenski_nk_nonce'] ) || ( empty( $_POST['nashenski_nk_send'] ) && empty( $_POST['nashenski_nk_edit'] ) && empty( $_POST['nashenski_nk_delete'] ) ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_nk_nonce'] ?? '' ) ), 'nashenski_nk_report' ) || ! current_user_can( 'edit_shop_orders' ) ) {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_nk_nonce'] ) ), 'nashenski_nk_report' ) || ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( empty( $_POST['nashenski_nk_send'] ) && empty( $_POST['nashenski_nk_edit'] ) && empty( $_POST['nashenski_nk_delete'] ) ) {
 			return;
 		}
 
@@ -230,7 +229,7 @@ class Nekorekten extends Provider_Base {
 
 		if ( ! empty( $_POST['nashenski_nk_edit'] ) ) {
 			$id   = sanitize_text_field( wp_unslash( $_POST['nashenski_nk_edit'] ) );
-			$text = isset( $_POST['nashenski_nk_edit_text'][ $id ] ) ? self::clean_text( wp_unslash( $_POST['nashenski_nk_edit_text'][ $id ] ) ) : '';
+			$text = isset( $_POST['nashenski_nk_edit_text'][ $id ] ) ? self::clean_text( sanitize_textarea_field( wp_unslash( $_POST['nashenski_nk_edit_text'][ $id ] ) ) ) : '';
 
 			if ( isset( $sent[ $id ] ) ) {
 				self::edit( $order, $id, $text, $sent );
@@ -239,8 +238,7 @@ class Nekorekten extends Provider_Base {
 			return;
 		}
 
-		$text = isset( $_POST['nashenski_nk_text'] ) ? self::clean_text( wp_unslash( $_POST['nashenski_nk_text'] ) ) : '';
-		// phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$text = isset( $_POST['nashenski_nk_text'] ) ? self::clean_text( sanitize_textarea_field( wp_unslash( $_POST['nashenski_nk_text'] ) ) ) : '';
 		self::send( $order, $text, $sent );
 	}
 

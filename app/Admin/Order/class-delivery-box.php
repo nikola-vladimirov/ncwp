@@ -224,12 +224,11 @@ class Delivery_Box {
 	 * @return void
 	 */
 	public static function save( $order_id ) {
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- checked right below.
-		if ( empty( $_POST['nashenski_delivery_rate'] ) || ! isset( $_POST['nashenski_delivery_nonce'] ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_nonce'] ?? '' ) ), self::NONCE ) || ! current_user_can( 'edit_shop_orders' ) ) {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_nonce'] ) ), self::NONCE ) || ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( empty( $_POST['nashenski_delivery_rate'] ) ) {
 			return;
 		}
 
@@ -237,7 +236,6 @@ class Delivery_Box {
 		$rate_id = sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_rate'] ) );
 		$options = self::options();
 		$choice  = isset( $_POST['nashenski_delivery_choice'] ) ? json_decode( wp_unslash( $_POST['nashenski_delivery_choice'] ), true ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON, sanitized value by value below.
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		if ( ! self::applies( $order ) || ! isset( $options[ $rate_id ] ) ) {
 			return;
