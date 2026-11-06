@@ -110,7 +110,7 @@ class Setting_Help {
 			'nashenski_settings_invoice_trigger'           => array( __( 'When the order document and invoice are made.', 'nashenski-commerce' ), __( '"Order completed" waits until you complete the order, so cancelled orders get no documents.', 'nashenski-commerce' ) ),
 			'nashenski_settings_invoice_remove_shipping'   => array( '', __( 'Use it when the courier issues its own receipt for the delivery charge.', 'nashenski-commerce' ) ),
 			'nashenski_settings_invoice_next_invoice_number' => array( __( 'The number of the next order document, 10 digits.', 'nashenski-commerce' ), '' ),
-			'nashenski_settings_invoice_next_invoice_separate_number' => array( __( 'Leave empty to number invoices together with order documents.', 'nashenski-commerce' ), '' ),
+			'nashenski_settings_invoice_next_invoice_separate_number' => array( __( 'Leave empty to number invoices together with order documents.', 'nashenski-commerce' ) . ' ' . __( 'Also used when you make an invoice by hand.', 'nashenski-commerce' ), '' ),
 			'nashenski_settings_invoice_due_days'          => array( __( 'Days from the invoice date to the payment due date.', 'nashenski-commerce' ), '' ),
 			'nashenski_settings_invoice_prepared_by'       => array( __( 'Printed as the person who prepared the document.', 'nashenski-commerce' ), '' ),
 			'nashenski_settings_invoice_identification_code' => array( '', __( 'Bulgarian invoices may carry an identification code instead of a signature.', 'nashenski-commerce' ) ),

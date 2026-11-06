@@ -50,11 +50,6 @@ class Settings_Page extends \WC_Settings_Page {
 	const SECRET_MASK = '********';
 
 	/**
-	 * Settings that only matter for invoices. Hidden while "When to generate invoices?" is "Disable invoice generation"; their saved values stay.
-	 */
-	const INVOICE_ONLY = array( 'nashenski_settings_company_invoice_numbering', 'nashenski_settings_invoice_next_invoice_separate_number', 'nashenski_settings_invoice_due_days', 'nashenski_settings_invoice_separate_copy_documents' );
-
-	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -400,31 +395,25 @@ class Settings_Page extends \WC_Settings_Page {
 		}
 
 		if ( 'documents' === $section_id ) {
-			$settings = self::invoice_rows( $settings, nashenski_get_option( 'invoice', 'invoices' ) );
+			$settings = self::invoice_rows( $settings );
 		}
 
 		return self::boxes( Setting_Help::apply( $settings ) );
 	}
 
 	/**
-	 * Documents: "Invoice numbering" (stored in the company group) moves under "When to generate invoices?", and the
-	 * invoice-only rows hide while invoices are off. They are still sent on save, so their values stay (settings.js toggles them live).
+	 * Documents: "Invoice numbering" (stored in the company group) moves under "When to generate invoices?".
+	 * Nothing hides while invoices are off: numbering, the next number, due days and separate copies all feed "Make invoice" on the order screen.
 	 *
-	 * @param array  $settings Settings of the section.
-	 * @param string $invoices Saved "When to generate invoices?" value.
+	 * @param array $settings Settings of the section.
 	 */
-	public static function invoice_rows( $settings, $invoices ) {
+	public static function invoice_rows( $settings ) {
 		$from = null;
 		$to   = null;
 
 		foreach ( $settings as $i => $setting ) {
-			$id = $setting['id'] ?? '';
-
-			if ( in_array( $id, self::INVOICE_ONLY, true ) ) {
-				$settings[ $i ]['row_class'] = 'nashenski-invoice-only' . ( 'disable' === $invoices ? ' hidden' : '' );
-			}
-
-			$from = self::INVOICE_ONLY[0] === $id ? $i : $from;
+			$id   = $setting['id'] ?? '';
+			$from = 'nashenski_settings_company_invoice_numbering' === $id ? $i : $from;
 			$to   = 'nashenski_settings_invoice_invoices' === $id ? $i : $to;
 		}
 

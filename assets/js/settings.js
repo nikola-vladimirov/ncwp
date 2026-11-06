@@ -474,21 +474,6 @@
 	} );
 	syncPublicPrices();
 
-	// Invoice-only settings hide while invoices are off (Settings_Page::invoice_rows()); hidden fields are still saved as they are.
-	function syncInvoiceRows() {
-		var select = document.getElementById( 'nashenski_settings_invoice_invoices' );
-
-		if ( select ) {
-			each( document.querySelectorAll( '.wc-settings-row-nashenski-invoice-only' ), function ( row ) {
-				row.classList.toggle( 'hidden', 'disable' === select.value );
-			} );
-		}
-	}
-	// The select is a select2 box: its change event reaches jQuery listeners only.
-	if ( window.jQuery ) {
-		window.jQuery( document ).on( 'change', '#nashenski_settings_invoice_invoices', syncInvoiceRows );
-	}
-
 	/* Public price lists ---------------------------------------------------- */
 
 	var KINDS = [ 'office', 'locker', 'address' ];

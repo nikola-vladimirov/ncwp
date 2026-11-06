@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.20.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-06 14:59+0000\n"
-"PO-Revision-Date: 2026-11-06 14:59+0000\n"
+"POT-Creation-Date: 2026-11-06 15:58+0000\n"
+"PO-Revision-Date: 2026-11-06 15:58+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -114,7 +114,7 @@ msgstr ""
 msgid "Unsubscribed"
 msgstr ""
 
-#: app/Admin/Abandoned_Carts_Page.php:55 app/Admin/Abandoned_Carts_Page.php:56 app/Admin/Abandoned_Carts_Page.php:251 app/Admin/Help_Page.php:168 app/Admin/Settings_Page.php:156 app/Admin/Tabs/Abandoned_Carts_Tab.php:14
+#: app/Admin/Abandoned_Carts_Page.php:55 app/Admin/Abandoned_Carts_Page.php:56 app/Admin/Abandoned_Carts_Page.php:251 app/Admin/Help_Page.php:168 app/Admin/Settings_Page.php:151 app/Admin/Tabs/Abandoned_Carts_Tab.php:14
 msgid "Abandoned carts"
 msgstr ""
 
@@ -204,7 +204,7 @@ msgstr ""
 msgid "No carts found."
 msgstr ""
 
-#: app/Admin/Abandoned_Carts_Page.php:359 app/Admin/Help_Page.php:94 app/Admin/Help_Page.php:108 app/Admin/Help_Page.php:140 app/Admin/Settings_Page.php:146
+#: app/Admin/Abandoned_Carts_Page.php:359 app/Admin/Help_Page.php:94 app/Admin/Help_Page.php:108 app/Admin/Help_Page.php:140 app/Admin/Settings_Page.php:141
 msgid "Checkout"
 msgstr ""
 
@@ -298,7 +298,7 @@ msgstr ""
 msgid "If you like %1$s please leave us a %2$s rating. A huge thanks in advance!"
 msgstr ""
 
-#: app/Admin/Admin_Menus.php:96 app/Admin/Settings_Page.php:62 app/Admin/Settings_Page.php:599
+#: app/Admin/Admin_Menus.php:96 app/Admin/Settings_Page.php:57 app/Admin/Settings_Page.php:588
 msgid "Nashenski Commerce"
 msgstr ""
 
@@ -366,23 +366,23 @@ msgstr ""
 msgid "Shipment status"
 msgstr ""
 
-#: app/Admin/BoxNow.php:105 app/Admin/Tabs/BoxNow_Tab.php:205
+#: app/Admin/BoxNow.php:105 app/Admin/Tabs/BoxNow_Tab.php:206
 msgid "Box size"
 msgstr ""
 
-#: app/Admin/BoxNow.php:106 app/Admin/Tabs/BoxNow_Tab.php:189
+#: app/Admin/BoxNow.php:106 app/Admin/Tabs/BoxNow_Tab.php:190
 msgid "Automatically pack products to boxes"
 msgstr ""
 
-#: app/Admin/BoxNow.php:107 app/Admin/Tabs/BoxNow_Tab.php:193
+#: app/Admin/BoxNow.php:107 app/Admin/Tabs/BoxNow_Tab.php:194
 msgid "Small Box"
 msgstr ""
 
-#: app/Admin/BoxNow.php:108 app/Admin/Tabs/BoxNow_Tab.php:197
+#: app/Admin/BoxNow.php:108 app/Admin/Tabs/BoxNow_Tab.php:198
 msgid "Medium Box"
 msgstr ""
 
-#: app/Admin/BoxNow.php:109 app/Admin/Tabs/BoxNow_Tab.php:201
+#: app/Admin/BoxNow.php:109 app/Admin/Tabs/BoxNow_Tab.php:202
 msgid "Large Box"
 msgstr ""
 
@@ -402,7 +402,7 @@ msgstr ""
 msgid "Weight"
 msgstr ""
 
-#: app/Admin/BoxNow.php:114 app/Admin/Tabs/BoxNow_Tab.php:133 app/Admin/Tabs/BoxNow_Tab.php:151 app/Admin/Tabs/BoxNow_Tab.php:167 app/Invoice/Document/BaseDocument.php:99
+#: app/Admin/BoxNow.php:114 app/Admin/Tabs/BoxNow_Tab.php:134 app/Admin/Tabs/BoxNow_Tab.php:152 app/Admin/Tabs/BoxNow_Tab.php:168 app/Invoice/Document/BaseDocument.php:99
 msgid "Price"
 msgstr ""
 
@@ -728,7 +728,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: app/Admin/Export_Builder.php:204 app/Admin/Settings_Page.php:892 app/Admin/Settings_Page.php:1107 app/Admin/Settings_Page.php:1247 app/Front_End/Checkout/Field_Editor.php:747 app/Front_End/Checkout/Field_Editor.php:779
+#: app/Admin/Export_Builder.php:204 app/Admin/Settings_Page.php:881 app/Admin/Settings_Page.php:1096 app/Admin/Settings_Page.php:1236 app/Front_End/Checkout/Field_Editor.php:747 app/Front_End/Checkout/Field_Editor.php:779
 msgid "Remove"
 msgstr ""
 
@@ -822,7 +822,7 @@ msgstr ""
 msgid "One row per product line"
 msgstr ""
 
-#: app/Admin/Export_Builder.php:272 app/Admin/Help_Page.php:96 app/Admin/Help_Page.php:109 app/Admin/Order/Columns.php:24 app/Admin/Settings_Page.php:160 app/Admin/Tabs/Export_Tab.php:28
+#: app/Admin/Export_Builder.php:272 app/Admin/Help_Page.php:96 app/Admin/Help_Page.php:109 app/Admin/Order/Columns.php:24 app/Admin/Settings_Page.php:155 app/Admin/Tabs/Export_Tab.php:28
 msgid "Documents"
 msgstr ""
 
@@ -834,11 +834,11 @@ msgstr ""
 msgid "Which records"
 msgstr ""
 
-#: app/Admin/Export_Builder.php:279 app/Admin/Settings_Page.php:1091 app/Admin/Settings_Page.php:1091 app/Admin/Settings_Page.php:1092
+#: app/Admin/Export_Builder.php:279 app/Admin/Settings_Page.php:1080 app/Admin/Settings_Page.php:1080 app/Admin/Settings_Page.php:1081
 msgid "From"
 msgstr ""
 
-#: app/Admin/Export_Builder.php:280 app/Admin/Settings_Page.php:1091 app/Admin/Settings_Page.php:1091 app/Admin/Settings_Page.php:1092
+#: app/Admin/Export_Builder.php:280 app/Admin/Settings_Page.php:1080 app/Admin/Settings_Page.php:1080 app/Admin/Settings_Page.php:1081
 msgid "To"
 msgstr ""
 
@@ -1030,7 +1030,7 @@ msgstr ""
 msgid "In %s, turn on the couriers you work with, invoices and the customer checks you need, and save."
 msgstr ""
 
-#: app/Admin/Help_Page.php:88 app/Admin/Help_Page.php:106 app/Admin/Settings_Page.php:138
+#: app/Admin/Help_Page.php:88 app/Admin/Help_Page.php:106 app/Admin/Settings_Page.php:133
 msgid "Overview"
 msgstr ""
 
@@ -1040,7 +1040,7 @@ msgstr ""
 msgid "In %s, enter the login or API keys the courier gave you for online shops."
 msgstr ""
 
-#: app/Admin/Help_Page.php:90 app/Admin/Help_Page.php:107 app/Admin/Settings_Page.php:142 app/Admin/Settings_Page.php:669 app/Admin/Tabs/Settings_Tab.php:16
+#: app/Admin/Help_Page.php:90 app/Admin/Help_Page.php:107 app/Admin/Settings_Page.php:137 app/Admin/Settings_Page.php:658 app/Admin/Tabs/Settings_Tab.php:16
 msgid "Couriers"
 msgstr ""
 
@@ -1068,7 +1068,7 @@ msgstr ""
 msgid "Every month, create the NRA audit file in %s and submit it by the 15th, or have it emailed to your accountant."
 msgstr ""
 
-#: app/Admin/Help_Page.php:98 app/Admin/Help_Page.php:110 app/Admin/Settings_Page.php:168
+#: app/Admin/Help_Page.php:98 app/Admin/Help_Page.php:110 app/Admin/Settings_Page.php:163
 msgid "Exports"
 msgstr ""
 
@@ -1232,7 +1232,7 @@ msgstr ""
 msgid "Customers see \"Track your parcel\" with the waybill number on their order page, and get it in the order emails."
 msgstr ""
 
-#: app/Admin/Help_Page.php:161 app/Admin/Settings_Page.php:152 app/Admin/Tabs/Quick_Order_Tab.php:14 app/Admin/Tabs/Quick_Order_Tab.php:96 app/Admin/Tabs/Settings_Tab.php:21 app/Front_End/Quick_Order.php:347
+#: app/Admin/Help_Page.php:161 app/Admin/Settings_Page.php:147 app/Admin/Tabs/Quick_Order_Tab.php:14 app/Admin/Tabs/Quick_Order_Tab.php:96 app/Admin/Tabs/Settings_Tab.php:21 app/Front_End/Quick_Order.php:347
 msgid "Quick order"
 msgstr ""
 
@@ -1380,7 +1380,7 @@ msgstr ""
 msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
 msgstr ""
 
-#: app/Admin/Help_Page.php:208 app/Admin/Settings_Page.php:164 app/Admin/Tabs/Settings_Tab.php:43 app/Reports/Reports.php:130
+#: app/Admin/Help_Page.php:208 app/Admin/Settings_Page.php:159 app/Admin/Tabs/Settings_Tab.php:43 app/Reports/Reports.php:130
 msgid "Customer checks"
 msgstr ""
 
@@ -1618,7 +1618,7 @@ msgstr ""
 msgid "Review and import"
 msgstr ""
 
-#: app/Admin/Import_Sources.php:188 app/Admin/Settings_Page.php:815
+#: app/Admin/Import_Sources.php:188 app/Admin/Settings_Page.php:804
 msgid "Dismiss"
 msgstr ""
 
@@ -1711,7 +1711,7 @@ msgstr ""
 msgid "Cancelled order document"
 msgstr ""
 
-#: app/Admin/Import_Sources.php:973 app/Admin/Order/Courier_Info.php:31 app/Admin/Settings_Page.php:874 app/Front_End/Checkout/Pickers.php:352
+#: app/Admin/Import_Sources.php:973 app/Admin/Order/Courier_Info.php:31 app/Admin/Settings_Page.php:863 app/Front_End/Checkout/Pickers.php:352
 msgid "To an office"
 msgstr ""
 
@@ -1719,7 +1719,7 @@ msgstr ""
 msgid "To a parcel locker"
 msgstr ""
 
-#: app/Admin/Import_Sources.php:976 app/Admin/Order/Courier_Info.php:35 app/Admin/Settings_Page.php:876
+#: app/Admin/Import_Sources.php:976 app/Admin/Order/Courier_Info.php:35 app/Admin/Settings_Page.php:865
 msgid "To an address"
 msgstr ""
 
@@ -2293,213 +2293,213 @@ msgstr ""
 msgid "(not set)"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:172
+#: app/Admin/Settings_Page.php:167
 msgid "Help"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:312
+#: app/Admin/Settings_Page.php:307
 msgid "Available once the courier login works."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:393
+#: app/Admin/Settings_Page.php:388
 msgid "Colours and sizes"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:449
+#: app/Admin/Settings_Page.php:438
 msgid "Available once the courier login works"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:488
+#: app/Admin/Settings_Page.php:477
 msgid "More options"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:531
+#: app/Admin/Settings_Page.php:520
 msgid "Enable"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:631
+#: app/Admin/Settings_Page.php:620
 msgid "Turn on documents in the Overview to also get the NRA audit file, the invoice archive and the Microinvest Delta file here."
 msgstr ""
 
 #. translators: %s: courier name
-#: app/Admin/Settings_Page.php:703
+#: app/Admin/Settings_Page.php:692
 #, php-format
 msgid "Connected to %s. Prices and labels use your account."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:724
+#: app/Admin/Settings_Page.php:713
 msgid "Reload offices and cities"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:725
+#: app/Admin/Settings_Page.php:714
 msgid "Downloads the latest cities, offices and lockers (and your profile) from the courier. They also update by themselves once a week."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:750
+#: app/Admin/Settings_Page.php:739
 msgid "Offices and cities will be downloaded again the next time they are needed."
 msgstr ""
 
 #. translators: %s: courier names with links
-#: app/Admin/Settings_Page.php:812
+#: app/Admin/Settings_Page.php:801
 #, php-format
 msgid "New published prices were found for %s. Open the courier, press \"Check the courier website\" and decide whether to use them."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:835
+#: app/Admin/Settings_Page.php:824
 msgid "Public prices"
 msgstr ""
 
 #. translators: 1: link to the courier price list, 2: date
-#: app/Admin/Settings_Page.php:838
+#: app/Admin/Settings_Page.php:827
 #, php-format
 msgid "Used to price orders when this courier is not connected or does not answer, so customers can always order. The built-in prices come from the %1$s (valid from %2$s). Edit them, or let Nashenski Commerce check the courier website for newer prices."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:839
+#: app/Admin/Settings_Page.php:828
 msgid "courier's published price list"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:840
+#: app/Admin/Settings_Page.php:829
 msgid "unknown"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:846
+#: app/Admin/Settings_Page.php:835
 msgid "Use public prices"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:847
+#: app/Admin/Settings_Page.php:836
 msgid "Price orders with this list when there is no working courier login"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:853
+#: app/Admin/Settings_Page.php:842
 msgid "Price list"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:875
+#: app/Admin/Settings_Page.php:864
 msgid "To a locker"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:888
+#: app/Admin/Settings_Page.php:877
 msgid "Up to (kg)"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:902 app/Admin/Settings_Page.php:1116 app/Plugin.php:341
+#: app/Admin/Settings_Page.php:891 app/Admin/Settings_Page.php:1105 app/Plugin.php:341
 msgid "Remove row"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:908
+#: app/Admin/Settings_Page.php:897
 msgid "Heavier: base"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:915
+#: app/Admin/Settings_Page.php:904
 msgid "+ per kg above the last row"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:923 app/Admin/Settings_Page.php:1121
+#: app/Admin/Settings_Page.php:912 app/Admin/Settings_Page.php:1110
 msgid "Add row"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:926
+#: app/Admin/Settings_Page.php:915
 msgid "Prices include VAT"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:927
+#: app/Admin/Settings_Page.php:916
 msgid "Extra surcharge (fuel, toll) %"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:928
+#: app/Admin/Settings_Page.php:917
 msgid "Cash on delivery fee %"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:929
+#: app/Admin/Settings_Page.php:918
 msgid "at least"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:930 app/Pricing/Updater.php:384
+#: app/Admin/Settings_Page.php:919 app/Pricing/Updater.php:384
 msgid "Valid from"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:935
+#: app/Admin/Settings_Page.php:924
 msgid "Check the courier website"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:936
+#: app/Admin/Settings_Page.php:925
 msgid "Restore the built-in prices"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:940
+#: app/Admin/Settings_Page.php:929
 msgid "Prices are for parcels you hand in at a courier office. Changes take effect after you save."
 msgstr ""
 
 #. translators: %s: name of the setting
-#: app/Admin/Settings_Page.php:1030
+#: app/Admin/Settings_Page.php:1019
 #, php-format
 msgid "\"%s\" was not saved: the value is not valid, so the earlier one stays."
 msgstr ""
 
 #. translators: %s: name of the setting
-#: app/Admin/Settings_Page.php:1168
+#: app/Admin/Settings_Page.php:1157
 #, php-format
 msgid "\"%s\" was not saved: a weight or price must be a number from zero up, and every band needs a price, so the earlier list stays."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1198
+#: app/Admin/Settings_Page.php:1187
 msgid "No payment method is turned on in WooCommerce yet."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1246
+#: app/Admin/Settings_Page.php:1235
 msgid "Choose image"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1286
+#: app/Admin/Settings_Page.php:1275
 msgid "Standardised audit file (Annex 38)"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1287
+#: app/Admin/Settings_Page.php:1276
 msgid "The monthly XML file for the NRA under Ordinance N-18. There is no limit on the number of orders."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1288
+#: app/Admin/Settings_Page.php:1277
 msgid "Create XML file"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1295
+#: app/Admin/Settings_Page.php:1284
 msgid "Invoice archive"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1296
+#: app/Admin/Settings_Page.php:1285
 msgid "A ZIP file with all invoices and credit notes of the month."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1297
+#: app/Admin/Settings_Page.php:1286
 msgid "Download archive"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1302
+#: app/Admin/Settings_Page.php:1291
 msgid "Microinvest Delta"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1303
+#: app/Admin/Settings_Page.php:1292
 msgid "The documents of the month in the import format of Microinvest Delta."
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1304
+#: app/Admin/Settings_Page.php:1293
 msgid "Create file"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1308
+#: app/Admin/Settings_Page.php:1297
 msgid "Ready-made files"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1320
+#: app/Admin/Settings_Page.php:1309
 msgid "Month"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1325
+#: app/Admin/Settings_Page.php:1314
 msgid "Older orders"
 msgstr ""
 
-#: app/Admin/Settings_Page.php:1327
+#: app/Admin/Settings_Page.php:1316
 msgid "Create missing documents for orders placed before the plugin was installed"
 msgstr ""
 
@@ -2839,6 +2839,10 @@ msgstr ""
 msgid "Leave empty to number invoices together with order documents."
 msgstr ""
 
+#: app/Admin/Setting_Help.php:113
+msgid "Also used when you make an invoice by hand."
+msgstr ""
+
 #: app/Admin/Setting_Help.php:114
 msgid "Days from the invoice date to the payment due date."
 msgstr ""
@@ -3036,30 +3040,26 @@ msgid "The courier texts the customer about the delivery. It may cost extra."
 msgstr ""
 
 #: app/Admin/Setting_Help.php:154
-msgid "Delivery and pickup on Saturdays. It may cost extra."
-msgstr ""
-
-#: app/Admin/Setting_Help.php:155
 msgid "Orders at or above this total ship for free with this method."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:155
+#: app/Admin/Setting_Help.php:154
 msgid "You still pay the courier; the customer sees \"Free\"."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:156
+#: app/Admin/Setting_Help.php:155
 msgid "Also deliver to customers in other countries. Prices come only from the courier."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:157
+#: app/Admin/Setting_Help.php:156
 msgid "Free shipping for customers abroad, per country: RO=150, GR=200."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:158
+#: app/Admin/Setting_Help.php:157
 msgid "A set delivery price instead of the courier's calculation."
 msgstr ""
 
-#: app/Admin/Setting_Help.php:158
+#: app/Admin/Setting_Help.php:157
 msgid "The difference to the real courier price is yours."
 msgstr ""
 
@@ -3159,7 +3159,7 @@ msgstr ""
 msgid "Keeps the carts that were not ordered and sends reminders to shoppers who typed an email, even a logged-out shopper at checkout. Reminders go out between 08:00 and 22:00 site time. The subject and the body are edited under WooCommerce > Settings > Emails > Abandoned cart reminder. The list is under WooCommerce > Abandoned carts."
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:39 app/Admin/Tabs/Settings_Tab.php:18 app/functions.php:614 app/Shipping/BoxNow/Method.php:225
+#: app/Admin/Tabs/BoxNow_Tab.php:39 app/Admin/Tabs/Settings_Tab.php:18 app/functions.php:614 app/Shipping/BoxNow/Method.php:223
 msgid "BOX NOW"
 msgstr ""
 
@@ -3211,15 +3211,15 @@ msgstr ""
 msgid "This option will try to generate your label immediately after user checkout. Also, will add the tracking number in the order email."
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:107 app/Admin/Tabs/BoxNow_Tab.php:140
+#: app/Admin/Tabs/BoxNow_Tab.php:107 app/Admin/Tabs/BoxNow_Tab.php:141
 msgid "From/To in kg"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:111 app/Admin/Tabs/BoxNow_Tab.php:155
+#: app/Admin/Tabs/BoxNow_Tab.php:111 app/Admin/Tabs/BoxNow_Tab.php:156
 msgid "From/To Order Total"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:115 app/Admin/Tabs/BoxNow_Tab.php:175
+#: app/Admin/Tabs/BoxNow_Tab.php:115 app/Admin/Tabs/BoxNow_Tab.php:176
 msgid "From/To kg and Order Total"
 msgstr ""
 
@@ -3231,67 +3231,67 @@ msgstr ""
 msgid "After you select the option, you must save the settings in order the correct price settings to be shown."
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:131 app/Admin/Tabs/BoxNow_Tab.php:163
+#: app/Admin/Tabs/BoxNow_Tab.php:132 app/Admin/Tabs/BoxNow_Tab.php:164
 msgid "kg"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:132 app/Admin/Tabs/BoxNow_Tab.php:149 app/Admin/Tabs/BoxNow_Tab.php:166
+#: app/Admin/Tabs/BoxNow_Tab.php:133 app/Admin/Tabs/BoxNow_Tab.php:150 app/Admin/Tabs/BoxNow_Tab.php:167
 msgid " to "
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:134 app/Admin/Tabs/BoxNow_Tab.php:150 app/Admin/Tabs/BoxNow_Tab.php:168
+#: app/Admin/Tabs/BoxNow_Tab.php:135 app/Admin/Tabs/BoxNow_Tab.php:151 app/Admin/Tabs/BoxNow_Tab.php:169
 msgid "+ Add new row"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:165 app/Front_End/Checkout/Field_Editor.php:800
+#: app/Admin/Tabs/BoxNow_Tab.php:166 app/Front_End/Checkout/Field_Editor.php:800
 msgid "and"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:183
+#: app/Admin/Tabs/BoxNow_Tab.php:184
 msgid "Hide shipping over cart total price"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:183
+#: app/Admin/Tabs/BoxNow_Tab.php:184
 msgid "If filled will hide the shipping method if the cart total price is over the sum."
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:184 app/Shipping/Econt/Method.php:388 app/Shipping/Pigeon/Method.php:330 app/Shipping/Speedy/Method.php:370
+#: app/Admin/Tabs/BoxNow_Tab.php:185 app/Shipping/Econt/Method.php:388 app/Shipping/Pigeon/Method.php:330 app/Shipping/Speedy/Method.php:370
 msgid "Free shipping over"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:184 app/Shipping/Econt/Method.php:391 app/Shipping/Pigeon/Method.php:333 app/Shipping/Speedy/Method.php:373
+#: app/Admin/Tabs/BoxNow_Tab.php:185 app/Shipping/Econt/Method.php:391 app/Shipping/Pigeon/Method.php:333 app/Shipping/Speedy/Method.php:373
 msgid "Free shipping at or above total cart price."
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:208
+#: app/Admin/Tabs/BoxNow_Tab.php:209
 msgid "Default box size"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:224
+#: app/Admin/Tabs/BoxNow_Tab.php:225
 msgid "BOX NOW account"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:225
+#: app/Admin/Tabs/BoxNow_Tab.php:226
 msgid "Client ID and secret from your BOX NOW e-shop account. The other options unlock once BOX NOW accepts them."
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:228
+#: app/Admin/Tabs/BoxNow_Tab.php:229
 msgid "Where you hand over parcels"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:229 app/Admin/Tabs/Econt_Tab.php:245 app/Admin/Tabs/Pigeon_Tab.php:168 app/Admin/Tabs/Speedy_Tab.php:158
+#: app/Admin/Tabs/BoxNow_Tab.php:230 app/Admin/Tabs/Econt_Tab.php:245 app/Admin/Tabs/Pigeon_Tab.php:168 app/Admin/Tabs/Speedy_Tab.php:158
 msgid "The sender details on your labels and the place you send parcels from."
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:232
+#: app/Admin/Tabs/BoxNow_Tab.php:233
 msgid "What customers pay"
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:233
+#: app/Admin/Tabs/BoxNow_Tab.php:234
 msgid "How Nashenski Commerce calculates the BOX NOW price at checkout."
 msgstr ""
 
-#: app/Admin/Tabs/BoxNow_Tab.php:252
+#: app/Admin/Tabs/BoxNow_Tab.php:253
 msgid "Incorrect Client ID or Client Secret."
 msgstr ""
 
@@ -6128,25 +6128,25 @@ msgstr ""
 msgid "Enables BOX NOW delivery."
 msgstr ""
 
-#: app/Shipping/BoxNow/Method.php:222 app/Shipping/Econt/Method.php:340 app/Shipping/Pigeon/Method.php:302 app/Shipping/Speedy/Method.php:333
+#: app/Shipping/BoxNow/Method.php:220 app/Shipping/Econt/Method.php:340 app/Shipping/Pigeon/Method.php:302 app/Shipping/Speedy/Method.php:333
 msgid "Title"
 msgstr ""
 
-#: app/Shipping/BoxNow/Method.php:224 app/Shipping/Econt/Method.php:342 app/Shipping/Pigeon/Method.php:304 app/Shipping/Speedy/Method.php:335
+#: app/Shipping/BoxNow/Method.php:222 app/Shipping/Econt/Method.php:342 app/Shipping/Pigeon/Method.php:304 app/Shipping/Speedy/Method.php:335
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
-#: app/Shipping/BoxNow/Method.php:462 app/Shipping/Econt/Method.php:1009 app/Shipping/Speedy/Method.php:1265
+#: app/Shipping/BoxNow/Method.php:460 app/Shipping/Econt/Method.php:1009 app/Shipping/Speedy/Method.php:1265
 msgid "Please choose a automat."
 msgstr ""
 
 #. translators: 1: waybill number, 2: tracking link
-#: app/Shipping/BoxNow/Method.php:652 app/Shipping/Econt/Method.php:1120 app/Shipping/Pigeon/Method.php:835 app/Shipping/Speedy/Method.php:1314
+#: app/Shipping/BoxNow/Method.php:650 app/Shipping/Econt/Method.php:1120 app/Shipping/Pigeon/Method.php:835 app/Shipping/Speedy/Method.php:1314
 #, php-format
 msgid "Label number: %1$s. %2$s"
 msgstr ""
 
-#: app/Shipping/BoxNow/Method.php:657 app/Shipping/Econt/Method.php:1125 app/Shipping/Pigeon/Method.php:840 app/Shipping/Speedy/Method.php:1319
+#: app/Shipping/BoxNow/Method.php:655 app/Shipping/Econt/Method.php:1125 app/Shipping/Pigeon/Method.php:840 app/Shipping/Speedy/Method.php:1319
 msgid "Track your order."
 msgstr ""
 
