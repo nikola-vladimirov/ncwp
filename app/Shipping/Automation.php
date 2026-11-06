@@ -281,7 +281,7 @@ class Automation {
 		);
 
 		if ( $seen ) {
-			$args['exclude'] = $seen;
+			$args['exclude'] = $seen; // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- the IDs already read in one second, at most the limit (100).
 		}
 		$open   = array(
 			'key'     => self::STATE_META,
