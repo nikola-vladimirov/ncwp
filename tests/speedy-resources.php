@@ -939,8 +939,8 @@ namespace {
 		''     => array( 0, '10.00' ),
 		'4.50' => array( 1, '14.50' ),
 	) as $old => list( $lines, $cod ) ) {
-		$label = array( 'service' => array( 'additionalServices' => array( 'cod' => array( 'amount' => '10.00' ) ) ) );
-		$out   = \Nashenski\Admin\Speedy::update_fiscal_items( $label, new SpeedyOldCookieOrder( $old ) );
+		$label          = array( 'service' => array( 'additionalServices' => array( 'cod' => array( 'amount' => '10.00' ) ) ) );
+		$out            = \Nashenski\Admin\Speedy::update_fiscal_items( $label, new SpeedyOldCookieOrder( $old ) );
 		$delivery_lines = count( $out['service']['additionalServices']['cod']['fiscalReceiptItems'] );
 		expect( $lines === $delivery_lines, "Speedy label with an old cookie price '$old' has $lines delivery lines" );
 		$out = \Nashenski\Admin\Speedy::update_cod( $label, new SpeedyOldCookieOrder( $old ) );
