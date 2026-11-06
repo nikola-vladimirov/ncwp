@@ -1,15 +1,16 @@
 <?php
 namespace Nashenski\Client\Econt;
+
 use Nashenski\Container\Client;
 use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
 class Offices {
-    const OFFICES_ENDPOINT = 'Nomenclatures/NomenclaturesService.getOffices.json';
+	const OFFICES_ENDPOINT = 'Nomenclatures/NomenclaturesService.getOffices.json';
 
-    private $offices = [];
-    private $container;
+	private $offices = array();
+	private $container;
 
 	public function __construct( $container ) {
 		$this->container = $container;
@@ -21,21 +22,26 @@ class Offices {
 		}
 
 		$offices_file = $this->container[ Client::ECONT ]::CACHE_FOLDER . 'offices-' . $city_id . '.json';
-		$offices = File::get_file( $offices_file );
+		$offices      = File::get_file( $offices_file );
 
-		if ( !$offices ) {
-			$args = apply_filters( 'nashenski/econt/offices/api_call_args', array( 
-				'countryCode' => 'BGR', 
-				'cityID' => $city_id, 
-			), $city_id, $country_code );
-			
+		if ( ! $offices ) {
+			$args = apply_filters(
+				'nashenski/econt/offices/api_call_args',
+				array(
+					'countryCode' => 'BGR',
+					'cityID'      => $city_id,
+				),
+				$city_id,
+				$country_code
+			);
+
 			$api_call = $this->container[ Client::ECONT ]->api_call( self::OFFICES_ENDPOINT, $args );
 
 			if ( is_array( $api_call ) ) {
 				if ( $this->container[ Client::ECONT ]::validate_access( $api_call ) ) {
-					if ( !empty( $api_call['offices'] ) ) {
+					if ( ! empty( $api_call['offices'] ) ) {
 						$offices = wp_json_encode( $api_call );
-						
+
 						File::put_to_file( $offices_file, $offices );
 						unset( $api_call );
 					}
@@ -50,7 +56,7 @@ class Offices {
 		return $offices;
 	}
 
-	//Getters
+	// Getters
 	public function get_offices( $city_id, $country_code = 'BG' ) {
 		if ( empty( $this->offices[ $city_id ] ) ) {
 			$this->load_offices( $city_id, $country_code );
@@ -59,7 +65,7 @@ class Offices {
 		return $this->offices[ $city_id ];
 	}
 
-	//Setters
+	// Setters
 	private function set_offices( $city_id, $offices ) {
 		$this->offices[ $city_id ] = $offices;
 	}
@@ -67,15 +73,15 @@ class Offices {
 	public function get_formatted_offices( $city, $country_code = 'BG' ) {
 		$city_id = str_replace( 'cityID-', '', $city );
 		$offices = $this->get_offices( $city_id, $country_code );
-		$shops = [];
-		$aps = [];
+		$shops   = array();
+		$aps     = array();
 
-		if ( !empty( $offices['offices'] ) ) {
+		if ( ! empty( $offices['offices'] ) ) {
 			foreach ( $offices['offices'] as $office ) {
-				$data = [
-					'id' => 'officeID-' . $office['code'],
+				$data = array(
+					'id'    => 'officeID-' . $office['code'],
 					'label' => $office['name'] . ' (' . $office['address']['fullAddress'] . ')',
-				];
+				);
 
 				if ( $office['isAPS'] ) {
 					$aps[ 'officeID-' . $office['code'] ] = $data;
@@ -87,6 +93,9 @@ class Offices {
 
 		unset( $this->offices[ $city_id ], $offices );
 
-		return array( 'shops' => $shops, 'aps' => $aps );
+		return array(
+			'shops' => $shops,
+			'aps'   => $aps,
+		);
 	}
 }

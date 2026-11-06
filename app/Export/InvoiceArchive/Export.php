@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Export\InvoiceArchive;
+
 use ZipArchive;
 
 defined( 'ABSPATH' ) || exit;
@@ -13,17 +14,19 @@ class Export {
 	}
 
 	protected function load_woo_orders() {
-		$this->order_ids = wc_get_orders( array(
-			'date_created' => strtotime( 'first day of ' . $this->date . ' ' . wp_timezone_string() ) . '...' . strtotime( 'last day of ' . $this->date . ' 23:59:59 ' . wp_timezone_string() ),
-			'limit' => -1,
-			'return' => 'ids',
-		) );
+		$this->order_ids = wc_get_orders(
+			array(
+				'date_created' => strtotime( 'first day of ' . $this->date . ' ' . wp_timezone_string() ) . '...' . strtotime( 'last day of ' . $this->date . ' 23:59:59 ' . wp_timezone_string() ),
+				'limit'        => -1,
+				'return'       => 'ids',
+			)
+		);
 	}
 
 	public function get_file() {
 		if ( ! class_exists( 'ZipArchive' ) ) {
-	        return new \WP_Error( 'zip_missing', 'PHP ZipArchive extension is not available.' );
-	    }
+			return new \WP_Error( 'zip_missing', 'PHP ZipArchive extension is not available.' );
+		}
 
 		foreach ( $this->order_ids as $key => $order_id ) {
 			$order = wc_get_order( $order_id );
@@ -33,21 +36,21 @@ class Export {
 			}
 
 			if ( $order->get_meta( 'nashenski_invoice_document' ) ) {
-				$attachment_id = $order->get_meta( 'nashenski_invoice_document' );
-				$this->documents[] = [
+				$attachment_id     = $order->get_meta( 'nashenski_invoice_document' );
+				$this->documents[] = array(
 					'file_name' => $order->get_id() . '.pdf',
-					'file' => wp_get_attachment_url( $attachment_id ),
-					'path' => get_attached_file( $attachment_id ),
-				];
+					'file'      => wp_get_attachment_url( $attachment_id ),
+					'path'      => get_attached_file( $attachment_id ),
+				);
 			}
 
 			if ( $order->get_meta( 'nashenski_refunded_invoice_document' ) ) {
-				$attachment_id = $order->get_meta( 'nashenski_refunded_invoice_document' );
-				$this->documents[] = [
-					'file_name' => $order->get_parent_id() . "-refund-" . $order->get_id() . '.pdf',
-					'file' => wp_get_attachment_url( $attachment_id ),
-					'path' => get_attached_file( $attachment_id ),
-				];
+				$attachment_id     = $order->get_meta( 'nashenski_refunded_invoice_document' );
+				$this->documents[] = array(
+					'file_name' => $order->get_parent_id() . '-refund-' . $order->get_id() . '.pdf',
+					'file'      => wp_get_attachment_url( $attachment_id ),
+					'path'      => get_attached_file( $attachment_id ),
+				);
 			}
 
 			unset( $order );
@@ -59,7 +62,7 @@ class Export {
 
 		if ( has_filter( 'nashenski/admin/delta_export/documents' ) ) {
 			$this->woo_orders = array_filter( array_map( 'wc_get_order', $this->order_ids ) );
-			$this->documents = apply_filters( 'nashenski/admin/delta_export/documents', $this->documents, $this->woo_orders );
+			$this->documents  = apply_filters( 'nashenski/admin/delta_export/documents', $this->documents, $this->woo_orders );
 		}
 
 		return $this->generate_zip();
@@ -67,9 +70,9 @@ class Export {
 
 	protected function generate_zip() {
 		$zip_file_name = 'invoice-export-' . $this->date . '.zip';
-		$zip = new \ZipArchive();
-		$tmp_file = wp_tempnam( $zip_file_name );
-		$opened = $zip->open( $tmp_file, ZipArchive::CREATE | ZipArchive::OVERWRITE );
+		$zip           = new \ZipArchive();
+		$tmp_file      = wp_tempnam( $zip_file_name );
+		$opened        = $zip->open( $tmp_file, ZipArchive::CREATE | ZipArchive::OVERWRITE );
 
 		if ( true !== $opened ) {
 			return new \WP_Error( 'zip_open_failed', 'Could not create the invoice archive.' );
@@ -78,8 +81,8 @@ class Export {
 		foreach ( $this->documents as $document ) {
 			if ( ! empty( $document['path'] ) && is_readable( $document['path'] ) ) {
 				$zip->addFile( $document['path'], $document['file_name'] );
-			} else if ( ! empty( $document['file'] ) ) {
-				$response = wp_remote_get( $document['file'], array( 'timeout' => 30 ) );
+			} elseif ( ! empty( $document['file'] ) ) {
+				$response      = wp_remote_get( $document['file'], array( 'timeout' => 30 ) );
 				$file_contents = ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ? wp_remote_retrieve_body( $response ) : false;
 
 				if ( false !== $file_contents ) {
@@ -97,11 +100,11 @@ class Export {
 		}
 		unset( $document );
 
-		return [
+		return array(
 			'documents' => $this->documents,
-			'zip' => $zip,
+			'zip'       => $zip,
 			'file_name' => $zip_file_name,
 			'temp_file' => $tmp_file,
-		];
+		);
 	}
 }

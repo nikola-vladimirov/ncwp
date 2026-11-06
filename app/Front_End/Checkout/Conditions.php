@@ -70,7 +70,7 @@ class Conditions {
 	 * One condition against a value.
 	 */
 	public static function test( $condition, $value ) {
-		$value = (string) $value;
+		$value   = (string) $value;
 		$operand = (string) $condition['value'];
 
 		switch ( $condition['operator'] ) {
@@ -129,13 +129,13 @@ class Conditions {
 
 		if ( empty( $when['hide'] ) ) {
 			return array(
-				'hidden' => $wrap( array( 'not' => $met ) ),
+				'hidden'   => $wrap( array( 'not' => $met ) ),
 				'required' => $required ? $wrap( $met ) : false,
 			);
 		}
 
 		return array(
-			'hidden' => $wrap( $met ),
+			'hidden'   => $wrap( $met ),
 			'required' => $required ? $wrap( array( 'not' => $met ) ) : false,
 		);
 	}
@@ -147,10 +147,13 @@ class Conditions {
 			return null;
 		}
 
-		$id = 'nashenski/' . substr( $field, 7 );
+		$id       = 'nashenski/' . substr( $field, 7 );
 		$checkbox = 'checkbox' === $types[ $field ];
 		// A blank-only text is not filled, as the classic script cleans it to nothing.
-		$filled = array( 'required' => array( $id ), 'properties' => array( $id => $checkbox ? array( 'const' => true ) : array( 'pattern' => '[^ \\t\\r\\n]' ) ) );
+		$filled = array(
+			'required'   => array( $id ),
+			'properties' => array( $id => $checkbox ? array( 'const' => true ) : array( 'pattern' => '[^ \\t\\r\\n]' ) ),
+		);
 
 		if ( 'empty' === $condition['operator'] || 'not_empty' === $condition['operator'] ) {
 			return 'not_empty' === $condition['operator'] ? $filled : array( 'not' => $filled );
@@ -165,11 +168,17 @@ class Conditions {
 		}
 
 		// The classic check cleans the typed value too, so " Sofia" and "Sofia" are the same: spaces around and between the words are allowed.
-		$words = array_map( function ( $word ) {
-			return addcslashes( $word, '\\^$.*+?()[]{}|/' );
-		}, explode( ' ', $text ) );
+		$words = array_map(
+			function ( $word ) {
+				return addcslashes( $word, '\\^$.*+?()[]{}|/' );
+			},
+			explode( ' ', $text )
+		);
 		$match = $checkbox ? array( 'const' => true ) : array( 'pattern' => '^[ \\t\\r\\n]*' . implode( '[ \\t\\r\\n]+', $words ) . '[ \\t\\r\\n]*$' );
-		$equal = '' === $text ? array( 'not' => $filled ) : array( 'required' => array( $id ), 'properties' => array( $id => $match ) );
+		$equal = '' === $text ? array( 'not' => $filled ) : array(
+			'required'   => array( $id ),
+			'properties' => array( $id => $match ),
+		);
 
 		return 'value_eq' === $condition['operator'] ? $equal : array( 'not' => $equal );
 	}

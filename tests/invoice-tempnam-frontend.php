@@ -43,7 +43,7 @@ namespace {
 		public $document;
 		public function generate() {
 			$this->titles[] = $this->document->title;
-			$dompdf = new \Dompdf\Dompdf();
+			$dompdf         = new \Dompdf\Dompdf();
 			$dompdf->loadHtml( '<p>' . $this->document->title . '</p>' );
 			$dompdf->render();
 			return $dompdf->output();
@@ -63,16 +63,16 @@ namespace {
 
 	$checks = 0;
 	function expect( $condition, $message ) {
-		$GLOBALS['checks']++;
+		++$GLOBALS['checks'];
 		if ( ! $condition ) {
 			throw new RuntimeException( $message );
 		}
 	}
 
 	expect( ! function_exists( 'wp_tempnam' ), 'wp_tempnam is not loaded before the invoice is made, as on the storefront' );
-	$document               = new TestDocument();
-	$document->title        = 'Original';
-	$document->pdf          = new FakePdf();
+	$document                = new TestDocument();
+	$document->title         = 'Original';
+	$document->pdf           = new FakePdf();
 	$document->pdf->document = $document;
 	$document->run();
 

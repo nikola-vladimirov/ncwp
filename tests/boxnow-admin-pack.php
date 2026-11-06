@@ -260,5 +260,3 @@ $empty = pack_items( 'mm', array( '', '', '' ), 1 );
 expect( count( $empty ) === 1, 'Product without dimensions must get one default box' );
 
 echo 'boxnow-admin-pack: ' . $GLOBALS['checks'] . " checks ok\n";
-
-

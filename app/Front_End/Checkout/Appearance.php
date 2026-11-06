@@ -46,35 +46,35 @@ class Appearance {
 	public static function defaults() {
 		if ( self::framework() ) {
 			return array(
-				'accent' => 'var(--primary, currentColor)',
-				'selected_bg' => 'var(--primary-ultra-light, color-mix(in srgb, var(--primary, currentColor) 8%, transparent))',
-				'border' => 'var(--border-color-dark, var(--border-color, color-mix(in srgb, currentColor 20%, transparent)))',
-				'muted' => 'var(--text-dark-muted, color-mix(in srgb, currentColor 70%, transparent))',
-				'radius' => 'var(--radius-m, var(--radius, 6px))',
+				'accent'       => 'var(--primary, currentColor)',
+				'selected_bg'  => 'var(--primary-ultra-light, color-mix(in srgb, var(--primary, currentColor) 8%, transparent))',
+				'border'       => 'var(--border-color-dark, var(--border-color, color-mix(in srgb, currentColor 20%, transparent)))',
+				'muted'        => 'var(--text-dark-muted, color-mix(in srgb, currentColor 70%, transparent))',
+				'radius'       => 'var(--radius-m, var(--radius, 6px))',
 				'field_border' => 'var(--border-color-dark, var(--border-color, color-mix(in srgb, currentColor 30%, transparent)))',
-				'field_bg' => 'transparent',
+				'field_bg'     => 'transparent',
 				'field_radius' => 'var(--radius-s, var(--radius, 4px))',
-				'gap' => 'var(--space-xs, 0.75em)',
-				'logo_height' => '1.5em',
+				'gap'          => 'var(--space-xs, 0.75em)',
+				'logo_height'  => '1.5em',
 			);
 		}
 
 		return array(
-			'accent' => 'currentColor',
-			'selected_bg' => 'color-mix(in srgb, currentColor 5%, transparent)',
-			'border' => 'color-mix(in srgb, currentColor 20%, transparent)',
-			'muted' => 'color-mix(in srgb, currentColor 70%, transparent)',
-			'radius' => '6px',
+			'accent'       => 'currentColor',
+			'selected_bg'  => 'color-mix(in srgb, currentColor 5%, transparent)',
+			'border'       => 'color-mix(in srgb, currentColor 20%, transparent)',
+			'muted'        => 'color-mix(in srgb, currentColor 70%, transparent)',
+			'radius'       => '6px',
 			'field_border' => 'color-mix(in srgb, currentColor 30%, transparent)',
-			'field_bg' => 'transparent',
+			'field_bg'     => 'transparent',
 			'field_radius' => '4px',
-			'gap' => '0.75em',
-			'logo_height' => '1.4em',
+			'gap'          => '0.75em',
+			'logo_height'  => '1.4em',
 		);
 	}
 
 	public static function value( $name ) {
-		$saved = trim( (string) nashenski_get_option( self::GROUP, $name ) );
+		$saved    = trim( (string) nashenski_get_option( self::GROUP, $name ) );
 		$defaults = self::defaults();
 
 		return '' !== $saved ? $saved : ( $defaults[ $name ] ?? '' );
@@ -142,27 +142,27 @@ class Appearance {
 			$defaults = self::defaults();
 
 			return array(
-				'type' => 'nashenski_style',
-				'id' => $id( $name ),
-				'title' => $title,
-				'desc' => $desc,
+				'type'        => 'nashenski_style',
+				'id'          => $id( $name ),
+				'title'       => $title,
+				'desc'        => $desc,
 				'placeholder' => $defaults[ $name ],
 			);
 		};
 
 		return array(
 			array(
-				'type' => 'title',
-				'id' => 'nashenski_appearance',
+				'type'  => 'title',
+				'id'    => 'nashenski_appearance',
 				'title' => __( 'Shipping options look', 'nashenski-commerce' ),
-				'desc' => __( 'How the courier options look at checkout.', 'nashenski-commerce' ) . ' ' . $source,
+				'desc'  => __( 'How the courier options look at checkout.', 'nashenski-commerce' ) . ' ' . $source,
 			),
 			array(
-				'type' => 'select',
-				'id' => $id( 'layout' ),
-				'title' => __( 'Layout', 'nashenski-commerce' ),
-				'class' => 'wc-enhanced-select',
-				'css' => 'width: 100%;',
+				'type'    => 'select',
+				'id'      => $id( 'layout' ),
+				'title'   => __( 'Layout', 'nashenski-commerce' ),
+				'class'   => 'wc-enhanced-select',
+				'css'     => 'width: 100%;',
 				'default' => self::layout(),
 				'options' => array(
 					'cards' => __( 'Cards: each option in its own box, the chosen one opens its office or address fields', 'nashenski-commerce' ),
@@ -170,10 +170,10 @@ class Appearance {
 				),
 			),
 			array(
-				'type' => 'checkbox',
-				'id' => $id( 'show_type' ),
-				'title' => __( 'Delivery type', 'nashenski-commerce' ),
-				'desc' => __( 'Show "To an office", "To a parcel locker" or "To your address" under each option', 'nashenski-commerce' ),
+				'type'    => 'checkbox',
+				'id'      => $id( 'show_type' ),
+				'title'   => __( 'Delivery type', 'nashenski-commerce' ),
+				'desc'    => __( 'Show "To an office", "To a parcel locker" or "To your address" under each option', 'nashenski-commerce' ),
 				'default' => 'yes',
 			),
 			$style( 'accent', __( 'Accent colour', 'nashenski-commerce' ), __( 'Border of the chosen option, focus ring and buttons.', 'nashenski-commerce' ) ),
@@ -188,14 +188,14 @@ class Appearance {
 			$style( 'logo_height', __( 'Logo height', 'nashenski-commerce' ), '' ),
 			array(
 				'type' => 'sectionend',
-				'id' => 'nashenski_appearance',
+				'id'   => 'nashenski_appearance',
 			),
 		);
 	}
 
 	public static function output_style_field( $value ) {
 		$current = (string) get_option( $value['id'], '' );
-		$list = $value['id'] . '_tokens';
+		$list    = $value['id'] . '_tokens';
 		?>
 		<tr valign="top">
 			<th scope="row" class="titledesc"><label for="<?php echo esc_attr( $value['id'] ); ?>"><?php echo esc_html( $value['title'] ); ?></label></th>

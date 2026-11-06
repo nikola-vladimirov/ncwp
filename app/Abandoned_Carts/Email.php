@@ -28,15 +28,18 @@ class Email extends \WC_Email {
 		$this->template_plain = 'emails/plain/nashenski-abandoned-cart.php';
 		$this->template_base  = nashenski()->plugin_dir_path() . 'templates/';
 
-		$this->placeholders = array_merge( array(
-			'{name}'             => '',
-			'{items}'            => '',
-			'{cart_total}'       => '',
-			'{coupon}'           => '',
-			'{coupon_line}'      => '',
-			'{resume_link}'      => '',
-			'{unsubscribe_link}' => '',
-		), (array) $this->placeholders );
+		$this->placeholders = array_merge(
+			array(
+				'{name}'             => '',
+				'{items}'            => '',
+				'{cart_total}'       => '',
+				'{coupon}'           => '',
+				'{coupon_line}'      => '',
+				'{resume_link}'      => '',
+				'{unsubscribe_link}' => '',
+			),
+			(array) $this->placeholders
+		);
 
 		parent::__construct();
 	}
@@ -90,7 +93,7 @@ class Email extends \WC_Email {
 		$this->recipient = isset( $row->email ) ? $row->email : '';
 
 		foreach ( array( '{name}', '{items}', '{cart_total}', '{coupon}', '{coupon_line}', '{resume_link}', '{unsubscribe_link}' ) as $key ) {
-			$name = trim( $key, '{}' );
+			$name                       = trim( $key, '{}' );
 			$this->placeholders[ $key ] = isset( $this->data[ $name ] ) ? $this->data[ $name ] : '';
 		}
 
@@ -106,23 +109,39 @@ class Email extends \WC_Email {
 	}
 
 	public function get_content_html() {
-		return wc_get_template_html( $this->template_html, array_merge( $this->template_args(), array(
-			'email_heading'      => $this->get_heading(),
-			'additional_content' => $this->get_additional_content(),
-			'sent_to_admin'      => false,
-			'plain_text'         => false,
-			'email'              => $this,
-		) ), '', $this->template_base );
+		return wc_get_template_html(
+			$this->template_html,
+			array_merge(
+				$this->template_args(),
+				array(
+					'email_heading'      => $this->get_heading(),
+					'additional_content' => $this->get_additional_content(),
+					'sent_to_admin'      => false,
+					'plain_text'         => false,
+					'email'              => $this,
+				)
+			),
+			'',
+			$this->template_base
+		);
 	}
 
 	public function get_content_plain() {
-		return wc_get_template_html( $this->template_plain, array_merge( $this->template_args(), array(
-			'email_heading'      => $this->get_heading(),
-			'additional_content' => $this->get_additional_content(),
-			'sent_to_admin'      => false,
-			'plain_text'         => true,
-			'email'              => $this,
-		) ), '', $this->template_base );
+		return wc_get_template_html(
+			$this->template_plain,
+			array_merge(
+				$this->template_args(),
+				array(
+					'email_heading'      => $this->get_heading(),
+					'additional_content' => $this->get_additional_content(),
+					'sent_to_admin'      => false,
+					'plain_text'         => true,
+					'email'              => $this,
+				)
+			),
+			'',
+			$this->template_base
+		);
 	}
 
 	private function template_args() {

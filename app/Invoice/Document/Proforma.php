@@ -11,7 +11,7 @@ class Proforma extends BaseDocument {
 		$this->meta = 'nashenski_proform_document';
 
 		if ( nashenski_get_option( 'invoice', 'next_invoice_separate_number' ) ) {
-			$this->document_number_meta = 'nashenski_order_invoice_number';
+			$this->document_number_meta   = 'nashenski_order_invoice_number';
 			$this->document_number_option = 'next_invoice_separate_number';
 		}
 	}

@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Invoice\PDF;
+
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Dompdf\Adapter\CPDF;
@@ -11,7 +12,7 @@ class PDF {
 	public $document;
 
 	function __construct( $document ) {
-		$this->document = $document;
+		$this->document   = $document;
 		$default_template = apply_filters( 'nashenski/invoice/pdf/default-template', $this->get_default_template(), $this );
 
 		$this->set_template( $default_template );
@@ -51,7 +52,7 @@ class PDF {
 
 		$dompdf->render();
 		self::inject_page_count( $dompdf );
-		
+
 		return $dompdf->output();
 	}
 
@@ -60,14 +61,14 @@ class PDF {
 			return;
 		}
 
-		include( $this->get_template() );
+		include $this->get_template();
 	}
 
 	public static function inject_page_count( $dompdf ) {
 		$canvas = $dompdf->getCanvas();
 		assert( $canvas instanceof CPDF );
-		$search = self::insert_null_byte_before_each_character( '%PC%' );
-		$replace = self::insert_null_byte_before_each_character( ( string ) $canvas->get_page_count() );
+		$search  = self::insert_null_byte_before_each_character( '%PC%' );
+		$replace = self::insert_null_byte_before_each_character( (string) $canvas->get_page_count() );
 
 		foreach ( $canvas->get_cpdf()->objects as &$object ) {
 			if ( $object['t'] === 'contents' ) {

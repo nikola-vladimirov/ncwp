@@ -15,7 +15,7 @@ class Updater {
 	const NOTICE_OPTION = 'nashenski_price_updates';
 	/** Courier => the published price list that was already seen (saved or dismissed). */
 	const SEEN_OPTION = 'nashenski_price_updates_seen';
-	const CRON = 'nashenski/prices/check';
+	const CRON        = 'nashenski/prices/check';
 
 	public function __construct() {
 		add_action( 'wp_ajax_nashenski_check_prices', array( __CLASS__, 'ajax_check' ) );
@@ -98,7 +98,7 @@ class Updater {
 			return array();
 		}
 
-		$dom = new \DOMDocument();
+		$dom      = new \DOMDocument();
 		$previous = libxml_use_internal_errors( true );
 		$dom->loadHTML( '<?xml encoding="UTF-8">' . (string) $html );
 		libxml_clear_errors();
@@ -142,9 +142,12 @@ class Updater {
 	private static function euros( $text ) {
 		preg_match_all( '/(\d+[.,]\d{2})\s*€/u', $text, $m );
 
-		return array_map( function ( $v ) {
-			return (float) str_replace( ',', '.', $v );
-		}, $m[1] );
+		return array_map(
+			function ( $v ) {
+				return (float) str_replace( ',', '.', $v );
+			},
+			$m[1]
+		);
 	}
 
 	private static function upper_kg( $line ) {
@@ -160,11 +163,14 @@ class Updater {
 	 */
 	public static function parse_econt( $raw_lines ) {
 		// Qt prints each letter separately: join the letters of each word.
-		$lines = array_map( function ( $line ) {
-			return preg_replace( '/\s{2,}/', ' ', preg_replace( '/(?<=\S) (?=\S)/u', '', trim( $line ) ) );
-		}, (array) $raw_lines );
+		$lines = array_map(
+			function ( $line ) {
+				return preg_replace( '/\s{2,}/', ' ', preg_replace( '/(?<=\S) (?=\S)/u', '', trim( $line ) ) );
+			},
+			(array) $raw_lines
+		);
 
-		$text = implode( "\n", $lines );
+		$text  = implode( "\n", $lines );
 		$start = array_search( 'Колетни пратки', $lines, true );
 
 		if ( false === $start ) {
@@ -172,7 +178,7 @@ class Updater {
 		}
 
 		$bands = array();
-		$over = null;
+		$over  = null;
 
 		for ( $i = $start; $i < count( $lines ) && $i < $start + 80; $i++ ) {
 			$line = $lines[ $i ];
@@ -186,8 +192,16 @@ class Updater {
 			// "над 20 до 50 кг" row: four times "base€ + per_kg€ за".
 			if ( 8 === count( $prices ) && false !== strpos( $line, '+' ) ) {
 				$over = array(
-					'base' => array( 'office' => $prices[2], 'locker' => round( $prices[2] * 0.9, 2 ), 'address' => $prices[4] ),
-					'per_kg' => array( 'office' => $prices[3], 'locker' => round( $prices[3] * 0.9, 2 ), 'address' => $prices[5] ),
+					'base'   => array(
+						'office'  => $prices[2],
+						'locker'  => round( $prices[2] * 0.9, 2 ),
+						'address' => $prices[4],
+					),
+					'per_kg' => array(
+						'office'  => $prices[3],
+						'locker'  => round( $prices[3] * 0.9, 2 ),
+						'address' => $prices[5],
+					),
 				);
 				continue;
 			}
@@ -196,7 +210,12 @@ class Updater {
 
 			if ( null !== $to && 4 === count( $prices ) && $to <= 20 ) {
 				// Codes: 1 city courier, 2 office/Econtomat both ends, 3 office and door, 4 door to door.
-				$bands[] = array( 'to' => $to, 'office' => $prices[1], 'locker' => round( $prices[1] * 0.9, 2 ), 'address' => $prices[2] );
+				$bands[] = array(
+					'to'      => $to,
+					'office'  => $prices[1],
+					'locker'  => round( $prices[1] * 0.9, 2 ),
+					'address' => $prices[2],
+				);
 			}
 		}
 
@@ -206,10 +225,13 @@ class Updater {
 
 		$list = array(
 			'vat_included' => false !== strpos( $text, 'включен ДДС' ),
-			'surcharge' => 0,
-			'bands' => $bands,
-			'over' => $over,
-			'cod' => array( 'percent' => 1.65, 'min' => 0 ),
+			'surcharge'    => 0,
+			'bands'        => $bands,
+			'over'         => $over,
+			'cod'          => array(
+				'percent' => 1.65,
+				'min'     => 0,
+			),
 		);
 
 		if ( preg_match( '/Тарифата е валидна от (\d{2}\.\d{2}\.\d{4})/u', $text, $m ) ) {
@@ -247,8 +269,8 @@ class Updater {
 	 */
 	public static function parse_speedy( $lines, $tables = array() ) {
 		$bands = array();
-		$over = null;
-		$text = implode( "\n", $lines );
+		$over  = null;
+		$text  = implode( "\n", $lines );
 
 		foreach ( $tables as $rows ) {
 			foreach ( $rows as $cells ) {
@@ -256,7 +278,7 @@ class Updater {
 					continue;
 				}
 
-				$base = self::cell_euro( $cells[1] );
+				$base     = self::cell_euro( $cells[1] );
 				$delivery = self::cell_euro( $cells[3] );
 
 				if ( null === $base || null === $delivery ) {
@@ -265,12 +287,25 @@ class Updater {
 
 				if ( preg_match( '/\+\s*([\d.,]+)\s*€\s*за всеки/u', $cells[1], $m ) ) {
 					$per_kg = (float) str_replace( ',', '.', $m[1] );
-					$over = array(
-						'base' => array( 'office' => $base, 'locker' => $base, 'address' => round( $base + $delivery, 2 ) ),
-						'per_kg' => array( 'office' => $per_kg, 'locker' => $per_kg, 'address' => $per_kg ),
+					$over   = array(
+						'base'   => array(
+							'office'  => $base,
+							'locker'  => $base,
+							'address' => round( $base + $delivery, 2 ),
+						),
+						'per_kg' => array(
+							'office'  => $per_kg,
+							'locker'  => $per_kg,
+							'address' => $per_kg,
+						),
 					);
 				} elseif ( ! $over && $to <= 20 ) {
-					$bands[] = array( 'to' => $to, 'office' => $base, 'locker' => $base, 'address' => round( $base + $delivery, 2 ) );
+					$bands[] = array(
+						'to'      => $to,
+						'office'  => $base,
+						'locker'  => $base,
+						'address' => round( $base + $delivery, 2 ),
+					);
 				}
 			}
 
@@ -288,14 +323,26 @@ class Updater {
 			$bands[0]['locker'] = (float) str_replace( ',', '.', $m[1] );
 		}
 
-		$list = array( 'vat_included' => true, 'surcharge' => 0, 'bands' => $bands, 'over' => $over, 'cod' => array( 'percent' => 2.4, 'min' => 0.61 ) );
+		$list = array(
+			'vat_included' => true,
+			'surcharge'    => 0,
+			'bands'        => $bands,
+			'over'         => $over,
+			'cod'          => array(
+				'percent' => 2.4,
+				'min'     => 0.61,
+			),
+		);
 
 		if ( preg_match( '/валидни към дата (\d{2}\.\d{2}\.\d{4})/u', $text, $m ) ) {
 			$list['valid_from'] = self::valid_from( $m[1] );
 		}
 
 		if ( preg_match( '/банков път.*?([\d.,]+)%\s*от стойността на НП, но не по-малко от ([\d.,]+)\s*€/us', $text, $m ) ) {
-			$list['cod'] = array( 'percent' => (float) str_replace( ',', '.', $m[1] ), 'min' => (float) str_replace( ',', '.', $m[2] ) );
+			$list['cod'] = array(
+				'percent' => (float) str_replace( ',', '.', $m[1] ),
+				'min'     => (float) str_replace( ',', '.', $m[2] ),
+			);
 		}
 
 		return $list;
@@ -306,40 +353,53 @@ class Updater {
 	 * to APS | to office | to address. The shop's "send from" setting picks the table.
 	 */
 	public static function parse_pigeon( $lines, $tables = array() ) {
-		$text = implode( "\n", $lines );
-		$price_tables = array_values( array_filter( $tables, function ( $rows ) {
-			return isset( $rows[0] ) && false !== strpos( implode( ' ', $rows[0] ), 'до АПС' );
-		} ) );
-		$sender = nashenski_get_option( 'pigeon', 'send_from' );
-		$index = 'address' === $sender ? 2 : 1;
+		$text         = implode( "\n", $lines );
+		$price_tables = array_values(
+			array_filter(
+				$tables,
+				function ( $rows ) {
+					return isset( $rows[0] ) && false !== strpos( implode( ' ', $rows[0] ), 'до АПС' );
+				}
+			)
+		);
+		$sender       = nashenski_get_option( 'pigeon', 'send_from' );
+		$index        = 'address' === $sender ? 2 : 1;
 
 		if ( empty( $price_tables[ $index ] ) ) {
 			return null;
 		}
 
 		$bands = array();
-		$over = null;
+		$over  = null;
 
 		foreach ( $price_tables[ $index ] as $cells ) {
 			if ( 4 !== count( $cells ) || null === ( $to = self::upper_kg( $cells[0] ) ) ) {
 				continue;
 			}
 
-			$office_kg = self::cell_per_kg( $cells[2] );
+			$office_kg  = self::cell_per_kg( $cells[2] );
 			$address_kg = self::cell_per_kg( $cells[3] );
 
 			if ( $office_kg || $address_kg ) {
-				$office_kg = $office_kg ? $office_kg : array( self::cell_euro( $cells[2] ), 0 );
+				$office_kg  = $office_kg ? $office_kg : array( self::cell_euro( $cells[2] ), 0 );
 				$address_kg = $address_kg ? $address_kg : array( self::cell_euro( $cells[3] ), 0 );
-				$over = array(
-					'base' => array( 'office' => $office_kg[0], 'locker' => $office_kg[0], 'address' => $address_kg[0] ),
-					'per_kg' => array( 'office' => $office_kg[1], 'locker' => $office_kg[1], 'address' => $address_kg[1] ),
+				$over       = array(
+					'base'   => array(
+						'office'  => $office_kg[0],
+						'locker'  => $office_kg[0],
+						'address' => $address_kg[0],
+					),
+					'per_kg' => array(
+						'office'  => $office_kg[1],
+						'locker'  => $office_kg[1],
+						'address' => $address_kg[1],
+					),
 				);
 				break;
 			}
 
-			$office = self::cell_euro( $cells[2] );
-			$locker = self::cell_euro( $cells[1] );
+			$office  = self::cell_euro( $cells[2] );
+			$locker  = self::cell_euro( $cells[1] );
 			$address = self::cell_euro( $cells[3] );
 
 			if ( null === $office || null === $address ) {
@@ -347,21 +407,48 @@ class Updater {
 			}
 
 			// Lockers take parcels up to 30 kg; heavier rows use the office price.
-			$bands[] = array( 'to' => $to, 'office' => $office, 'locker' => null === $locker ? $office : $locker, 'address' => $address );
+			$bands[] = array(
+				'to'      => $to,
+				'office'  => $office,
+				'locker'  => null === $locker ? $office : $locker,
+				'address' => $address,
+			);
 		}
 
 		if ( count( $bands ) < 5 || ! $over ) {
 			return null;
 		}
 
-		$list = array( 'vat_included' => true, 'surcharge' => 0, 'bands' => $bands, 'over' => $over, 'cod' => array( 'percent' => 1.5, 'min' => 0.40 ) );
+		$list = array(
+			'vat_included' => true,
+			'surcharge'    => 0,
+			'bands'        => $bands,
+			'over'         => $over,
+			'cod'          => array(
+				'percent' => 1.5,
+				'min'     => 0.40,
+			),
+		);
 
 		if ( preg_match( '/([\d.,]+)\s*%\s*Актуална такса гориво/u', $text, $m ) ) {
 			$list['surcharge'] = (float) str_replace( ',', '.', $m[1] );
 		}
 
 		// The page has no date; the fuel surcharge names its month ("октомври 2026").
-		$months = array( 'януари' => 1, 'февруари' => 2, 'март' => 3, 'април' => 4, 'май' => 5, 'юни' => 6, 'юли' => 7, 'август' => 8, 'септември' => 9, 'октомври' => 10, 'ноември' => 11, 'декември' => 12 );
+		$months = array(
+			'януари'    => 1,
+			'февруари'  => 2,
+			'март'      => 3,
+			'април'     => 4,
+			'май'       => 5,
+			'юни'       => 6,
+			'юли'       => 7,
+			'август'    => 8,
+			'септември' => 9,
+			'октомври'  => 10,
+			'ноември'   => 11,
+			'декември'  => 12,
+		);
 
 		if ( preg_match( '/Актуална такса гориво\s*-\s*(\p{L}+)\s+(\d{4})/u', $text, $m ) && isset( $months[ mb_strtolower( $m[1] ) ] ) ) {
 			$list['valid_from'] = sprintf( '%04d-%02d-01', $m[2], $months[ mb_strtolower( $m[1] ) ] );
@@ -375,7 +462,7 @@ class Updater {
 	 */
 	public static function changes( $old, $new ) {
 		$changes = array();
-		$add = function ( $label, $a, $b ) use ( &$changes ) {
+		$add     = function ( $label, $a, $b ) use ( &$changes ) {
 			if ( (string) $a !== (string) $b ) {
 				$changes[] = array( $label, (string) $a, (string) $b );
 			}
@@ -419,10 +506,12 @@ class Updater {
 			wp_send_json_error( array( 'message' => $new->get_error_message() ) );
 		}
 
-		wp_send_json_success( array(
-			'list' => $new,
-			'changes' => self::changes( Price_Lists::get( $courier ), $new ),
-		) );
+		wp_send_json_success(
+			array(
+				'list'    => $new,
+				'changes' => self::changes( Price_Lists::get( $courier ), $new ),
+			)
+		);
 	}
 
 	/**
@@ -431,7 +520,7 @@ class Updater {
 	 */
 	public static function forget( $courier = null ) {
 		$found = (array) get_option( self::NOTICE_OPTION, array() );
-		$seen = (array) get_option( self::SEEN_OPTION, array() );
+		$seen  = (array) get_option( self::SEEN_OPTION, array() );
 
 		foreach ( null === $courier ? array_keys( $found ) : array( $courier ) as $key ) {
 			if ( isset( $found[ $key ] ) ) {
@@ -449,7 +538,7 @@ class Updater {
 	 */
 	public static function weekly_check() {
 		$found = array();
-		$seen = (array) get_option( self::SEEN_OPTION, array() );
+		$seen  = (array) get_option( self::SEEN_OPTION, array() );
 
 		foreach ( Price_Lists::COURIERS as $courier ) {
 			if ( 'yes' !== nashenski_get_option( 'apis', 'enable_' . $courier ) ) {

@@ -9,7 +9,7 @@ class Courier_Pdf {
 		if ( ! is_string( $value ) || preg_match( '/[\x00-\x20\x7f\\\\]/', $value ) || ! preg_match( '~^https?://[a-z0-9.-]+(?::[0-9]+)?(?:[/?#]|$)~i', $value ) ) {
 			return '';
 		}
-		$parts = wp_parse_url( $value );
+		$parts      = wp_parse_url( $value );
 		$admin_host = wp_parse_url( admin_url(), PHP_URL_HOST );
 		if ( ! $parts || empty( $parts['host'] ) || isset( $parts['user'] ) || isset( $parts['pass'] ) || strtolower( rtrim( $parts['host'], '.' ) ) === strtolower( rtrim( (string) $admin_host, '.' ) ) ) {
 			return '';

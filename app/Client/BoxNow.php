@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Client;
+
 use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
@@ -9,15 +10,15 @@ class BoxNow {
 		clear_cache_folder as protected clear_courier_cache_folder;
 	}
 
-	const LIVE_URL = 'https://api-production.boxnow.bg';
-    const DEMO_URL = 'https://api-stage.boxnow.bg';
-    const AUTH_ENDPOINT = '/api/v1/auth-sessions';
-    const CREATE_LABELS_ENDPOINT = '/api/v1/delivery-requests';
+	const LIVE_URL               = 'https://api-production.boxnow.bg';
+	const DEMO_URL               = 'https://api-stage.boxnow.bg';
+	const AUTH_ENDPOINT          = '/api/v1/auth-sessions';
+	const CREATE_LABELS_ENDPOINT = '/api/v1/delivery-requests';
 
 	const CACHE_FOLDER = File::CACHE_FOLDER . 'boxnow' . DIRECTORY_SEPARATOR;
 
-	private $env = '';
-	private $client_id = '';
+	private $env           = '';
+	private $client_id     = '';
 	private $client_secret = '';
 	private $base_endpoint;
 	private $access_token;
@@ -43,14 +44,14 @@ class BoxNow {
 		}
 
 		$url = $this->get_base_endpoint() . $endpoint;
-		
+
 		$request_args = array(
 			'timeout' => 15,
 			'headers' => array(
-				'content-type' => 'application/json',
+				'content-type'  => 'application/json',
 				'Authorization' => 'Bearer ' . $this->get_access_token(),
 			),
-			'body' => wp_json_encode( $args ),
+			'body'    => wp_json_encode( $args ),
 		);
 
 		if ( $method === 'GET' ) {
@@ -76,9 +77,15 @@ class BoxNow {
 			$response['message'] = rtrim( 'BOX NOW ' . $response['code'] . ': ' . $text, ' :' );
 
 			if ( ! empty( $response['jsonSchemaErrors'] ) && is_array( $response['jsonSchemaErrors'] ) ) {
-				$response['message'] .= ' ' . implode( '. ', array_map( function ( $error ) {
-					return is_scalar( $error ) ? $error : wp_json_encode( $error );
-				}, $response['jsonSchemaErrors'] ) );
+				$response['message'] .= ' ' . implode(
+					'. ',
+					array_map(
+						function ( $error ) {
+							return is_scalar( $error ) ? $error : wp_json_encode( $error );
+						},
+						$response['jsonSchemaErrors']
+					)
+				);
 			}
 		}
 
@@ -119,24 +126,29 @@ class BoxNow {
 		}
 
 		$token_key = 'nashenski_boxnow_token_' . md5( $this->get_base_endpoint() . $this->get_client_id() . $this->get_client_secret() );
-		$cached = get_transient( $token_key );
+		$cached    = get_transient( $token_key );
 
 		if ( $cached ) {
 			$this->set_access_token( $cached );
 			return;
 		}
 
-		$request = wp_remote_post( $this->get_base_endpoint() . self::AUTH_ENDPOINT, array(
-			'timeout' => 15,
-			'headers' => array(
-				'Content-Type' => 'application/json',
-			),
-			'body' => wp_json_encode( array(
-				'grant_type' => 'client_credentials',
-				'client_id' => $this->get_client_id(),
-				'client_secret' => $this->get_client_secret(),
-			) ),
-		) );
+		$request = wp_remote_post(
+			$this->get_base_endpoint() . self::AUTH_ENDPOINT,
+			array(
+				'timeout' => 15,
+				'headers' => array(
+					'Content-Type' => 'application/json',
+				),
+				'body'    => wp_json_encode(
+					array(
+						'grant_type'    => 'client_credentials',
+						'client_id'     => $this->get_client_id(),
+						'client_secret' => $this->get_client_secret(),
+					)
+				),
+			)
+		);
 
 		if ( is_wp_error( $request ) || wp_remote_retrieve_response_code( $request ) !== 200 ) {
 			$this->set_access_token( null );
@@ -144,7 +156,7 @@ class BoxNow {
 		}
 
 		$response = json_decode( wp_remote_retrieve_body( $request ), true );
-		$token = $response['access_token'] ?? null;
+		$token    = $response['access_token'] ?? null;
 		$this->set_access_token( $token );
 
 		if ( $token ) {
@@ -152,7 +164,7 @@ class BoxNow {
 		}
 	}
 
-	//Loaders
+	// Loaders
 	public function load_client_id() {
 		$this->set_client_id( nashenski_get_option( 'boxnow', 'client_id' ) );
 	}
@@ -161,7 +173,7 @@ class BoxNow {
 		$this->set_client_secret( nashenski_get_option( 'boxnow', 'client_secret' ) );
 	}
 
-	//Getters
+	// Getters
 
 	public function get_client_id() {
 		return $this->client_id;
@@ -183,7 +195,7 @@ class BoxNow {
 		return $this->access_token;
 	}
 
-	//Setters
+	// Setters
 
 	private function set_client_id( $user ) {
 		$this->client_id = $user;

@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Client\Econt;
+
 use Nashenski\Container\Client;
 use Nashenski\File;
 
@@ -8,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 class Countries {
 	const COUNTRIES_ENDPOINT = 'Nomenclatures/NomenclaturesService.getCountries.json';
 
-	private $countries = [];
+	private $countries = array();
 	private $container;
 
 	public function __construct( $container ) {
@@ -21,15 +22,15 @@ class Countries {
 		}
 
 		$countries_file = $this->container[ Client::ECONT ]::CACHE_FOLDER . 'countries.json';
-		$countries = File::get_file( $countries_file );
+		$countries      = File::get_file( $countries_file );
 
-		if ( !$countries ) {
+		if ( ! $countries ) {
 			$api_call = $this->container[ Client::ECONT ]->api_call( self::COUNTRIES_ENDPOINT, array( 'GetCountriesRequest' => '' ) );
 
 			if ( is_array( $api_call ) ) {
 				if ( $this->container[ Client::ECONT ]::validate_access( $api_call ) ) {
 					$countries = wp_json_encode( $api_call );
-					
+
 					File::put_to_file( $countries_file, $countries );
 				}
 			}
@@ -42,7 +43,7 @@ class Countries {
 		return $countries;
 	}
 
-	//Getters
+	// Getters
 	public function get_countries() {
 		if ( empty( $this->countries ) ) {
 			$this->load_countries();
@@ -51,7 +52,7 @@ class Countries {
 		return $this->countries;
 	}
 
-	//Setters
+	// Setters
 	private function set_countries( $countries ) {
 		$this->countries = $countries;
 	}

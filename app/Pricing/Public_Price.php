@@ -21,10 +21,10 @@ class Public_Price {
 	 */
 	public static function kind( $delivery_type ) {
 		$map = array(
-			'office' => 'office',
+			'office'  => 'office',
 			'automat' => 'locker',
-			'locker' => 'locker',
-			'apm' => 'locker',
+			'locker'  => 'locker',
+			'apm'     => 'locker',
 			'address' => 'address',
 		);
 
@@ -47,7 +47,7 @@ class Public_Price {
 		}
 
 		$weight = max( 0.0, (float) $weight );
-		$price = null;
+		$price  = null;
 
 		// The published Pigeon page stops at 30 kg: no rate above it, even from an older saved list with bands to 40 kg.
 		if ( 'pigeon' === $courier && $weight > self::PIGEON_MAX_KG ) {
@@ -73,8 +73,8 @@ class Public_Price {
 		}
 
 		if ( null === $price ) {
-			$last = end( $list['bands'] );
-			$base = $list['over']['base'][ $kind ] ?? $list['over']['base']['address'] ?? null;
+			$last   = end( $list['bands'] );
+			$base   = $list['over']['base'][ $kind ] ?? $list['over']['base']['address'] ?? null;
 			$per_kg = $list['over']['per_kg'][ $kind ] ?? $list['over']['per_kg']['address'] ?? 0;
 
 			// The published Pigeon page stops at 30 kg: no rate above its last band.
@@ -147,16 +147,16 @@ class Public_Price {
 		}
 
 		$package = is_array( $method->package ?? null ) ? $method->package : array();
-		$cookie = is_array( $method->cookie_data ?? null ) ? $method->cookie_data : array();
-		$cod = isset( $cookie['payment'] ) && 'cod' === $cookie['payment'] ? self::package_value( $package ) : 0.0;
-		$gross = self::calculate( $courier, self::kind( $method->delivery_type ?? '' ), self::package_weight( $package ), $cod );
+		$cookie  = is_array( $method->cookie_data ?? null ) ? $method->cookie_data : array();
+		$cod     = isset( $cookie['payment'] ) && 'cod' === $cookie['payment'] ? self::package_value( $package ) : 0.0;
+		$gross   = self::calculate( $courier, self::kind( $method->delivery_type ?? '' ), self::package_weight( $package ), $cod );
 
 		if ( null === $gross ) {
 			return $request_data;
 		}
 
 		return array(
-			'price' => nashenski_tax_based_price( $gross ),
+			'price'        => nashenski_tax_based_price( $gross ),
 			'public_price' => true,
 		);
 	}

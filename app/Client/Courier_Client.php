@@ -13,13 +13,13 @@ trait Courier_Client {
 	}
 
 	public static function add_error_message( $error ) {
-		$message = [];
+		$message = array();
 
 		if ( ! empty( $error['message'] ) && $error['message'] !== ' ' ) {
 			$message[] = $error['message'];
 		}
 
-		if ( !empty( $error['innerErrors'] ) ) {
+		if ( ! empty( $error['innerErrors'] ) ) {
 			foreach ( $error['innerErrors'] as $error ) {
 				$message = array_merge( $message, self::add_error_message( $error ) );
 			}

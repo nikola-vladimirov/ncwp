@@ -1,15 +1,16 @@
 <?php
 namespace Nashenski\Client\Pigeon;
+
 use Nashenski\Container\Client;
 use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
 class Offices {
-    const OFFICES_ENDPOINT = '/offices';
+	const OFFICES_ENDPOINT = '/offices';
 
-    private $offices = [];
-    private $container;
+	private $offices = array();
+	private $container;
 
 	public function __construct( $container ) {
 		$this->container = $container;
@@ -21,16 +22,21 @@ class Offices {
 		}
 
 		$offices_file = $this->container[ Client::PIGEON ]::CACHE_FOLDER . 'offices-' . $city_id . '.json';
-		$offices = File::get_file( $offices_file );
+		$offices      = File::get_file( $offices_file );
 
-		if ( !$offices ) {
-			$args = apply_filters( 'nashenski/pigeon/offices/api_call_args', array(
-				'city_id' => $city_id,
-				'type' => 'office',
-			), $city_id, $country_code );
-			
-			$all_offices = [];
-			$complete = false;
+		if ( ! $offices ) {
+			$args = apply_filters(
+				'nashenski/pigeon/offices/api_call_args',
+				array(
+					'city_id' => $city_id,
+					'type'    => 'office',
+				),
+				$city_id,
+				$country_code
+			);
+
+			$all_offices = array();
+			$complete    = false;
 
 			// Cap the pages; cache only when every page answered.
 			for ( $page = 1; $page <= 200; $page++ ) {
@@ -48,9 +54,9 @@ class Offices {
 				}
 			}
 
-			if ( !empty( $all_offices ) ) {
+			if ( ! empty( $all_offices ) ) {
 				$offices = wp_json_encode( $all_offices );
-				
+
 				if ( $complete ) {
 					File::put_to_file( $offices_file, $offices );
 				}
@@ -65,11 +71,17 @@ class Offices {
 		return $offices;
 	}
 
-	//Getters
+	// Getters
 	public function get_page( $page = 1, $args = array() ) {
-		return $this->container[ Client::PIGEON ]->api_call( self::OFFICES_ENDPOINT, array_merge( $args, [
-			'page' => $page,
-		] ) );
+		return $this->container[ Client::PIGEON ]->api_call(
+			self::OFFICES_ENDPOINT,
+			array_merge(
+				$args,
+				array(
+					'page' => $page,
+				)
+			)
+		);
 	}
 
 	public function get_offices( $city_id, $country_code = 'BG' ) {
@@ -80,7 +92,7 @@ class Offices {
 		return $this->offices[ $city_id ];
 	}
 
-	//Setters
+	// Setters
 	private function set_offices( $city_id, $offices ) {
 		$this->offices[ $city_id ] = $offices;
 	}
@@ -88,14 +100,14 @@ class Offices {
 	public function get_formatted_offices( $city, $country_code = 'BG' ) {
 		$city_id = str_replace( 'cityID-', '', $city );
 		$offices = $this->get_offices( $city_id, $country_code );
-		$data = [];
+		$data    = array();
 
-		if ( !empty( $offices ) ) {
+		if ( ! empty( $offices ) ) {
 			foreach ( $offices as $office ) {
-				$data[ 'officeID-' . $office['id']] = [
-					'id' => 'officeID-' . $office['id'],
+				$data[ 'officeID-' . $office['id'] ] = array(
+					'id'    => 'officeID-' . $office['id'],
 					'label' => $office['name'] . ' (' . $office['address'] . ')',
-				];
+				);
 			}
 		}
 

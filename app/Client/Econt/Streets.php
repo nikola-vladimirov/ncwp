@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Client\Econt;
+
 use Nashenski\Container\Client;
 use Nashenski\File;
 
@@ -8,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 class Streets {
 	const STREETS_ENDPOINT = 'Nomenclatures/NomenclaturesService.getStreets.json';
 
-	private $streets = [];
+	private $streets = array();
 	private $container;
 
 	public function __construct( $container ) {
@@ -21,16 +22,16 @@ class Streets {
 		}
 
 		$streets_file = $this->container[ Client::ECONT ]::CACHE_FOLDER . 'streets-' . $city_id . '.json';
-		$streets = File::get_file( $streets_file );
+		$streets      = File::get_file( $streets_file );
 
-		if ( !$streets ) {
+		if ( ! $streets ) {
 			$api_call = $this->container[ Client::ECONT ]->api_call( self::STREETS_ENDPOINT, array( 'cityID' => $city_id ) );
 
 			if ( is_array( $api_call ) ) {
 				if ( $this->container[ Client::ECONT ]::validate_access( $api_call ) ) {
-					if ( !empty( $api_call['streets'] ) ) {
+					if ( ! empty( $api_call['streets'] ) ) {
 						$streets = wp_json_encode( $api_call );
-						
+
 						File::put_to_file( $streets_file, $streets );
 						unset( $api_call );
 					}
@@ -45,7 +46,7 @@ class Streets {
 		return $streets;
 	}
 
-	//Getters
+	// Getters
 	public function get_streets_by_city( $city_id ) {
 		if ( empty( $this->streets[ $city_id ] ) ) {
 			$this->load_streets_by_city( $city_id );
@@ -54,13 +55,13 @@ class Streets {
 		return $this->streets[ $city_id ];
 	}
 
-	//Setters
+	// Setters
 	private function set_streets( $streets, $city_id ) {
 		$this->streets[ $city_id ] = $streets;
 	}
 
 	public function format_streets( $streets, $city_id = null ) {
-		$formatted = [];
+		$formatted = array();
 
 		foreach ( $streets as $street ) {
 			$formatted[ 'street-' . $street['id'] ] = $street['name'];
@@ -69,7 +70,7 @@ class Streets {
 		if ( null !== $city_id ) {
 			unset( $this->streets[ $city_id ] );
 		}
-		
+
 		return $formatted;
 	}
 }

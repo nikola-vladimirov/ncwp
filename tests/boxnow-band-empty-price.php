@@ -308,19 +308,61 @@ function calculate( $contents, $payment = 'cod', $weight = 1, $oversize = false,
 // An empty, text or negative price in a stored band is not a free rate. A typed 0 still is.
 foreach ( array(
 	'from_to_kg'                 => array(
-		array( 'from' => '0', 'to' => '20', 'price' => '' ),
-		array( 'from' => '0', 'to' => '20', 'price' => 'abc' ),
-		array( 'from' => '0', 'to' => '20', 'price' => '-5' ),
+		array(
+			'from'  => '0',
+			'to'    => '20',
+			'price' => '',
+		),
+		array(
+			'from'  => '0',
+			'to'    => '20',
+			'price' => 'abc',
+		),
+		array(
+			'from'  => '0',
+			'to'    => '20',
+			'price' => '-5',
+		),
 	),
 	'from_to_order_total'        => array(
-		array( 'from' => '0', 'to' => '100', 'price' => '' ),
-		array( 'from' => '0', 'to' => '100', 'price' => 'abc' ),
-		array( 'from' => '0', 'to' => '100', 'price' => '-5' ),
+		array(
+			'from'  => '0',
+			'to'    => '100',
+			'price' => '',
+		),
+		array(
+			'from'  => '0',
+			'to'    => '100',
+			'price' => 'abc',
+		),
+		array(
+			'from'  => '0',
+			'to'    => '100',
+			'price' => '-5',
+		),
 	),
 	'from_to_kg_and_order_total' => array(
-		array( 'from' => '0', 'to' => '20', 'from_price' => '0', 'to_price' => '100', 'price' => '' ),
-		array( 'from' => '0', 'to' => '20', 'from_price' => '0', 'to_price' => '100', 'price' => 'abc' ),
-		array( 'from' => '0', 'to' => '20', 'from_price' => '0', 'to_price' => '100', 'price' => '-5' ),
+		array(
+			'from'       => '0',
+			'to'         => '20',
+			'from_price' => '0',
+			'to_price'   => '100',
+			'price'      => '',
+		),
+		array(
+			'from'       => '0',
+			'to'         => '20',
+			'from_price' => '0',
+			'to_price'   => '100',
+			'price'      => 'abc',
+		),
+		array(
+			'from'       => '0',
+			'to'         => '20',
+			'from_price' => '0',
+			'to_price'   => '100',
+			'price'      => '-5',
+		),
 	),
 ) as $type => $bad_rows ) {
 	foreach ( $bad_rows as $row ) {

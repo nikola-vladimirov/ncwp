@@ -24,7 +24,7 @@ class BaseDocument {
 		$this->email        = nashenski_get_option( 'nap', 'email' );
 		$this->nap_number   = nashenski_get_option( 'nap', 'nap_number' );
 
-		$this->document_number_meta = 'nashenski_order_number';
+		$this->document_number_meta   = 'nashenski_order_number';
 		$this->document_number_option = 'next_invoice_number';
 
 		$this->color               = nashenski_get_option( 'invoice', 'color' );
@@ -34,13 +34,13 @@ class BaseDocument {
 		$this->footer_text         = nashenski_get_option( 'invoice', 'footer_text' );
 
 		if ( ! is_a( $this->woo_order, '\Automattic\WooCommerce\Admin\Overrides\OrderRefund' ) ) {
-			$this->payment_method         = $this->woo_order->get_payment_method_title();
-			$this->transaction_id         = $this->woo_order->get_transaction_id();
+			$this->payment_method = $this->woo_order->get_payment_method_title();
+			$this->transaction_id = $this->woo_order->get_transaction_id();
 		}
 
 		$this->set_pdf_printer();
 
-		if( ! preg_match('/^#[a-f0-9]{6}$/i', $this->color ) ){
+		if ( ! preg_match( '/^#[a-f0-9]{6}$/i', $this->color ) ) {
 			$this->color = '#007fff';
 		}
 	}
@@ -49,61 +49,68 @@ class BaseDocument {
 		$items = array();
 
 		if ( $document_number = $this->get_document_number() ) {
-			$items[ 'reference' ] = array(
+			$items['reference'] = array(
 				'label' => '№',
 				'value' => str_pad( $document_number, 10, '0', STR_PAD_LEFT ),
 			);
 		}
 
-		$items = array_merge( $items, array(
-			'date' => array(
-				'label' => __( 'Order date', 'nashenski-commerce' ),
-				'value' => $this->format_date( $this->get_document_date() ),
-			),
-			'date-of-tax' => array(
-				'label' => __( 'Date of tax. event', 'nashenski-commerce' ),
-				'value' => $this->format_date( $this->get_document_date() ),
-			),
-			'due-date' => array(
-				'label' => __( 'Due date', 'nashenski-commerce' ),
-				'value' => $this->format_date( $this->get_document_due_date() ),
-			),
-			'address' => array(
-				'label' => __( 'Place of transaction', 'nashenski-commerce' ),
-				'value' => $this->city,
-			),
-			'order-number' => array(
-				'label' => __( 'Order Number', 'nashenski-commerce' ),
-				'value' => $this->woo_order->get_order_number(),
-			),
-		) );
+		$items = array_merge(
+			$items,
+			array(
+				'date'         => array(
+					'label' => __( 'Order date', 'nashenski-commerce' ),
+					'value' => $this->format_date( $this->get_document_date() ),
+				),
+				'date-of-tax'  => array(
+					'label' => __( 'Date of tax. event', 'nashenski-commerce' ),
+					'value' => $this->format_date( $this->get_document_date() ),
+				),
+				'due-date'     => array(
+					'label' => __( 'Due date', 'nashenski-commerce' ),
+					'value' => $this->format_date( $this->get_document_due_date() ),
+				),
+				'address'      => array(
+					'label' => __( 'Place of transaction', 'nashenski-commerce' ),
+					'value' => $this->city,
+				),
+				'order-number' => array(
+					'label' => __( 'Order Number', 'nashenski-commerce' ),
+					'value' => $this->woo_order->get_order_number(),
+				),
+			)
+		);
 
-		return apply_filters( 'nashenski/invoice/head_items', $items , $this );
+		return apply_filters( 'nashenski/invoice/head_items', $items, $this );
 	}
 
 	public function get_cart_headers() {
-		return apply_filters( 'nashenski/invoice/cart_headers', array(
+		return apply_filters(
+			'nashenski/invoice/cart_headers',
 			array(
-				'label' => __( 'Product', 'nashenski-commerce' ),
-				'class' => '',
+				array(
+					'label' => __( 'Product', 'nashenski-commerce' ),
+					'class' => '',
+				),
+				array(
+					'label' => __( 'Qty', 'nashenski-commerce' ),
+					'class' => '',
+				),
+				array(
+					'label' => __( 'Vat', 'nashenski-commerce' ),
+					'class' => '',
+				),
+				array(
+					'label' => __( 'Price', 'nashenski-commerce' ),
+					'class' => '',
+				),
+				array(
+					'label' => __( 'Total amount', 'nashenski-commerce' ),
+					'class' => '',
+				),
 			),
-			array(
-				'label' => __( 'Qty', 'nashenski-commerce' ),
-				'class' => '',
-			),
-			array(
-				'label' => __( 'Vat', 'nashenski-commerce' ),
-				'class' => '',
-			),
-			array(
-				'label' => __( 'Price', 'nashenski-commerce' ),
-				'class' => '',
-			),
-			array(
-				'label' => __( 'Total amount', 'nashenski-commerce' ),
-				'class' => '',
-			),
-		), $this );
+			$this
+		);
 	}
 
 	/**
@@ -117,32 +124,44 @@ class BaseDocument {
 	 * Lines of a From or To box without the empty ones.
 	 */
 	protected static function lines( $lines ) {
-		return array_filter( array_map( function ( $line ) {
-			return trim( (string) $line );
-		}, $lines ), 'strlen' );
+		return array_filter(
+			array_map(
+				function ( $line ) {
+					return trim( (string) $line );
+				},
+				$lines
+			),
+			'strlen'
+		);
 	}
 
 	public function get_from_items() {
 		$contacts = 'no' !== \Nashenski\Invoice\PDF\Style::get()['show_contacts'];
 
-		return apply_filters( 'nashenski/invoice/from_items', self::lines( array(
-			'company_name' => $this->company_name,
-			/* translators: %s: company EIK */
-			'eik' => $this->eik ? sprintf( __( 'EIK: %s', 'nashenski-commerce' ), $this->eik ) : '',
-			/* translators: %s: VAT number */
-			'vat_number' => $this->vat_number ? sprintf( __( 'VAT Number: %s', 'nashenski-commerce' ), $this->vat_number ) : '',
-			/* translators: %s: name of the responsible person (MOL) */
-			'mol' => $this->mol ? sprintf( __( 'MOL: %s', 'nashenski-commerce' ), $this->mol ) : '',
-			'address' => implode( ', ', self::lines( array( $this->address, $this->city ) ) ),
-			/* translators: %s: phone number */
-			'phone' => $contacts && $this->phone_number ? sprintf( __( 'Phone: %s', 'nashenski-commerce' ), $this->phone_number ) : '',
-			/* translators: %s: email address */
-			'email' => $contacts && $this->email ? sprintf( __( 'E-mail: %s', 'nashenski-commerce' ), $this->email ) : '',
-		) ), $this );
+		return apply_filters(
+			'nashenski/invoice/from_items',
+			self::lines(
+				array(
+					'company_name' => $this->company_name,
+					/* translators: %s: company EIK */
+					'eik'          => $this->eik ? sprintf( __( 'EIK: %s', 'nashenski-commerce' ), $this->eik ) : '',
+					/* translators: %s: VAT number */
+					'vat_number'   => $this->vat_number ? sprintf( __( 'VAT Number: %s', 'nashenski-commerce' ), $this->vat_number ) : '',
+					/* translators: %s: name of the responsible person (MOL) */
+					'mol'          => $this->mol ? sprintf( __( 'MOL: %s', 'nashenski-commerce' ), $this->mol ) : '',
+					'address'      => implode( ', ', self::lines( array( $this->address, $this->city ) ) ),
+					/* translators: %s: phone number */
+					'phone'        => $contacts && $this->phone_number ? sprintf( __( 'Phone: %s', 'nashenski-commerce' ), $this->phone_number ) : '',
+					/* translators: %s: email address */
+					'email'        => $contacts && $this->email ? sprintf( __( 'E-mail: %s', 'nashenski-commerce' ), $this->email ) : '',
+				)
+			),
+			$this
+		);
 	}
 
 	public function get_to_items() {
-		$order = $this->customer_order();
+		$order    = $this->customer_order();
 		$contacts = 'no' !== \Nashenski\Invoice\PDF\Style::get()['show_contacts'];
 		/* translators: %s: phone number */
 		$phone = $contacts && $order->get_billing_phone() ? sprintf( __( 'Phone: %s', 'nashenski-commerce' ), $order->get_billing_phone() ) : '';
@@ -154,25 +173,33 @@ class BaseDocument {
 			$vat = $order->get_meta( '_billing_vat_number' );
 			$mol = $order->get_meta( '_billing_company_mol' );
 
-			$items = apply_filters( 'nashenski/invoice/set_to_company', array(
-				$order->get_billing_company(),
-				/* translators: %s: company EIK */
-				$eik ? sprintf( __( 'EIK: %s', 'nashenski-commerce' ), $eik ) : '',
-				/* translators: %s: VAT number */
-				$vat ? sprintf( __( 'VAT Number: %s', 'nashenski-commerce' ), $vat ) : '',
-				/* translators: %s: name of the responsible person (MOL) */
-				$mol ? sprintf( __( 'MOL: %s', 'nashenski-commerce' ), $mol ) : '',
-				implode( ', ', self::lines( array( $order->get_meta( '_billing_company_address' ), $order->get_meta( '_billing_company_settlement' ) ) ) ),
-				$phone,
-				$email,
-			), $order );
+			$items = apply_filters(
+				'nashenski/invoice/set_to_company',
+				array(
+					$order->get_billing_company(),
+					/* translators: %s: company EIK */
+					$eik ? sprintf( __( 'EIK: %s', 'nashenski-commerce' ), $eik ) : '',
+					/* translators: %s: VAT number */
+					$vat ? sprintf( __( 'VAT Number: %s', 'nashenski-commerce' ), $vat ) : '',
+					/* translators: %s: name of the responsible person (MOL) */
+					$mol ? sprintf( __( 'MOL: %s', 'nashenski-commerce' ), $mol ) : '',
+					implode( ', ', self::lines( array( $order->get_meta( '_billing_company_address' ), $order->get_meta( '_billing_company_settlement' ) ) ) ),
+					$phone,
+					$email,
+				),
+				$order
+			);
 		} else {
-			$items = apply_filters( 'nashenski/invoice/set_to_person', array(
-				$order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
-				implode( ', ', self::lines( array( $order->get_billing_address_1() . ' ' . $order->get_billing_address_2(), $order->get_billing_city() . ' ' . $order->get_billing_postcode() ) ) ),
-				$phone,
-				$email,
-			), $order );
+			$items = apply_filters(
+				'nashenski/invoice/set_to_person',
+				array(
+					$order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+					implode( ', ', self::lines( array( $order->get_billing_address_1() . ' ' . $order->get_billing_address_2(), $order->get_billing_city() . ' ' . $order->get_billing_postcode() ) ) ),
+					$phone,
+					$email,
+				),
+				$order
+			);
 		}
 
 		return apply_filters( 'nashenski/invoice/to_items', self::lines( $items ), $this );
@@ -223,16 +250,16 @@ class BaseDocument {
 		}
 
 		if ( $this->pays_by_bank() ) {
-			$bacs_info  = get_option( 'woocommerce_bacs_accounts');
+			$bacs_info = get_option( 'woocommerce_bacs_accounts' );
 
 			ob_start();
 
-			if ( !empty( $bacs_info ) ) {
+			if ( ! empty( $bacs_info ) ) {
 				foreach ( $bacs_info as $account ) {
 					?>
-					<strong><?php esc_html_e( 'Bank name', 'nashenski-commerce' ) ?>:</strong> <?php echo esc_html( $account['bank_name'] ) ?> <br>
-					<strong>IBAN:</strong> <?php echo esc_html( $account['iban'] ) ?> <br>
-					<strong>BIC:</strong> <?php echo esc_html( $account['bic'] ) ?> <br>
+					<strong><?php esc_html_e( 'Bank name', 'nashenski-commerce' ); ?>:</strong> <?php echo esc_html( $account['bank_name'] ); ?> <br>
+					<strong>IBAN:</strong> <?php echo esc_html( $account['iban'] ); ?> <br>
+					<strong>BIC:</strong> <?php echo esc_html( $account['bic'] ); ?> <br>
 					<?php
 				}
 			}
@@ -245,7 +272,7 @@ class BaseDocument {
 		}
 
 		if ( $this->prepared_by || $this->identification_code ) {
-			$items[] = $this->prepared_by . " " . $this->identification_code;
+			$items[] = $this->prepared_by . ' ' . $this->identification_code;
 		}
 
 		if ( $this->shows_received() ) {
@@ -285,12 +312,18 @@ class BaseDocument {
 		$class = get_class( $this );
 		$order = $this->woo_order;
 
-		foreach ( array( 'bg_BG' => '', 'en_US' => '_en' ) as $locale => $suffix ) {
-			nashenski_in_locale( $locale, function () use ( $class, $order, $suffix ) {
-				$document = new $class( $order );
-				$document->meta .= $suffix;
-				$document->build_file();
-			} );
+		foreach ( array(
+			'bg_BG' => '',
+			'en_US' => '_en',
+		) as $locale => $suffix ) {
+			nashenski_in_locale(
+				$locale,
+				function () use ( $class, $order, $suffix ) {
+					$document        = new $class( $order );
+					$document->meta .= $suffix;
+					$document->build_file();
+				}
+			);
 		}
 
 		// Refund documents load their own copy of the refund; pick up the saved files.
@@ -330,7 +363,7 @@ class BaseDocument {
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 
 		$original = wp_tempnam( 'nashenski-original.pdf' );
-		$copy = wp_tempnam( 'nashenski-copy.pdf' );
+		$copy     = wp_tempnam( 'nashenski-copy.pdf' );
 
 		try {
 			File::put_to_file( $original, $this->pdf->generate() );
@@ -354,7 +387,7 @@ class BaseDocument {
 	 * and run after_file_generated().
 	 */
 	protected function save_pdf( $contents ) {
-		$name = apply_filters( 'nashenski/admin/invoice/file_name', uniqid( wp_rand(), true ), $this );
+		$name      = apply_filters( 'nashenski/admin/invoice/file_name', uniqid( wp_rand(), true ), $this );
 		$attach_id = \Nashenski\Document_Storage::save( $name, 'pdf', $contents );
 
 		if ( ! $attach_id ) {
@@ -394,19 +427,19 @@ class BaseDocument {
 	 * The logo as an <img> with a data URI, sized to fit 220 x 70, so the PDF never loads files over the web.
 	 */
 	public static function get_logo_img() {
-		$id = self::get_logo_id();
+		$id   = self::get_logo_id();
 		$file = $id ? get_attached_file( $id ) : '';
 
 		if ( ! $file || ! is_readable( $file ) ) {
 			return '';
 		}
 
-		$type = wp_check_filetype( $file );
-		$mime = $type['type'] ? $type['type'] : 'image/png';
-		$data = base64_encode( file_get_contents( $file ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents, WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- local logo file embedded as a data URI.
-		$size = 'image/svg+xml' === $mime ? false : @getimagesize( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- unreadable images just get no size.
+		$type                  = wp_check_filetype( $file );
+		$mime                  = $type['type'] ? $type['type'] : 'image/png';
+		$data                  = base64_encode( file_get_contents( $file ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents, WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- local logo file embedded as a data URI.
+		$size                  = 'image/svg+xml' === $mime ? false : @getimagesize( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- unreadable images just get no size.
 		list( $box_w, $box_h ) = \Nashenski\Invoice\PDF\Style::logo_box();
-		$attrs = sprintf( 'height="%d"', $box_h );
+		$attrs                 = sprintf( 'height="%d"', $box_h );
 
 		if ( $size && $size[0] && $size[1] ) {
 			$scale = min( $box_w / $size[0], $box_h / $size[1], 1 );
@@ -426,16 +459,22 @@ class BaseDocument {
 
 		$email = $this->email ? $this->email : get_option( 'woocommerce_email_from_address' );
 
-		return apply_filters( 'nashenski/invoice/site_details', array_filter( array(
-			'name' => get_bloginfo( 'name' ),
-			'url' => untrailingslashit( wp_parse_url( home_url(), PHP_URL_HOST ) . wp_parse_url( home_url(), PHP_URL_PATH ) ),
-			'email' => $email,
-			'phone' => $this->phone_number,
-		) ), $this );
+		return apply_filters(
+			'nashenski/invoice/site_details',
+			array_filter(
+				array(
+					'name'  => get_bloginfo( 'name' ),
+					'url'   => untrailingslashit( wp_parse_url( home_url(), PHP_URL_HOST ) . wp_parse_url( home_url(), PHP_URL_PATH ) ),
+					'email' => $email,
+					'phone' => $this->phone_number,
+				)
+			),
+			$this
+		);
 	}
 
 	public function render_pdf_logo() {
-		$logo = self::get_logo_img();
+		$logo    = self::get_logo_img();
 		$details = $this->get_site_details();
 
 		if ( $logo ) {

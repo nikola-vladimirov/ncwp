@@ -1,14 +1,15 @@
 <?php
 namespace Nashenski\Client\Speedy;
+
 use Nashenski\Container\Client;
 
 defined( 'ABSPATH' ) || exit;
 
 class Profile {
-    const PROFILE_ENDPOINT = 'client/contract';
-    const CLIENT_ENDPOINT = 'client/';
+	const PROFILE_ENDPOINT = 'client/contract';
+	const CLIENT_ENDPOINT  = 'client/';
 
-    private $is_valid_profile, $profile_data, $container, $clients;
+	private $is_valid_profile, $profile_data, $container, $clients;
 
 	public function __construct( $container ) {
 		$this->container = $container;
@@ -40,14 +41,14 @@ class Profile {
 		$profile_data = $this->container[ Client::SPEEDY ]->api_call( self::PROFILE_ENDPOINT, array() );
 
 		if ( $this->container[ Client::SPEEDY ]->validate_access( $profile_data ) ) {
-			$clients = [];
+			$clients = array();
 
-			if ( !empty( $profile_data['clients'] ) ) {
+			if ( ! empty( $profile_data['clients'] ) ) {
 				foreach ( $profile_data['clients'] as $profile ) {
 					$client = $this->get_client( $profile['clientId'] );
 
-					if ( isset( $client[ 'client' ] ) ) {
-						$clients[ $profile['clientId'] ] = $client[ 'client' ];
+					if ( isset( $client['client'] ) ) {
+						$clients[ $profile['clientId'] ] = $client['client'];
 					}
 				}
 			} else {
@@ -59,15 +60,15 @@ class Profile {
 					if ( isset( $client['client'] ) ) {
 						$clients[ $profile_client['clientId'] ] = $client['client'];
 
-						$profile_data = [
-							'clients' => [ $client['client'] ],
-						];
+						$profile_data = array(
+							'clients' => array( $client['client'] ),
+						);
 					}
 				}
-			} 
+			}
 
 			// A login with no client (empty contract) is not a usable profile: save nothing.
-			if ( !empty( $clients ) ) {
+			if ( ! empty( $clients ) ) {
 				nashenski_set_option( 'speedy', 'profile_data', $profile_data );
 				nashenski_set_option( 'speedy', 'clients', $clients );
 				delete_transient( 'nashenski_speedy_profile_failed' );
@@ -115,7 +116,7 @@ class Profile {
 	protected function return_single_profile() {
 		$profile_id = 0;
 
-		if ( !empty( $this->profile_data[ 'clients' ] ) ) {
+		if ( ! empty( $this->profile_data['clients'] ) ) {
 			if ( $selected_id = nashenski_get_option( 'speedy', 'profile_key' ) ) {
 				$profile_id = $selected_id;
 			}
@@ -128,22 +129,22 @@ class Profile {
 
 	public function get_profiles_for_settings() {
 		$all_profiles = nashenski_get_option( 'speedy', 'profile_data' );
-		$options = array();
+		$options      = array();
 
 		$clients = $this->get_clients();
 
-		if ( !empty( $all_profiles['clients'] ) ) {
+		if ( ! empty( $all_profiles['clients'] ) ) {
 			foreach ( $all_profiles['clients'] as $key => $profile ) {
 				if ( ! isset( $profile['clientId'], $clients[ $profile['clientId'] ] ) ) {
 					continue;
 				}
 
 				$client = $clients[ $profile['clientId'] ];
-				$label = ( isset( $client['objectName'] ) && $client['objectName'] ) ? $client['objectName'] : $client['clientName'];
+				$label  = ( isset( $client['objectName'] ) && $client['objectName'] ) ? $client['objectName'] : $client['clientName'];
 
 				$options[ $key ] = array(
-					'id' => $key,
-					'label' => $label . " ( ID:" . $profile['clientId'] . " )",
+					'id'    => $key,
+					'label' => $label . ' ( ID:' . $profile['clientId'] . ' )',
 				);
 
 			}

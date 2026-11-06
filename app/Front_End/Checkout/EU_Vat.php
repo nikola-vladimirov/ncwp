@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Front_End\Checkout;
+
 use Ddeboer\Vatin\Validator;
 
 defined( 'ABSPATH' ) || exit;
@@ -63,7 +64,7 @@ class EU_Vat {
 
 	public static function get_eu_countries() {
 		if ( empty( self::$eu_countries ) ) {
-			self::$eu_countries = apply_filters( 'nashenski/eu_vat_number/country_codes', array('AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'IM', 'MC', ) );
+			self::$eu_countries = apply_filters( 'nashenski/eu_vat_number/country_codes', array( 'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'IM', 'MC' ) );
 		}
 		return self::$eu_countries;
 	}
@@ -79,12 +80,12 @@ class EU_Vat {
 	public static function vat_number_field( $fields ) {
 		$fields['billing']['billing_vat_number'] = array(
 			'label'    => __( 'VAT number', 'nashenski-commerce' ),
-			'required' => ( nashenski_get_option('nap', 'dds_number_required' ) === 'yes' ),
+			'required' => ( nashenski_get_option( 'nap', 'dds_number_required' ) === 'yes' ),
 			'class'    => array(
 				'form-row-first',
 				'nashenski-company-info',
 			),
-			'id' => 'nashenski_eu_vat_number',
+			'id'       => 'nashenski_eu_vat_number',
 			'priority' => 120,
 		);
 
@@ -93,18 +94,18 @@ class EU_Vat {
 
 	public static function get_vat_number_prefix( $country ) {
 		switch ( $country ) {
-			case 'GR' :
+			case 'GR':
 				$vat_prefix = 'EL';
-			break;
-			case 'IM' :
+				break;
+			case 'IM':
 				$vat_prefix = 'GB';
-			break;
-			case 'MC' :
+				break;
+			case 'MC':
 				$vat_prefix = 'FR';
-			break;
-			default :
+				break;
+			default:
 				$vat_prefix = $country;
-			break;
+				break;
 		}
 		return $vat_prefix;
 	}
@@ -128,9 +129,9 @@ class EU_Vat {
 	}
 
 	public static function vat_number_is_valid( $vat_number, $country ) {
-		$required_number = nashenski_get_option('nap', 'dds_number_required' );
-		
-		if ( 'yes' !== $required_number && !$vat_number ) {
+		$required_number = nashenski_get_option( 'nap', 'dds_number_required' );
+
+		if ( 'yes' !== $required_number && ! $vat_number ) {
 			return true;
 		}
 
@@ -147,7 +148,7 @@ class EU_Vat {
 			return 'yes' === $cached_result;
 		}
 
-		$vies = new Validator;
+		$vies = new Validator();
 
 		if ( ! isset( self::$country_codes_patterns[ $vat_prefix ] ) ) {
 			return new \WP_Error( 'api', __( 'Invalid country code', 'nashenski-commerce' ) );
@@ -167,7 +168,7 @@ class EU_Vat {
 	}
 	public static function validate( $vat_number, $billing_country ) {
 		$vat_numer = self::get_formatted_vat_number( $vat_number );
-		$valid      = self::vat_number_is_valid( $vat_number, $billing_country );
+		$valid     = self::vat_number_is_valid( $vat_number, $billing_country );
 
 		if ( is_wp_error( $valid ) ) {
 			self::$data['vat_number'] = $vat_number;
@@ -208,9 +209,9 @@ class EU_Vat {
 	public static function process_checkout() {
 		self::reset();
 
-		$billing_country = nashenski_checkout_posted( 'billing_country' );
+		$billing_country  = nashenski_checkout_posted( 'billing_country' );
 		$shipping_country = nashenski_checkout_posted( 'shipping_country' ) && nashenski_checkout_posted( 'ship_to_different_address' ) ? nashenski_checkout_posted( 'shipping_country' ) : $billing_country;
-		$to_company = (bool) nashenski_checkout_posted( 'billing_to_company' );
+		$to_company       = (bool) nashenski_checkout_posted( 'billing_to_company' );
 
 		$vat_number = nashenski_checkout_posted( 'billing_vat_number' );
 
@@ -243,7 +244,7 @@ class EU_Vat {
 			return $form_data;
 		}
 
-		if ( nashenski_get_option('invoice', 'enable_vies' ) !== 'no' ) {
+		if ( nashenski_get_option( 'invoice', 'enable_vies' ) !== 'no' ) {
 			if ( in_array( $form_data['billing_country'], self::get_eu_countries() ) && ! empty( $form_data['billing_vat_number'] ) ) {
 				$shipping_country = sanitize_text_field( ! empty( $form_data['shipping_country'] ) && ! empty( $form_data['ship_to_different_address'] ) ? $form_data['shipping_country'] : $form_data['billing_country'] );
 

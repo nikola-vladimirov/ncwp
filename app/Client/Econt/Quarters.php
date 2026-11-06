@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Client\Econt;
+
 use Nashenski\Container\Client;
 use Nashenski\File;
 
@@ -8,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 class Quarters {
 	const QUARTERS_ENDPOINT = 'Nomenclatures/NomenclaturesService.getQuarters.json';
 
-	private $quarters = [];
+	private $quarters = array();
 	private $container;
 
 	public function __construct( $container ) {
@@ -21,14 +22,14 @@ class Quarters {
 		}
 
 		$quarters_file = $this->container[ Client::ECONT ]::CACHE_FOLDER . 'quarters-' . $city_id . '.json';
-		$quarters = File::get_file( $quarters_file );
+		$quarters      = File::get_file( $quarters_file );
 
-		if ( !$quarters ) {
+		if ( ! $quarters ) {
 			$api_call = $this->container[ Client::ECONT ]->api_call( self::QUARTERS_ENDPOINT, array( 'cityID' => $city_id ) );
 
 			if ( is_array( $api_call ) ) {
 				if ( $this->container[ Client::ECONT ]::validate_access( $api_call ) ) {
-					if ( !empty( $api_call['quarters'] ) ) {
+					if ( ! empty( $api_call['quarters'] ) ) {
 						$quarters = wp_json_encode( $api_call );
 
 						File::put_to_file( $quarters_file, $quarters );
@@ -45,7 +46,7 @@ class Quarters {
 		return $quarters;
 	}
 
-	//Getters
+	// Getters
 	public function get_quarters_by_city( $city_id ) {
 		if ( empty( $this->quarters[ $city_id ] ) ) {
 			$this->load_quarters_by_city( $city_id );
@@ -54,13 +55,13 @@ class Quarters {
 		return $this->quarters[ $city_id ];
 	}
 
-	//Setters
+	// Setters
 	private function set_quarters( $quarters, $city_id ) {
 		$this->quarters[ $city_id ] = $quarters;
 	}
 
 	public function format_quarters( $quarters, $city_id = null ) {
-		$formatted = [];
+		$formatted = array();
 
 		foreach ( $quarters as $qtr ) {
 			$formatted[ 'qtr-' . $qtr['id'] ] = $qtr['name'];

@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Client\Econt;
+
 use Nashenski\Container\Client;
 use Nashenski\Transliteration;
 use Nashenski\File;
@@ -9,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 class Cities {
 	const CITIES_ENDPOINT = 'Nomenclatures/NomenclaturesService.getCities.json';
 
-	private $cities = [];
+	private $cities = array();
 	private $container;
 
 	public function __construct( $container ) {
@@ -22,21 +23,21 @@ class Cities {
 		}
 
 		$cities_file = $this->container[ Client::ECONT ]::CACHE_FOLDER . 'cities-' . $country_code . '.json';
-		$cities = File::get_file( $cities_file );
+		$cities      = File::get_file( $cities_file );
 
-		if ( !$cities ) {
+		if ( ! $cities ) {
 			$api_call = $this->container[ Client::ECONT ]->api_call( self::CITIES_ENDPOINT, array( 'countryCode' => $country_code ) );
 
 			if ( is_array( $api_call ) ) {
 				if ( $this->container[ Client::ECONT ]::validate_access( $api_call ) ) {
-					if ( !empty( $api_call['cities'] ) ) {
+					if ( ! empty( $api_call['cities'] ) ) {
 						foreach ( $api_call['cities'] as &$city ) {
-							unset( $city[ 'servingOffices' ] );
+							unset( $city['servingOffices'] );
 						}
 						unset( $city );
 
 						$cities = wp_json_encode( $api_call );
-						
+
 						File::put_to_file( $cities_file, $cities );
 						unset( $api_call );
 					}
@@ -52,28 +53,31 @@ class Cities {
 	}
 
 	public function get_formatted_cities( $country_code = 'BG' ) {
-		$cities = $this->container[ Client::ECONT_CITIES ]->get_cities( $country_code );
-		$formatted = [];
+		$cities    = $this->container[ Client::ECONT_CITIES ]->get_cities( $country_code );
+		$formatted = array();
 
 		foreach ( $cities['cities'] ?? array() as $city ) {
-			$label = $city['name'] ?? '';
+			$label       = $city['name'] ?? '';
 			$region_name = $city['regionName'] ?? '';
 
 			if ( $region_name && $region_name !== $label ) {
-				$label = $region_name . " - " . $label;
+				$label = $region_name . ' - ' . $label;
 			}
 
 			if ( ! empty( $city['name'] ) && $region_name ) {
 				$formatted[ 'cityID-' . $city['id'] ] = array(
-					'id' => 'cityID-' . $city['id'],
+					'id'    => 'cityID-' . $city['id'],
 					'label' => $label,
 				);
 			}
 		}
 
-		uasort( $formatted, function( $a, $b ) {
-			return strcmp( $a["label"], $b["label"] );
-		} );
+		uasort(
+			$formatted,
+			function ( $a, $b ) {
+				return strcmp( $a['label'], $b['label'] );
+			}
+		);
 
 		// The settings select uses only the compact formatted representation.
 		// Do not retain the complete Econt city records alongside it.
@@ -82,7 +86,7 @@ class Cities {
 		return $formatted;
 	}
 
-	//Getters
+	// Getters
 	public function get_cities( $country_code = 'BG' ) {
 		if ( empty( $this->cities[ $country_code ] ) ) {
 			$this->load_cities( $country_code );
@@ -99,29 +103,31 @@ class Cities {
 		$cities = $this->get_cities( $country_code );
 
 		if ( empty( $cities ) ) {
-			return [];
+			return array();
 		}
-		
-		$cities = array_filter( $cities['cities'], function( $city ) use ( $region ) {
-			if ( 
-				mb_strtolower( $city['regionName'] ?? '' ) === mb_strtolower( $region ) || 
+
+		$cities = array_filter(
+			$cities['cities'],
+			function ( $city ) use ( $region ) {
+				if ( mb_strtolower( $city['regionName'] ?? '' ) === mb_strtolower( $region ) ||
 				mb_strtolower( $city['regionNameEn'] ) === mb_strtolower( $region )
-			) {
-				return true;
+				) {
+					return true;
+				}
 			}
-		} );
+		);
 
 		return array_values( $cities );
 	}
 
 	public function get_state_name( $state_code, $country_code = 'BG' ) {
 		$countries = new \WC_Countries();
-		$states = $countries->get_states( $country_code );
+		$states    = $countries->get_states( $country_code );
 
 		return $states[ $state_code ];
 	}
 
-	//Setters
+	// Setters
 	private function set_cities( $cities, $country_code = 'BG' ) {
 		$this->cities[ $country_code ] = $cities;
 	}
@@ -131,7 +137,7 @@ class Cities {
 
 		if ( $country_code === 'GR' ) {
 			$regions = explode( ',', $state );
-			$cities = [];
+			$cities  = array();
 
 			foreach ( $regions as $region ) {
 				$cities = array_merge( $cities, self::get_cities_by_region( $region, $country_code ) );
@@ -140,34 +146,34 @@ class Cities {
 			$cities = self::get_cities_by_region( $state, $country_code );
 		}
 
-		$cities_only_names = [];
-		$cities_search_names = [];
-		$cities_only_names_dropdowns = [];
-		$key = 'name';
+		$cities_only_names           = array();
+		$cities_search_names         = array();
+		$cities_only_names_dropdowns = array();
+		$key                         = 'name';
 
 		if ( $country_code !== 'BG' ) {
 			$key = 'nameEn';
 		}
 
-		if ( !empty( $cities ) ) {
+		if ( ! empty( $cities ) ) {
 			foreach ( $cities as $temp_city ) {
 				$cities_only_names_dropdowns[] = $temp_city[ $key ];
-				$temp_city[ $key ] = $this->normalize_city_name( $temp_city[ $key ], $country_code );
-				$cities_only_names[] = $temp_city[ $key ];
-				$cities_search_names[] = $temp_city;
+				$temp_city[ $key ]             = $this->normalize_city_name( $temp_city[ $key ], $country_code );
+				$cities_only_names[]           = $temp_city[ $key ];
+				$cities_search_names[]         = $temp_city;
 			}
 		}
 
 		$city_key = array_search( $city, array_column( $cities_search_names, $key ) );
 
-		return [
-			'city' => $city,
-			'cities' => $cities,
-			'cities_only_names' => $cities_only_names,
-			'cities_search_names' => $cities_search_names,
+		return array(
+			'city'                        => $city,
+			'cities'                      => $cities,
+			'cities_only_names'           => $cities_only_names,
+			'cities_search_names'         => $cities_search_names,
 			'cities_only_names_dropdowns' => $cities_only_names_dropdowns,
-			'city_key' => $city_key,
-		];
+			'city_key'                    => $city_key,
+		);
 	}
 
 	private function normalize_city_name( $city, $country_code ) {
@@ -184,39 +190,42 @@ class Cities {
 	}
 
 	public function get_regions( $country_code = 'BG' ) {
-		$regions = apply_filters( 'nashenski/econt/cities/regions', array(
-			'BG' => [
-				'BG-01' => 'Благоевград',
-				'BG-02' => 'Бургас',
-				'BG-03' => 'Варна',
-				'BG-04' => 'Велико Търново',
-				'BG-05' => 'Видин',
-				'BG-06' => 'Враца',
-				'BG-07' => 'Габрово',
-				'BG-08' => 'Добрич',
-				'BG-09' => 'Кърджали',
-				'BG-10' => 'Кюстендил',
-				'BG-11' => 'Ловеч',
-				'BG-12' => 'Монтана',
-				'BG-13' => 'Пазарджик',
-				'BG-14' => 'Перник',
-				'BG-15' => 'Плевен',
-				'BG-16' => 'Пловдив',
-				'BG-17' => 'Разград',
-				'BG-18' => 'Русе',
-				'BG-19' => 'Силистра',
-				'BG-20' => 'Сливен',
-				'BG-21' => 'Смолян',
-				'BG-22' => 'София',
-				'BG-23' => 'София Област',
-				'BG-24' => 'Стара Загора',
-				'BG-25' => 'Търговище',
-				'BG-26' => 'Хасково',
-				'BG-27' => 'Шумен',
-				'BG-28' => 'Ямбол',
-			]
-		) );
-		
+		$regions = apply_filters(
+			'nashenski/econt/cities/regions',
+			array(
+				'BG' => array(
+					'BG-01' => 'Благоевград',
+					'BG-02' => 'Бургас',
+					'BG-03' => 'Варна',
+					'BG-04' => 'Велико Търново',
+					'BG-05' => 'Видин',
+					'BG-06' => 'Враца',
+					'BG-07' => 'Габрово',
+					'BG-08' => 'Добрич',
+					'BG-09' => 'Кърджали',
+					'BG-10' => 'Кюстендил',
+					'BG-11' => 'Ловеч',
+					'BG-12' => 'Монтана',
+					'BG-13' => 'Пазарджик',
+					'BG-14' => 'Перник',
+					'BG-15' => 'Плевен',
+					'BG-16' => 'Пловдив',
+					'BG-17' => 'Разград',
+					'BG-18' => 'Русе',
+					'BG-19' => 'Силистра',
+					'BG-20' => 'Сливен',
+					'BG-21' => 'Смолян',
+					'BG-22' => 'София',
+					'BG-23' => 'София Област',
+					'BG-24' => 'Стара Загора',
+					'BG-25' => 'Търговище',
+					'BG-26' => 'Хасково',
+					'BG-27' => 'Шумен',
+					'BG-28' => 'Ямбол',
+				),
+			)
+		);
+
 		return $regions[ $country_code ];
 	}
 }

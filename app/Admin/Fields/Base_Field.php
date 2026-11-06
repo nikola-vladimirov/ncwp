@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 abstract class Base_Field {
 	protected $type, $name, $title, $value, $help_text, $validation_rules, $desc;
 
-	//Getters
+	// Getters
 	public function get_type() {
 		return $this->type;
 	}
@@ -34,7 +34,7 @@ abstract class Base_Field {
 		return $this->validation_rules;
 	}
 
-	//Setters
+	// Setters
 	public function set_type( $type ) {
 		return $this->type = sanitize_title_with_dashes( $type );
 	}
@@ -59,7 +59,7 @@ abstract class Base_Field {
 		return $this->validation_rules = $validation_rules;
 	}
 
-	
+
 	// Value WooCommerce shows and saves when the option was never saved.
 	protected $default = null;
 

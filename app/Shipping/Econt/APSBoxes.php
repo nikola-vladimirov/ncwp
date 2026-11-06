@@ -46,7 +46,7 @@ class APSBoxes {
 		}
 
 		try {
-			$budget = $method instanceof Method ? $method->packing_budget() : new Packing_Budget();
+			$budget       = $method instanceof Method ? $method->packing_budget() : new Packing_Budget();
 			$packed_boxes = APSPackage::pack_package( $method->package, self::$box_sizes, null, $budget );
 		} catch ( Packing_Limit_Exceeded $e ) {
 			throw $e;

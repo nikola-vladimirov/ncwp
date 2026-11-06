@@ -5,16 +5,16 @@ defined( 'ABSPATH' ) || exit;
 
 class Accountant_Email extends \WC_Email {
 	public function __construct() {
-		$this->id             = 'nashenski_accountant_documents';
-		$this->title          = __( 'Accountant Document Copies', 'nashenski-commerce' );
-		$this->description    = __( 'This email sends invoice and credit notice copies to the accountant.', 'nashenski-commerce' );
-		$this->heading        = __( 'Document Copy', 'nashenski-commerce' );
-		$this->subject        = __( '[{site_title}]: Document copy for order #{order_number}', 'nashenski-commerce' );
+		$this->id          = 'nashenski_accountant_documents';
+		$this->title       = __( 'Accountant Document Copies', 'nashenski-commerce' );
+		$this->description = __( 'This email sends invoice and credit notice copies to the accountant.', 'nashenski-commerce' );
+		$this->heading     = __( 'Document Copy', 'nashenski-commerce' );
+		$this->subject     = __( '[{site_title}]: Document copy for order #{order_number}', 'nashenski-commerce' );
 
 		$this->template_html  = '';
 		$this->template_plain = '';
 
-		$this->placeholders   = array(
+		$this->placeholders = array(
 			'{order_date}'   => '',
 			'{order_number}' => '',
 			'{site_title}'   => $this->get_blogname(),

@@ -65,9 +65,12 @@ class Quick_Order_Tab extends Base_Tab {
 			$rows[] = ( new Fields\TrueFalse_Field( 'field_' . $key, $title, null, null, __( 'Show in the form (Custom template)', 'nashenski-commerce' ) ) )->set_default( 'no' );
 		}
 
-		$fields = apply_filters( 'nashenski/admin/settings/quick_order/fields', array(
-			'quick_order' => $rows,
-		) );
+		$fields = apply_filters(
+			'nashenski/admin/settings/quick_order/fields',
+			array(
+				'quick_order' => $rows,
+			)
+		);
 
 		$this->set_fields( $fields );
 	}
@@ -81,7 +84,7 @@ class Quick_Order_Tab extends Base_Tab {
 		$options = array();
 
 		foreach ( $codes as $iso => $dial ) {
-			$name = isset( $names[ $iso ] ) ? $names[ $iso ] : $iso;
+			$name            = isset( $names[ $iso ] ) ? $names[ $iso ] : $iso;
 			$options[ $iso ] = sprintf( '%s (+%s)', $name, $dial );
 		}
 

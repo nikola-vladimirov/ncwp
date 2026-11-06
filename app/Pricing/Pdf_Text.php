@@ -91,7 +91,7 @@ class Pdf_Text {
 	 * Font resource name => glyph code (hex) => text.
 	 */
 	private function page_fonts( $page ) {
-		$fonts = array();
+		$fonts     = array();
 		$resources = $page;
 
 		if ( preg_match( '#/Resources\s*(\d+)\s+0\s+R#', $page, $m ) && isset( $this->objects[ (int) $m[1] ] ) ) {
@@ -110,7 +110,7 @@ class Pdf_Text {
 
 		foreach ( $entries as $entry ) {
 			$font = $this->objects[ (int) $entry[2] ] ?? '';
-			$map = array();
+			$map  = array();
 
 			if ( preg_match( '#/ToUnicode\s*(\d+)\s+0\s+R#', $font, $t ) && isset( $this->objects[ (int) $t[1] ] ) ) {
 				$map = $this->cmap( $this->stream( $this->objects[ (int) $t[1] ] ) );
@@ -148,12 +148,12 @@ class Pdf_Text {
 
 				foreach ( $arrays as $array ) {
 					$width = strlen( $array[1] );
-					$code = hexdec( $array[1] );
+					$code  = hexdec( $array[1] );
 					preg_match_all( '/<([0-9A-Fa-f]+)>/', $array[3], $targets );
 
 					foreach ( $targets[1] as $target ) {
 						$map[ strtoupper( str_pad( dechex( $code ), $width, '0', STR_PAD_LEFT ) ) ] = self::utf16_hex( $target );
-						$code++;
+						++$code;
 					}
 				}
 
@@ -163,9 +163,9 @@ class Pdf_Text {
 				preg_match_all( '/<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>/', $block, $ranges, PREG_SET_ORDER );
 
 				foreach ( $ranges as $range ) {
-					$width = strlen( $range[1] );
-					$start = hexdec( $range[1] );
-					$end = hexdec( $range[2] );
+					$width  = strlen( $range[1] );
+					$start  = hexdec( $range[1] );
+					$end    = hexdec( $range[2] );
 					$target = hexdec( $range[3] );
 
 					for ( $code = $start; $code <= $end && $code - $start < 2048; $code++ ) {
@@ -180,8 +180,8 @@ class Pdf_Text {
 
 	private function decode( $string, $map ) {
 		if ( '<' === $string[0] ) {
-			$hex = strtoupper( preg_replace( '/[^0-9A-Fa-f]/', '', $string ) );
-			$out = '';
+			$hex  = strtoupper( preg_replace( '/[^0-9A-Fa-f]/', '', $string ) );
+			$out  = '';
 			$step = $map && 4 === strlen( (string) array_key_first( $map ) ) ? 4 : 2;
 
 			for ( $i = 0; $i < strlen( $hex ); $i += $step ) {
@@ -213,9 +213,9 @@ class Pdf_Text {
 	 */
 	private function text_lines( $content, $fonts ) {
 		$pieces = array();
-		$font = '';
-		$x = 0;
-		$y = 0;
+		$font   = '';
+		$x      = 0;
+		$y      = 0;
 
 		$pattern = '/\/([A-Za-z0-9_.+-]+)\s+[\d.]+\s+Tf|([-\d.]+)\s+([-\d.]+)\s+Td|([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+Tm|(<[0-9A-Fa-f\s]*>|\((?:\\\\.|[^\\\\)])*\))\s*Tj|\[((?:[^\]\\\\]|\\\\.)*)\]\s*TJ/s';
 
@@ -245,12 +245,15 @@ class Pdf_Text {
 		}
 
 		// Group by row (same y within half a point), top to bottom, then left to right.
-		usort( $pieces, function ( $a, $b ) {
-			return abs( $a[1] - $b[1] ) < 0.5 ? $a[0] <=> $b[0] : $b[1] <=> $a[1];
-		} );
+		usort(
+			$pieces,
+			function ( $a, $b ) {
+				return abs( $a[1] - $b[1] ) < 0.5 ? $a[0] <=> $b[0] : $b[1] <=> $a[1];
+			}
+		);
 
-		$lines = array();
-		$row = null;
+		$lines   = array();
+		$row     = null;
 		$current = array();
 
 		foreach ( $pieces as $piece ) {
@@ -259,7 +262,7 @@ class Pdf_Text {
 				$current = array();
 			}
 
-			$row = $piece[1];
+			$row       = $piece[1];
 			$current[] = trim( $piece[2] );
 		}
 

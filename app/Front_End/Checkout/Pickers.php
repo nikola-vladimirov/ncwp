@@ -20,7 +20,7 @@ class Pickers {
 
 	// Login settings of each courier (group = courier slug).
 	const LOGIN = array(
-		'econt' => array( 'user', 'password' ),
+		'econt'  => array( 'user', 'password' ),
 		'speedy' => array( 'user', 'password' ),
 		'boxnow' => array( 'client_id', 'client_secret' ),
 		'pigeon' => array( 'api_key', 'api_secret' ),
@@ -55,18 +55,18 @@ class Pickers {
 	public static function search_towns() {
 		nashenski_check_picker_request();
 
-		$text = mb_strtolower( trim( nashenski_remove_city_prefix( nashenski_picker_request( 'query' ) ) ) );
+		$text     = mb_strtolower( trim( nashenski_remove_city_prefix( nashenski_picker_request( 'query' ) ) ) );
 		$cyrillic = mb_strtolower( \Nashenski\Transliteration::latin2cyrillic( $text ) );
-		$found = array();
+		$found    = array();
 
 		if ( mb_strlen( $text ) > 1 ) {
-			$cities = nashenski()->container()[ \Nashenski\Container\Client::ECONT_CITIES ];
+			$cities  = nashenski()->container()[ \Nashenski\Container\Client::ECONT_CITIES ];
 			$regions = array_flip( $cities->get_regions( 'BG' ) );
 
 			foreach ( $cities->get_cities( 'BG' )['cities'] ?? array() as $city ) {
 				$state = $regions[ $city['regionName'] ?? '' ] ?? '';
 				$names = array( mb_strtolower( (string) $city['name'] ), mb_strtolower( (string) ( $city['nameEn'] ?? '' ) ) );
-				$rank = 3;
+				$rank  = 3;
 
 				foreach ( $names as $name ) {
 					foreach ( array( $cyrillic, $text ) as $query ) {
@@ -80,18 +80,21 @@ class Pickers {
 
 				if ( $state && $rank < 3 ) {
 					$found[] = array(
-						'rank' => $rank,
-						'name' => $city['name'],
-						'state' => $state,
-						'region' => $city['regionName'],
+						'rank'     => $rank,
+						'name'     => $city['name'],
+						'state'    => $state,
+						'region'   => $city['regionName'],
 						'postcode' => (string) ( $city['postCode'] ?? '' ),
 					);
 				}
 			}
 
-			usort( $found, function ( $a, $b ) {
-				return array( $a['rank'], $a['name'] ) <=> array( $b['rank'], $b['name'] );
-			} );
+			usort(
+				$found,
+				function ( $a, $b ) {
+					return array( $a['rank'], $a['name'] ) <=> array( $b['rank'], $b['name'] );
+				}
+			);
 		}
 
 		wp_send_json_success( array( 'towns' => array_slice( $found, 0, 30 ) ) );
@@ -157,9 +160,16 @@ class Pickers {
 	 * the current choice, also an order placed before the checkout had updated the price.
 	 */
 	public static function add_choice( $packages ) {
-		$choice = md5( wp_json_encode( array_map( function ( $courier ) {
-			return nashenski_courier_cookie( 'nashenski--' . $courier . ( 'boxnow' === $courier ? '-apm' : '-address' ) );
-		}, \Nashenski\Plugin::COURIERS ) ) );
+		$choice = md5(
+			wp_json_encode(
+				array_map(
+					function ( $courier ) {
+						return nashenski_courier_cookie( 'nashenski--' . $courier . ( 'boxnow' === $courier ? '-apm' : '-address' ) );
+					},
+					\Nashenski\Plugin::COURIERS
+				)
+			)
+		);
 
 		foreach ( $packages as $key => $package ) {
 			$packages[ $key ]['nashenski_choice'] = $choice;
@@ -186,8 +196,8 @@ class Pickers {
 				continue;
 			}
 
-			$meta = $rate->get_meta_data();
-			$free = ! empty( $meta['free_shipping'] );
+			$meta   = $rate->get_meta_data();
+			$free   = ! empty( $meta['free_shipping'] );
 			$cookie = isset( $meta['cookie_data'] ) && is_array( $meta['cookie_data'] ) ? $meta['cookie_data'] : array();
 			$chosen = 'boxnow' === $courier ? ! empty( $cookie['selectedApm'] ) : ! empty( $meta['validated'] );
 
@@ -238,9 +248,9 @@ class Pickers {
 			return null;
 		}
 
-		$chosen = WC()->session->get( 'chosen_shipping_methods', array() );
+		$chosen   = WC()->session->get( 'chosen_shipping_methods', array() );
 		$packages = WC()->shipping()->get_packages();
-		$id = $chosen[0] ?? '';
+		$id       = $chosen[0] ?? '';
 
 		return $id && isset( $packages[0]['rates'][ $id ] ) ? $packages[0]['rates'][ $id ] : null;
 	}
@@ -270,8 +280,8 @@ class Pickers {
 	 * The block checkout does not print our holders, so the script needs this to label the options.
 	 */
 	public static function rate_types() {
-		$types = array();
-		$zones = \WC_Shipping_Zones::get_zones();
+		$types   = array();
+		$zones   = \WC_Shipping_Zones::get_zones();
 		$zones[] = array( 'shipping_methods' => ( new \WC_Shipping_Zone( 0 ) )->get_shipping_methods() );
 
 		foreach ( $zones as $zone ) {
@@ -281,7 +291,7 @@ class Pickers {
 				if ( $courier ) {
 					$types[ $method->id . ':' . $method->instance_id ] = array(
 						'courier' => $courier,
-						'type' => 'boxnow' === $courier ? 'apm' : (string) $method->get_option( 'delivery_type', 'office' ),
+						'type'    => 'boxnow' === $courier ? 'apm' : (string) $method->get_option( 'delivery_type', 'office' ),
 					);
 				}
 			}
@@ -340,57 +350,57 @@ class Pickers {
 		}
 
 		return array(
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-			'nonce' => wp_create_nonce( 'nashenski_pickers' ),
-			'rates' => self::rate_types(),
-			'connected' => $connected,
+			'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+			'nonce'      => wp_create_nonce( 'nashenski_pickers' ),
+			'rates'      => self::rate_types(),
+			'connected'  => $connected,
 			'townPicker' => self::town_picker(),
-			'logos' => 'no' === nashenski_get_option( 'checkout', 'courier_logos' ) ? array() : Courier_Logos::get_logos(),
-			'showType' => 'no' !== nashenski_get_option( Appearance::GROUP, 'show_type' ),
-			'pending' => self::pending_text(),
-			'types' => array(
-				'office' => __( 'To an office', 'nashenski-commerce' ),
+			'logos'      => 'no' === nashenski_get_option( 'checkout', 'courier_logos' ) ? array() : Courier_Logos::get_logos(),
+			'showType'   => 'no' !== nashenski_get_option( Appearance::GROUP, 'show_type' ),
+			'pending'    => self::pending_text(),
+			'types'      => array(
+				'office'  => __( 'To an office', 'nashenski-commerce' ),
 				'automat' => __( 'To a parcel locker', 'nashenski-commerce' ),
-				'locker' => __( 'To a parcel locker', 'nashenski-commerce' ),
-				'apm' => __( 'To a parcel locker', 'nashenski-commerce' ),
+				'locker'  => __( 'To a parcel locker', 'nashenski-commerce' ),
+				'apm'     => __( 'To a parcel locker', 'nashenski-commerce' ),
 				'address' => __( 'To your address', 'nashenski-commerce' ),
 			),
-			'i18n' => array(
-				'office' => __( 'Office', 'nashenski-commerce' ),
-				'automat' => __( 'Parcel locker', 'nashenski-commerce' ),
-				'locker' => __( 'Parcel locker', 'nashenski-commerce' ),
-				'apm' => __( 'Parcel locker', 'nashenski-commerce' ),
+			'i18n'       => array(
+				'office'       => __( 'Office', 'nashenski-commerce' ),
+				'automat'      => __( 'Parcel locker', 'nashenski-commerce' ),
+				'locker'       => __( 'Parcel locker', 'nashenski-commerce' ),
+				'apm'          => __( 'Parcel locker', 'nashenski-commerce' ),
 				'searchOffice' => __( 'Search by town, name or address', 'nashenski-commerce' ),
-				'change' => __( 'Change', 'nashenski-commerce' ),
-				'map' => __( 'Choose on the map', 'nashenski-commerce' ),
-				'mapTitle' => __( 'Choose an office on the map', 'nashenski-commerce' ),
-				'close' => __( 'Close', 'nashenski-commerce' ),
-				'loading' => __( 'Loading...', 'nashenski-commerce' ),
-				'none' => __( 'Nothing found. Check the town in the address above.', 'nashenski-commerce' ),
-				'noMatch' => __( 'No match. Try another word.', 'nashenski-commerce' ),
-				'enterCity' => __( 'Enter your town in the address above to see the list.', 'nashenski-commerce' ),
-				'mapOnly' => __( 'Choose it on the map. The price comes from the courier\'s public price list.', 'nashenski-commerce' ),
-				'notLocker' => __( 'This is an office. Choose a parcel locker, or pick the office delivery option.', 'nashenski-commerce' ),
-				'notOffice' => __( 'This is a parcel locker. Choose an office, or pick the parcel locker delivery option.', 'nashenski-commerce' ),
-				'street' => __( 'Street or quarter', 'nashenski-commerce' ),
+				'change'       => __( 'Change', 'nashenski-commerce' ),
+				'map'          => __( 'Choose on the map', 'nashenski-commerce' ),
+				'mapTitle'     => __( 'Choose an office on the map', 'nashenski-commerce' ),
+				'close'        => __( 'Close', 'nashenski-commerce' ),
+				'loading'      => __( 'Loading...', 'nashenski-commerce' ),
+				'none'         => __( 'Nothing found. Check the town in the address above.', 'nashenski-commerce' ),
+				'noMatch'      => __( 'No match. Try another word.', 'nashenski-commerce' ),
+				'enterCity'    => __( 'Enter your town in the address above to see the list.', 'nashenski-commerce' ),
+				'mapOnly'      => __( 'Choose it on the map. The price comes from the courier\'s public price list.', 'nashenski-commerce' ),
+				'notLocker'    => __( 'This is an office. Choose a parcel locker, or pick the office delivery option.', 'nashenski-commerce' ),
+				'notOffice'    => __( 'This is a parcel locker. Choose an office, or pick the parcel locker delivery option.', 'nashenski-commerce' ),
+				'street'       => __( 'Street or quarter', 'nashenski-commerce' ),
 				'streetSearch' => __( 'Start typing the street or quarter', 'nashenski-commerce' ),
-				'streetFree' => __( 'Street and number', 'nashenski-commerce' ),
+				'streetFree'   => __( 'Street and number', 'nashenski-commerce' ),
 				'streetNumber' => __( 'Number', 'nashenski-commerce' ),
-				'block' => __( 'Block', 'nashenski-commerce' ),
-				'entrance' => __( 'Entrance', 'nashenski-commerce' ),
-				'floor' => __( 'Floor', 'nashenski-commerce' ),
-				'apartment' => __( 'Apartment', 'nashenski-commerce' ),
-				'other' => __( 'Note for the courier (optional)', 'nashenski-commerce' ),
-				'error' => __( 'The list could not be loaded. Please try again.', 'nashenski-commerce' ),
-				'retry' => __( 'Try again', 'nashenski-commerce' ),
-				'choose' => __( 'Choose', 'nashenski-commerce' ),
-				'town' => __( 'Town or village', 'nashenski-commerce' ),
-				'townSearch' => __( 'Start typing your town or village', 'nashenski-commerce' ),
+				'block'        => __( 'Block', 'nashenski-commerce' ),
+				'entrance'     => __( 'Entrance', 'nashenski-commerce' ),
+				'floor'        => __( 'Floor', 'nashenski-commerce' ),
+				'apartment'    => __( 'Apartment', 'nashenski-commerce' ),
+				'other'        => __( 'Note for the courier (optional)', 'nashenski-commerce' ),
+				'error'        => __( 'The list could not be loaded. Please try again.', 'nashenski-commerce' ),
+				'retry'        => __( 'Try again', 'nashenski-commerce' ),
+				'choose'       => __( 'Choose', 'nashenski-commerce' ),
+				'town'         => __( 'Town or village', 'nashenski-commerce' ),
+				'townSearch'   => __( 'Start typing your town or village', 'nashenski-commerce' ),
 				/* translators: %s: region name */
-				'region' => __( '%s region', 'nashenski-commerce' ),
+				'region'       => __( '%s region', 'nashenski-commerce' ),
 			),
-			'maps' => array(
-				'econt' => 'https://officelocator.econt.com/',
+			'maps'       => array(
+				'econt'  => 'https://officelocator.econt.com/',
 				'speedy' => 'https://services.speedy.bg/office_locator_widget_v3/office_locator.php',
 			),
 		);
@@ -406,16 +416,16 @@ class Pickers {
 
 		if ( 'address' === $type ) {
 			$street = $cookie['selectedAddress']['label'] ?? '';
-			$parts = array();
+			$parts  = array();
 
 			if ( ! empty( $cookie['streetNumber'] ) ) {
 				$street .= ' ' . $cookie['streetNumber'];
 			}
 
 			$details = array(
-				'blockNumber' => __( 'bl.', 'nashenski-commerce' ),
-				'entranceNumber' => __( 'entr.', 'nashenski-commerce' ),
-				'floorNumber' => __( 'fl.', 'nashenski-commerce' ),
+				'blockNumber'     => __( 'bl.', 'nashenski-commerce' ),
+				'entranceNumber'  => __( 'entr.', 'nashenski-commerce' ),
+				'floorNumber'     => __( 'fl.', 'nashenski-commerce' ),
 				'apartmentNumber' => __( 'ap.', 'nashenski-commerce' ),
 			);
 
@@ -450,16 +460,16 @@ class Pickers {
 				continue;
 			}
 
-			$type = 'boxnow' === $courier ? 'apm' : (string) $item->get_meta( 'delivery_type' );
+			$type   = 'boxnow' === $courier ? 'apm' : (string) $item->get_meta( 'delivery_type' );
 			$cookie = $item->get_meta( 'cookie_data' );
-			$text = self::describe_choice( $cookie, $type );
+			$text   = self::describe_choice( $cookie, $type );
 
 			if ( '' === $text ) {
 				return;
 			}
 
 			$changed = false;
-			$hidden = 'hidden' === Field_Editor::rule( 'address_1' );
+			$hidden  = 'hidden' === Field_Editor::rule( 'address_1' );
 
 			foreach ( array( 'billing', 'shipping' ) as $kind ) {
 				if ( $hidden ? $text !== $order->{"get_{$kind}_address_1"}() : '' === (string) $order->{"get_{$kind}_address_1"}() ) {

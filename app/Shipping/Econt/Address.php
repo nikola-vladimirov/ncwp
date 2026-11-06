@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Shipping\Econt;
+
 use Nashenski\Container\Client;
 use Nashenski\Transliteration;
 
@@ -24,7 +25,7 @@ class Address {
 			'floorNumber'     => __( 'Floor', 'nashenski-commerce' ),
 			'apartmentNumber' => __( 'Apartment', 'nashenski-commerce' ),
 		);
-		$parts = array();
+		$parts  = array();
 
 		foreach ( $labels as $field => $label ) {
 			$value = isset( $address_data[ $field ] ) ? trim( (string) $address_data[ $field ] ) : '';
@@ -63,31 +64,31 @@ class Address {
 		nashenski_check_picker_request();
 
 		self::$container = nashenski()->container();
-		$args = [];
-		$raw_state = nashenski_picker_request( 'state' );
-		$country = nashenski_picker_request( 'country' );
-		$query = self::normalize_search_text( nashenski_picker_request( 'query' ), $country === 'BG' );
-		$states = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
-		$state = $states[ $raw_state ] ?? '';
-		$raw_city = nashenski_picker_request( 'city' );
-		$cities_data = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $raw_city, $state, $country );
+		$args            = array();
+		$raw_state       = nashenski_picker_request( 'state' );
+		$country         = nashenski_picker_request( 'country' );
+		$query           = self::normalize_search_text( nashenski_picker_request( 'query' ), $country === 'BG' );
+		$states          = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
+		$state           = $states[ $raw_state ] ?? '';
+		$raw_city        = nashenski_picker_request( 'city' );
+		$cities_data     = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $raw_city, $state, $country );
 
 		if ( in_array( $cities_data['city'], $cities_data['cities_only_names'] ) ) {
-			$streets = nashenski_return_array_for_select( 
-				self::get_streets_for_query( $query, $cities_data['city_key'], $cities_data['cities'] ), 
-				1, 
-				array( 'type'=>'streets' ) 
+			$streets = nashenski_return_array_for_select(
+				self::get_streets_for_query( $query, $cities_data['city_key'], $cities_data['cities'] ),
+				1,
+				array( 'type' => 'streets' )
 			);
 
-			$quarters = nashenski_return_array_for_select( 
-				self::get_quarters_for_query( $query, $cities_data['city_key'], $cities_data['cities'] ), 
-				1, 
-				array( 'type'=>'quarters' ) 
+			$quarters = nashenski_return_array_for_select(
+				self::get_quarters_for_query( $query, $cities_data['city_key'], $cities_data['cities'] ),
+				1,
+				array( 'type' => 'quarters' )
 			);
 
-			$args[ 'streets' ] = array_merge( $streets, $quarters );
+			$args['streets'] = array_merge( $streets, $quarters );
 		} else {
-			$args[ 'cities' ] = nashenski_return_array_for_select( self::get_cities_for_query( $query, $cities_data['cities_only_names'] ), 1 );
+			$args['cities'] = nashenski_return_array_for_select( self::get_cities_for_query( $query, $cities_data['cities_only_names'] ), 1 );
 		}
 
 		wp_send_json_success( $args );
@@ -99,33 +100,33 @@ class Address {
 		nashenski_check_picker_request();
 
 		self::$container = nashenski()->container();
-		$args = [];
-		$raw_state = nashenski_picker_request( 'state' );
-		$country = nashenski_picker_request( 'country' );
-		$states = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
-		$state = $states[ $raw_state ] ?? '';
+		$args            = array();
+		$raw_state       = nashenski_picker_request( 'state' );
+		$country         = nashenski_picker_request( 'country' );
+		$states          = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
+		$state           = $states[ $raw_state ] ?? '';
 
-		$raw_city = nashenski_picker_request( 'city' );
+		$raw_city    = nashenski_picker_request( 'city' );
 		$cities_data = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $raw_city, $state, $country );
 
-		if ( !in_array( $cities_data['city'], $cities_data['cities_only_names'] ) ) {
-			$args[ 'cities' ] = nashenski_return_array_for_select( $cities_data['cities_only_names_dropdowns'], 1, array( 'type'=>'city' ) );
-			$args[ 'status' ] = 'invalid-city';
+		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'] ) ) {
+			$args['cities'] = nashenski_return_array_for_select( $cities_data['cities_only_names_dropdowns'], 1, array( 'type' => 'city' ) );
+			$args['status'] = 'invalid-city';
 		} else {
-			$streets = nashenski_return_array_for_select( 
-				self::get_streets_for_query( '', $cities_data['city_key'], $cities_data['cities'] ), 
-				1, 
-				array( 'type' => 'streets' ) 
+			$streets = nashenski_return_array_for_select(
+				self::get_streets_for_query( '', $cities_data['city_key'], $cities_data['cities'] ),
+				1,
+				array( 'type' => 'streets' )
 			);
 
-			$quarters = nashenski_return_array_for_select( 
-				self::get_quarters_for_query( '', $cities_data['city_key'], $cities_data['cities'] ), 
-				1, 
-				array( 'type' => 'quarters' ) 
+			$quarters = nashenski_return_array_for_select(
+				self::get_quarters_for_query( '', $cities_data['city_key'], $cities_data['cities'] ),
+				1,
+				array( 'type' => 'quarters' )
 			);
 
-			$args[ 'streets' ] = array_merge( $streets, $quarters );
-			$args[ 'status' ] = 'valid-city';
+			$args['streets'] = array_merge( $streets, $quarters );
+			$args['status']  = 'valid-city';
 		}
 
 		wp_send_json_success( $args );
@@ -134,26 +135,26 @@ class Address {
 	}
 
 	public static function get_streets_for_query( $query, $city_key, $cities ) {
-		if ( !self::$container ) {
+		if ( ! self::$container ) {
 			self::$container = nashenski()->container();
 		}
-		
-		$city_id = $cities[ $city_key ]['id'];
-		$streets = self::$container[ Client::ECONT_STREETS ]->get_streets_by_city( $city_id );
-		$streets_only_names = ( !empty( $streets['streets'] ) ) ? self::$container[ Client::ECONT_STREETS ]->format_streets( $streets['streets'], $city_id ) : [];
+
+		$city_id            = $cities[ $city_key ]['id'];
+		$streets            = self::$container[ Client::ECONT_STREETS ]->get_streets_by_city( $city_id );
+		$streets_only_names = ( ! empty( $streets['streets'] ) ) ? self::$container[ Client::ECONT_STREETS ]->format_streets( $streets['streets'], $city_id ) : array();
 		unset( $streets );
 
 		return self::filter_and_rank_names( $streets_only_names, $query );
 	}
 
 	public static function get_quarters_for_query( $query, $city_key, $cities ) {
-		if ( !self::$container ) {
+		if ( ! self::$container ) {
 			self::$container = nashenski()->container();
 		}
 
-		$city_id = $cities[ $city_key ]['id'];
-		$quarters = self::$container[ Client::ECONT_QUARTERS ]->get_quarters_by_city( $city_id );
-		$quarters_only_names = ( !empty( $quarters['quarters'] ) ) ? self::$container[ Client::ECONT_QUARTERS ]->format_quarters( $quarters['quarters'], $city_id ) : [];
+		$city_id             = $cities[ $city_key ]['id'];
+		$quarters            = self::$container[ Client::ECONT_QUARTERS ]->get_quarters_by_city( $city_id );
+		$quarters_only_names = ( ! empty( $quarters['quarters'] ) ) ? self::$container[ Client::ECONT_QUARTERS ]->format_quarters( $quarters['quarters'], $city_id ) : array();
 		unset( $quarters );
 
 		return self::filter_and_rank_names( $quarters_only_names, $query );
@@ -184,12 +185,12 @@ class Address {
 		}
 
 		$tokens = explode( ' ', $query );
-		$ranked = [];
-		$order = 0;
+		$ranked = array();
+		$order  = 0;
 
 		foreach ( $names as $key => $name ) {
-			$normalized_name = self::normalize_search_text( $name, false );
-			$position = mb_strpos( $normalized_name, $query );
+			$normalized_name  = self::normalize_search_text( $name, false );
+			$position         = mb_strpos( $normalized_name, $query );
 			$all_tokens_match = true;
 
 			foreach ( $tokens as $token ) {
@@ -199,19 +200,27 @@ class Address {
 				}
 			}
 
-			if ( $position === false && !$all_tokens_match ) {
+			if ( $position === false && ! $all_tokens_match ) {
 				continue;
 			}
 
-			$rank = $normalized_name === $query ? 0 : ( $position === 0 ? 1 : ( $position !== false ? 2 : 3 ) );
-			$ranked[] = [ 'key' => $key, 'name' => $name, 'rank' => $rank, 'order' => $order++ ];
+			$rank     = $normalized_name === $query ? 0 : ( $position === 0 ? 1 : ( $position !== false ? 2 : 3 ) );
+			$ranked[] = array(
+				'key'   => $key,
+				'name'  => $name,
+				'rank'  => $rank,
+				'order' => $order++,
+			);
 		}
 
-		usort( $ranked, function( $a, $b ) {
-			return $a['rank'] === $b['rank'] ? $a['order'] <=> $b['order'] : $a['rank'] <=> $b['rank'];
-		} );
+		usort(
+			$ranked,
+			function ( $a, $b ) {
+				return $a['rank'] === $b['rank'] ? $a['order'] <=> $b['order'] : $a['rank'] <=> $b['rank'];
+			}
+		);
 
-		$filtered = [];
+		$filtered = array();
 		foreach ( $ranked as $match ) {
 			$filtered[ $match['key'] ] = $match['name'];
 		}

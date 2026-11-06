@@ -52,12 +52,14 @@ class Delivery_Box {
 		$order->update_meta_data( '_nashenski_delivery_price_emailed', $price );
 		$order->save();
 		$emails['WC_Email_Customer_Invoice']->trigger( $order->get_id(), $order );
-		$order->add_order_note( sprintf(
+		$order->add_order_note(
+			sprintf(
 			/* translators: 1: delivery price, 2: order total */
-			__( 'Delivery price %1$s and the new total %2$s emailed to the customer.', 'nashenski-commerce' ),
-			html_entity_decode( wp_strip_all_tags( wc_price( $price, array( 'currency' => $order->get_currency() ) ) ) ),
-			html_entity_decode( wp_strip_all_tags( wc_price( $order->get_total(), array( 'currency' => $order->get_currency() ) ) ) )
-		) );
+				__( 'Delivery price %1$s and the new total %2$s emailed to the customer.', 'nashenski-commerce' ),
+				html_entity_decode( wp_strip_all_tags( wc_price( $price, array( 'currency' => $order->get_currency() ) ) ) ),
+				html_entity_decode( wp_strip_all_tags( wc_price( $order->get_total(), array( 'currency' => $order->get_currency() ) ) ) )
+			)
+		);
 		$order->save();
 	}
 
@@ -95,7 +97,7 @@ class Delivery_Box {
 	public static function options() {
 		$options = array();
 
-		$names   = nashenski_couriers();
+		$names = nashenski_couriers();
 
 		foreach ( Pickers::rate_types() as $id => $rate ) {
 			$courier = $rate['courier'];
@@ -108,10 +110,10 @@ class Delivery_Box {
 				continue;
 			}
 
-			$method = \WC_Shipping_Zones::get_shipping_method( (int) substr( $id, strpos( $id, ':' ) + 1 ) );
+			$method        = \WC_Shipping_Zones::get_shipping_method( (int) substr( $id, strpos( $id, ':' ) + 1 ) );
 			$rate['title'] = $method ? $method->get_title() : $id;
 			// Method titles such as "To an office" repeat between couriers, so the list names the courier.
-			$rate['label'] = false === stripos( $rate['title'], $names[ $courier ] ) ? $names[ $courier ] . ': ' . $rate['title'] : $rate['title'];
+			$rate['label']  = false === stripos( $rate['title'], $names[ $courier ] ) ? $names[ $courier ] . ': ' . $rate['title'] : $rate['title'];
 			$options[ $id ] = $rate;
 		}
 
@@ -253,12 +255,14 @@ class Delivery_Box {
 		}
 
 		$order->calculate_totals();
-		$order->add_order_note( sprintf(
+		$order->add_order_note(
+			sprintf(
 			/* translators: 1: shipping option, 2: office, locker or address */
-			__( 'Delivery set on the order screen: %1$s, %2$s. The price comes with the label.', 'nashenski-commerce' ),
-			$option['title'],
-			Pickers::describe_choice( $choice, $option['type'] )
-		) );
+				__( 'Delivery set on the order screen: %1$s, %2$s. The price comes with the label.', 'nashenski-commerce' ),
+				$option['title'],
+				Pickers::describe_choice( $choice, $option['type'] )
+			)
+		);
 		$order->save();
 	}
 

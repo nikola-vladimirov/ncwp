@@ -1,15 +1,16 @@
 <?php
 namespace Nashenski\Client\Pigeon;
+
 use Nashenski\Container\Client;
 use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
 class Lockers {
-    const LOCKERS_ENDPOINT = '/offices';
+	const LOCKERS_ENDPOINT = '/offices';
 
-    private $lockers = [];
-    private $container;
+	private $lockers = array();
+	private $container;
 
 	public function __construct( $container ) {
 		$this->container = $container;
@@ -21,16 +22,21 @@ class Lockers {
 		}
 
 		$lockers_file = $this->container[ Client::PIGEON ]::CACHE_FOLDER . 'lockers-' . $city_id . '.json';
-		$lockers = File::get_file( $lockers_file );
+		$lockers      = File::get_file( $lockers_file );
 
-		if ( !$lockers ) {
-			$args = apply_filters( 'nashenski/pigeon/lockers/api_call_args', array(
-				'city_id' => $city_id,
-				'type' => 'locker',
-			), $city_id, $country_code );
-			
-			$all_lockers = [];
-			$complete = false;
+		if ( ! $lockers ) {
+			$args = apply_filters(
+				'nashenski/pigeon/lockers/api_call_args',
+				array(
+					'city_id' => $city_id,
+					'type'    => 'locker',
+				),
+				$city_id,
+				$country_code
+			);
+
+			$all_lockers = array();
+			$complete    = false;
 
 			// Cap the pages; cache only when every page answered.
 			for ( $page = 1; $page <= 200; $page++ ) {
@@ -48,9 +54,9 @@ class Lockers {
 				}
 			}
 
-			if ( !empty( $all_lockers ) ) {
+			if ( ! empty( $all_lockers ) ) {
 				$lockers = wp_json_encode( $all_lockers );
-				
+
 				if ( $complete ) {
 					File::put_to_file( $lockers_file, $lockers );
 				}
@@ -65,11 +71,17 @@ class Lockers {
 		return $lockers;
 	}
 
-	//Getters
+	// Getters
 	public function get_page( $page = 1, $args = array() ) {
-		return $this->container[ Client::PIGEON ]->api_call( self::LOCKERS_ENDPOINT, array_merge( $args, [
-			'page' => $page,
-		] ) );
+		return $this->container[ Client::PIGEON ]->api_call(
+			self::LOCKERS_ENDPOINT,
+			array_merge(
+				$args,
+				array(
+					'page' => $page,
+				)
+			)
+		);
 	}
 
 	public function get_lockers( $city_id, $country_code = 'BG' ) {
@@ -80,7 +92,7 @@ class Lockers {
 		return $this->lockers[ $city_id ];
 	}
 
-	//Setters
+	// Setters
 	private function set_lockers( $city_id, $lockers ) {
 		$this->lockers[ $city_id ] = $lockers;
 	}
@@ -88,14 +100,14 @@ class Lockers {
 	public function get_formatted_lockers( $city, $country_code = 'BG' ) {
 		$city_id = str_replace( 'cityID-', '', $city );
 		$lockers = $this->get_lockers( $city_id, $country_code );
-		$data = [];
+		$data    = array();
 
-		if ( !empty( $lockers ) ) {
+		if ( ! empty( $lockers ) ) {
 			foreach ( $lockers as $locker ) {
-				$data[ 'lockerID-' . $locker['id']] = [
-					'id' => 'lockerID-' . $locker['id'],
+				$data[ 'lockerID-' . $locker['id'] ] = array(
+					'id'    => 'lockerID-' . $locker['id'],
 					'label' => $locker['name'] . ' (' . $locker['address'] . ')',
-				];
+				);
 			}
 		}
 

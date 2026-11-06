@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Nekorekten extends Provider_Base {
 	const META_PREFIX = 'nashenski_reports-nekorekten_phone_';
-	const SENT_META = '_nashenski_nk_sent';
+	const SENT_META   = '_nashenski_nk_sent';
 
 	public function __construct() {
 		$this->set_name( __( 'nekorekten.com', 'nashenski-commerce' ) );
@@ -26,9 +26,9 @@ class Nekorekten extends Provider_Base {
 	private static function person( $order ) {
 		return array(
 			'firstName' => trim( $order->get_billing_first_name() ),
-			'lastName' => trim( $order->get_billing_last_name() ),
-			'phone' => trim( self::phone( $order ) ),
-			'email' => trim( $order->get_billing_email() ),
+			'lastName'  => trim( $order->get_billing_last_name() ),
+			'phone'     => trim( self::phone( $order ) ),
+			'email'     => trim( $order->get_billing_email() ),
 		);
 	}
 
@@ -48,9 +48,9 @@ class Nekorekten extends Provider_Base {
 	}
 
 	public static function get_all_reports( $order, $force = false ) {
-		$phone = self::phone( $order );
+		$phone    = self::phone( $order );
 		$meta_key = self::META_PREFIX . md5( $phone );
-		$result = $order->get_meta( $meta_key );
+		$result   = $order->get_meta( $meta_key );
 
 		if ( ! $result || $force ) {
 			$fresh = ( new Client() )->find_by_phone( $phone, (bool) $force );
@@ -63,7 +63,7 @@ class Nekorekten extends Provider_Base {
 		}
 
 		return array(
-			'result' => $result,
+			'result'  => $result,
 			'reports' => self::to_reports( $result ),
 		);
 	}
@@ -73,7 +73,7 @@ class Nekorekten extends Provider_Base {
 	}
 
 	public function print_reports_html( $order ) {
-		$data = self::get_all_reports( $order );
+		$data   = self::get_all_reports( $order );
 		$result = $data['result'];
 		?>
 		<div class="order_data_column_container">
@@ -172,7 +172,7 @@ class Nekorekten extends Provider_Base {
 		}
 
 		if ( ! empty( $_POST['nashenski_nk_edit'] ) ) {
-			$id = sanitize_text_field( wp_unslash( $_POST['nashenski_nk_edit'] ) );
+			$id   = sanitize_text_field( wp_unslash( $_POST['nashenski_nk_edit'] ) );
 			$text = isset( $_POST['nashenski_nk_edit_text'][ $id ] ) ? self::clean_text( wp_unslash( $_POST['nashenski_nk_edit_text'][ $id ] ) ) : '';
 
 			if ( isset( $sent[ $id ] ) ) {

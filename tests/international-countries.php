@@ -68,7 +68,7 @@ function nashenski_intl_assert( $ok, $label ) {
  */
 function nashenski_intl_accepts( $class, $setting, $country ) {
 	WC_Shipping_Method::$options = array( 'international' => $setting );
-	$method = ( new ReflectionClass( $class ) )->newInstanceWithoutConstructor();
+	$method                      = ( new ReflectionClass( $class ) )->newInstanceWithoutConstructor();
 	return $method->is_available( array( 'destination' => array( 'country' => $country ) ) );
 }
 

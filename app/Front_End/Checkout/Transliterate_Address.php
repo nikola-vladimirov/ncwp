@@ -52,11 +52,11 @@ class Transliterate_Address {
 			return false;
 		}
 
-		$mode = $mode ? $mode : self::mode();
+		$mode    = $mode ? $mode : self::mode();
 		$changed = false;
 
 		foreach ( array( 'billing', 'shipping' ) as $type ) {
-			$country = $order->{"get_{$type}_country"}();
+			$country  = $order->{"get_{$type}_country"}();
 			$to_latin = 'auto' === $mode && $country && 'BG' !== $country;
 
 			foreach ( self::fields() as $field ) {

@@ -24,10 +24,10 @@ class XmlBuilder {
 	 * @return array { content: string, totals: array }
 	 */
 	public static function build( array $args ) {
-		$shop = $args['shop'];
+		$shop   = $args['shop'];
 		$totals = array(
-			'orders_total' => 0,
-			'orders_total_vat' => 0,
+			'orders_total'          => 0,
+			'orders_total_vat'      => 0,
 			'returned_orders_total' => 0,
 		);
 
@@ -47,8 +47,8 @@ class XmlBuilder {
 		$xml->startElement( 'order' );
 
 		foreach ( $args['orders'] as $order ) {
-			$order_totals = self::write_order( $xml, $order );
-			$totals['orders_total'] += $order_totals['total'];
+			$order_totals                = self::write_order( $xml, $order );
+			$totals['orders_total']     += $order_totals['total'];
 			$totals['orders_total_vat'] += $order_totals['vat'];
 		}
 
@@ -83,7 +83,7 @@ class XmlBuilder {
 
 		return array(
 			'content' => $xml->outputMemory( true ),
-			'totals' => array_map( array( __CLASS__, 'money' ), $totals ),
+			'totals'  => array_map( array( __CLASS__, 'money' ), $totals ),
 		);
 	}
 
@@ -119,10 +119,10 @@ class XmlBuilder {
 
 		$xml->endElement();
 
-		$net = self::money( $net );
-		$vat = self::money( $vat );
+		$net      = self::money( $net );
+		$vat      = self::money( $vat );
 		$discount = self::money( $order['total_discount'] );
-		$total = self::money( $net - $discount + $vat );
+		$total    = self::money( $net - $discount + $vat );
 
 		$xml->writeElement( 'ord_total1', self::format( $net ) );
 		$xml->writeElement( 'ord_disc', self::format( $discount ) );
@@ -130,7 +130,11 @@ class XmlBuilder {
 		$xml->writeElement( 'ord_total2', self::format( $total ) );
 		$xml->writeElement( 'paym', (string) (int) $order['payment_method_type'] );
 
-		foreach ( array( 'pos_number' => 'pos_n', 'transaction_id' => 'trans_n', 'identifier' => 'proc_id' ) as $key => $tag ) {
+		foreach ( array(
+			'pos_number'     => 'pos_n',
+			'transaction_id' => 'trans_n',
+			'identifier'     => 'proc_id',
+		) as $key => $tag ) {
 			if ( ! empty( $order[ $key ] ) ) {
 				$xml->writeElement( $tag, (string) $order[ $key ] );
 			}
@@ -138,24 +142,27 @@ class XmlBuilder {
 
 		$xml->endElement();
 
-		return array( 'total' => $total, 'vat' => $vat );
+		return array(
+			'total' => $total,
+			'vat'   => $vat,
+		);
 	}
 
 	/**
 	 * Split a line total with VAT into its parts.
 	 */
 	protected static function item_amounts( array $item ) {
-		$qty = (float) $item['qty'] ?: 1;
-		$rate = (float) $item['vat_rate'];
+		$qty   = (float) $item['qty'] ?: 1;
+		$rate  = (float) $item['vat_rate'];
 		$gross = self::money( $item['total'] );
-		$net = $rate ? self::money( $gross / ( 1 + $rate / 100 ) ) : $gross;
-		$vat = self::money( $gross - $net );
+		$net   = $rate ? self::money( $gross / ( 1 + $rate / 100 ) ) : $gross;
+		$vat   = self::money( $gross - $net );
 
 		return array(
-			'gross' => $gross,
-			'net' => $net,
-			'unit_net' => self::money( $net / $qty ),
-			'vat' => $vat,
+			'gross'              => $gross,
+			'net'                => $net,
+			'unit_net'           => self::money( $net / $qty ),
+			'vat'                => $vat,
 			'vat_after_discount' => isset( $item['line_tax'] ) && '' !== $item['line_tax'] ? self::money( $item['line_tax'] ) : $vat,
 		);
 	}

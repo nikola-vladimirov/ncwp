@@ -11,10 +11,10 @@ defined( 'ABSPATH' ) || exit;
  * orientation checks. Exhaustion rejects the whole quote, never a partial cart.
  */
 class Packing_Budget {
-	const MAX_UNITS = 1000;
-	const MAX_PARCELS = 1000;
+	const MAX_UNITS      = 1000;
+	const MAX_PARCELS    = 1000;
 	const MAX_CANDIDATES = 2048;
-	const MAX_WORK = 2000000;
+	const MAX_WORK       = 2000000;
 
 	private $remaining;
 	private $rejected = false;

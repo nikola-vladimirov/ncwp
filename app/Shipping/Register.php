@@ -9,7 +9,7 @@ class Register {
 	 * "Generate label after checkout", and the priority that saves the label data of a new order.
 	 */
 	const COURIERS = array(
-		'econt' => array( 'Econt', array( 'Address', 'Office', 'APSBoxes' ), 'econt', 200 ),
+		'econt'  => array( 'Econt', array( 'Address', 'Office', 'APSBoxes' ), 'econt', 200 ),
 		'speedy' => array( 'Speedy', array( 'Address', 'Office' ), 'speedy', 200 ),
 		'boxnow' => array( 'BoxNow', array( 'Apm' ), 'boxnow_send_from', 200 ),
 		'pigeon' => array( 'Pigeon', array( 'Address', 'Office', 'Locker', 'APSBoxes', 'PackageBoxes' ), 'pigeon', 200 ),
@@ -76,7 +76,7 @@ class Register {
 			return;
 		}
 
-		$cod = 'cod' === ( $data['payment_method'] ?? '' );
+		$cod      = 'cod' === ( $data['payment_method'] ?? '' );
 		$mismatch = false;
 
 		foreach ( (array) WC()->session->get( 'chosen_shipping_methods' ) as $key => $chosen ) {
@@ -106,8 +106,8 @@ class Register {
 
 	private static function register_courier( $slug, $name, $parts, $label_group, $save_priority ) {
 		$method = __NAMESPACE__ . '\\' . $name . '\\Method';
-		$admin = 'Nashenski\\Admin\\' . $name;
-		$cron = 'Nashenski\\Cron\\' . $name;
+		$admin  = 'Nashenski\\Admin\\' . $name;
+		$cron   = 'Nashenski\\Cron\\' . $name;
 
 		new $cron();
 
@@ -118,11 +118,14 @@ class Register {
 
 		new $admin();
 
-		add_filter( 'woocommerce_shipping_methods', function ( $methods ) use ( $method ) {
-			$methods[ $method::METHOD_ID ] = $method;
+		add_filter(
+			'woocommerce_shipping_methods',
+			function ( $methods ) use ( $method ) {
+				$methods[ $method::METHOD_ID ] = $method;
 
-			return $methods;
-		} );
+				return $methods;
+			}
+		);
 		add_action( 'woocommerce_after_checkout_validation', array( $method, 'validate_' . $slug . '_method' ), 20, 2 );
 		add_action( 'woocommerce_checkout_order_processed', array( $method, 'save_label_data_to_order' ), $save_priority, 2 );
 
@@ -135,21 +138,21 @@ class Register {
 
 	public static function update_order_review() {
 		self::update_session();
-		
-	    $packages = WC()->cart->get_shipping_packages();
 
-	    foreach ( $packages as $key => $value ) {
-	        $shipping_session = "shipping_for_package_$key";
-	        unset( WC()->session->$shipping_session );
-	    }
+		$packages = WC()->cart->get_shipping_packages();
 
-	    WC()->cart->calculate_shipping();
-	    
-	    return;
+		foreach ( $packages as $key => $value ) {
+			$shipping_session = "shipping_for_package_$key";
+			unset( WC()->session->$shipping_session );
+		}
+
+		WC()->cart->calculate_shipping();
+
+		return;
 	}
 
 	public static function set_shipping_rate_taxes_for_recalculation( $method, $calculate_tax_for ) {
-		if ( strpos( $method[ 'method_id' ], 'nashenski' ) === false ) {
+		if ( strpos( $method['method_id'], 'nashenski' ) === false ) {
 			return;
 		}
 
@@ -272,7 +275,7 @@ class Register {
 				|| $chosen_shipping_methods[ $index ] !== $method_id
 			) {
 				$chosen_shipping_methods[ $index ] = $method_id;
-				$updated = true;
+				$updated                           = true;
 			}
 		}
 

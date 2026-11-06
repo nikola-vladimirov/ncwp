@@ -42,10 +42,10 @@ class Monthly {
 			return false;
 		}
 
-		$month = preg_match( '/^\d{4}-\d{2}$/', (string) $month ) ? $month : wp_date( 'Y-m', strtotime( 'first day of last month' ) );
+		$month  = preg_match( '/^\d{4}-\d{2}$/', (string) $month ) ? $month : wp_date( 'Y-m', strtotime( 'first day of last month' ) );
 		$result = ( new Export( $month, '' ) )->get_xml_file();
-		$id = empty( $result['attachment_id'] ) ? 0 : $result['attachment_id'];
-		$path = $id ? get_attached_file( $id ) : '';
+		$id     = empty( $result['attachment_id'] ) ? 0 : $result['attachment_id'];
+		$path   = $id ? get_attached_file( $id ) : '';
 
 		if ( ! $path ) {
 			return false;

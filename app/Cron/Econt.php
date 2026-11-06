@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Cron;
+
 use Nashenski\Container\Client;
 
 defined( 'ABSPATH' ) || exit;

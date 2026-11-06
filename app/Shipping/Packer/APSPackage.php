@@ -109,7 +109,7 @@ class APSPackage {
 				$raw_quantity = $cart_item['quantity'] ?? 1;
 				$budget->check_units( $raw_quantity === '' ? 1 : $raw_quantity );
 			}
-			$weight  = $product->get_weight() ? wc_get_weight( $product->get_weight(), 'kg' ) : 0;
+			$weight   = $product->get_weight() ? wc_get_weight( $product->get_weight(), 'kg' ) : 0;
 			$quantity = ! empty( $cart_item['quantity'] ) ? (int) $cart_item['quantity'] : 1;
 
 			if ( ! $product->get_length() || ! $product->get_width() || ! $product->get_height() ) {

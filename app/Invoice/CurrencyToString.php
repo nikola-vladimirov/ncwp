@@ -13,20 +13,20 @@ defined( 'ABSPATH' ) || exit;
 class CurrencyToString {
 	const UNITS = array(
 		'EUR' => array(
-			'one'          => 'евро',
-			'many'         => 'евро',
-			'gender'       => 'n',
-			'cent_one'     => 'евроцент',
-			'cent_many'    => 'евроцента',
-			'cent_gender'  => 'm',
+			'one'         => 'евро',
+			'many'        => 'евро',
+			'gender'      => 'n',
+			'cent_one'    => 'евроцент',
+			'cent_many'   => 'евроцента',
+			'cent_gender' => 'm',
 		),
 		'BGN' => array(
-			'one'          => 'лев',
-			'many'         => 'лева',
-			'gender'       => 'm',
-			'cent_one'     => 'стотинка',
-			'cent_many'    => 'стотинки',
-			'cent_gender'  => 'f',
+			'one'         => 'лев',
+			'many'        => 'лева',
+			'gender'      => 'm',
+			'cent_one'    => 'стотинка',
+			'cent_many'   => 'стотинки',
+			'cent_gender' => 'f',
 		),
 	);
 
@@ -47,15 +47,15 @@ class CurrencyToString {
 
 		if ( $number >= 1000000 ) {
 			$millions = intdiv( $number, 1000000 );
-			$rest = $number % 1000000;
-			$text = 1 === $millions ? 'един милион' : self::number_to_text( $millions, 'm' ) . ' милиона';
+			$rest     = $number % 1000000;
+			$text     = 1 === $millions ? 'един милион' : self::number_to_text( $millions, 'm' ) . ' милиона';
 
 			return $text . self::join_rest( $rest, $gender );
 		}
 
 		if ( $number >= 1000 ) {
 			$thousands = intdiv( $number, 1000 );
-			$rest = $number % 1000;
+			$rest      = $number % 1000;
 
 			if ( 1 === $thousands ) {
 				$text = 'хиляда';
@@ -96,12 +96,12 @@ class CurrencyToString {
 	}
 
 	private static function below_thousand( $number, $gender ) {
-		$ones = array( '', 'един', 'два', 'три', 'четири', 'пет', 'шест', 'седем', 'осем', 'девет', 'десет', 'единадесет', 'дванадесет', 'тринадесет', 'четиринадесет', 'петнадесет', 'шестнадесет', 'седемнадесет', 'осемнадесет', 'деветнадесет' );
-		$tens = array( '', '', 'двадесет', 'тридесет', 'четиридесет', 'петдесет', 'шестдесет', 'седемдесет', 'осемдесет', 'деветдесет' );
+		$ones     = array( '', 'един', 'два', 'три', 'четири', 'пет', 'шест', 'седем', 'осем', 'девет', 'десет', 'единадесет', 'дванадесет', 'тринадесет', 'четиринадесет', 'петнадесет', 'шестнадесет', 'седемнадесет', 'осемнадесет', 'деветнадесет' );
+		$tens     = array( '', '', 'двадесет', 'тридесет', 'четиридесет', 'петдесет', 'шестдесет', 'седемдесет', 'осемдесет', 'деветдесет' );
 		$hundreds = array( '', 'сто', 'двеста', 'триста', 'четиристотин', 'петстотин', 'шестстотин', 'седемстотин', 'осемстотин', 'деветстотин' );
 
-		$h = intdiv( $number, 100 );
-		$rest = $number % 100;
+		$h     = intdiv( $number, 100 );
+		$rest  = $number % 100;
 		$words = array();
 
 		if ( $h ) {
@@ -150,7 +150,7 @@ class CurrencyToString {
 			return '';
 		}
 
-		$unit = self::UNITS[ $currency ];
+		$unit                  = self::UNITS[ $currency ];
 		list( $whole, $cents ) = array_map( 'intval', explode( '.', number_format( abs( (float) $amount ), 2, '.', '' ) ) );
 
 		if ( $whole >= 1000000000 ) {

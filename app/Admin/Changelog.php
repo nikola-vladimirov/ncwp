@@ -24,11 +24,11 @@ class Changelog {
 
 		$url = add_query_arg(
 			array(
-				'action' => self::ACTION,
-				'_wpnonce' => wp_create_nonce( self::ACTION ),
+				'action'    => self::ACTION,
+				'_wpnonce'  => wp_create_nonce( self::ACTION ),
 				'TB_iframe' => 'true',
-				'width' => 772,
-				'height' => 700,
+				'width'     => 772,
+				'height'    => 700,
 			),
 			admin_url( 'admin-ajax.php' )
 		);
@@ -46,7 +46,7 @@ class Changelog {
 		check_admin_referer( self::ACTION );
 
 		$file = nashenski()->plugin_dir_path() . 'CHANGELOG.md';
-		$md = is_readable( $file ) ? (string) file_get_contents( $file ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local file.
+		$md   = is_readable( $file ) ? (string) file_get_contents( $file ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local file.
 
 		header( 'Content-Type: text/html; charset=utf-8' );
 		?>
@@ -67,7 +67,7 @@ p { margin: 0 0 8px; }
 </style>
 </head>
 <body>
-<?php echo self::html( $md ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in html(). ?>
+		<?php echo self::html( $md ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in html(). ?>
 </body>
 </html>
 		<?php
@@ -88,7 +88,7 @@ p { margin: 0 0 8px; }
 
 			if ( $list && ! $item ) {
 				$html .= "</ul>\n";
-				$list = false;
+				$list  = false;
 			}
 
 			// Skip blank lines and the "# Nashenski Commerce changelog" title.
@@ -98,11 +98,11 @@ p { margin: 0 0 8px; }
 
 			if ( preg_match( '/^(#{2,5}) (.*)$/', $line, $m ) ) {
 				// "## 0.14.0 (date)" -> h3, "### Fixed" -> h4.
-				$tag = 'h' . ( strlen( $m[1] ) + 1 );
+				$tag   = 'h' . ( strlen( $m[1] ) + 1 );
 				$html .= "<$tag>" . self::inline( $m[2] ) . "</$tag>\n";
 			} elseif ( $item ) {
 				$html .= ( $list ? '' : "<ul>\n" ) . '<li>' . self::inline( substr( $line, 2 ) ) . "</li>\n";
-				$list = true;
+				$list  = true;
 			} else {
 				$html .= '<p>' . self::inline( $line ) . "</p>\n";
 			}

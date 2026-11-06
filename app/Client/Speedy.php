@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Client;
+
 use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
@@ -7,17 +8,17 @@ defined( 'ABSPATH' ) || exit;
 class Speedy {
 	use Courier_Client;
 
-	const BASE_ENDPOINT = 'https://api.speedy.bg/v1/';
-	const CALC_LABELS_ENDPOINT = 'calculate';
+	const BASE_ENDPOINT          = 'https://api.speedy.bg/v1/';
+	const CALC_LABELS_ENDPOINT   = 'calculate';
 	const CREATE_LABELS_ENDPOINT = 'shipment';
 	const UPDATE_LABELS_ENDPOINT = 'shipment/update';
 	const DELETE_LABELS_ENDPOINT = 'shipment/cancel';
-	const PRINT_LABELS_ENDPOINT = 'print';
-	const TRACK_ENDPOINT = 'track';
-	const CACHE_FOLDER = File::CACHE_FOLDER . 'speedy' . DIRECTORY_SEPARATOR;
+	const PRINT_LABELS_ENDPOINT  = 'print';
+	const TRACK_ENDPOINT         = 'track';
+	const CACHE_FOLDER           = File::CACHE_FOLDER . 'speedy' . DIRECTORY_SEPARATOR;
 
-	private $user = '';
-	private $password = '';
+	private $user                    = '';
+	private $password                = '';
 	public static $skip_cached_files = array(
 		'cities-100.csv',
 		'cities-642.csv',
@@ -32,24 +33,32 @@ class Speedy {
 	public function api_call( $endpoint, $args, $return_plain = false ) {
 		// Without a login Speedy answers with an error page; never call it, so nothing wrong gets cached.
 		if ( '' === trim( (string) $this->get_user() ) || '' === trim( (string) $this->get_password() ) ) {
-			return $return_plain ? '' : array( 'error' => array( 'code' => 1, 'message' => __( 'Speedy is not connected.', 'nashenski-commerce' ) ) );
+			return $return_plain ? '' : array(
+				'error' => array(
+					'code'    => 1,
+					'message' => __( 'Speedy is not connected.', 'nashenski-commerce' ),
+				),
+			);
 		}
 
 		$args = array_merge(
 			array(
-				"userName" => $this->get_user(),
-				"password" => $this->get_password(),
+				'userName' => $this->get_user(),
+				'password' => $this->get_password(),
 			),
 			$args
 		);
 
-		$request = wp_remote_post( self::BASE_ENDPOINT . $endpoint, array(
-			'headers' => array(
-				'content-type' => 'application/json',
-			),
-			'body' => wp_json_encode( $args ),
-			'timeout' => 30,
-		) );
+		$request = wp_remote_post(
+			self::BASE_ENDPOINT . $endpoint,
+			array(
+				'headers' => array(
+					'content-type' => 'application/json',
+				),
+				'body'    => wp_json_encode( $args ),
+				'timeout' => 30,
+			)
+		);
 
 		if ( $return_plain ) {
 			$body = wp_remote_retrieve_body( $request );
@@ -66,12 +75,12 @@ class Speedy {
 	}
 
 	public function label_request( $type, $request_body ) {
-		$endpoints = [
+		$endpoints = array(
 			'calculate' => self::CALC_LABELS_ENDPOINT,
-			'create' => self::CREATE_LABELS_ENDPOINT,
-			'update' => self::UPDATE_LABELS_ENDPOINT,
-			'delete' => self::DELETE_LABELS_ENDPOINT,
-		];
+			'create'    => self::CREATE_LABELS_ENDPOINT,
+			'update'    => self::UPDATE_LABELS_ENDPOINT,
+			'delete'    => self::DELETE_LABELS_ENDPOINT,
+		);
 
 		if ( ! isset( $endpoints[ $type ] ) || empty( $this->get_user() ) || empty( $this->get_password() ) ) {
 			return;
@@ -81,10 +90,10 @@ class Speedy {
 	}
 
 	public static function validate_access( $api_call ) {
-		return is_array( $api_call ) && !( isset( $api_call['error'] ) && $api_call['error']['code'] === 1 );
+		return is_array( $api_call ) && ! ( isset( $api_call['error'] ) && $api_call['error']['code'] === 1 );
 	}
 
-	//Loaders
+	// Loaders
 	public function load_user() {
 		$this->set_user( nashenski_get_option( 'speedy', 'user' ) );
 	}
@@ -93,7 +102,7 @@ class Speedy {
 		$this->set_password( nashenski_get_option( 'speedy', 'password' ) );
 	}
 
-	//Getters
+	// Getters
 
 	public function get_user() {
 		return $this->user;
@@ -103,7 +112,7 @@ class Speedy {
 		return $this->password;
 	}
 
-	//Setters
+	// Setters
 
 	private function set_user( $user ) {
 		$this->user = $user;

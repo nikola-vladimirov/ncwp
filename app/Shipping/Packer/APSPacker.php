@@ -8,7 +8,7 @@ class APSPacker {
 	private $budget;
 
 	public function __construct( $volumetric_weight_divisor = null, ?Packing_Budget $budget = null ) {
-		$this->budget = $budget;
+		$this->budget                    = $budget;
 		$this->volumetric_weight_divisor = ( is_numeric( $volumetric_weight_divisor ) && (float) $volumetric_weight_divisor > 0 )
 			? (float) $volumetric_weight_divisor
 			: null;
@@ -55,7 +55,7 @@ class APSPacker {
 				$current_products   = $candidate_list;
 				$current_box_index  = $fit['box_index'];
 				$current_placements = $fit['placements'];
-				$product_index++;
+				++$product_index;
 				continue;
 			}
 
@@ -101,12 +101,12 @@ class APSPacker {
 			}
 
 			for ( $i = 1; $i <= $quantity; $i++ ) {
-				$copy                   = $item;
-				$copy['weight']             = $weight;
+				$copy                      = $item;
+				$copy['weight']            = $weight;
 				$copy['chargeable_weight'] = $this->get_chargeable_weight( $item, $weight );
-				$copy['source_index']       = $index;
-				$copy['quantity_index']     = $i;
-				$normalized[]               = $copy;
+				$copy['source_index']      = $index;
+				$copy['quantity_index']    = $i;
+				$normalized[]              = $copy;
 			}
 		}
 
@@ -128,10 +128,10 @@ class APSPacker {
 		$boxes = array();
 
 		foreach ( $box_sizes as $index => $box ) {
-			$item                = $this->normalize_item( $box, $index, 'Box' );
-			$item['max_weight']  = $this->get_max_weight( $box, $index );
-			$item['index']       = $index;
-			$boxes[]             = $item;
+			$item               = $this->normalize_item( $box, $index, 'Box' );
+			$item['max_weight'] = $this->get_max_weight( $box, $index );
+			$item['index']      = $index;
+			$boxes[]            = $item;
 		}
 
 		usort(
@@ -312,20 +312,20 @@ class APSPacker {
 		$shelf_origin_z = 0.0;
 
 		$start_new_shelf = function () use ( &$shelf_index, &$row_index, &$shelf_height, &$shelf_used_y, &$row_height_y, &$row_used_x, &$row_origin_y, &$shelf_origin_z, &$height_total ): void {
-			$height_total   += $shelf_height;
-			$shelf_origin_z  = $height_total;
-			$shelf_index++;
-			$row_index       = -1;
-			$shelf_height    = 0.0;
-			$shelf_used_y    = 0.0;
-			$row_height_y    = 0.0;
-			$row_used_x      = 0.0;
-			$row_origin_y    = 0.0;
+			$height_total  += $shelf_height;
+			$shelf_origin_z = $height_total;
+			++$shelf_index;
+			$row_index    = -1;
+			$shelf_height = 0.0;
+			$shelf_used_y = 0.0;
+			$row_height_y = 0.0;
+			$row_used_x   = 0.0;
+			$row_origin_y = 0.0;
 		};
 
 		$start_new_row = function () use ( &$row_index, &$row_height_y, &$row_used_x, &$row_origin_y, &$shelf_used_y ): void {
 			$row_origin_y = $shelf_used_y;
-			$row_index++;
+			++$row_index;
 			$row_height_y = 0.0;
 			$row_used_x   = 0.0;
 		};
@@ -414,22 +414,22 @@ class APSPacker {
 
 			switch ( $best_choice['mode'] ) {
 				case 'same-row':
-					$origin         = array( $row_used_x, $row_origin_y, $shelf_origin_z );
-					$row_used_x    += $x;
-					$row_height_y   = max( $row_height_y, $y );
-					$shelf_height   = max( $shelf_height, $z );
-					$placements[]   = $this->build_placement( $product, array( $x, $y, $z ), $origin, $shelf_index, $row_index );
+					$origin       = array( $row_used_x, $row_origin_y, $shelf_origin_z );
+					$row_used_x  += $x;
+					$row_height_y = max( $row_height_y, $y );
+					$shelf_height = max( $shelf_height, $z );
+					$placements[] = $this->build_placement( $product, array( $x, $y, $z ), $origin, $shelf_index, $row_index );
 					break;
 
 				case 'new-row':
 					$shelf_used_y += $row_height_y;
 					$start_new_row();
 
-					$origin         = array( 0.0, $row_origin_y, $shelf_origin_z );
-					$row_height_y   = $best_choice['row_height'];
-					$row_used_x     = $x;
-					$shelf_height   = max( $shelf_height, $z );
-					$placements[]   = $this->build_placement( $product, array( $x, $y, $z ), $origin, $shelf_index, $row_index );
+					$origin       = array( 0.0, $row_origin_y, $shelf_origin_z );
+					$row_height_y = $best_choice['row_height'];
+					$row_used_x   = $x;
+					$shelf_height = max( $shelf_height, $z );
+					$placements[] = $this->build_placement( $product, array( $x, $y, $z ), $origin, $shelf_index, $row_index );
 					break;
 
 				case 'new-shelf':
@@ -437,11 +437,11 @@ class APSPacker {
 					$start_new_shelf();
 					$start_new_row();
 
-					$origin         = array( 0.0, $row_origin_y, $shelf_origin_z );
-					$row_height_y   = $best_choice['row_height'];
-					$row_used_x     = $x;
-					$shelf_height   = $best_choice['shelf_height'];
-					$placements[]   = $this->build_placement( $product, array( $x, $y, $z ), $origin, $shelf_index, $row_index );
+					$origin       = array( 0.0, $row_origin_y, $shelf_origin_z );
+					$row_height_y = $best_choice['row_height'];
+					$row_used_x   = $x;
+					$shelf_height = $best_choice['shelf_height'];
+					$placements[] = $this->build_placement( $product, array( $x, $y, $z ), $origin, $shelf_index, $row_index );
 					break;
 			}
 		}
@@ -529,7 +529,7 @@ class APSPacker {
 				'height'     => $box['height'],
 				'max_weight' => $box['max_weight'],
 			),
-			'weight'      => $total_weight,
+			'weight'     => $total_weight,
 			'products'   => array_map(
 				static function ( array $product ): array {
 					return array(

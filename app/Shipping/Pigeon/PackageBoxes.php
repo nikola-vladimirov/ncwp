@@ -10,12 +10,12 @@ use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 defined( 'ABSPATH' ) || exit;
 
 class PackageBoxes {
-	const MAX_LENGTH   = 200;
-	const MAX_WIDTH    = 200;
-	const MAX_HEIGHT   = 200;
-	const MAX_WEIGHT   = 30;
+	const MAX_LENGTH          = 200;
+	const MAX_WIDTH           = 200;
+	const MAX_HEIGHT          = 200;
+	const MAX_WEIGHT          = 30;
 	const MAX_SHIPMENT_WEIGHT = 400;
-	const DEFAULT_SIZE = 20;
+	const DEFAULT_SIZE        = 20;
 
 	public function __construct() {
 		add_filter( 'nashenski/pigeon/calculate_label', array( __CLASS__, 'calculate_label' ), 21, 2 );

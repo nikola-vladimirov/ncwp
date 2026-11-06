@@ -70,19 +70,19 @@ function nashenski_get_vat_groups() {
 function nashenski_get_return_methods() {
 	return array(
 		1 => array(
-			'id' => 1,
+			'id'    => 1,
 			'label' => __( 'On a payment account', 'nashenski-commerce' ),
 		),
 		2 => array(
-			'id' => 2,
+			'id'    => 2,
 			'label' => __( 'Card', 'nashenski-commerce' ),
 		),
 		3 => array(
-			'id' => 3,
+			'id'    => 3,
 			'label' => __( 'Cash', 'nashenski-commerce' ),
 		),
 		4 => array(
-			'id' => 4,
+			'id'    => 4,
 			'label' => __( 'Other', 'nashenski-commerce' ),
 		),
 	);
@@ -91,27 +91,27 @@ function nashenski_get_return_methods() {
 function nashenski_get_payment_types() {
 	return array(
 		1 => array(
-			'id' => 1,
+			'id'    => 1,
 			'label' => __( 'Released under Art. 3 payment without PPP', 'nashenski-commerce' ),
 		),
 		2 => array(
-			'id' => 2,
+			'id'    => 2,
 			'label' => __( 'Virtual POS terminal', 'nashenski-commerce' ),
 		),
 		3 => array(
-			'id' => 3,
+			'id'    => 3,
 			'label' => __( 'Cash on delivery with PPP', 'nashenski-commerce' ),
 		),
 		4 => array(
-			'id' => 4,
+			'id'    => 4,
 			'label' => __( 'Payment service provider', 'nashenski-commerce' ),
 		),
 		5 => array(
-			'id' => 5,
+			'id'    => 5,
 			'label' => __( 'Other', 'nashenski-commerce' ),
 		),
 		6 => array(
-			'id' => 6,
+			'id'    => 6,
 			'label' => __( 'Reflected with receipt', 'nashenski-commerce' ),
 		),
 	);
@@ -119,12 +119,12 @@ function nashenski_get_payment_types() {
 
 function nashenski_get_payment_types_for_meta() {
 	return array(
-		'1' => 'WithoutPostPayment', //1
-		'2' => 'VirtualPOSTerminal', //2
-		'3' => 'WithPostPayment', //3
-		'4' => 'PaymentService', //4
-		'5' => 'Other', //5
-		'6' => 'ReflectedWithReceipt', //6
+		'1' => 'WithoutPostPayment', // 1
+		'2' => 'VirtualPOSTerminal', // 2
+		'3' => 'WithPostPayment', // 3
+		'4' => 'PaymentService', // 4
+		'5' => 'Other', // 5
+		'6' => 'ReflectedWithReceipt', // 6
 	);
 }
 
@@ -133,15 +133,15 @@ function nashenski_get_tax_classes() {
 
 	$classes_options = array(
 		'standard' => array(
-			'id' => 'standard',
+			'id'    => 'standard',
 			'label' => __( 'Standard', 'nashenski-commerce' ),
 		),
 	);
 
 	foreach ( $tax_classes as $class ) {
-		$slug = sanitize_title( $class );
+		$slug                     = sanitize_title( $class );
 		$classes_options[ $slug ] = array(
-			'id' => $slug,
+			'id'    => $slug,
 			'label' => esc_html( $class ),
 		);
 	}
@@ -155,9 +155,9 @@ function nashenski_get_vat_from_order( $order ) {
 }
 
 function nashenski_return_array_for_select( $array, $user_value_for_id = false, $additional_attributes = array() ) {
-	$new_array = [];
+	$new_array = array();
 
-	if ( !empty( $array ) ) {
+	if ( ! empty( $array ) ) {
 		foreach ( $array as $key => $value ) {
 			$id = $key;
 
@@ -166,12 +166,12 @@ function nashenski_return_array_for_select( $array, $user_value_for_id = false, 
 			}
 
 			$item = array(
-				'id' => $id,
+				'id'       => $id,
 				'orig_key' => $key,
-				'label' => $value,
+				'label'    => $value,
 			);
 
-			if ( !empty( $additional_attributes ) ) {
+			if ( ! empty( $additional_attributes ) ) {
 				$item = array_merge( $item, $additional_attributes );
 			}
 
@@ -184,7 +184,7 @@ function nashenski_return_array_for_select( $array, $user_value_for_id = false, 
 
 function nashenski_return_bg_states() {
 	return array(
-		'' => '',
+		''      => '',
 		'BG-01' => 'Благоевград',
 		'BG-02' => 'Бургас',
 		'BG-03' => 'Варна',
@@ -218,16 +218,16 @@ function nashenski_return_bg_states() {
 
 function nashenski_get_shipping_tests_options() {
 	return array(
-		'no' => __( 'No', 'nashenski-commerce' ),
+		'no'     => __( 'No', 'nashenski-commerce' ),
 		'review' => __( 'Review only', 'nashenski-commerce' ),
-		'test' => __( 'Review and test', 'nashenski-commerce' ),
+		'test'   => __( 'Review and test', 'nashenski-commerce' ),
 	);
 }
 
 function nashenski_get_order_shipping_vat( $order, $show_group = false ) {
 	$shipping_vat = 0;
 
-	if ( wc_tax_enabled() && !empty( $order->get_items( 'tax' ) ) ) {
+	if ( wc_tax_enabled() && ! empty( $order->get_items( 'tax' ) ) ) {
 		foreach ( $order->get_items( 'tax' ) as $tax_item ) {
 			if ( $tax_item->get_shipping_tax_total() ) {
 				$shipping_vat = $tax_item->get_rate_percent();
@@ -249,32 +249,32 @@ function nashenski_get_order_item_vat_rate( $item, $order, $show_group = false, 
 	if ( $default_rate !== false ) {
 		$rate = $default_rate;
 	} else {
-		$vat_group           = nashenski_get_option( 'shop', 'vat_group' );
-		$vat_percentages     = nashenski_get_vat_groups();
-		$rate = ( isset( $vat_percentages[ $vat_group ] ) ) ? $vat_percentages[ $vat_group ] : 0;
+		$vat_group       = nashenski_get_option( 'shop', 'vat_group' );
+		$vat_percentages = nashenski_get_vat_groups();
+		$rate            = ( isset( $vat_percentages[ $vat_group ] ) ) ? $vat_percentages[ $vat_group ] : 0;
 	}
-	
+
 	if ( $tax_data ) {
-		$founded = false;
+		$founded     = false;
 		$order_taxes = $order->get_taxes();
 
 		foreach ( $order_taxes as $tax_item ) {
-			$tax_item_id       = $tax_item->get_rate_id();
-			$tax_item_total    = isset( $tax_data['total'][ $tax_item_id ] ) ? $tax_data['total'][ $tax_item_id ] : '';
+			$tax_item_id    = $tax_item->get_rate_id();
+			$tax_item_total = isset( $tax_data['total'][ $tax_item_id ] ) ? $tax_data['total'][ $tax_item_id ] : '';
 
 			// A line discounted to zero has no tax after discount; its rate is in the tax before discount.
 			if ( ! ( $tax_item_total > 0 ) && ! empty( $tax_data['subtotal'][ $tax_item_id ] ) ) {
 				$tax_item_total = $tax_data['subtotal'][ $tax_item_id ];
 			}
-				
+
 			if ( '' !== $tax_item_total && $tax_item_total > 0 ) {
-				$rate = $tax_item->get_rate_percent();
+				$rate    = $tax_item->get_rate_percent();
 				$founded = true;
 				break;
 			}
 		}
 
-		if ( !$founded ) {
+		if ( ! $founded ) {
 			$rate = 0;
 		}
 	}
@@ -290,14 +290,18 @@ function nashenski_maybe_add_rate_group( $rate ) {
 	$group = nashenski_get_vat_group_from_rate( $rate );
 
 	if ( $group ) {
-		$rate = $group . " - " . $rate;
+		$rate = $group . ' - ' . $rate;
 	}
 
 	return $rate;
 }
 
 function nashenski_get_vat_group_from_rate( $rate ) {
-	$groups = array( '0' => 'А', '9' => 'Г', '20' => 'Б' );
+	$groups = array(
+		'0'  => 'А',
+		'9'  => 'Г',
+		'20' => 'Б',
+	);
 
 	return $groups[ (string) $rate ] ?? '';
 }
@@ -307,23 +311,31 @@ function nashenski_tax_based_price( $price, $rate = 20, $force = false ) {
 		$price = $price - nashenski_calculate_vat_from_price( $price, $rate );
 	}
 
-	return number_format( round($price, 2), 2, '.', '' );
+	return number_format( round( $price, 2 ), 2, '.', '' );
 }
 
 function nashenski_calculate_vat_from_price( $price, $rate = 20 ) {
-	$vat = (new \WC_Tax)::calc_tax( $price, array( array('compound' => 'yes', 'rate' => $rate ) ), true )[0];
-    $vat = round( $vat, 3, PHP_ROUND_HALF_UP );
-    $vat = number_format( $vat, 2, '.', '');
-    
-    return $vat;
+	$vat = ( new \WC_Tax() )::calc_tax(
+		$price,
+		array(
+			array(
+				'compound' => 'yes',
+				'rate'     => $rate,
+			),
+		),
+		true
+	)[0];
+	$vat = round( $vat, 3, PHP_ROUND_HALF_UP );
+	$vat = number_format( $vat, 2, '.', '' );
+
+	return $vat;
 }
 
 function nashenski_maybe_remove_shipping( $order ) {
 	$remove_shipping = nashenski_get_option( 'invoice', 'remove_shipping' );
 
-	if ( 
-		is_a( $order, 'Automattic\WooCommerce\Admin\Overrides\OrderRefund' ) || 
-		is_a( $order, 'WC_Order_Refund' ) 
+	if ( is_a( $order, 'Automattic\WooCommerce\Admin\Overrides\OrderRefund' ) ||
+		is_a( $order, 'WC_Order_Refund' )
 	) {
 		$order = wc_get_order( $order->get_parent_id() );
 	}
@@ -340,10 +352,10 @@ function nashenski_maybe_remove_shipping( $order ) {
 	$shipping_methods = $order->get_shipping_methods();
 
 	if ( ! empty( $shipping_methods ) ) {
-		$shipping_method = reset( $shipping_methods );
+		$shipping_method    = reset( $shipping_methods );
 		$shipping_method_id = $shipping_method['method_id'];
 
-		if ( $order->get_payment_method() === 'cod' && nashenski_get_option('shippings', $shipping_method_id . '_is_courier' ) === 'yes' ) {
+		if ( $order->get_payment_method() === 'cod' && nashenski_get_option( 'shippings', $shipping_method_id . '_is_courier' ) === 'yes' ) {
 			$remove_shipping = 'yes';
 		}
 	}
@@ -353,7 +365,7 @@ function nashenski_maybe_remove_shipping( $order ) {
 
 function nashenski_has_free_shipping_coupon_in_cart() {
 	$has_coupon = false;
-	$coupons = WC()->cart->get_coupons();
+	$coupons    = WC()->cart->get_coupons();
 
 	if ( $coupons ) {
 		foreach ( $coupons as $code => $coupon ) {
@@ -371,8 +383,8 @@ function nashenski_format_phone( $phone, $country = 'BG' ) {
 	if ( $country !== 'BG' ) {
 		return $phone;
 	}
-	
-	$phone = str_replace( [ ' ', '+' ], '', $phone );
+
+	$phone = str_replace( array( ' ', '+' ), '', $phone );
 
 	if ( substr( $phone, 0, 3 ) === '359' ) {
 		$phone = str_pad( substr( $phone, 3 ), 10, '0', STR_PAD_LEFT );
@@ -395,7 +407,7 @@ function nashenski_format_phone( $phone, $country = 'BG' ) {
  * @return mixed
  */
 function nashenski_verified_request( $key, $default, $field, $actions ) {
-	$nonce = isset( $_REQUEST[ $field ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ $field ] ) ) : '';
+	$nonce    = isset( $_REQUEST[ $field ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ $field ] ) ) : '';
 	$verified = false;
 
 	foreach ( (array) $actions as $action ) {
@@ -429,9 +441,11 @@ function nashenski_check_admin_label_actions() {
 	}
 
 	if ( ! empty( $errors ) ) {
-		wp_send_json_error( array(
-			'message' => implode( ' ', $errors ),
-		) );
+		wp_send_json_error(
+			array(
+				'message' => implode( ' ', $errors ),
+			)
+		);
 	}
 }
 
@@ -452,9 +466,12 @@ function nashenski_label_request( $key = null, $default = '' ) {
  */
 function nashenski_check_picker_request() {
 	if ( null === nashenski_picker_request( 'nonce', null ) ) {
-		wp_send_json_error( array(
-			'error' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ),
-		), 403 );
+		wp_send_json_error(
+			array(
+				'error' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ),
+			),
+			403
+		);
 	}
 }
 
@@ -520,7 +537,7 @@ function nashenski_send_download( $path, $name, $type ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 
 	$filesystem = new WP_Filesystem_Direct( null );
-	$contents = (string) $filesystem->get_contents( $path );
+	$contents   = (string) $filesystem->get_contents( $path );
 
 	wp_delete_file( $path );
 	nocache_headers();
@@ -566,9 +583,9 @@ function nashenski_prime_cart_fee_totals( WC_Cart $cart ) {
 					$taxes[ $rate_id ] = wc_round_tax_total( $tax_amount );
 				}
 
-				$tax_total     = array_sum( $taxes );
+				$tax_total      = array_sum( $taxes );
 				$fee_tax_total += $tax_total;
-				$fee_taxes     = wc_array_merge_recursive_numeric( $fee_taxes, $taxes );
+				$fee_taxes      = wc_array_merge_recursive_numeric( $fee_taxes, $taxes );
 			}
 
 			$fee->total    = wc_format_decimal( $amount );
@@ -586,7 +603,7 @@ function nashenski_prime_cart_fee_totals( WC_Cart $cart ) {
 
 function nashenski_get_package_total() {
 	$includes_fees = apply_filters( 'nashenski/shipping/package_total_includes_fees', true );
-	$total = (float) WC()->cart->get_cart_contents_total() + (float) WC()->cart->get_cart_contents_tax();
+	$total         = (float) WC()->cart->get_cart_contents_total() + (float) WC()->cart->get_cart_contents_tax();
 
 	if ( $includes_fees ) {
 		nashenski_prime_cart_fee_totals( WC()->cart );
@@ -613,12 +630,15 @@ function nashenski_is_shipping_enabled() {
  * Courier slug => name, in display order. Call it from hooks at or after init (names are translated).
  */
 function nashenski_couriers() {
-	return array_combine( \Nashenski\Plugin::COURIERS, array(
-		__( 'Econt', 'nashenski-commerce' ),
-		__( 'Speedy', 'nashenski-commerce' ),
-		__( 'BOX NOW', 'nashenski-commerce' ),
-		__( 'Pigeon Express', 'nashenski-commerce' ),
-	) );
+	return array_combine(
+		\Nashenski\Plugin::COURIERS,
+		array(
+			__( 'Econt', 'nashenski-commerce' ),
+			__( 'Speedy', 'nashenski-commerce' ),
+			__( 'BOX NOW', 'nashenski-commerce' ),
+			__( 'Pigeon Express', 'nashenski-commerce' ),
+		)
+	);
 }
 
 /**
@@ -657,7 +677,8 @@ function nashenski_save_checkout_label( $order_id, $courier ) {
 
 		if ( $shipping->get_meta( 'cookie_data' ) ) {
 			$cookie_data = $shipping->get_meta( 'cookie_data' );
-			if ( $courier === 'pigeon' ) { $cookie_data = \Nashenski\Shipping\Pigeon\Payment::cookie( $cookie_data ); }
+			if ( $courier === 'pigeon' ) {
+				$cookie_data = \Nashenski\Shipping\Pigeon\Payment::cookie( $cookie_data ); }
 			$order->update_meta_data( "nashenski_{$courier}_cookie_data", $cookie_data );
 		}
 
@@ -719,15 +740,15 @@ function nashenski_add_label_order_note( $order, $courier, $action, $label_numbe
 }
 
 function nashenski_get_order_label( $order_id ) {
-	$order = wc_get_order( $order_id );
-	$data = [];
-	$label_data = [];
-	$method = '';
+	$order      = wc_get_order( $order_id );
+	$data       = array();
+	$label_data = array();
+	$method     = '';
 
-	if ( !empty( $order->get_items( 'shipping' ) ) ) {
-		$items = $order->get_items( 'shipping' );
+	if ( ! empty( $order->get_items( 'shipping' ) ) ) {
+		$items         = $order->get_items( 'shipping' );
 		$method_object = array_shift( $items );
-		$method = $method_object['method_id'];
+		$method        = $method_object['method_id'];
 
 		$label_data = nashenski_get_label_data_for_shipping_method( $method_object, $order );
 
@@ -738,30 +759,30 @@ function nashenski_get_order_label( $order_id ) {
 
 	$print = admin_url( 'admin-ajax.php' ) . '?cache-buster=' . wp_rand() . '&nonce=' . wp_create_nonce( 'nashenski_admin_label' ) . '&action=';
 
-	if ( !empty( $label_data ) ) {
+	if ( ! empty( $label_data ) ) {
 		switch ( $method ) {
 			case 'nashenski_speedy':
 				$shipment_status = $order->get_meta( 'nashenski_speedy_shipment_status' );
 
 				if ( $shipment_status && $label_data['id'] ) {
 					$data['number'] = $label_data['id'];
-					$data['link'] = $print . 'nashenski_speedy_print_labels&parcels=' . implode('|', wp_list_pluck( $shipment_status['parcels'], 'id' ) ) . "&size=A6";
+					$data['link']   = $print . 'nashenski_speedy_print_labels&parcels=' . implode( '|', wp_list_pluck( $shipment_status['parcels'], 'id' ) ) . '&size=A6';
 				}
 				break;
 			case 'nashenski_econt':
 				$shipment_status = $order->get_meta( 'nashenski_econt_shipment_status' );
 
-				if ( $shipment_status && !empty( $label_data['label'] ) && !empty( $label_data['label']['shipmentNumber'] ) ) {
+				if ( $shipment_status && ! empty( $label_data['label'] ) && ! empty( $label_data['label']['shipmentNumber'] ) ) {
 					$pdf = \Nashenski\Admin\Courier_Pdf::url( $shipment_status['label']['pdfURL'] ?? null, '10x9' );
 					// Waybills imported from another plugin may have no PDF address: link to Econt's tracking page then.
-					$data = [
+					$data = array(
 						'number' => $label_data['label']['shipmentNumber'],
-						'link' => $pdf ?: \Nashenski\Shipping\Automation::tracking_url( 'econt', $label_data['label']['shipmentNumber'] ),
-					];
+						'link'   => $pdf ?: \Nashenski\Shipping\Automation::tracking_url( 'econt', $label_data['label']['shipmentNumber'] ),
+					);
 				}
 				break;
 			case 'nashenski_boxnow':
-				$parcels = isset( $label_data['parcels'] ) && is_array( $label_data['parcels'] ) ? $label_data['parcels'] : array();
+				$parcels      = isset( $label_data['parcels'] ) && is_array( $label_data['parcels'] ) ? $label_data['parcels'] : array();
 				$other_labels = $order->get_meta( 'nashenski_boxnow_other_labels_data' );
 
 				if ( $other_labels ) {
@@ -773,20 +794,20 @@ function nashenski_get_order_label( $order_id ) {
 				}
 
 				foreach ( $parcels as $parcel ) {
-					$data['items'][] = [
+					$data['items'][] = array(
 						'number' => $parcel['id'],
-						'link' => $print . 'nashenski_boxnow_print_label&parcel=' . $parcel['id'],
-					];
+						'link'   => $print . 'nashenski_boxnow_print_label&parcel=' . $parcel['id'],
+					);
 				}
 
 				break;
 			case 'nashenski_pigeon':
 				$shipment_status = $order->get_meta( 'nashenski_pigeon_shipment_status' );
-				if ( $shipment_status && !empty( $label_data['data']['reference_number'] ) ) {
-					$data = [
+				if ( $shipment_status && ! empty( $label_data['data']['reference_number'] ) ) {
+					$data = array(
 						'number' => $label_data['data']['reference_number'],
-						'link' => $print . 'nashenski_pigeon_print_labels&order-id=' . $order->get_id(),
-					];
+						'link'   => $print . 'nashenski_pigeon_print_labels&order-id=' . $order->get_id(),
+					);
 				}
 
 				break;
@@ -794,8 +815,8 @@ function nashenski_get_order_label( $order_id ) {
 	}
 
 	if ( $method ) {
-		$names = nashenski_couriers();
-		$courier = preg_replace( '/^nashenski_/', '', $method );
+		$names          = nashenski_couriers();
+		$courier        = preg_replace( '/^nashenski_/', '', $method );
 		$data['method'] = $method;
 
 		if ( $courier !== $method && isset( $names[ $courier ] ) ) {
@@ -813,7 +834,7 @@ function nashenski_get_order_label( $order_id ) {
 function nashenski_get_label_data_for_shipping_method( $shipping ) {
 	$meta_keys = array(
 		'nashenski_speedy' => 'nashenski_speedy_label',
-		'nashenski_econt' => 'nashenski_econt_label',
+		'nashenski_econt'  => 'nashenski_econt_label',
 		'nashenski_boxnow' => 'nashenski_boxnow_shipment_status',
 		'nashenski_pigeon' => 'nashenski_pigeon_shipment_status',
 	);
@@ -822,87 +843,92 @@ function nashenski_get_label_data_for_shipping_method( $shipping ) {
 }
 
 function nashenski_get_shipping_rate_taxes( $price, $country = 'BG' ) {
-	if ( !wc_tax_enabled() ) {
-		return [];
+	if ( ! wc_tax_enabled() ) {
+		return array();
 	}
 
-	$tax_rates = \WC_Tax::find_shipping_rates( ['country' => $country ] );
+	$tax_rates = \WC_Tax::find_shipping_rates( array( 'country' => $country ) );
 
 	if ( empty( $tax_rates ) ) {
-		$tax_rates = [ ['rate' => 20, 'compound' => 'yes' ] ];
+		$tax_rates = array(
+			array(
+				'rate'     => 20,
+				'compound' => 'yes',
+			),
+		);
 	}
 
 	return \WC_Tax::calc_tax( $price, $tax_rates, false );
 }
 
 function nashenski_is_different_shipping_address( $order ) {
-    $billing_address  = $order->get_address();
-    $shipping_address = $order->get_address( 'shipping' );
+	$billing_address  = $order->get_address();
+	$shipping_address = $order->get_address( 'shipping' );
 
-    if ( ! empty( $billing_address ) && ! empty( $shipping_address ) ) {
-        foreach ( $billing_address as $billing_address_key => $billing_address_value ) {
-            if ( isset( $shipping_address[ $billing_address_key ] ) ) {
-                $shipping_address_value = $shipping_address[ $billing_address_key ];
+	if ( ! empty( $billing_address ) && ! empty( $shipping_address ) ) {
+		foreach ( $billing_address as $billing_address_key => $billing_address_value ) {
+			if ( isset( $shipping_address[ $billing_address_key ] ) ) {
+				$shipping_address_value = $shipping_address[ $billing_address_key ];
 
-                if ( ! empty( $billing_address_value ) && ! empty( $shipping_address_value ) && strcmp( $billing_address_value, $shipping_address_value ) !== 0 ) {
-                    return true;
-                }
-            }
-        }
-    }
+				if ( ! empty( $billing_address_value ) && ! empty( $shipping_address_value ) && strcmp( $billing_address_value, $shipping_address_value ) !== 0 ) {
+					return true;
+				}
+			}
+		}
+	}
 
-    return false;
+	return false;
 }
 
 function nashenski_strip_street_prefix( $street ) {
-    $prefixes = [
-        // Cyrillic prefixes
-        'ул.',
+	$prefixes = array(
+		// Cyrillic prefixes
+		'ул.',
 		'ул ',
-        'бул.',
+		'бул.',
 		'бул ',
-        'пл.',
+		'пл.',
 		'пл ',
-        'пр.',
+		'пр.',
 		'пр ',
-        'кв.',
+		'кв.',
 		'кв ',
-        'ж.к.',
-        'ж.к',
-        'жк.',
-        'жк',
-        // Latin prefixes (stripped before transliteration)
-        'ul.',
-        'ul ',
-        'bul.',
-        'bul ',
-        'pl.',
-        'pl ',
-        'pr.',
-        'pr ',
-        'kv.',
-        'kv ',
-        'zh.k.',
-        'zh.k',
-        'zhk.',
-        'zhk',
-        'j.k.',
-        'j.k',
-        'jk.',
-        'jk',
-    ];
+		'ж.к.',
+		'ж.к',
+		'жк.',
+		'жк',
+		// Latin prefixes (stripped before transliteration)
+		'ul.',
+		'ul ',
+		'bul.',
+		'bul ',
+		'pl.',
+		'pl ',
+		'pr.',
+		'pr ',
+		'kv.',
+		'kv ',
+		'zh.k.',
+		'zh.k',
+		'zhk.',
+		'zhk',
+		'j.k.',
+		'j.k',
+		'jk.',
+		'jk',
+	);
 
-    $street = preg_replace( '/\.(?=\S)/u', '. ', $street );
+	$street = preg_replace( '/\.(?=\S)/u', '. ', $street );
 
-    foreach ( $prefixes as $prefix ) {
-        if ( mb_stripos( $street, $prefix ) === 0 ) {
-            $street = mb_substr( $street, mb_strlen( $prefix ) );
-            $street = ltrim( $street );
-            break;
-        }
-    }
+	foreach ( $prefixes as $prefix ) {
+		if ( mb_stripos( $street, $prefix ) === 0 ) {
+			$street = mb_substr( $street, mb_strlen( $prefix ) );
+			$street = ltrim( $street );
+			break;
+		}
+	}
 
-    return $street;
+	return $street;
 }
 
 function nashenski_remove_city_prefix( $city ) {
@@ -956,45 +982,76 @@ function nashenski_remove_city_prefix( $city ) {
 	return preg_replace( '/^\s*(?:' . implode( '|', $prefixes ) . ')(?:\s*[.\-,:]\s*|\s+)/iu', '', $city );
 }
 
-function nashenski_title_case_bg(string $string, string $encoding = 'UTF-8') {
-    $smallWords = [
-        'и', 'или', 'а', 'но', 'че',
-        'в', 'във', 'с', 'със', 'у', 'към',
-        'на', 'за', 'от', 'до', 'по', 'под', 'над', 'пред', 'при', 'през',
-        'без', 'след', 'преди', 'между', 'сред', 'чрез'
-    ];
+function nashenski_title_case_bg( string $string, string $encoding = 'UTF-8' ) {
+	$smallWords = array(
+		'и',
+		'или',
+		'а',
+		'но',
+		'че',
+		'в',
+		'във',
+		'с',
+		'със',
+		'у',
+		'към',
+		'на',
+		'за',
+		'от',
+		'до',
+		'по',
+		'под',
+		'над',
+		'пред',
+		'при',
+		'през',
+		'без',
+		'след',
+		'преди',
+		'между',
+		'сред',
+		'чрез',
+	);
 
-    $string = trim(preg_replace('/\s+/u', ' ', $string));
-    $string = mb_strtolower($string, $encoding);
+	$string = trim( preg_replace( '/\s+/u', ' ', $string ) );
+	$string = mb_strtolower( $string, $encoding );
 
-    $parts = preg_split('/(\s+)/u', $string, -1, PREG_SPLIT_DELIM_CAPTURE);
-    $result = [];
-    $wordIndex = 0;
+	$parts     = preg_split( '/(\s+)/u', $string, -1, PREG_SPLIT_DELIM_CAPTURE );
+	$result    = array();
+	$wordIndex = 0;
 
-    foreach ($parts as $part) {
-        if (preg_match('/^\s+$/u', $part)) {
-            $result[] = $part;
-            continue;
-        }
+	foreach ( $parts as $part ) {
+		if ( preg_match( '/^\s+$/u', $part ) ) {
+			$result[] = $part;
+			continue;
+		}
 
-        $word = $part;
-        $word = preg_replace_callback('/^\p{L}/u', function ($m) use ($encoding) {
-            return mb_strtoupper($m[0], $encoding);
-        }, $word);
+		$word = $part;
+		$word = preg_replace_callback(
+			'/^\p{L}/u',
+			function ( $m ) use ( $encoding ) {
+				return mb_strtoupper( $m[0], $encoding );
+			},
+			$word
+		);
 
-        $word = preg_replace_callback('/(\.)(\p{L})/u', function ($m) use ($encoding) {
-            return $m[1] . mb_strtoupper($m[2], $encoding);
-        }, $word);
+		$word = preg_replace_callback(
+			'/(\.)(\p{L})/u',
+			function ( $m ) use ( $encoding ) {
+				return $m[1] . mb_strtoupper( $m[2], $encoding );
+			},
+			$word
+		);
 
-        if ($wordIndex > 0 && in_array($part, $smallWords, true)) {
-            $word = $part;
-        }
+		if ( $wordIndex > 0 && in_array( $part, $smallWords, true ) ) {
+			$word = $part;
+		}
 
-        $result[] = $word;
-        $wordIndex++;
-    }
+		$result[] = $word;
+		++$wordIndex;
+	}
 
-    return implode('', $result);
+	return implode( '', $result );
 }
 
 /**

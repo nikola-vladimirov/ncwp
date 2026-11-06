@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Client\Pigeon;
+
 use Nashenski\Container\Client;
 use Nashenski\File;
 
@@ -8,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 class Streets {
 	const STREETS_ENDPOINT = '/cities/{cityID}/streets';
 
-	private $streets = [];
+	private $streets = array();
 	private $container;
 
 	public function __construct( $container ) {
@@ -20,17 +21,17 @@ class Streets {
 			wp_mkdir_p( $this->container[ Client::PIGEON ]::CACHE_FOLDER );
 		}
 
-		$query = mb_substr( (string) $query, 0, 64 );
-		$hash = md5( $query );
+		$query        = mb_substr( (string) $query, 0, 64 );
+		$hash         = md5( $query );
 		$streets_file = $this->container[ Client::PIGEON ]::CACHE_FOLDER . 'streets-' . $city_id . '-' . $hash . '.json';
-		$streets = File::get_file( $streets_file );
+		$streets      = File::get_file( $streets_file );
 
 		$miss_key = 'nashenski_miss_' . md5( $streets_file );
 
 		// An empty answer is remembered for 5 minutes, so the same lookup does not call the courier again.
-		if ( !$streets && !get_transient( $miss_key ) ) {
-			$all_streets = [];
-			$complete = false;
+		if ( ! $streets && ! get_transient( $miss_key ) ) {
+			$all_streets = array();
+			$complete    = false;
 
 			// Cap the pages; cache only when every page answered.
 			for ( $page = 1; $page <= 200; $page++ ) {
@@ -48,9 +49,9 @@ class Streets {
 				}
 			}
 
-			if ( !empty( $all_streets ) ) {
+			if ( ! empty( $all_streets ) ) {
 				$streets = wp_json_encode( $all_streets );
-				
+
 				if ( $complete ) {
 					File::put_to_file( $streets_file, $streets );
 				}
@@ -67,15 +68,15 @@ class Streets {
 		return $streets;
 	}
 
-	//Getters
+	// Getters
 	public function get_page( $city_id, $page = 1, $query = '' ) {
 		$endpoint = str_replace( '{cityID}', $city_id, self::STREETS_ENDPOINT );
-		$args = [
+		$args     = array(
 			'city_id' => $city_id,
-			'page' => $page,
-		];
+			'page'    => $page,
+		);
 
-		if ( !empty( $query ) ) {
+		if ( ! empty( $query ) ) {
 			$args['name'] = $query;
 		}
 
@@ -84,7 +85,7 @@ class Streets {
 
 	public function get_streets_by_city( $city_id, $query ) {
 		$query = mb_substr( (string) $query, 0, 64 );
-		$hash = md5( $query );
+		$hash  = md5( $query );
 
 		if ( empty( $this->streets[ $city_id ][ $hash ] ) ) {
 			$this->load_streets_by_city( $city_id, $query );
@@ -93,30 +94,30 @@ class Streets {
 		return $this->streets[ $city_id ][ $hash ];
 	}
 
-	//Setters
+	// Setters
 	private function set_streets( $streets, $city_id, $hash ) {
 		$this->streets[ $city_id ][ $hash ] = $streets;
 	}
 
 	public function format_streets( $streets ) {
-		$formatted = [];
+		$formatted = array();
 
 		foreach ( $streets as $street ) {
-			$formatted[ 'street-' . $street['id'] ] = self::format_type( $street['type'] ) . " " . nashenski_title_case_bg( $street['name'] );
+			$formatted[ 'street-' . $street['id'] ] = self::format_type( $street['type'] ) . ' ' . nashenski_title_case_bg( $street['name'] );
 		}
-		
+
 		return $formatted;
 	}
 
 	public static function format_type( $type ) {
-		if ( !$type ) {
+		if ( ! $type ) {
 			return '';
 		}
 
-		return str_replace( 
-			[ 'улица', 'булевард', 'площад', 'жилищен комплекс', 'квартал', 'район', 'курортен комплекс'], 
-			[ 'ул.', 'бул.', 'пл.', 'ж.к.', 'кв.', 'р-н', 'к.к.'], 
-			$type 
+		return str_replace(
+			array( 'улица', 'булевард', 'площад', 'жилищен комплекс', 'квартал', 'район', 'курортен комплекс' ),
+			array( 'ул.', 'бул.', 'пл.', 'ж.к.', 'кв.', 'р-н', 'к.к.' ),
+			$type
 		);
 	}
 }

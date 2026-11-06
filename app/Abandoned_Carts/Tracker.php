@@ -82,9 +82,12 @@ class Tracker {
 	 * Up to three, sorted.
 	 */
 	public static function steps() {
-		$hours = array_filter( array_map( 'floatval', explode( ',', (string) nashenski_get_option( 'abandoned_carts', 'hours' ) ) ), function ( $hour ) {
-			return $hour > 0;
-		} );
+		$hours = array_filter(
+			array_map( 'floatval', explode( ',', (string) nashenski_get_option( 'abandoned_carts', 'hours' ) ) ),
+			function ( $hour ) {
+				return $hour > 0;
+			}
+		);
 
 		if ( ! $hours ) {
 			$hours = array( 1, 24, 72 );
@@ -126,7 +129,8 @@ class Tracker {
 		$table   = self::table();
 		$charset = $wpdb->get_charset_collate();
 
-		dbDelta( "CREATE TABLE {$table} (
+		dbDelta(
+			"CREATE TABLE {$table} (
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			session_key varchar(64) DEFAULT NULL,
 			email varchar(190) NOT NULL DEFAULT '',
@@ -149,7 +153,8 @@ class Tracker {
 			KEY status_activity (status,last_activity),
 			KEY token (token),
 			KEY email (email)
-		) {$charset};" );
+		) {$charset};"
+		);
 
 		if ( function_exists( 'as_has_scheduled_action' ) ) {
 			if ( ! as_has_scheduled_action( self::SEND_HOOK, array(), self::GROUP ) ) {
@@ -224,13 +229,16 @@ class Tracker {
 			return;
 		}
 
-		$wpdb->insert( $table, self::cart_data() + array(
-			'session_key' => $key,
-			'status'      => 'open',
-			'step'        => 'cart',
-			'token'       => wp_generate_password( 32, false ),
-			'created_at'  => current_time( 'mysql', true ),
-		) );
+		$wpdb->insert(
+			$table,
+			self::cart_data() + array(
+				'session_key' => $key,
+				'status'      => 'open',
+				'step'        => 'cart',
+				'token'       => wp_generate_password( 32, false ),
+				'created_at'  => current_time( 'mysql', true ),
+			)
+		);
 	}
 
 	/**
@@ -314,12 +322,15 @@ class Tracker {
 		}
 
 		// No open row for this session: make one from the current cart so the email is kept.
-		$wpdb->insert( $table, self::cart_data() + $contact + array(
-			'session_key' => $key,
-			'status'      => 'open',
-			'token'       => wp_generate_password( 32, false ),
-			'created_at'  => current_time( 'mysql', true ),
-		) );
+		$wpdb->insert(
+			$table,
+			self::cart_data() + $contact + array(
+				'session_key' => $key,
+				'status'      => 'open',
+				'token'       => wp_generate_password( 32, false ),
+				'created_at'  => current_time( 'mysql', true ),
+			)
+		);
 	}
 
 	/**
@@ -356,18 +367,20 @@ class Tracker {
 		$table = self::table();
 		$steps = self::steps();
 
-		$rows = $wpdb->get_results( $wpdb->prepare(
-			'SELECT * FROM %i WHERE status = %s AND email <> %s AND emails_sent < %d AND last_activity <= %s
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT * FROM %i WHERE status = %s AND email <> %s AND emails_sent < %d AND last_activity <= %s
 			AND email NOT IN (SELECT email FROM %i WHERE status = %s) ORDER BY last_activity LIMIT %d',
-			$table,
-			'open',
-			'',
-			count( $steps ),
-			gmdate( 'Y-m-d H:i:s', time() - min( $steps ) * HOUR_IN_SECONDS ),
-			$table,
-			'unsubscribed',
-			self::BATCH
-		) );
+				$table,
+				'open',
+				'',
+				count( $steps ),
+				gmdate( 'Y-m-d H:i:s', time() - min( $steps ) * HOUR_IN_SECONDS ),
+				$table,
+				'unsubscribed',
+				self::BATCH
+			)
+		);
 
 		foreach ( (array) $rows as $row ) {
 			// Each reminder waits its own number of hours after the last cart change.
@@ -568,10 +581,14 @@ class Tracker {
 
 			global $wpdb;
 
-			$wpdb->update( self::table(), array(
-				'coupon_code' => $code,
-				'coupon_id'   => (int) $coupon->get_id(),
-			), array( 'id' => (int) $row->id ) );
+			$wpdb->update(
+				self::table(),
+				array(
+					'coupon_code' => $code,
+					'coupon_id'   => (int) $coupon->get_id(),
+				),
+				array( 'id' => (int) $row->id )
+			);
 
 			$row->coupon_code = $code;
 
@@ -618,7 +635,7 @@ class Tracker {
 			$quantity     = isset( $item['quantity'] ) ? max( 1, (int) $item['quantity'] ) : 1;
 
 			if ( $product_id && WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $variation ) ) {
-				$added++;
+				++$added;
 			}
 		}
 
@@ -678,11 +695,13 @@ class Tracker {
 
 		global $wpdb;
 
-		$wpdb->query( $wpdb->prepare(
-			'DELETE FROM %i WHERE last_activity < %s',
-			self::table(),
-			gmdate( 'Y-m-d H:i:s', time() - self::retention_days() * DAY_IN_SECONDS )
-		) );
+		$wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM %i WHERE last_activity < %s',
+				self::table(),
+				gmdate( 'Y-m-d H:i:s', time() - self::retention_days() * DAY_IN_SECONDS )
+			)
+		);
 	}
 
 	/*
@@ -748,11 +767,15 @@ class Tracker {
 	public static function update_contact( $id, $email, $name, $phone ) {
 		global $wpdb;
 
-		return (bool) $wpdb->update( self::table(), array(
-			'email'      => sanitize_email( (string) $email ),
-			'first_name' => sanitize_text_field( (string) $name ),
-			'phone'      => sanitize_text_field( (string) $phone ),
-		), array( 'id' => (int) $id ) );
+		return (bool) $wpdb->update(
+			self::table(),
+			array(
+				'email'      => sanitize_email( (string) $email ),
+				'first_name' => sanitize_text_field( (string) $name ),
+				'phone'      => sanitize_text_field( (string) $phone ),
+			),
+			array( 'id' => (int) $id )
+		);
 	}
 
 	public static function delete_row( $id ) {

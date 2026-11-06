@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Admin;
+
 use Nashenski\Container\Client;
 use Nashenski\Shipping\Econt\Address;
 
@@ -34,51 +35,55 @@ class Econt {
 			$theorder = wc_get_order( $post->ID );
 		}
 
-		if ( !empty( $theorder->get_items( 'shipping' ) ) ) {
+		if ( ! empty( $theorder->get_items( 'shipping' ) ) ) {
 			foreach ( $theorder->get_items( 'shipping' ) as $shipping ) {
 				if ( $shipping['method_id'] === 'nashenski_econt' ) {
 					echo '<div id="nashenski--econt-admin"></div>';
 
-					$label_data = array();
-					$cookie_data = $theorder->get_meta( 'nashenski_econt_cookie_data' );
+					$label_data      = array();
+					$cookie_data     = $theorder->get_meta( 'nashenski_econt_cookie_data' );
 					$shipment_status = Courier_Pdf::status( 'econt', $theorder->get_meta( 'nashenski_econt_shipment_status' ) );
 
 					if ( $label = $theorder->get_meta( 'nashenski_econt_label' ) ) {
 						$label_data = $label;
 					}
 
-					if ( !$cookie_data ) {
+					if ( ! $cookie_data ) {
 						foreach ( $shipping->get_meta_data() as $meta_data ) {
 							$data = $meta_data->get_data();
 
 							if ( $data['key'] == 'cookie_data' ) {
 								$cookie_data = $data['value'];
 							}
-						}	
+						}
 					}
-					
+
 					// An order made outside checkout (quick order, admin order) has no label draft from the cart.
 					if ( empty( $label_data['label'] ) ) {
 						$label_data = array( 'label' => self::draft_label( $theorder, is_array( $cookie_data ) ? $cookie_data : array() ) );
 					}
 
-					wp_localize_script( 'nashenski-js-admin', 'nashenski_econt', array(
-						'useInvoiceNumber' => self::use_invoice_number(),
-						'invoiceNumber' => self::get_invoice_number( $theorder->get_id() ),
-						'label' => $label_data['label'] ?? null,
-						'sendFrom' => self::get_send_from_data(),
-						'shipmentStatus' => $shipment_status,
-						'cookie_data' => $cookie_data,
-						'paymentType' => $theorder->get_payment_method(),
-						'shipmentTypes' => self::get_shipment_types(),
-						'offices' => self::get_offices( $cookie_data, $theorder ),
-						'streets' => self::get_streets( $cookie_data, $theorder ),
-						'orderId' => $theorder->get_id(),
-						'testsOptions' => nashenski_return_array_for_select( nashenski_get_shipping_tests_options() ),
-						'testOption' => self::get_test_option( $label_data['label'] ?? array() ),
-						'i18n' => self::get_i18n(),
-						'nonce' => wp_create_nonce( 'nashenski_admin_label' ),
-					) );
+					wp_localize_script(
+						'nashenski-js-admin',
+						'nashenski_econt',
+						array(
+							'useInvoiceNumber' => self::use_invoice_number(),
+							'invoiceNumber'    => self::get_invoice_number( $theorder->get_id() ),
+							'label'            => $label_data['label'] ?? null,
+							'sendFrom'         => self::get_send_from_data(),
+							'shipmentStatus'   => $shipment_status,
+							'cookie_data'      => $cookie_data,
+							'paymentType'      => $theorder->get_payment_method(),
+							'shipmentTypes'    => self::get_shipment_types(),
+							'offices'          => self::get_offices( $cookie_data, $theorder ),
+							'streets'          => self::get_streets( $cookie_data, $theorder ),
+							'orderId'          => $theorder->get_id(),
+							'testsOptions'     => nashenski_return_array_for_select( nashenski_get_shipping_tests_options() ),
+							'testOption'       => self::get_test_option( $label_data['label'] ?? array() ),
+							'i18n'             => self::get_i18n(),
+							'nonce'            => wp_create_nonce( 'nashenski_admin_label' ),
+						)
+					);
 					break;
 				}
 			}
@@ -87,55 +92,55 @@ class Econt {
 
 	protected static function get_i18n() {
 		return array(
-			'updateShipmentStatus' => __( 'Update shipment status', 'nashenski-commerce' ),
-			'updateLabel' => __( 'Update label', 'nashenski-commerce' ),
-			'generateLabel' => __( 'Generate label', 'nashenski-commerce' ),
-			'deleteLabel' => __( 'Delete label', 'nashenski-commerce' ),
-			'label' => __( 'Label', 'nashenski-commerce' ), 
-			'default' => __( 'Default', 'nashenski-commerce' ),
-			'selected' => __( 'Selected', 'nashenski-commerce' ),
-			'choose' => __( 'Choose', 'nashenski-commerce' ),
-			'deliveryPayedBy' => __( 'Delivery is payed by', 'nashenski-commerce' ),
-			'cd' => __( 'Cash on delivery', 'nashenski-commerce' ), 
-			'packCount' => __( 'Pack count', 'nashenski-commerce' ),
-			'shipmentType' => __( 'Shipment type', 'nashenski-commerce' ),
-			'other' => __( 'Other', 'nashenski-commerce' ),
-			'blVhEt' => __( 'bl. vh. et.', 'nashenski-commerce' ),
-			'streetNumber' => __( 'Street number', 'nashenski-commerce' ),
-			'blockNumber' => __( 'Block', 'nashenski-commerce' ),
-			'entranceNumber' => __( 'Entrance', 'nashenski-commerce' ),
-			'floorNumber' => __( 'Floor', 'nashenski-commerce' ),
-			'apartmentNumber' => __( 'Apartment', 'nashenski-commerce' ),
-			'streetNumberRequired' => __( 'Street number is required.', 'nashenski-commerce' ),
+			'updateShipmentStatus'  => __( 'Update shipment status', 'nashenski-commerce' ),
+			'updateLabel'           => __( 'Update label', 'nashenski-commerce' ),
+			'generateLabel'         => __( 'Generate label', 'nashenski-commerce' ),
+			'deleteLabel'           => __( 'Delete label', 'nashenski-commerce' ),
+			'label'                 => __( 'Label', 'nashenski-commerce' ),
+			'default'               => __( 'Default', 'nashenski-commerce' ),
+			'selected'              => __( 'Selected', 'nashenski-commerce' ),
+			'choose'                => __( 'Choose', 'nashenski-commerce' ),
+			'deliveryPayedBy'       => __( 'Delivery is payed by', 'nashenski-commerce' ),
+			'cd'                    => __( 'Cash on delivery', 'nashenski-commerce' ),
+			'packCount'             => __( 'Pack count', 'nashenski-commerce' ),
+			'shipmentType'          => __( 'Shipment type', 'nashenski-commerce' ),
+			'other'                 => __( 'Other', 'nashenski-commerce' ),
+			'blVhEt'                => __( 'bl. vh. et.', 'nashenski-commerce' ),
+			'streetNumber'          => __( 'Street number', 'nashenski-commerce' ),
+			'blockNumber'           => __( 'Block', 'nashenski-commerce' ),
+			'entranceNumber'        => __( 'Entrance', 'nashenski-commerce' ),
+			'floorNumber'           => __( 'Floor', 'nashenski-commerce' ),
+			'apartmentNumber'       => __( 'Apartment', 'nashenski-commerce' ),
+			'streetNumberRequired'  => __( 'Street number is required.', 'nashenski-commerce' ),
 			'quarterDetailRequired' => __( 'Fill in at least one of block, entrance, floor or apartment.', 'nashenski-commerce' ),
-			'streetQuarter' => __( 'Street/Quarter', 'nashenski-commerce' ),
-			'office' => __( 'Office', 'nashenski-commerce' ),
-			'automat' => __( 'Automat', 'nashenski-commerce' ),
-			'address' => __( 'Address', 'nashenski-commerce' ),
-			'deliveryType' => __( 'Delivery type', 'nashenski-commerce' ),
-			'labelData' => __( 'Label data', 'nashenski-commerce' ),
-			'buyer' => __( 'Buyer', 'nashenski-commerce' ),
-			'sender' => __( 'Sender', 'nashenski-commerce' ),
-			'weight' => __( 'Weight', 'nashenski-commerce' ),
-			'fixedPrice' => __( 'Fixed price', 'nashenski-commerce' ),
-			'copyLabelData' => __( 'Copy Label Data', 'nashenski-commerce' ),
-			'copyLabelDataMessage' => __( 'You just copied the label data used for the Econt API.', 'nashenski-commerce' ),
-			'shipmentStatus' => __( 'Shipment status', 'nashenski-commerce' ),
-			'time' => __( 'Time:', 'nashenski-commerce' ),
-			'event' => __( 'Event:', 'nashenski-commerce' ),
-			'details' => __( 'Details:', 'nashenski-commerce' ),
-			'reviewAndTest' => __( 'Review and test', 'nashenski-commerce' ),
-			'declaredValue' => __( 'Declared value', 'nashenski-commerce' ),
-			'description' => __( 'Description', 'nashenski-commerce' ),
-			'invoiceNum' => __( 'Invoice number', 'nashenski-commerce' ),
-			'partialDelivery' => __( 'Partial delivery', 'nashenski-commerce' ),
-			'sendFrom' => __('Send From', 'nashenski-commerce'),
-			'length' => __('Length', 'nashenski-commerce'),
-			'width' => __('Width', 'nashenski-commerce'),
-			'height' => __('Height', 'nashenski-commerce'),
-			'pack' => __('Pack', 'nashenski-commerce'),
-			'addPack' => __('Add Pack', 'nashenski-commerce'),
-			'removePack' => __('Remove Pack', 'nashenski-commerce'),
+			'streetQuarter'         => __( 'Street/Quarter', 'nashenski-commerce' ),
+			'office'                => __( 'Office', 'nashenski-commerce' ),
+			'automat'               => __( 'Automat', 'nashenski-commerce' ),
+			'address'               => __( 'Address', 'nashenski-commerce' ),
+			'deliveryType'          => __( 'Delivery type', 'nashenski-commerce' ),
+			'labelData'             => __( 'Label data', 'nashenski-commerce' ),
+			'buyer'                 => __( 'Buyer', 'nashenski-commerce' ),
+			'sender'                => __( 'Sender', 'nashenski-commerce' ),
+			'weight'                => __( 'Weight', 'nashenski-commerce' ),
+			'fixedPrice'            => __( 'Fixed price', 'nashenski-commerce' ),
+			'copyLabelData'         => __( 'Copy Label Data', 'nashenski-commerce' ),
+			'copyLabelDataMessage'  => __( 'You just copied the label data used for the Econt API.', 'nashenski-commerce' ),
+			'shipmentStatus'        => __( 'Shipment status', 'nashenski-commerce' ),
+			'time'                  => __( 'Time:', 'nashenski-commerce' ),
+			'event'                 => __( 'Event:', 'nashenski-commerce' ),
+			'details'               => __( 'Details:', 'nashenski-commerce' ),
+			'reviewAndTest'         => __( 'Review and test', 'nashenski-commerce' ),
+			'declaredValue'         => __( 'Declared value', 'nashenski-commerce' ),
+			'description'           => __( 'Description', 'nashenski-commerce' ),
+			'invoiceNum'            => __( 'Invoice number', 'nashenski-commerce' ),
+			'partialDelivery'       => __( 'Partial delivery', 'nashenski-commerce' ),
+			'sendFrom'              => __( 'Send From', 'nashenski-commerce' ),
+			'length'                => __( 'Length', 'nashenski-commerce' ),
+			'width'                 => __( 'Width', 'nashenski-commerce' ),
+			'height'                => __( 'Height', 'nashenski-commerce' ),
+			'pack'                  => __( 'Pack', 'nashenski-commerce' ),
+			'addPack'               => __( 'Add Pack', 'nashenski-commerce' ),
+			'removePack'            => __( 'Remove Pack', 'nashenski-commerce' ),
 		);
 	}
 
@@ -169,7 +174,14 @@ class Econt {
 			'shipmentType'          => 'PACK',
 			'weight'                => $weight,
 			'shipmentDescription'   => nashenski_normalize_text_for_label( implode( ', ', $names ), 500 ),
-			'packs'                 => array( array( 'width' => 17, 'height' => 17, 'length' => 17, 'weight' => $weight ) ),
+			'packs'                 => array(
+				array(
+					'width'  => 17,
+					'height' => 17,
+					'length' => 17,
+					'weight' => $weight,
+				),
+			),
 			'services'              => array(),
 			'paymentReceiverMethod' => 'cash',
 		);
@@ -190,89 +202,90 @@ class Econt {
 	}
 
 	protected static function get_shipment_types() {
-		return nashenski_return_array_for_select( array(
-			'PACK' => __('Pack', 'nashenski-commerce'),
-			'DOCUMENT' => __('Document', 'nashenski-commerce'),
-			'PALLET' => __('Pallet', 'nashenski-commerce'),
-			'CARGO' => __('Cargo', 'nashenski-commerce'),
-			'DOCUMENTPALLET' => __('Document-Pallet', 'nashenski-commerce'),
-		) );
+		return nashenski_return_array_for_select(
+			array(
+				'PACK'           => __( 'Pack', 'nashenski-commerce' ),
+				'DOCUMENT'       => __( 'Document', 'nashenski-commerce' ),
+				'PALLET'         => __( 'Pallet', 'nashenski-commerce' ),
+				'CARGO'          => __( 'Cargo', 'nashenski-commerce' ),
+				'DOCUMENTPALLET' => __( 'Document-Pallet', 'nashenski-commerce' ),
+			)
+		);
 	}
 
 	protected static function get_send_from_data() {
 		$container = nashenski()->container();
-		$type = nashenski_get_option( 'econt', 'send_from' );
-		$data = [
+		$type      = nashenski_get_option( 'econt', 'send_from' );
+		$data      = array(
 			'type' => $type,
-		];
+		);
 
 		$data['currentOffice'] = nashenski_get_option( 'econt_send_from', 'office' );
-		$data['offices'] = ( nashenski_get_option( 'econt_send_from', 'office_city' ) ) ? self::$container[ Client::ECONT_OFFICES ]->get_formatted_offices( nashenski_get_option( 'econt_send_from', 'office_city' ) ) : [];
+		$data['offices']       = ( nashenski_get_option( 'econt_send_from', 'office_city' ) ) ? self::$container[ Client::ECONT_OFFICES ]->get_formatted_offices( nashenski_get_option( 'econt_send_from', 'office_city' ) ) : array();
 
-		if ( !empty( $data['offices'] ) ) {
+		if ( ! empty( $data['offices'] ) ) {
 			$data['offices'] = array_merge( $data['offices']['shops'], $data['offices']['aps'] );
 		}
-		
-		$data['currentAddress'] = nashenski_get_option( 'econt_send_from', 'address' );
-		$data['addresses'] = $container[ Client::ECONT_PROFILE ]->get_formatted_addresses();
 
+		$data['currentAddress'] = nashenski_get_option( 'econt_send_from', 'address' );
+		$data['addresses']      = $container[ Client::ECONT_PROFILE ]->get_formatted_addresses();
 
 		return $data;
 	}
 
 	protected static function get_offices( $cookie_data, $order ) {
-		$offices = [];
+		$offices = array();
 		$country = $order->get_billing_country();
-		$state = $order->get_billing_state();
-		$city = $order->get_billing_city();
+		$state   = $order->get_billing_state();
+		$city    = $order->get_billing_city();
 
 		if ( nashenski_is_different_shipping_address( $order ) ) {
 			$country = $order->get_shipping_country();
-			$state = $order->get_shipping_state();
-			$city = $order->get_shipping_city();
+			$state   = $order->get_shipping_state();
+			$city    = $order->get_shipping_city();
 		}
 
-		$states = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
-		$state = $states[ $state ] ?? null; // An order with no region has no key here.
+		$states      = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
+		$state       = $states[ $state ] ?? null; // An order with no region has no key here.
 		$cities_data = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $city, $state, $country );
 
 		if ( $cities_data['city_key'] !== false ) {
 			$offices = self::$container[ Client::ECONT_OFFICES ]->get_offices( $cities_data['cities'][ $cities_data['city_key'] ]['id'], $country );
-			$offices = ( isset( $offices['offices'] ) ) ? $offices['offices'] : [];
+			$offices = ( isset( $offices['offices'] ) ) ? $offices['offices'] : array();
 		}
 
 		return $offices;
 	}
 
 	protected static function get_streets( $cookie_data, $order ) {
-		$streets = [];
-		$quarters = [];
-		$country = $order->get_billing_country();
-		$state = $order->get_billing_state();
-		$city = $order->get_billing_city();
-		
+		$streets  = array();
+		$quarters = array();
+		$country  = $order->get_billing_country();
+		$state    = $order->get_billing_state();
+		$city     = $order->get_billing_city();
+
 		if ( nashenski_is_different_shipping_address( $order ) ) {
 			$country = $order->get_shipping_country();
-			$state = $order->get_shipping_state();
-			$city = $order->get_shipping_city();
+			$state   = $order->get_shipping_state();
+			$city    = $order->get_shipping_city();
 		}
 
 		$states = self::$container[ Client::ECONT_CITIES ]->get_regions( $country );
-		$state = $states[ $state ] ?? null; // An order with no region has no key here.
+		$state  = $states[ $state ] ?? null; // An order with no region has no key here.
 
 		$cities_data = self::$container[ Client::ECONT_CITIES ]->get_filtered_cities( $city, $state, $country );
 
 		if ( $cities_data['city_key'] !== false ) {
-			$streets = nashenski_return_array_for_select( 
-				Address::get_streets_for_query( '', $cities_data['city_key'], $cities_data['cities'] ), 
-				1, 
-				array( 'type' => 'streets' ) 
+			$streets = nashenski_return_array_for_select(
+				Address::get_streets_for_query( '', $cities_data['city_key'], $cities_data['cities'] ),
+				1,
+				array( 'type' => 'streets' )
 			);
 
-			$quarters = nashenski_return_array_for_select( 
-				Address::get_quarters_for_query( '', $cities_data['city_key'], $cities_data['cities'] ), 
-				1, 
-				array( 'type' => 'quarters' ) 
+			$quarters = nashenski_return_array_for_select(
+				Address::get_quarters_for_query( '', $cities_data['city_key'], $cities_data['cities'] ),
+				1,
+				array( 'type' => 'quarters' )
 			);
 		}
 
@@ -282,9 +295,9 @@ class Econt {
 	protected static function get_test_option( $label ) {
 		$option = 'no';
 
-		if ( !empty( $label['payAfterAccept'] ) && !empty( $label['payAfterTest'] ) ) {
+		if ( ! empty( $label['payAfterAccept'] ) && ! empty( $label['payAfterTest'] ) ) {
 			$option = 'test';
-		} else if ( !empty( $label['payAfterAccept'] ) ) {
+		} elseif ( ! empty( $label['payAfterAccept'] ) ) {
 			$option = 'review';
 		}
 
@@ -294,41 +307,47 @@ class Econt {
 	public static function delete_label() {
 		nashenski_check_admin_label_actions();
 
-		$container = nashenski()->container();
-		$order_id = nashenski_label_request( 'orderId' );
+		$container       = nashenski()->container();
+		$order_id        = nashenski_label_request( 'orderId' );
 		$shipment_status = nashenski_label_request( 'shipmentStatus', array() );
-		$order = wc_get_order( $order_id );
+		$order           = wc_get_order( $order_id );
 
 		if ( isset( $shipment_status['label']['shipmentNumber'] ) ) {
 			$shipment_number = $shipment_status['label']['shipmentNumber'];
-			$response = $container[ Client::ECONT ]->label_request( 'delete', array(
-				'shipmentNumbers' => [ $shipment_number ]
-			) );
+			$response        = $container[ Client::ECONT ]->label_request(
+				'delete',
+				array(
+					'shipmentNumbers' => array( $shipment_number ),
+				)
+			);
 
 			$order->update_meta_data( 'nashenski_econt_shipment_status', '' );
 			$order->save();
 			nashenski_add_label_order_note( $order, 'Econt', 'deleted', $shipment_number );
 		} else {
-			$response = [ 'message' => 'Няма намерена товарителница' ];
+			$response = array( 'message' => 'Няма намерена товарителница' );
 		}
-		
+
 		wp_send_json_success( $response );
 		wp_die();
 	}
 
 	public static function update_shipment_status() {
 		nashenski_check_admin_label_actions();
-		
-		$container = nashenski()->container();
-		$order_id = nashenski_label_request( 'orderId' );
-		$order = wc_get_order( $order_id );
-		$shipment_status = nashenski_label_request( 'shipmentStatus', array() );
-		$data = array();
+
+		$container             = nashenski()->container();
+		$order_id              = nashenski_label_request( 'orderId' );
+		$order                 = wc_get_order( $order_id );
+		$shipment_status       = nashenski_label_request( 'shipmentStatus', array() );
+		$data                  = array();
 		$order_shipment_status = $order->get_meta( 'nashenski_econt_shipment_status' );
 
-		$response = $container[ Client::ECONT ]->api_call( $container[ Client::ECONT ]::SHIPMENT_STATUS_ENDPOINT, array(
-			'shipmentNumbers' => [ $shipment_status['label']['shipmentNumber'] ]
-		) );
+		$response = $container[ Client::ECONT ]->api_call(
+			$container[ Client::ECONT ]::SHIPMENT_STATUS_ENDPOINT,
+			array(
+				'shipmentNumbers' => array( $shipment_status['label']['shipmentNumber'] ),
+			)
+		);
 
 		// An error reply has no statuses; send it back as an error instead of a fatal from array_shift().
 		$status = is_array( $response ) ? array_shift( $response ) : null;
@@ -338,10 +357,10 @@ class Econt {
 			wp_send_json_error( $response );
 		}
 
-		$safe_status = Courier_Pdf::status( 'econt', array( 'label' => $status['status'] ) );
-		$data['shipmentStatus'] = $safe_status['label'];
+		$safe_status                    = Courier_Pdf::status( 'econt', array( 'label' => $status['status'] ) );
+		$data['shipmentStatus']         = $safe_status['label'];
 		$order_shipment_status['label'] = $data['shipmentStatus'];
-		
+
 		$order->update_meta_data( 'nashenski_econt_shipment_status', $order_shipment_status );
 		$order->save();
 
@@ -353,7 +372,7 @@ class Econt {
 		nashenski_check_admin_label_actions();
 
 		$order_id = $order_id = nashenski_label_request( 'orderId' );
-		$label = nashenski_label_request( 'label_data', array() );
+		$label    = nashenski_label_request( 'label_data', array() );
 
 		$label = self::update_sender( $label );
 		$label = self::update_receiver_address( $label );
@@ -377,9 +396,9 @@ class Econt {
 
 		$service_overrides = array();
 
-		if ( !empty( $label['label'] ) ) {
+		if ( ! empty( $label['label'] ) ) {
 			$service_overrides = $label[ \Nashenski\Shipping\Econt\Service_Policy::OVERRIDES ] ?? array();
-			$label = $label['label'];
+			$label             = $label['label'];
 		} else {
 			// A quick or admin order has no checkout draft: build it from the order and its delivery choice.
 			$cookie_data = self::cookie_data( $order );
@@ -408,7 +427,7 @@ class Econt {
 	protected static function cookie_data( $order ) {
 		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
 
-		if ( !$cookie_data ) {
+		if ( ! $cookie_data ) {
 			foreach ( $order->get_items( 'shipping' ) as $shipping ) {
 				if ( 'nashenski_econt' === $shipping->get_method_id() ) {
 					$cookie_data = $shipping->get_meta( 'cookie_data' );
@@ -420,25 +439,24 @@ class Econt {
 	}
 
 	public static function send_label_to_econt( $label, $order_id ) {
-		$data = [];
-		$order = wc_get_order( $order_id );
+		$data   = array();
+		$order  = wc_get_order( $order_id );
 		$action = $order->get_meta( 'nashenski_econt_shipment_status' ) ? 'updated' : 'created';
 
 		$generated_data = self::generate_response( $label, $order_id );
-		$response = Courier_Pdf::status( 'econt', $generated_data['response'] );
-		$request_body = $generated_data['request_body'];
+		$response       = Courier_Pdf::status( 'econt', $generated_data['response'] );
+		$request_body   = $generated_data['request_body'];
 
-		if ( 
-			isset( $response['type'] ) && 
+		if ( isset( $response['type'] ) &&
 			( strpos( $response['type'], 'ExInvalid' ) !== false || strpos( $response['type'], 'ExException' ) !== false )
 		) {
 			$errors = nashenski()->container()[ Client::ECONT ]::add_error_message( $response );
 
-			$data['message'] = implode('', $errors );
-		} else if ( isset( $response['label'] ) ) {
+			$data['message'] = implode( '', $errors );
+		} elseif ( isset( $response['label'] ) ) {
 			$request_body['label']['shipmentNumber'] = $response['label']['shipmentNumber'];
-			$data['shipmentStatus'] = $response;
-			$data['label'] = $request_body['label'];
+			$data['shipmentStatus']                  = $response;
+			$data['label']                           = $request_body['label'];
 
 			$order->update_meta_data( 'nashenski_econt_label', $request_body );
 			$order->update_meta_data( 'nashenski_econt_shipment_status', $response );
@@ -456,24 +474,24 @@ class Econt {
 	public static function update_sender( $label ) {
 		$container = nashenski()->container();
 
-		$label['senderClient'] = $container[ Client::ECONT_PROFILE ]->get_profile_data()['client'];
-		$label['senderAgent'] = array(
-			'name' => nashenski_get_option( 'econt', 'name' ),
-			'phones' => [ nashenski_get_option( 'econt', 'phone' ) ],
+		$label['senderClient']  = $container[ Client::ECONT_PROFILE ]->get_profile_data()['client'];
+		$label['senderAgent']   = array(
+			'name'   => nashenski_get_option( 'econt', 'name' ),
+			'phones' => array( nashenski_get_option( 'econt', 'phone' ) ),
 		);
 		$label['senderAddress'] = self::generate_sender_address();
-		$send_from = nashenski_get_option( 'econt', 'send_from' );
+		$send_from              = nashenski_get_option( 'econt', 'send_from' );
 
 		if ( $send_from == 'office' ) {
-			$office = nashenski_get_option( 'econt_send_from', 'office' );
+			$office                    = nashenski_get_option( 'econt_send_from', 'office' );
 			$label['senderOfficeCode'] = str_replace( 'officeID-', '', $office );
 		}
 
 		if ( ( null !== nashenski_label_request( 'send_from', null ) ) && ( null !== nashenski_label_request( 'send_from_type', null ) ) ) {
-			$new_send_from = nashenski_label_request( 'send_from', array() );
+			$new_send_from      = nashenski_label_request( 'send_from', array() );
 			$new_send_from_type = nashenski_label_request( 'send_from_type' );
 
-			if ( !empty( $new_send_from ) && !empty( $new_send_from_type ) ) {
+			if ( ! empty( $new_send_from ) && ! empty( $new_send_from_type ) ) {
 				switch ( $new_send_from_type ) {
 					case 'address':
 						$profile_addresses = $container[ Client::ECONT_PROFILE ]->get_profile_data()['addresses'];
@@ -493,17 +511,16 @@ class Econt {
 
 	public static function update_weight( $label ) {
 		$weight = 0;
-		
-		if ( !empty( $label['packs'] ) ) {
+
+		if ( ! empty( $label['packs'] ) ) {
 			foreach ( $label['packs'] as $pack ) {
 				$weight += isset( $pack['weight'] ) ? floatval( $pack['weight'] ) : 0;
 			}
-	
+
 			$label['weight'] = $weight;
 		} else {
 			$label['weight'] = apply_filters( 'nashenski/econt/default_weight', 0.100 );
 		}
-
 
 		return $label;
 	}
@@ -537,8 +554,8 @@ class Econt {
 
 	public static function generate_sender_address() {
 		$container = nashenski()->container();
-		$address = '';
-		$id = nashenski_get_option( 'econt_send_from', 'address' );
+		$address   = '';
+		$id        = nashenski_get_option( 'econt_send_from', 'address' );
 		$send_from = nashenski_get_option( 'econt', 'send_from' );
 
 		if ( $id !== '' && $send_from === 'address' ) {
@@ -551,18 +568,18 @@ class Econt {
 	}
 
 	protected static function update_receiver_address( $label ) {
-		$order = wc_get_order( nashenski_label_request( 'orderId' ) );
-		$type = nashenski_label_request( 'type', array() );
-		$cookie_data = nashenski_label_request( 'cookie_data', array() );
+		$order               = wc_get_order( nashenski_label_request( 'orderId' ) );
+		$type                = nashenski_label_request( 'type', array() );
+		$cookie_data         = nashenski_label_request( 'cookie_data', array() );
 		$cookie_data['type'] = $type['id'];
 
-		if ( in_array( $type['id'], [ 'office', 'automat' ], true ) ) {
-			$office = nashenski_label_request( 'office', array() );
-			$cookie_data['selectedOffice'] = $office['code'];
+		if ( in_array( $type['id'], array( 'office', 'automat' ), true ) ) {
+			$office                             = nashenski_label_request( 'office', array() );
+			$cookie_data['selectedOffice']      = $office['code'];
 			$cookie_data['selectedOfficeIsAPS'] = $office['isAPS'];
 		} else {
 			$cookie_data['selectedAddress'] = nashenski_label_request( 'street', array() );
-			$cookie_data['streetNumber'] = nashenski_label_request( 'streetNumber' );
+			$cookie_data['streetNumber']    = nashenski_label_request( 'streetNumber' );
 			foreach ( array( 'blockNumber', 'entranceNumber', 'floorNumber', 'apartmentNumber' ) as $field ) {
 				$cookie_data[ $field ] = nashenski_label_request( $field );
 			}
@@ -583,30 +600,30 @@ class Econt {
 	 */
 	protected static function receiver_from_cookie( $label, $cookie_data, $order ) {
 		$container = nashenski()->container();
-		$country = ( $order->get_shipping_country() ) ? $order->get_shipping_country() : $order->get_billing_country();
+		$country   = ( $order->get_shipping_country() ) ? $order->get_shipping_country() : $order->get_billing_country();
 
-		unset( $label[ 'receiverOfficeCode' ] );
-		unset( $label[ 'receiverAddress' ] );
+		unset( $label['receiverOfficeCode'] );
+		unset( $label['receiverAddress'] );
 
-		if ( in_array( $cookie_data['type'] ?? '', [ 'office', 'automat' ], true ) ) {
-			$label[ 'receiverDeliveryType' ] = 'office';
-			$label['receiverOfficeCode'] = $cookie_data['selectedOffice'] ?? '';
+		if ( in_array( $cookie_data['type'] ?? '', array( 'office', 'automat' ), true ) ) {
+			$label['receiverDeliveryType'] = 'office';
+			$label['receiverOfficeCode']   = $cookie_data['selectedOffice'] ?? '';
 		} else {
-			$label[ 'receiverDeliveryType' ] = 'door';
+			$label['receiverDeliveryType'] = 'door';
 
 			$states = $container[ Client::ECONT_CITIES ]->get_regions( $country );
-			$state = $states[ $cookie_data['state'] ];
+			$state  = $states[ $cookie_data['state'] ];
 
 			$cities_data = $container[ Client::ECONT_CITIES ]->get_filtered_cities( $cookie_data['city'], $state, $country );
-			$cities = $cities_data['cities'];
-			$city_key = $cities_data['city_key'];
+			$cities      = $cities_data['cities'];
+			$city_key    = $cities_data['city_key'];
 
-			$type = ( !empty( $cookie_data['selectedAddress']['type'] ) ) ? $cookie_data['selectedAddress']['type'] :'';
+			$type = ( ! empty( $cookie_data['selectedAddress']['type'] ) ) ? $cookie_data['selectedAddress']['type'] : '';
 
 			$receiver_address = array(
 				'city' => $cities[ $city_key ],
 			);
-			
+
 			unset( $receiver_address['city']['servingOffices'] );
 
 			if ( $type === 'streets' ) {
@@ -614,12 +631,12 @@ class Econt {
 				if ( trim( (string) $cookie_data['streetNumber'] ) !== '' ) {
 					$receiver_address['num'] = $cookie_data['streetNumber'];
 				}
-			} else if ( $type === 'quarters' ) {
+			} elseif ( $type === 'quarters' ) {
 				$receiver_address['quarter'] = $cookie_data['selectedAddress']['label'];
 			}
 
 			$additional_parts = array();
-			$legacy_other = trim( (string) ( $cookie_data['other'] ?? '' ) );
+			$legacy_other     = trim( (string) ( $cookie_data['other'] ?? '' ) );
 			if (
 				$type === 'quarters' ||
 				Address::has_structured_details( $cookie_data ) ||
@@ -628,7 +645,7 @@ class Econt {
 				$additional_parts[] = $cookie_data['otherField'] ?? '';
 			}
 
-			$other = Address::format_other( $cookie_data, $additional_parts );
+			$other                = Address::format_other( $cookie_data, $additional_parts );
 			$cookie_data['other'] = $other;
 
 			if ( $other !== '' ) {
@@ -642,7 +659,7 @@ class Econt {
 	}
 
 	protected static function update_label_pay_options( $label, $order_id ) {
-		$order = wc_get_order( $order_id );
+		$order       = wc_get_order( $order_id );
 		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
 
 		unset( $label['services']['cdPayOptionsTemplate'] );
@@ -655,14 +672,14 @@ class Econt {
 			$cd_pay_option = nashenski_get_option( 'econt', 'pay_options' );
 
 			if ( $cd_pay_option && $cd_pay_option !== 'no' ) {
-				$packing_list_or_invoice = nashenski_get_option( 'econt', 'invoice_or_packing_list' );
+				$packing_list_or_invoice                   = nashenski_get_option( 'econt', 'invoice_or_packing_list' );
 				$label['services']['cdPayOptionsTemplate'] = $cd_pay_option;
 
 				if ( $packing_list_or_invoice === 'packing_list' ) {
 					unset( $label['services']['invoiceNum'] );
-					$label["packingListType"] = 'digital';
-					$label["packingList"] = [];
-					
+					$label['packingListType'] = 'digital';
+					$label['packingList']     = array();
+
 					foreach ( $order->get_items() as $key => $item ) {
 						if ( $item->get_total() <= 0 ) {
 							continue;
@@ -671,53 +688,53 @@ class Econt {
 						/ Count is added to the name for a reason.
 						/ When you have discount with more than 1 quantity, the label cannot be generated because of differences in the cents.
 						*/
-						
-						$product = $item->get_product(); // false when the product was deleted
+
+						$product     = $item->get_product(); // false when the product was deleted
 						$item_weight = ( $product && $product->get_weight() ) ? wc_get_weight( $product->get_weight(), 'kg' ) * $item['quantity'] : 0.100;
 
-						$label["packingList"][] = [
+						$label['packingList'][] = array(
 							'inventoryNum' => $key,
-							'description' => nashenski_normalize_text_for_label( $item->get_name() . " x " . $item->get_quantity() ),
-							'weight' => number_format( $item_weight, 3 ),
-							'count' => 1,
-							'price' => number_format( $item->get_total(), 2, '.', '' ) + number_format( $item->get_total_tax(), 2, '.', '' ),
-						];
+							'description'  => nashenski_normalize_text_for_label( $item->get_name() . ' x ' . $item->get_quantity() ),
+							'weight'       => number_format( $item_weight, 3 ),
+							'count'        => 1,
+							'price'        => number_format( $item->get_total(), 2, '.', '' ) + number_format( $item->get_total_tax(), 2, '.', '' ),
+						);
 					}
 
-					if ( !empty( $order->get_items( 'fee' ) ) && apply_filters('nashenski/shipping/package_total_includes_fees', true ) ) {
+					if ( ! empty( $order->get_items( 'fee' ) ) && apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) ) {
 						foreach ( $order->get_items( 'fee' ) as $key => $item ) {
 							if ( $item->get_total() <= 0 ) {
 								continue;
 							}
 
-							$key++;
-							
+							++$key;
+
 							$rate = nashenski_get_order_item_vat_rate( $item, $order );
 
-							$label["packingList"][] = [
+							$label['packingList'][] = array(
 								'inventoryNum' => $key,
-								'description' => nashenski_normalize_text_for_label( $item->get_name() . " x " . $item->get_quantity() ),
-								'weight' => 0.05,
-								'count' => 1,
-								'price' => number_format( $item->get_total(), 2, '.', '' ) + number_format( $item->get_total_tax(), 2, '.', '' ),
-							];
+								'description'  => nashenski_normalize_text_for_label( $item->get_name() . ' x ' . $item->get_quantity() ),
+								'weight'       => 0.05,
+								'count'        => 1,
+								'price'        => number_format( $item->get_total(), 2, '.', '' ) + number_format( $item->get_total_tax(), 2, '.', '' ),
+							);
 						}
 					}
-				} else if ( ( empty( $packing_list_or_invoice ) || $packing_list_or_invoice === 'invoice' ) && empty( $label['services']['invoiceNum'] ) ) {
+				} elseif ( ( empty( $packing_list_or_invoice ) || $packing_list_or_invoice === 'invoice' ) && empty( $label['services']['invoiceNum'] ) ) {
 					$label['services']['invoiceNum'] = self::get_invoice_number( $order_id );
 				}
 			}
 		}
-		
+
 		return $label;
 	}
 
 	public static function get_invoice_number( $order_id ) {
-		$order = wc_get_order( $order_id );
+		$order       = wc_get_order( $order_id );
 		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
 		$invoice_num = '';
 
-		if ( !empty( $cookie_data['payment'] ) && $cookie_data['payment'] === 'cod' ) {
+		if ( ! empty( $cookie_data['payment'] ) && $cookie_data['payment'] === 'cod' ) {
 			$cd_pay_option = nashenski_get_option( 'econt', 'pay_options' );
 
 			if ( $cd_pay_option && $cd_pay_option !== 'no' ) {
@@ -726,16 +743,16 @@ class Econt {
 
 					foreach ( $cd_pay_options as $option ) {
 						if ( $option['num'] === $cd_pay_option && $option['method'] != 'office' ) {
-							$order = wc_get_order( $order_id );
+							$order           = wc_get_order( $order_id );
 							$document_number = $order->get_meta( 'nashenski_order_number' );
 
-							if ( !$document_number ) {
-								$order_number = $order->get_order_number();
+							if ( ! $document_number ) {
+								$order_number    = $order->get_order_number();
 								$document_number = str_pad( ctype_digit( (string) $order_number ) ? $order_number : $order->get_id(), 10, '0', STR_PAD_LEFT );
 							}
 
 							// WC_DateTime::date() uses the store timezone, so a late-night order keeps its own date.
-							$created = $order->get_date_created();
+							$created     = $order->get_date_created();
 							$invoice_num = $document_number . '/' . ( $created ? $created->date( 'd.m.y' ) : wp_date( 'd.m.y' ) );
 						}
 					}
@@ -748,23 +765,23 @@ class Econt {
 
 	public static function use_invoice_number() {
 		$cd_pay_option = nashenski_get_option( 'econt', 'pay_options' );
-		$use = false;
+		$use           = false;
 
 		if ( $cd_pay_option && $cd_pay_option !== 'no' ) {
 			$packing_list_or_invoice = nashenski_get_option( 'econt', 'invoice_or_packing_list' );
 
-			$use = ( !$packing_list_or_invoice || $packing_list_or_invoice === 'invoice' );
+			$use = ( ! $packing_list_or_invoice || $packing_list_or_invoice === 'invoice' );
 		}
 
 		return $use;
 	}
 
 	protected static function update_payment_by( $label, $order_id ) {
-		$payment_by = nashenski_label_request( 'paymentBy', array() );
-		$fixed_price = ( isset( $label['paymentReceiverAmount'] ) ) ? $label['paymentReceiverAmount'] : 0;
+		$payment_by    = nashenski_label_request( 'paymentBy', array() );
+		$fixed_price   = ( isset( $label['paymentReceiverAmount'] ) ) ? $label['paymentReceiverAmount'] : 0;
 		$sender_method = nashenski()->container()[ Client::ECONT_PROFILE ]->get_sender_payment_method();
 
-		unset( 
+		unset(
 			$label['paymentReceiverMethod'],
 			$label['paymentSenderMethod'],
 			$label['paymentReceiverAmount'],
@@ -775,21 +792,21 @@ class Econt {
 		} elseif ( $payment_by['id'] == 'sender' ) {
 			$label['paymentSenderMethod'] = $sender_method;
 		} elseif ( $payment_by['id'] == 'fixed' ) {
-			$label['paymentSenderMethod'] = $sender_method;
+			$label['paymentSenderMethod']   = $sender_method;
 			$label['paymentReceiverMethod'] = 'cash';
 			$label['paymentReceiverAmount'] = $fixed_price;
 
 			self::update_order_shipping_price( $label, $order_id, $label );
 		}
-		
+
 		return $label;
 	}
 
 	protected static function update_test_options( $label ) {
-		$payment_by = nashenski_label_request( 'testOption', array() );
-		$payment_by_id = isset( $payment_by['id'] ) ? $payment_by['id'] : '';
+		$payment_by              = nashenski_label_request( 'testOption', array() );
+		$payment_by_id           = isset( $payment_by['id'] ) ? $payment_by['id'] : '';
 		$label['payAfterAccept'] = false;
-		$label['payAfterTest'] = false;
+		$label['payAfterTest']   = false;
 
 		if ( isset( $label['partialDelivery'] ) ) {
 			unset( $label['partialDelivery'] );
@@ -797,68 +814,67 @@ class Econt {
 
 		if ( $payment_by_id == 'review' ) {
 			$label['payAfterAccept'] = true;
-		} else if ( $payment_by_id == 'test' ) {
+		} elseif ( $payment_by_id == 'test' ) {
 			$label['payAfterAccept'] = true;
-			$label['payAfterTest'] = true;
+			$label['payAfterTest']   = true;
 
 			if ( wc_string_to_bool( nashenski_label_request( 'partialDelivery' ) ) ) {
 				$label['partialDelivery'] = true;
 			}
-
 		}
-		
+
 		return $label;
 	}
 
 	protected static function update_shipment_type( $label ) {
-		$shipment_type = nashenski_label_request( 'shipmentType', array() );
+		$shipment_type         = nashenski_label_request( 'shipmentType', array() );
 		$label['shipmentType'] = strtolower( $shipment_type['id'] );
-		
+
 		return $label;
 	}
 
 	protected static function update_phone_and_names( $label, $order_id = null ) {
-		if ( !$order_id ) {
+		if ( ! $order_id ) {
 			$order_id = nashenski_label_request( 'orderId' );
 		}
 
-		if ( !$order_id ) {
+		if ( ! $order_id ) {
 			return $label;
 		}
 
 		$order = wc_get_order( $order_id );
-		$phone = [];
-		$name = '';
+		$phone = array();
+		$name  = '';
 
 		unset( $label['receiverClient'] );
 		unset( $label['receiverAgent'] );
 
 		if ( $order->get_shipping_first_name() && $order->get_shipping_last_name() ) {
-			$name = $order->get_shipping_first_name() . " " . $order->get_shipping_last_name();
+			$name = $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name();
 		} else {
-			$name = $order->get_billing_first_name() . " " . $order->get_billing_last_name();
+			$name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
 		}
 
 		if ( $order->get_shipping_phone() ) {
-			$phone = [ $order->get_shipping_phone() ];
+			$phone = array( $order->get_shipping_phone() );
 		} else {
-			$phone = [ $order->get_billing_phone() ];
+			$phone = array( $order->get_billing_phone() );
 		}
-		
-		$label['receiverClient'] = array();
-		$label['receiverClient']['name'] = $name;
-		$label['receiverClient']['email'] = $order->get_billing_email();
+
+		$label['receiverClient']           = array();
+		$label['receiverClient']['name']   = $name;
+		$label['receiverClient']['email']  = $order->get_billing_email();
 		$label['receiverClient']['phones'] = $phone;
-		$label['receiverAgent'] = $label['receiverClient'];
-		
+		$label['receiverAgent']            = $label['receiverClient'];
+
 		if ( $order->get_meta( '_billing_to_company' ) ) {
 			$label['receiverClient']['juridicalEntity'] = true;
-			$label['receiverClient']['molName'] = $order->get_meta( '_billing_company_mol' );
-			$label['receiverClient']['name'] = $order->get_billing_company();
-			
+			$label['receiverClient']['molName']         = $order->get_meta( '_billing_company_mol' );
+			$label['receiverClient']['name']            = $order->get_billing_company();
+
 			if ( $order->get_meta( '_billing_vat_number' ) ) {
-				$label['receiverClient']['ein'] = substr( $order->get_meta( '_billing_vat_number' ), 2 );
-				$label['receiverClient']['ddsEin'] = $label['receiverClient']['ein'];
+				$label['receiverClient']['ein']          = substr( $order->get_meta( '_billing_vat_number' ), 2 );
+				$label['receiverClient']['ddsEin']       = $label['receiverClient']['ein'];
 				$label['receiverClient']['ddsEinPrefix'] = str_replace( $label['receiverClient']['ein'], '', $order->get_meta( '_billing_vat_number' ) );
 			}
 		}
@@ -867,50 +883,50 @@ class Econt {
 	}
 
 	protected static function update_os_value( $label ) {
-		if ( isset( $label[ 'services' ]['declaredValueAmount'] ) ) {
-			unset( $label[ 'services' ]['declaredValueAmount'] );
-			unset( $label[ 'services' ]['declaredValueCurrency'] );
+		if ( isset( $label['services']['declaredValueAmount'] ) ) {
+			unset( $label['services']['declaredValueAmount'] );
+			unset( $label['services']['declaredValueCurrency'] );
 		}
 
 		// Only a positive number is sent; a decimal comma is accepted.
 		$declared_value = str_replace( ',', '.', (string) nashenski_label_request( 'declaredValue' ) );
 
 		if ( is_numeric( $declared_value ) && (float) $declared_value > 0 ) {
-			$label[ 'services' ]['declaredValueAmount'] = (float) $declared_value;
-			$label[ 'services' ]['declaredValueCurrency'] = get_woocommerce_currency();
+			$label['services']['declaredValueAmount']   = (float) $declared_value;
+			$label['services']['declaredValueCurrency'] = get_woocommerce_currency();
 		}
 
 		return $label;
 	}
 
-	protected static function update_order_shipping_price( $response, $order_id, $request_body = [] ) {
+	protected static function update_order_shipping_price( $response, $order_id, $request_body = array() ) {
 		if ( ( null === nashenski_label_request( 'paymentBy', null ) ) ) {
 			return;
 		}
 
-		$order = wc_get_order( $order_id );
-		$price = 0;
+		$order       = wc_get_order( $order_id );
+		$price       = 0;
 		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
 
-		if ( $order->get_payment_method() !== 'cod' ) { 
+		if ( $order->get_payment_method() !== 'cod' ) {
 			return;
 		}
 
 		$payment_by = nashenski_label_request( 'paymentBy', array() );
 
-		if ( !empty( $payment_by ) ) {
-			$tax_rate = apply_filters('nashenski/econt/fixed_price_tax_rate', 20, $order->get_shipping_country() );
+		if ( ! empty( $payment_by ) ) {
+			$tax_rate = apply_filters( 'nashenski/econt/fixed_price_tax_rate', 20, $order->get_shipping_country() );
 
 			if ( $payment_by['id'] == 'buyer' ) {
 				$price = nashenski_tax_based_price( $response['label']['receiverDueAmount'], $tax_rate );
-			} else if ( $payment_by['id'] == 'fixed' && !empty( $request_body['paymentReceiverAmount'] ) ) {
+			} elseif ( $payment_by['id'] == 'fixed' && ! empty( $request_body['paymentReceiverAmount'] ) ) {
 				$price = nashenski_tax_based_price( $request_body['paymentReceiverAmount'], $tax_rate );
 			}
 		}
 
 		$price = apply_filters( 'nashenski/admin/econt/price_for_update', $price, $order, nashenski_label_request(), $response, $request_body );
 
-		foreach( $order->get_items( 'shipping' ) as $item_id => $item ) {
+		foreach ( $order->get_items( 'shipping' ) as $item_id => $item ) {
 			$item->set_total( $price );
 			$item->calculate_taxes();
 			$item->save();
@@ -922,52 +938,60 @@ class Econt {
 	}
 
 	protected static function generate_response( $label, $order_id ) {
-		$container = nashenski()->container();
-		$order = wc_get_order( $order_id );
+		$container       = nashenski()->container();
+		$order           = wc_get_order( $order_id );
 		$shipment_status = $order->get_meta( 'nashenski_econt_shipment_status' );
-		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
+		$cookie_data     = $order->get_meta( 'nashenski_econt_cookie_data' );
 
 		if ( ! is_array( $cookie_data ) ) {
 			$cookie_data = array();
 		}
 
-		$country = $order->get_shipping_country() ?: $order->get_billing_country();
-		$city = $order->get_shipping_city() ?: $order->get_billing_city();
-		$state = $order->get_shipping_state() ?: $order->get_billing_state();
-		$post_code = $order->get_shipping_postcode() ?: $order->get_billing_postcode();
+		$country     = $order->get_shipping_country() ?: $order->get_billing_country();
+		$city        = $order->get_shipping_city() ?: $order->get_billing_city();
+		$state       = $order->get_shipping_state() ?: $order->get_billing_state();
+		$post_code   = $order->get_shipping_postcode() ?: $order->get_billing_postcode();
 		$destination = array(
 			'country_code' => $cookie_data['country'] ?? $country,
-			'name' => $cookie_data['city'] ?? $city,
-			'region' => $cookie_data['state'] ?? $state,
-			'post_code' => $post_code,
+			'name'         => $cookie_data['city'] ?? $city,
+			'region'       => $cookie_data['state'] ?? $state,
+			'post_code'    => $post_code,
 		);
 
 		$label['holidayDeliveryDay'] = 'workday';
 
 		if ( $shipment_status ) {
-			if ( !$label['shipmentNumber'] ) {
+			if ( ! $label['shipmentNumber'] ) {
 				$label['shipmentNumber'] = $shipment_status['label']['shipmentNumber'];
 			}
 
-			$request_body = apply_filters( 'nashenski/econt/update_label', array(
-				'label' => $label,
-			), $order );
+			$request_body = apply_filters(
+				'nashenski/econt/update_label',
+				array(
+					'label' => $label,
+				),
+				$order
+			);
 
 			$response = $container[ Client::ECONT ]->label_request( 'update', $request_body );
 		} else {
 			unset( $label['shipmentNumber'] );
-			
-			$request_body = apply_filters( 'nashenski/econt/create_label', array(
-				'label' => $label,
-				'mode' => 'create',
-			), $order );
+
+			$request_body = apply_filters(
+				'nashenski/econt/create_label',
+				array(
+					'label' => $label,
+					'mode'  => 'create',
+				),
+				$order
+			);
 
 			$response = $container[ Client::ECONT ]->label_request( 'create', $request_body, $destination );
 		}
 
-		return [
-			'response' => $response,
+		return array(
+			'response'     => $response,
 			'request_body' => $request_body,
-		];
+		);
 	}
 }

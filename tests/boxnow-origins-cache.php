@@ -11,31 +11,53 @@ namespace {
 
 	$GLOBALS['root'] = $root;
 	$GLOBALS['opts'] = array();
-	function get_option( $k ) { return $GLOBALS['opts'][ $k ] ?? false; }
-	function update_option( $k, $v, $a = null ) { $GLOBALS['opts'][ $k ] = $v; }
-	function wp_upload_dir( $t = null, $c = true ) { return array( 'basedir' => $GLOBALS['root'] . '/uploads' ); }
-	function trailingslashit( $s ) { return rtrim( $s, '/\\' ) . '/'; }
-	function wp_mkdir_p( $d ) { return is_dir( $d ) || mkdir( $d, 0777, true ); }
-	function wp_generate_password( $n = 8, $s = true ) { return bin2hex( random_bytes( 4 ) ); }
-	function wp_json_encode( $d ) { return json_encode( $d ); }
-	function wp_delete_file( $f ) { unlink( $f ); }
-	function get_transient( $k ) { return false; }
+	function get_option( $k ) {
+		return $GLOBALS['opts'][ $k ] ?? false; }
+	function update_option( $k, $v, $a = null ) {
+		$GLOBALS['opts'][ $k ] = $v; }
+	function wp_upload_dir( $t = null, $c = true ) {
+		return array( 'basedir' => $GLOBALS['root'] . '/uploads' ); }
+	function trailingslashit( $s ) {
+		return rtrim( $s, '/\\' ) . '/'; }
+	function wp_mkdir_p( $d ) {
+		return is_dir( $d ) || mkdir( $d, 0777, true ); }
+	function wp_generate_password( $n = 8, $s = true ) {
+		return bin2hex( random_bytes( 4 ) ); }
+	function wp_json_encode( $d ) {
+		return json_encode( $d ); }
+	function wp_delete_file( $f ) {
+		unlink( $f ); }
+	function get_transient( $k ) {
+		return false; }
 	function set_transient( $k, $v, $t ) {}
-	$GLOBALS['wp_filesystem'] = new class {
-		public function put_contents( $f, $d, $m = null ) { return false !== file_put_contents( $f, $d ); }
-		public function get_contents( $f ) { return file_get_contents( $f ); }
-		public function delete( $f ) { return unlink( $f ); }
+	$GLOBALS['wp_filesystem'] = new class() {
+		public function put_contents( $f, $d, $m = null ) {
+			return false !== file_put_contents( $f, $d ); }
+		public function get_contents( $f ) {
+			return file_get_contents( $f ); }
+		public function delete( $f ) {
+			return unlink( $f ); }
 	};
 }
 
 namespace Nashenski\Container {
-	class Client { const BOXNOW = 'client.boxnow'; }
+	class Client {
+		const BOXNOW = 'client.boxnow';
+	}
 }
 
 namespace Nashenski\Test {
 	class Api {
 		const CACHE_FOLDER = WP_CONTENT_DIR . '/cache/nashenski/boxnow/';
-		public function api_call() { return array( 'data' => array( array( 'id' => '1', 'name' => 'Sender' ) ) ); }
+		public function api_call() {
+			return array(
+				'data' => array(
+					array(
+						'id'   => '1',
+						'name' => 'Sender',
+					),
+				),
+			); }
 	}
 }
 
@@ -46,8 +68,10 @@ namespace Nashenski {
 
 	$checks = 0;
 	function expect( $condition, $message ) {
-		$GLOBALS['checks']++;
-		if ( ! $condition ) { fwrite( STDERR, 'FAIL: ' . $message . "\n" ); exit( 1 ); }
+		++$GLOBALS['checks'];
+		if ( ! $condition ) {
+			fwrite( STDERR, 'FAIL: ' . $message . "\n" );
+			exit( 1 ); }
 	}
 
 	$public = WP_CONTENT_DIR . '/cache/nashenski/boxnow/origins.json';
@@ -68,7 +92,8 @@ namespace Nashenski {
 	$root = $GLOBALS['root'];
 	if ( 0 === strpos( $root, sys_get_temp_dir() ) ) {
 		$it = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $root, \FilesystemIterator::SKIP_DOTS ), \RecursiveIteratorIterator::CHILD_FIRST );
-		foreach ( $it as $f ) { $f->isDir() ? rmdir( $f->getPathname() ) : unlink( $f->getPathname() ); }
+		foreach ( $it as $f ) {
+			$f->isDir() ? rmdir( $f->getPathname() ) : unlink( $f->getPathname() ); }
 		rmdir( $root );
 	}
 	echo 'PASS: ' . $checks . " BOX NOW origins cache assertions\n";

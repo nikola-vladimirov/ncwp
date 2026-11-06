@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Client\Speedy;
+
 use Nashenski\Container\Client;
 use Nashenski\Transliteration;
 use Nashenski\File;
@@ -9,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 class Cities {
 	const CITIES_ENDPOINT = 'location/site/csv/';
 
-	private $cities = [];
+	private $cities = array();
 	private $container;
 
 	public function __construct( $container ) {
@@ -34,7 +35,7 @@ class Cities {
 			if ( ! is_file( $cities_file ) || ! filesize( $cities_file ) ) {
 				// A recent failed fetch is not retried on every request.
 				if ( get_transient( $failed_key ) ) {
-					return [];
+					return array();
 				}
 
 				$body = $this->container[ Client::SPEEDY ]->api_call( self::CITIES_ENDPOINT . $country_id, array(), 1 );
@@ -53,13 +54,18 @@ class Cities {
 
 				set_transient( $failed_key, 1, 5 * MINUTE_IN_SECONDS );
 
-				return [];
+				return array();
 			}
 
 			// Speedy writes regionEn in mixed case ("Sofia (stolitsa)"); the regions list is upper case.
-			$cities = array_values( array_filter( nashenski_read_csv( $cities_file ), function ( $city ) use ( $region ) {
-				return mb_strtoupper( $city['regionEn'] ) === $region;
-			} ) );
+			$cities = array_values(
+				array_filter(
+					nashenski_read_csv( $cities_file ),
+					function ( $city ) use ( $region ) {
+						return mb_strtoupper( $city['regionEn'] ) === $region;
+					}
+				)
+			);
 
 			File::put_to_file( $cities_by_region_file, wp_json_encode( $cities ) );
 		}
@@ -69,7 +75,7 @@ class Cities {
 		return $cities;
 	}
 
-	//Getters
+	// Getters
 	public function get_cities( $region, $country_id = '100' ) {
 		if ( empty( $this->cities[ $region ] ) ) {
 			$this->load_cities( $region, $country_id );
@@ -83,16 +89,16 @@ class Cities {
 	}
 
 	public function get_formatted_cities( $country_id = '100' ) {
-		$formatted = [];
-		$regions = $this->get_regions( $country_id );
+		$formatted = array();
+		$regions   = $this->get_regions( $country_id );
 
 		foreach ( $regions as $region_key => $region ) {
 			$cities = $this->get_cities( $region, $country_id );
 
-			if ( !empty( $cities ) ) {
+			if ( ! empty( $cities ) ) {
 				foreach ( $cities as $city ) {
 					$formatted[ 'cityID-' . $city['id'] ] = array(
-						'id' => 'cityID-' . $city['id'],
+						'id'    => 'cityID-' . $city['id'],
 						'label' => sprintf( '%s - %s', $region, $city['name'] ),
 					);
 				}
@@ -103,9 +109,12 @@ class Cities {
 			unset( $this->cities[ $region ], $cities );
 		}
 
-		uasort( $formatted, function( $a, $b ) {
-			return strcmp( $a["label"], $b["label"] );
-		} );
+		uasort(
+			$formatted,
+			function ( $a, $b ) {
+				return strcmp( $a['label'], $b['label'] );
+			}
+		);
 
 		return $formatted;
 	}
@@ -115,7 +124,7 @@ class Cities {
 		$region = $region_code ? ( $this->get_regions( $country_id )[ $region_code ] ?? '' ) : '';
 
 		if ( ! $region ) {
-			return [];
+			return array();
 		}
 
 		return array_values( $this->get_cities( $region, $country_id ) );
@@ -137,30 +146,30 @@ class Cities {
 			}
 		}
 
-		$cities_only_names = [];
-		$cities_search_names = [];
-		$cities_only_names_dropdowns = [];
+		$cities_only_names           = array();
+		$cities_search_names         = array();
+		$cities_only_names_dropdowns = array();
 
-		if ( !empty( $cities ) ) {
+		if ( ! empty( $cities ) ) {
 			foreach ( $cities as $temp_city ) {
 				$cities_only_names_dropdowns[] = $temp_city['name'];
-				$temp_city['name'] = $this->normalize_city_name( $temp_city['name'], $country_id );
-				$cities_only_names[] = $temp_city['name'];
-				$cities_search_names[] = $temp_city;
+				$temp_city['name']             = $this->normalize_city_name( $temp_city['name'], $country_id );
+				$cities_only_names[]           = $temp_city['name'];
+				$cities_search_names[]         = $temp_city;
 			}
 		}
 
 		$city_key = $this->find_city_key( $city, $cities, $country_id );
 
-		return [
-			'city' => $city,
-			'cities' => $cities,
-			'cities_only_names' => $cities_only_names,
-			'cities_search_names' => $cities_search_names,
+		return array(
+			'city'                        => $city,
+			'cities'                      => $cities,
+			'cities_only_names'           => $cities_only_names,
+			'cities_search_names'         => $cities_search_names,
 			'cities_only_names_dropdowns' => $cities_only_names_dropdowns,
 			// false when not found, like the other couriers (callers check !== false).
-			'city_key' => $city_key ?? false,
-		];
+			'city_key'                    => $city_key ?? false,
+		);
 	}
 
 	private function find_city_key( $city, $cities, $country_id ) {
@@ -187,44 +196,47 @@ class Cities {
 	}
 
 	public function get_regions( $country_id = 100 ) {
-		$regions = apply_filters( 'nashenski/speedy/cities/regions', array(
-			100 => [
-				'BG-01' => 'BLAGOEVGRAD',
-				'BG-02' => 'BURGAS',
-				'BG-03' => 'VARNA',
-				'BG-04' => 'VELIKO TARNOVO',
-				'BG-05' => 'VIDIN',
-				'BG-06' => 'VRATSA',
-				'BG-07' => 'GABROVO',
-				'BG-08' => 'DOBRICH',
-				'BG-09' => 'KARDZHALI',
-				'BG-10' => 'KYUSTENDIL',
-				'BG-11' => 'LOVECH',
-				'BG-12' => 'MONTANA',
-				'BG-13' => 'PAZARDZHIK',
-				'BG-14' => 'PERNIK',
-				'BG-15' => 'PLEVEN',
-				'BG-16' => 'PLOVDIV',
-				'BG-17' => 'RAZGRAD',
-				'BG-18' => 'RUSE',
-				'BG-19' => 'SILISTRA',
-				'BG-20' => 'SLIVEN',
-				'BG-21' => 'SMOLYAN',
-				'BG-22' => 'SOFIA (STOLITSA)',
-				'BG-23' => 'SOFIA',
-				'BG-24' => 'STARA ZAGORA',
-				'BG-25' => 'TARGOVISHTE',
-				'BG-26' => 'HASKOVO',
-				'BG-27' => 'SHUMEN',
-				'BG-28' => 'YAMBOL',
-			]
-		) );
-		
+		$regions = apply_filters(
+			'nashenski/speedy/cities/regions',
+			array(
+				100 => array(
+					'BG-01' => 'BLAGOEVGRAD',
+					'BG-02' => 'BURGAS',
+					'BG-03' => 'VARNA',
+					'BG-04' => 'VELIKO TARNOVO',
+					'BG-05' => 'VIDIN',
+					'BG-06' => 'VRATSA',
+					'BG-07' => 'GABROVO',
+					'BG-08' => 'DOBRICH',
+					'BG-09' => 'KARDZHALI',
+					'BG-10' => 'KYUSTENDIL',
+					'BG-11' => 'LOVECH',
+					'BG-12' => 'MONTANA',
+					'BG-13' => 'PAZARDZHIK',
+					'BG-14' => 'PERNIK',
+					'BG-15' => 'PLEVEN',
+					'BG-16' => 'PLOVDIV',
+					'BG-17' => 'RAZGRAD',
+					'BG-18' => 'RUSE',
+					'BG-19' => 'SILISTRA',
+					'BG-20' => 'SLIVEN',
+					'BG-21' => 'SMOLYAN',
+					'BG-22' => 'SOFIA (STOLITSA)',
+					'BG-23' => 'SOFIA',
+					'BG-24' => 'STARA ZAGORA',
+					'BG-25' => 'TARGOVISHTE',
+					'BG-26' => 'HASKOVO',
+					'BG-27' => 'SHUMEN',
+					'BG-28' => 'YAMBOL',
+				),
+			)
+		);
+
 		// No country id when Speedy did not answer (no login yet).
 		return null === $country_id ? array() : ( $regions[ $country_id ] ?? array() );
 	}
 
-	//Setters
+	// Setters
 	private function set_cities( $region, $cities ) {
 		$this->cities[ $region ] = $cities;
 	}

@@ -27,10 +27,12 @@ class Block_Checkout {
 			return;
 		}
 
-		woocommerce_store_api_register_update_callback( array(
-			'namespace' => self::NAMESPACE_ID,
-			'callback' => array( __CLASS__, 'refresh_shipping' ),
-		) );
+		woocommerce_store_api_register_update_callback(
+			array(
+				'namespace' => self::NAMESPACE_ID,
+				'callback'  => array( __CLASS__, 'refresh_shipping' ),
+			)
+		);
 	}
 
 	/**
@@ -63,7 +65,7 @@ class Block_Checkout {
 		foreach ( $wp_filter[ $hook ]->callbacks as $priority => $items ) {
 			foreach ( $items as $item ) {
 				$function = $item['function'];
-				$class = is_array( $function ) ? ( is_object( $function[0] ) ? get_class( $function[0] ) : (string) $function[0] ) : '';
+				$class    = is_array( $function ) ? ( is_object( $function[0] ) ? get_class( $function[0] ) : (string) $function[0] ) : '';
 
 				if ( 0 === strpos( ltrim( $class, '\\' ), 'Nashenski\\' ) ) {
 					$callbacks[] = $function;
@@ -81,11 +83,11 @@ class Block_Checkout {
 	 */
 	public static function validate( $order, $request ) {
 		$errors = new \WP_Error();
-		$data = array(
+		$data   = array(
 			'billing_country' => $order->get_billing_country(),
-			'billing_phone' => $order->get_billing_phone(),
-			'billing_email' => $order->get_billing_email(),
-			'payment_method' => $order->get_payment_method(),
+			'billing_phone'   => $order->get_billing_phone(),
+			'billing_email'   => $order->get_billing_email(),
+			'payment_method'  => $order->get_payment_method(),
 			'shipping_method' => WC()->session ? (array) WC()->session->get( 'chosen_shipping_methods' ) : array(),
 		);
 

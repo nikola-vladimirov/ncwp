@@ -1,13 +1,14 @@
 <?php
 namespace Nashenski\Client\Econt;
+
 use Nashenski\Container\Client;
 
 defined( 'ABSPATH' ) || exit;
 
 class Profile {
-    const PROFILE_ENDPOINT = 'Profile/ProfileService.getClientProfiles.json';
+	const PROFILE_ENDPOINT = 'Profile/ProfileService.getClientProfiles.json';
 
-    private $is_valid_profile, $profile_data, $container;
+	private $is_valid_profile, $profile_data, $container;
 
 	public function __construct( $container ) {
 		$this->container = $container;
@@ -29,9 +30,12 @@ class Profile {
 		$this->container[ Client::ECONT ]->load_password();
 		$this->container[ Client::ECONT ]->load_base_endpoint();
 
-		$profile_data = $this->container[ Client::ECONT ]->api_call( self::PROFILE_ENDPOINT, array(
-			'GetClientProfilesRequest' => ''
-		) );
+		$profile_data = $this->container[ Client::ECONT ]->api_call(
+			self::PROFILE_ENDPOINT,
+			array(
+				'GetClientProfilesRequest' => '',
+			)
+		);
 
 		if ( $this->container[ Client::ECONT ]->validate_access( $profile_data ) ) {
 			nashenski_set_option( 'econt', 'profile_data', $profile_data );
@@ -73,12 +77,12 @@ class Profile {
 	}
 
 	public function get_formatted_addresses() {
-		$formatted = [];
+		$formatted = array();
 
-		if ( !empty( $this->get_profile_data() ) ) {
+		if ( ! empty( $this->get_profile_data() ) ) {
 			foreach ( $this->get_profile_data()['addresses'] as $key => $address ) {
 				$formatted[ $key ] = array(
-					'id' => $key,
+					'id'    => $key,
 					'label' => implode( ' ', array( $address['city']['name'], $address['quarter'], $address['street'], $address['num'], $address['other'] ) ),
 				);
 			}
@@ -88,7 +92,7 @@ class Profile {
 	}
 
 	public static function get_sender_payment_method() {
-		$method = 'cash';
+		$method        = 'cash';
 		$cd_pay_option = nashenski_get_option( 'econt', 'pay_options' );
 		$sender_method = nashenski_get_option( 'econt', 'sender_payment_type' );
 
@@ -102,7 +106,7 @@ class Profile {
 	protected function return_single_profile() {
 		$profile_id = 0;
 
-		if ( !empty( $this->profile_data[ 'profiles' ] ) ) {
+		if ( ! empty( $this->profile_data['profiles'] ) ) {
 			if ( $selected_id = nashenski_get_option( 'econt', 'profile_key' ) ) {
 				$profile_id = $selected_id;
 			}
@@ -115,12 +119,12 @@ class Profile {
 
 	public function get_profiles_for_settings() {
 		$all_profiles = nashenski_get_option( 'econt', 'profile_data' );
-		$options = array();
+		$options      = array();
 
-		if ( !empty( $all_profiles['profiles'] ) ) {
+		if ( ! empty( $all_profiles['profiles'] ) ) {
 			foreach ( $all_profiles['profiles'] as $key => $profile ) {
 				$options[ $key ] = array(
-					'id' => $key,
+					'id'    => $key,
 					'label' => $profile['client']['name'],
 				);
 

@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Client;
+
 use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
@@ -7,24 +8,24 @@ defined( 'ABSPATH' ) || exit;
 class Pigeon {
 	use Courier_Client;
 
-	const LIVE_URL = 'https://api.pigeonexpress.com/v1';
-    const DEMO_URL = 'https://api-demo.pigeonexpress.com/v1';
-    const CREATE_LABEL_ENDPOINT = '/shipments';
-    const CALCULATE_ENDPOINT = '/shipments/calculate';
-    
-    const CACHE_FOLDER = File::CACHE_FOLDER . 'pigeon' . DIRECTORY_SEPARATOR;
+	const LIVE_URL              = 'https://api.pigeonexpress.com/v1';
+	const DEMO_URL              = 'https://api-demo.pigeonexpress.com/v1';
+	const CREATE_LABEL_ENDPOINT = '/shipments';
+	const CALCULATE_ENDPOINT    = '/shipments/calculate';
 
-    private $env = '';
-    private $api_key = '';
-    private $api_secret = '';
-    private $base_endpoint;
+	const CACHE_FOLDER = File::CACHE_FOLDER . 'pigeon' . DIRECTORY_SEPARATOR;
+
+	private $env        = '';
+	private $api_key    = '';
+	private $api_secret = '';
+	private $base_endpoint;
 	private $is_valid_access;
 
-    public static $skip_cached_files = array(
+	public static $skip_cached_files = array(
 		'cities-BG.json',
 	);
 
-	public function __construct() {	
+	public function __construct() {
 		$this->set_env( nashenski_get_option( 'pigeon', 'env' ) );
 		$this->load_api_key();
 		$this->load_api_secret();
@@ -33,19 +34,19 @@ class Pigeon {
 
 	public function api_call( $endpoint, $args, $method = 'GET', $plain = false ) {
 		if ( empty( $this->get_api_key() ) || empty( $this->get_api_secret() ) ) {
-	        return;
-	    }
+			return;
+		}
 
-		$url = $this->get_base_endpoint() . $endpoint;
+		$url          = $this->get_base_endpoint() . $endpoint;
 		$request_args = array(
 			'timeout' => 15,
 			'headers' => array(
 				'content-type' => 'application/json',
-				'X-API-Key' => $this->get_api_key(),
+				'X-API-Key'    => $this->get_api_key(),
 				'X-API-Secret' => $this->get_api_secret(),
-				'X-Platform' => 'WordPress Nashenski',
+				'X-Platform'   => 'WordPress Nashenski',
 			),
-			'body' => wp_json_encode( $args ),
+			'body'    => wp_json_encode( $args ),
 		);
 
 		if ( $method === 'GET' ) {
@@ -82,21 +83,24 @@ class Pigeon {
 
 		// Without valid keys Pigeon redirects to its website, which also answers 200,
 		// so do not follow redirects and expect a JSON answer.
-		$request = wp_remote_get( $this->get_base_endpoint() . Pigeon\Cities::CITIES_ENDPOINT . '/759', array(
-			'redirection' => 0,
-			'timeout' => 15,
-			'headers' => array(
-				'content-type' => 'application/json',
-				'X-API-Key' => $this->get_api_key(),
-				'X-API-Secret' => $this->get_api_secret(),
+		$request = wp_remote_get(
+			$this->get_base_endpoint() . Pigeon\Cities::CITIES_ENDPOINT . '/759',
+			array(
+				'redirection' => 0,
+				'timeout'     => 15,
+				'headers'     => array(
+					'content-type' => 'application/json',
+					'X-API-Key'    => $this->get_api_key(),
+					'X-API-Secret' => $this->get_api_secret(),
+				),
 			)
-		) );
+		);
 
 		return 200 === wp_remote_retrieve_response_code( $request )
 			&& is_array( json_decode( wp_remote_retrieve_body( $request ), true ) );
 	}
 
-	//Loaders
+	// Loaders
 	public function load_api_key() {
 		$this->set_api_key( nashenski_get_option( 'pigeon', 'api_key' ) );
 	}
@@ -105,7 +109,7 @@ class Pigeon {
 		$this->set_api_secret( nashenski_get_option( 'pigeon', 'api_secret' ) );
 	}
 
-	//Getters
+	// Getters
 
 	public function get_api_key() {
 		return $this->api_key;
@@ -123,7 +127,7 @@ class Pigeon {
 		return $this->base_endpoint;
 	}
 
-	//Setters
+	// Setters
 
 	private function set_api_key( $api_key ) {
 		$this->api_key = $api_key;

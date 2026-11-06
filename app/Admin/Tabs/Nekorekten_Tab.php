@@ -16,31 +16,34 @@ class Nekorekten_Tab extends Base_Tab {
 	}
 
 	public function load_fields() {
-		$fields = apply_filters( 'nashenski/admin/settings/nekorekten/fields', array(
-			'nekorekten' => array(
-				new Fields\Text_Field(
-					'api_key',
-					__( 'API key', 'nashenski-commerce' ),
-					null,
-					'required',
-					sprintf(
-						/* translators: %s: link to nekorekten.com */
-						__( 'Create a key in your %s profile under "API keys" and allow your server\'s IP address.', 'nashenski-commerce' ),
-						'<a href="https://nekorekten.com/" target="_blank" rel="noopener noreferrer">nekorekten.com</a>'
+		$fields = apply_filters(
+			'nashenski/admin/settings/nekorekten/fields',
+			array(
+				'nekorekten' => array(
+					new Fields\Text_Field(
+						'api_key',
+						__( 'API key', 'nashenski-commerce' ),
+						null,
+						'required',
+						sprintf(
+							/* translators: %s: link to nekorekten.com */
+							__( 'Create a key in your %s profile under "API keys" and allow your server\'s IP address.', 'nashenski-commerce' ),
+							'<a href="https://nekorekten.com/" target="_blank" rel="noopener noreferrer">nekorekten.com</a>'
+						),
+						'password'
 					),
-					'password'
+					( new Fields\Text_Field(
+						'level_of_warning',
+						__( 'Reports for a warning', 'nashenski-commerce' ),
+						__( 'Number of reports', 'nashenski-commerce' ),
+						'required',
+						__( 'From how many reports about a phone number the order shows a warning and cash on delivery is turned off at checkout.', 'nashenski-commerce' ),
+						'number'
+					) )->set_default( '1' ),
+					new Fields\Methods_Field( \Nashenski\Reports\Reports::payment_method_choices(), 'hide_payments', __( 'Hide these payment methods', 'nashenski-commerce' ), __( 'The checked payment methods are not offered to a customer that this service flags at the level of warning above.', 'nashenski-commerce' ) ),
 				),
-				( new Fields\Text_Field(
-					'level_of_warning',
-					__( 'Reports for a warning', 'nashenski-commerce' ),
-					__( 'Number of reports', 'nashenski-commerce' ),
-					'required',
-					__( 'From how many reports about a phone number the order shows a warning and cash on delivery is turned off at checkout.', 'nashenski-commerce' ),
-					'number'
-				) )->set_default( '1' ),
-				new Fields\Methods_Field( \Nashenski\Reports\Reports::payment_method_choices(), 'hide_payments', __( 'Hide these payment methods', 'nashenski-commerce' ), __( 'The checked payment methods are not offered to a customer that this service flags at the level of warning above.', 'nashenski-commerce' ) ),
-			),
-		) );
+			)
+		);
 
 		$this->set_fields( $fields );
 	}

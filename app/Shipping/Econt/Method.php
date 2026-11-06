@@ -148,14 +148,14 @@ class Method extends \WC_Shipping_Method {
 		$this->init_form_fields(); // This is part of the settings API. Override the method to add your own settings.
 		$this->init_settings(); // This is part of the settings API. Loads settings you previously init.
 
-		$this->title              = $this->get_option( 'title' );
-		$this->delivery_type      = $this->get_option( 'delivery_type' );
-		$this->free_shipping_over = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
+		$this->title                    = $this->get_option( 'title' );
+		$this->delivery_type            = $this->get_option( 'delivery_type' );
+		$this->free_shipping_over       = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
 		$this->free_shipping_by_country = $this->get_option( 'free_shipping_by_country' );
-		$this->fixed_price        = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
-		$this->test               = $this->get_option( 'test' );
-		$this->sms                = $this->get_option( 'sms' );
-		$this->tax_status         = ( wc_tax_enabled() ) ? 'taxable' : 'none';
+		$this->fixed_price              = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
+		$this->test                     = $this->get_option( 'test' );
+		$this->sms                      = $this->get_option( 'sms' );
+		$this->tax_status               = ( wc_tax_enabled() ) ? 'taxable' : 'none';
 
 		// Save settings in admin if you have any defined.
 		add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -336,14 +336,14 @@ class Method extends \WC_Shipping_Method {
 	 */
 	public function init_form_fields() {
 		$this->instance_form_fields = array(
-			'title'              => array(
+			'title'                    => array(
 				'title'       => __( 'Title', 'nashenski-commerce' ),
 				'type'        => 'text',
 				'description' => __( 'This controls the title which the user sees during checkout.', 'nashenski-commerce' ),
 				'default'     => __( 'Econt', 'nashenski-commerce' ),
 				'desc_tip'    => true,
 			),
-			'delivery_type'      => array(
+			'delivery_type'            => array(
 				'title'   => __( 'Delivery Type', 'nashenski-commerce' ),
 				'type'    => 'select',
 				'css'     => 'width: 400px;',
@@ -354,14 +354,14 @@ class Method extends \WC_Shipping_Method {
 					'address' => __( 'Address', 'nashenski-commerce' ),
 				),
 			),
-			'test'               => array(
+			'test'                     => array(
 				'title'   => __( 'Review and test', 'nashenski-commerce' ),
 				'type'    => 'select',
 				'css'     => 'width: 400px;',
 				'default' => 'no',
 				'options' => nashenski_get_shipping_tests_options(),
 			),
-			'international'      => array(
+			'international'            => array(
 				'title'       => __( 'Ship abroad', 'nashenski-commerce' ),
 				'type'        => 'select',
 				'css'         => 'width: 400px;',
@@ -373,7 +373,7 @@ class Method extends \WC_Shipping_Method {
 				'description' => __( 'Prices for these countries come only from Econt, not from the public price list.', 'nashenski-commerce' ),
 				'desc_tip'    => true,
 			),
-			'sms'                => array(
+			'sms'                      => array(
 				'title'       => __( 'SMS notification', 'nashenski-commerce' ),
 				'type'        => 'select',
 				'css'         => 'width: 400px;',
@@ -384,7 +384,7 @@ class Method extends \WC_Shipping_Method {
 				),
 				'description' => __( 'Send customer notification for delivery.', 'nashenski-commerce' ),
 			),
-			'free_shipping_over' => array(
+			'free_shipping_over'       => array(
 				'title'       => __( 'Free shipping over', 'nashenski-commerce' ),
 				'type'        => 'number',
 				'placeholder' => '0',
@@ -400,7 +400,7 @@ class Method extends \WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
-			'fixed_price'        => array(
+			'fixed_price'              => array(
 				'title'       => __( 'Maximum price payed by the client', 'nashenski-commerce' ),
 				'type'        => 'number',
 				'placeholder' => '0',

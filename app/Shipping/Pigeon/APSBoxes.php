@@ -9,7 +9,7 @@ use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 defined( 'ABSPATH' ) || exit;
 
 class APSBoxes {
-	const OPTION_NAME = 'auto_size';
+	const OPTION_NAME       = 'auto_size';
 	const MAX_LOCKER_WEIGHT = 30;
 
 	private static $box_sizes = array(
@@ -48,7 +48,7 @@ class APSBoxes {
 		}
 
 		try {
-			$budget = $method instanceof Method ? $method->packing_budget() : new Packing_Budget();
+			$budget       = $method instanceof Method ? $method->packing_budget() : new Packing_Budget();
 			$packed_boxes = APSPackage::pack_package( $method->package, self::$box_sizes, null, $budget );
 		} catch ( Packing_Limit_Exceeded $e ) {
 			throw $e;

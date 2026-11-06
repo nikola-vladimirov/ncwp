@@ -8,10 +8,10 @@ defined( 'ABSPATH' ) || exit;
  * Auth: "Api-Key" header. Limit: 10 requests per minute, so answers are cached.
  */
 class Nekorekten {
-	const BASE_URL = 'https://api.nekorekten.com/api/v1/';
+	const BASE_URL         = 'https://api.nekorekten.com/api/v1/';
 	const REPORTS_ENDPOINT = 'reports';
-	const USAGE_ENDPOINT = 'api-keys/current/usage';
-	const CACHE_SECONDS = 600;
+	const USAGE_ENDPOINT   = 'api-keys/current/usage';
+	const CACHE_SECONDS    = 600;
 
 	private $api_key = '';
 
@@ -31,13 +31,16 @@ class Nekorekten {
 			return null;
 		}
 
-		$response = wp_remote_get( add_query_arg( $query, self::BASE_URL . $endpoint ), array(
-			'timeout' => 10,
-			'headers' => array(
-				'Accept' => 'application/json',
-				'Api-Key' => $this->api_key,
-			),
-		) );
+		$response = wp_remote_get(
+			add_query_arg( $query, self::BASE_URL . $endpoint ),
+			array(
+				'timeout' => 10,
+				'headers' => array(
+					'Accept'  => 'application/json',
+					'Api-Key' => $this->api_key,
+				),
+			)
+		);
 
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			return null;
@@ -59,7 +62,7 @@ class Nekorekten {
 		}
 
 		$cache_key = 'nashenski_nk_' . md5( $phone );
-		$cached = $force ? false : get_transient( $cache_key );
+		$cached    = $force ? false : get_transient( $cache_key );
 
 		if ( false !== $cached ) {
 			return $cached;
@@ -100,12 +103,12 @@ class Nekorekten {
 		}
 
 		$args = array(
-			'method' => $method,
+			'method'  => $method,
 			'timeout' => 15,
 			'headers' => array(
-				'Accept' => 'application/json',
+				'Accept'       => 'application/json',
 				'Content-Type' => 'application/json',
-				'Api-Key' => $this->api_key,
+				'Api-Key'      => $this->api_key,
 			),
 		);
 

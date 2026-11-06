@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Admin;
+
 use Nashenski\Admin\Fields;
 use Nashenski\Front_End\Checkout\EU_Vat as Front_End_EU_Vat;
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
@@ -21,10 +22,10 @@ class EU_Vat {
 
 	public static function add_fields_in_settings( $fields ) {
 		if ( extension_loaded( 'soap' ) ) {
-			$fields[ 'invoice' ][] = new Fields\TrueFalse_Field( 'enable_vies', __( 'Enable VIES validation', 'nashenski-commerce' ), null, null, __( 'Validate the VAT number with the European VIES system or only with regex.', 'nashenski-commerce' ) );
+			$fields['invoice'][] = new Fields\TrueFalse_Field( 'enable_vies', __( 'Enable VIES validation', 'nashenski-commerce' ), null, null, __( 'Validate the VAT number with the European VIES system or only with regex.', 'nashenski-commerce' ) );
 		}
 
-		$fields[ 'invoice' ][] = new Fields\Select_Field( nashenski_get_tax_classes(), 'digital_tax_classes', __( 'Tax Classes for Digital Goods', 'nashenski-commerce' ), null, null, __( 'This option tells the plugin which of your tax classes are for digital goods. This affects the taxable location of the user as of 1st Jan 2015.', 'nashenski-commerce' ) );
+		$fields['invoice'][] = new Fields\Select_Field( nashenski_get_tax_classes(), 'digital_tax_classes', __( 'Tax Classes for Digital Goods', 'nashenski-commerce' ), null, null, __( 'This option tells the plugin which of your tax classes are for digital goods. This affects the taxable location of the user as of 1st Jan 2015.', 'nashenski-commerce' ) );
 
 		return $fields;
 	}
@@ -34,7 +35,7 @@ class EU_Vat {
 
 		$vat_number = is_object( $theorder ) ? nashenski_get_vat_from_order( $theorder ) : '';
 
-		$fields[ 'vat_number' ] = array(
+		$fields['vat_number'] = array(
 			'label' => __( 'VAT number', 'nashenski-commerce' ),
 			'show'  => false,
 			'id'    => '_billing_vat_number',
@@ -77,15 +78,17 @@ class EU_Vat {
 			<tbody>
 				<?php if ( $data->vat_number ) : ?>
 					<tr>
-						<th><?php echo wp_kses_post( __('VAT number', 'nashenski-commerce') ) ?></th>
+						<th><?php echo wp_kses_post( __( 'VAT number', 'nashenski-commerce' ) ); ?></th>
 						<td><?php echo esc_html( $data->vat_number ); ?></td>
-						<td><?php
-							if ( ! $data->validated ) {
-								echo wp_kses_post( '<span class="tips" data-tip="' . wc_sanitize_tooltip( __( 'Validation was not possible', 'nashenski-commerce' ) ) . '">?<span>' );
-							} else {
-								echo $data->valid ? '&#10004;' : '&#10008;';
-							}
-						?></td>
+						<td>
+						<?php
+						if ( ! $data->validated ) {
+							echo wp_kses_post( '<span class="tips" data-tip="' . wc_sanitize_tooltip( __( 'Validation was not possible', 'nashenski-commerce' ) ) . '">?<span>' );
+						} else {
+							echo $data->valid ? '&#10004;' : '&#10008;';
+						}
+						?>
+						</td>
 					</tr>
 				<?php else : ?>
 					<tr>
@@ -95,21 +98,23 @@ class EU_Vat {
 					</tr>
 					<tr>
 						<th><?php esc_html_e( 'IP Country', 'nashenski-commerce' ); ?></th>
-						<td><?php
-							if ( $data->ip_country ) {
-								echo esc_html( $countries[ $data->billing_country ] ?? $data->billing_country ) . ' ';
+						<td>
+						<?php
+						if ( $data->ip_country ) {
+							echo esc_html( $countries[ $data->billing_country ] ?? $data->billing_country ) . ' ';
 
-								if ( $data->billing_country === $data->ip_country ) {
-									echo '<span style="color:green">&#10004;</span>';
-								} elseif ( $data->self_declared ) {
-									esc_html_e( '(self-declared)', 'nashenski-commerce' );
-								} else {
-									echo '<span style="color:red">&#10008;</span>';
-								}
+							if ( $data->billing_country === $data->ip_country ) {
+								echo '<span style="color:green">&#10004;</span>';
+							} elseif ( $data->self_declared ) {
+								esc_html_e( '(self-declared)', 'nashenski-commerce' );
 							} else {
-								esc_html_e( 'Unknown', 'nashenski-commerce' );
+								echo '<span style="color:red">&#10008;</span>';
 							}
-						?><td></td>
+						} else {
+							esc_html_e( 'Unknown', 'nashenski-commerce' );
+						}
+						?>
+						<td></td>
 					</tr>
 					<tr>
 						<th><?php esc_html_e( 'Billing Country', 'nashenski-commerce' ); ?></th>

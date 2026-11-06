@@ -15,31 +15,31 @@ class Company {
 
 	public static function vat_number_field( $fields ) {
 		if ( class_exists( 'WC_EU_VAT_Number_Init' ) && isset( $fields['billing']['billing_vat_number'] ) ) {
-			$fields['billing']['billing_vat_number']['required'] = ( nashenski_get_option('nap', 'dds_number_required' ) === 'yes' );
-			$fields['billing']['billing_vat_number']['class'][] = 'nashenski-company-info form-row-first';
+			$fields['billing']['billing_vat_number']['required'] = ( nashenski_get_option( 'nap', 'dds_number_required' ) === 'yes' );
+			$fields['billing']['billing_vat_number']['class'][]  = 'nashenski-company-info form-row-first';
 		}
 
 		if ( isset( $fields['billing']['billing_company'] ) ) {
 			$fields['billing']['billing_company']['priority'] = 121;
 			$fields['billing']['billing_company']['required'] = true;
-			$fields['billing']['billing_company']['class'] = array( 'nashenski-company-info form-row-last' );
+			$fields['billing']['billing_company']['class']    = array( 'nashenski-company-info form-row-last' );
 		} else {
 			$fields['billing']['billing_company'] = array(
-				'label' => __( 'Company name', 'nashenski-commerce' ),
+				'label'        => __( 'Company name', 'nashenski-commerce' ),
 				'autocomplete' => 'organization',
-				'priority' => 121,
-				'required' => true,
-				'class' => 'nashenski-company-info form-row-last',
+				'priority'     => 121,
+				'required'     => true,
+				'class'        => 'nashenski-company-info form-row-last',
 			);
 		}
-		
+
 		$fields['billing']['billing_to_company'] = array(
-			'type'      => 'checkbox',
+			'type'     => 'checkbox',
 			'label'    => __( 'I want an invoice for a company', 'nashenski-commerce' ),
 			'class'    => array(
 				'form-row-wide',
 			),
-			'id' => 'woo-billing-to-company',
+			'id'       => 'woo-billing-to-company',
 			'priority' => 119,
 		);
 
@@ -50,7 +50,7 @@ class Company {
 				'form-row-first',
 				'nashenski-company-info',
 			),
-			'id' => 'nashenski-billing-company-mol',
+			'id'       => 'nashenski-billing-company-mol',
 			'priority' => 121,
 		);
 
@@ -61,7 +61,7 @@ class Company {
 				'form-row-last',
 				'nashenski-company-info',
 			),
-			'id' => 'nashenski-billing-company-eik',
+			'id'       => 'nashenski-billing-company-eik',
 			'priority' => 121,
 		);
 
@@ -72,7 +72,7 @@ class Company {
 				'form-row-first',
 				'nashenski-company-info',
 			),
-			'id' => 'nashenski-billing-company-settlement',
+			'id'       => 'nashenski-billing-company-settlement',
 			'priority' => 121,
 		);
 
@@ -83,9 +83,9 @@ class Company {
 				'form-row-last',
 				'nashenski-company-info',
 			),
-			'id' => 'nashenski-billing-company-address',
+			'id'       => 'nashenski-billing-company-address',
 			'priority' => 121,
-			'show'  => false,
+			'show'     => false,
 		);
 
 		return $fields;
@@ -99,7 +99,7 @@ class Company {
 	}
 
 	public static function admin_billing_fields( $fields ) {
-		unset( $fields[ 'company' ] );
+		unset( $fields['company'] );
 
 		$fields['to_company'] = array(
 			'label' => __( 'Do you want a company invoice?', 'nashenski-commerce' ),
@@ -107,33 +107,33 @@ class Company {
 		);
 
 		$fields['company'] = array(
-			'label' => __( 'Company', 'nashenski-commerce' ),
-			'show'  => true,
-			'wrapper_class' => '_billing_address_2_field'
+			'label'         => __( 'Company', 'nashenski-commerce' ),
+			'show'          => true,
+			'wrapper_class' => '_billing_address_2_field',
 		);
 
 		$fields['company_mol'] = array(
-			'label' => __( 'MOL', 'nashenski-commerce' ),
-			'show'  => true,
-			'wrapper_class' => '_billing_address_1_field'
+			'label'         => __( 'MOL', 'nashenski-commerce' ),
+			'show'          => true,
+			'wrapper_class' => '_billing_address_1_field',
 		);
 
 		$fields['company_eik'] = array(
-			'label' => __( 'EIK', 'nashenski-commerce' ),
-			'show'  => true,
-			'wrapper_class' => '_billing_address_2_field'
+			'label'         => __( 'EIK', 'nashenski-commerce' ),
+			'show'          => true,
+			'wrapper_class' => '_billing_address_2_field',
 		);
 
 		$fields['company_settlement'] = array(
-			'label' => __( 'Settlement', 'nashenski-commerce' ),
-			'show'  => true,
-			'wrapper_class' => '_billing_address_1_field'
+			'label'         => __( 'Settlement', 'nashenski-commerce' ),
+			'show'          => true,
+			'wrapper_class' => '_billing_address_1_field',
 		);
 
 		$fields['company_address'] = array(
-			'label' => __( 'Company Address', 'nashenski-commerce' ),
-			'show'  => true,
-			'wrapper_class' => '_billing_address_2_field'
+			'label'         => __( 'Company Address', 'nashenski-commerce' ),
+			'show'          => true,
+			'wrapper_class' => '_billing_address_2_field',
 		);
 
 		return $fields;
@@ -148,11 +148,11 @@ class Company {
 			'billing_company_address',
 			'billing_vat_number',
 		);
-		
+
 		if ( empty( $data['billing_to_company'] ) ) {
 			foreach ( $fields as $field ) {
-				unset( $errors->errors[ $field . '_required'] );
-				unset( $errors->error_data[ $field . '_required'] );
+				unset( $errors->errors[ $field . '_required' ] );
+				unset( $errors->error_data[ $field . '_required' ] );
 			}
 		}
 	}

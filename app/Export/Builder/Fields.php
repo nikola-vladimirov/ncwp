@@ -17,116 +17,146 @@ class Fields {
 	 */
 	public static function all() {
 		$all_sources = self::SOURCES;
-		$fields = array();
+		$fields      = array();
 
 		$add = function ( $group, $list, $sources = null, $kind = 'text' ) use ( &$fields, $all_sources ) {
 			foreach ( $list as $id => $label ) {
-				$fields[ $id ] = array(
-					'label' => $label,
-					'group' => $group,
-					'kind' => is_array( $label ) ? $label[1] : $kind,
+				$fields[ $id ]          = array(
+					'label'   => $label,
+					'group'   => $group,
+					'kind'    => is_array( $label ) ? $label[1] : $kind,
 					'sources' => $sources ? $sources : $all_sources,
 				);
 				$fields[ $id ]['label'] = is_array( $label ) ? $label[0] : $label;
 			}
 		};
 
-		$add( __( 'Order', 'nashenski-commerce' ), array(
-			'order_id' => __( 'Order ID', 'nashenski-commerce' ),
-			'order_number' => __( 'Order number', 'nashenski-commerce' ),
-			'status' => __( 'Status', 'nashenski-commerce' ),
-			'date_created' => array( __( 'Order date', 'nashenski-commerce' ), 'date' ),
-			'date_paid' => array( __( 'Paid on', 'nashenski-commerce' ), 'date' ),
-			'date_completed' => array( __( 'Completed on', 'nashenski-commerce' ), 'date' ),
-			'currency' => __( 'Currency', 'nashenski-commerce' ),
-			'customer_note' => __( 'Customer note', 'nashenski-commerce' ),
-			'created_via' => __( 'Created via', 'nashenski-commerce' ),
-		) );
+		$add(
+			__( 'Order', 'nashenski-commerce' ),
+			array(
+				'order_id'       => __( 'Order ID', 'nashenski-commerce' ),
+				'order_number'   => __( 'Order number', 'nashenski-commerce' ),
+				'status'         => __( 'Status', 'nashenski-commerce' ),
+				'date_created'   => array( __( 'Order date', 'nashenski-commerce' ), 'date' ),
+				'date_paid'      => array( __( 'Paid on', 'nashenski-commerce' ), 'date' ),
+				'date_completed' => array( __( 'Completed on', 'nashenski-commerce' ), 'date' ),
+				'currency'       => __( 'Currency', 'nashenski-commerce' ),
+				'customer_note'  => __( 'Customer note', 'nashenski-commerce' ),
+				'created_via'    => __( 'Created via', 'nashenski-commerce' ),
+			)
+		);
 
-		$add( __( 'Customer', 'nashenski-commerce' ), array(
-			'billing_full_name' => __( 'Customer name', 'nashenski-commerce' ),
-			'billing_first_name' => __( 'First name', 'nashenski-commerce' ),
-			'billing_last_name' => __( 'Last name', 'nashenski-commerce' ),
-			'billing_email' => __( 'Email', 'nashenski-commerce' ),
-			'billing_phone' => __( 'Phone', 'nashenski-commerce' ),
-			'customer_id' => __( 'Customer account ID', 'nashenski-commerce' ),
-			'billing_address_1' => __( 'Billing street', 'nashenski-commerce' ),
-			'billing_address_2' => __( 'Billing address line 2', 'nashenski-commerce' ),
-			'billing_city' => __( 'Billing town', 'nashenski-commerce' ),
-			'billing_state' => __( 'Billing region', 'nashenski-commerce' ),
-			'billing_postcode' => __( 'Billing postcode', 'nashenski-commerce' ),
-			'billing_country' => __( 'Billing country', 'nashenski-commerce' ),
-		) );
+		$add(
+			__( 'Customer', 'nashenski-commerce' ),
+			array(
+				'billing_full_name'  => __( 'Customer name', 'nashenski-commerce' ),
+				'billing_first_name' => __( 'First name', 'nashenski-commerce' ),
+				'billing_last_name'  => __( 'Last name', 'nashenski-commerce' ),
+				'billing_email'      => __( 'Email', 'nashenski-commerce' ),
+				'billing_phone'      => __( 'Phone', 'nashenski-commerce' ),
+				'customer_id'        => __( 'Customer account ID', 'nashenski-commerce' ),
+				'billing_address_1'  => __( 'Billing street', 'nashenski-commerce' ),
+				'billing_address_2'  => __( 'Billing address line 2', 'nashenski-commerce' ),
+				'billing_city'       => __( 'Billing town', 'nashenski-commerce' ),
+				'billing_state'      => __( 'Billing region', 'nashenski-commerce' ),
+				'billing_postcode'   => __( 'Billing postcode', 'nashenski-commerce' ),
+				'billing_country'    => __( 'Billing country', 'nashenski-commerce' ),
+			)
+		);
 
-		$add( __( 'Company invoice', 'nashenski-commerce' ), array(
-			'to_company' => __( 'Company invoice (yes/no)', 'nashenski-commerce' ),
-			'company' => __( 'Company name', 'nashenski-commerce' ),
-			'company_eik' => __( 'EIK', 'nashenski-commerce' ),
-			'company_vat' => __( 'VAT number', 'nashenski-commerce' ),
-			'company_mol' => __( 'MOL', 'nashenski-commerce' ),
-			'company_town' => __( 'Company town', 'nashenski-commerce' ),
-			'company_address' => __( 'Company address', 'nashenski-commerce' ),
-			'buyer' => __( 'Buyer (company or person)', 'nashenski-commerce' ),
-		) );
+		$add(
+			__( 'Company invoice', 'nashenski-commerce' ),
+			array(
+				'to_company'      => __( 'Company invoice (yes/no)', 'nashenski-commerce' ),
+				'company'         => __( 'Company name', 'nashenski-commerce' ),
+				'company_eik'     => __( 'EIK', 'nashenski-commerce' ),
+				'company_vat'     => __( 'VAT number', 'nashenski-commerce' ),
+				'company_mol'     => __( 'MOL', 'nashenski-commerce' ),
+				'company_town'    => __( 'Company town', 'nashenski-commerce' ),
+				'company_address' => __( 'Company address', 'nashenski-commerce' ),
+				'buyer'           => __( 'Buyer (company or person)', 'nashenski-commerce' ),
+			)
+		);
 
-		$add( __( 'Delivery', 'nashenski-commerce' ), array(
-			'shipping_full_name' => __( 'Recipient', 'nashenski-commerce' ),
-			'shipping_phone' => __( 'Recipient phone', 'nashenski-commerce' ),
-			'shipping_address_1' => __( 'Delivery street or office', 'nashenski-commerce' ),
-			'shipping_address_2' => __( 'Delivery address line 2', 'nashenski-commerce' ),
-			'shipping_city' => __( 'Delivery town', 'nashenski-commerce' ),
-			'shipping_state' => __( 'Delivery region', 'nashenski-commerce' ),
-			'shipping_postcode' => __( 'Delivery postcode', 'nashenski-commerce' ),
-			'shipping_country' => __( 'Delivery country', 'nashenski-commerce' ),
-			'shipping_method' => __( 'Shipping method', 'nashenski-commerce' ),
-			'courier' => __( 'Courier', 'nashenski-commerce' ),
-			'delivery_type' => __( 'Delivery type', 'nashenski-commerce' ),
-			'waybill' => __( 'Waybill number', 'nashenski-commerce' ),
-		) );
+		$add(
+			__( 'Delivery', 'nashenski-commerce' ),
+			array(
+				'shipping_full_name' => __( 'Recipient', 'nashenski-commerce' ),
+				'shipping_phone'     => __( 'Recipient phone', 'nashenski-commerce' ),
+				'shipping_address_1' => __( 'Delivery street or office', 'nashenski-commerce' ),
+				'shipping_address_2' => __( 'Delivery address line 2', 'nashenski-commerce' ),
+				'shipping_city'      => __( 'Delivery town', 'nashenski-commerce' ),
+				'shipping_state'     => __( 'Delivery region', 'nashenski-commerce' ),
+				'shipping_postcode'  => __( 'Delivery postcode', 'nashenski-commerce' ),
+				'shipping_country'   => __( 'Delivery country', 'nashenski-commerce' ),
+				'shipping_method'    => __( 'Shipping method', 'nashenski-commerce' ),
+				'courier'            => __( 'Courier', 'nashenski-commerce' ),
+				'delivery_type'      => __( 'Delivery type', 'nashenski-commerce' ),
+				'waybill'            => __( 'Waybill number', 'nashenski-commerce' ),
+			)
+		);
 
-		$add( __( 'Payment', 'nashenski-commerce' ), array(
-			'payment_method' => __( 'Payment method', 'nashenski-commerce' ),
-			'payment_method_id' => __( 'Payment method ID', 'nashenski-commerce' ),
-			'transaction_id' => __( 'Transaction ID', 'nashenski-commerce' ),
-			'is_paid' => __( 'Paid (yes/no)', 'nashenski-commerce' ),
-		) );
+		$add(
+			__( 'Payment', 'nashenski-commerce' ),
+			array(
+				'payment_method'    => __( 'Payment method', 'nashenski-commerce' ),
+				'payment_method_id' => __( 'Payment method ID', 'nashenski-commerce' ),
+				'transaction_id'    => __( 'Transaction ID', 'nashenski-commerce' ),
+				'is_paid'           => __( 'Paid (yes/no)', 'nashenski-commerce' ),
+			)
+		);
 
-		$add( __( 'Amounts', 'nashenski-commerce' ), array(
-			'total' => array( __( 'Total', 'nashenski-commerce' ), 'money' ),
-			'total_without_vat' => array( __( 'Total without VAT', 'nashenski-commerce' ), 'money' ),
-			'vat' => array( __( 'VAT', 'nashenski-commerce' ), 'money' ),
-			'subtotal' => array( __( 'Products subtotal', 'nashenski-commerce' ), 'money' ),
-			'discount' => array( __( 'Discount', 'nashenski-commerce' ), 'money' ),
-			'shipping_total' => array( __( 'Shipping', 'nashenski-commerce' ), 'money' ),
-			'fees' => array( __( 'Fees', 'nashenski-commerce' ), 'money' ),
-			'refunded' => array( __( 'Refunded', 'nashenski-commerce' ), 'money' ),
-			'items_count' => array( __( 'Number of items', 'nashenski-commerce' ), 'number' ),
-			'products' => __( 'Products (names)', 'nashenski-commerce' ),
-		), array( 'orders', 'documents' ) );
+		$add(
+			__( 'Amounts', 'nashenski-commerce' ),
+			array(
+				'total'             => array( __( 'Total', 'nashenski-commerce' ), 'money' ),
+				'total_without_vat' => array( __( 'Total without VAT', 'nashenski-commerce' ), 'money' ),
+				'vat'               => array( __( 'VAT', 'nashenski-commerce' ), 'money' ),
+				'subtotal'          => array( __( 'Products subtotal', 'nashenski-commerce' ), 'money' ),
+				'discount'          => array( __( 'Discount', 'nashenski-commerce' ), 'money' ),
+				'shipping_total'    => array( __( 'Shipping', 'nashenski-commerce' ), 'money' ),
+				'fees'              => array( __( 'Fees', 'nashenski-commerce' ), 'money' ),
+				'refunded'          => array( __( 'Refunded', 'nashenski-commerce' ), 'money' ),
+				'items_count'       => array( __( 'Number of items', 'nashenski-commerce' ), 'number' ),
+				'products'          => __( 'Products (names)', 'nashenski-commerce' ),
+			),
+			array( 'orders', 'documents' )
+		);
 
-		$add( __( 'Documents', 'nashenski-commerce' ), array(
-			'document_type' => __( 'Document type', 'nashenski-commerce' ),
-			'document_number' => __( 'Document number', 'nashenski-commerce' ),
-			'document_date' => array( __( 'Document date', 'nashenski-commerce' ), 'date' ),
-		), array( 'documents' ) );
+		$add(
+			__( 'Documents', 'nashenski-commerce' ),
+			array(
+				'document_type'   => __( 'Document type', 'nashenski-commerce' ),
+				'document_number' => __( 'Document number', 'nashenski-commerce' ),
+				'document_date'   => array( __( 'Document date', 'nashenski-commerce' ), 'date' ),
+			),
+			array( 'documents' )
+		);
 
-		$add( __( 'Documents', 'nashenski-commerce' ), array(
-			'invoice_number' => __( 'Invoice number', 'nashenski-commerce' ),
-			'invoice_date' => array( __( 'Invoice date', 'nashenski-commerce' ), 'date' ),
-		) );
+		$add(
+			__( 'Documents', 'nashenski-commerce' ),
+			array(
+				'invoice_number' => __( 'Invoice number', 'nashenski-commerce' ),
+				'invoice_date'   => array( __( 'Invoice date', 'nashenski-commerce' ), 'date' ),
+			)
+		);
 
-		$add( __( 'Product line', 'nashenski-commerce' ), array(
-			'item_name' => __( 'Product', 'nashenski-commerce' ),
-			'item_sku' => __( 'SKU', 'nashenski-commerce' ),
-			'item_product_id' => __( 'Product ID', 'nashenski-commerce' ),
-			'item_variation_id' => __( 'Variation ID', 'nashenski-commerce' ),
-			'item_quantity' => array( __( 'Quantity', 'nashenski-commerce' ), 'number' ),
-			'item_unit_price' => array( __( 'Unit price', 'nashenski-commerce' ), 'money' ),
-			'item_subtotal' => array( __( 'Line subtotal', 'nashenski-commerce' ), 'money' ),
-			'item_total' => array( __( 'Line total', 'nashenski-commerce' ), 'money' ),
-			'item_tax' => array( __( 'Line VAT', 'nashenski-commerce' ), 'money' ),
-			'item_tax_rate' => array( __( 'VAT rate %', 'nashenski-commerce' ), 'number' ),
-		), array( 'lines' ) );
+		$add(
+			__( 'Product line', 'nashenski-commerce' ),
+			array(
+				'item_name'         => __( 'Product', 'nashenski-commerce' ),
+				'item_sku'          => __( 'SKU', 'nashenski-commerce' ),
+				'item_product_id'   => __( 'Product ID', 'nashenski-commerce' ),
+				'item_variation_id' => __( 'Variation ID', 'nashenski-commerce' ),
+				'item_quantity'     => array( __( 'Quantity', 'nashenski-commerce' ), 'number' ),
+				'item_unit_price'   => array( __( 'Unit price', 'nashenski-commerce' ), 'money' ),
+				'item_subtotal'     => array( __( 'Line subtotal', 'nashenski-commerce' ), 'money' ),
+				'item_total'        => array( __( 'Line total', 'nashenski-commerce' ), 'money' ),
+				'item_tax'          => array( __( 'Line VAT', 'nashenski-commerce' ), 'money' ),
+				'item_tax_rate'     => array( __( 'VAT rate %', 'nashenski-commerce' ), 'number' ),
+			),
+			array( 'lines' )
+		);
 
 		return apply_filters( 'nashenski/export/builder/fields', $fields );
 	}
@@ -142,7 +172,12 @@ class Fields {
 		}
 
 		if ( 0 === strpos( $id, 'meta:' ) ) {
-			return array( 'label' => substr( $id, 5 ), 'group' => __( 'Order meta', 'nashenski-commerce' ), 'kind' => 'text', 'sources' => self::SOURCES );
+			return array(
+				'label'   => substr( $id, 5 ),
+				'group'   => __( 'Order meta', 'nashenski-commerce' ),
+				'kind'    => 'text',
+				'sources' => self::SOURCES,
+			);
 		}
 
 		return null;
@@ -152,11 +187,14 @@ class Fields {
 	 * Kind of each column of a config (text, money, number or date), in column order.
 	 */
 	public static function kinds( $config ) {
-		return array_map( function ( $column ) {
-			$field = self::get( $column['field'] );
+		return array_map(
+			function ( $column ) {
+				$field = self::get( $column['field'] );
 
-			return $field ? $field['kind'] : 'text';
-		}, $config['columns'] );
+				return $field ? $field['kind'] : 'text';
+			},
+			$config['columns']
+		);
 	}
 
 	private static function region( $country, $state ) {
@@ -206,7 +244,7 @@ class Fields {
 	 * Documents of an order or refund: array of array( type, number, date ).
 	 */
 	public static function documents( $object ) {
-		$docs = array();
+		$docs    = array();
 		$created = $object->get_date_created();
 
 		if ( $object instanceof \WC_Order_Refund ) {
@@ -235,9 +273,9 @@ class Fields {
 
 	public static function document_types() {
 		return array(
-			'order_document' => __( 'Order document', 'nashenski-commerce' ),
-			'invoice' => __( 'Invoice', 'nashenski-commerce' ),
-			'credit_note' => __( 'Credit note', 'nashenski-commerce' ),
+			'order_document'  => __( 'Order document', 'nashenski-commerce' ),
+			'invoice'         => __( 'Invoice', 'nashenski-commerce' ),
+			'credit_note'     => __( 'Credit note', 'nashenski-commerce' ),
 			'refund_document' => __( 'Refund document', 'nashenski-commerce' ),
 		);
 	}
@@ -246,10 +284,10 @@ class Fields {
 	 * The raw value of a column for a row: a string, a number, a date (WC_DateTime or string) or ''.
 	 */
 	public static function value( $id, $row ) {
-		$order = $row['order'];
-		$object = $row['object'] ?? $order;
-		$item = $row['item'] ?? null;
-		$doc = $row['doc'] ?? null;
+		$order      = $row['order'];
+		$object     = $row['object'] ?? $order;
+		$item       = $row['item'] ?? null;
+		$doc        = $row['doc'] ?? null;
 		$is_company = '1' === (string) $order->get_meta( '_billing_to_company' );
 
 		if ( 0 === strpos( $id, 'meta:' ) ) {
@@ -315,11 +353,11 @@ class Fields {
 				return ucfirst( self::courier( $order ) );
 			case 'delivery_type':
 				$shipping = self::shipping_item( $order );
-				$type = $shipping ? (string) $shipping->get_meta( 'delivery_type' ) : '';
-				$types = array(
-					'office' => __( 'Office', 'nashenski-commerce' ),
+				$type     = $shipping ? (string) $shipping->get_meta( 'delivery_type' ) : '';
+				$types    = array(
+					'office'  => __( 'Office', 'nashenski-commerce' ),
 					'automat' => __( 'Parcel locker', 'nashenski-commerce' ),
-					'locker' => __( 'Parcel locker', 'nashenski-commerce' ),
+					'locker'  => __( 'Parcel locker', 'nashenski-commerce' ),
 					'address' => __( 'Address', 'nashenski-commerce' ),
 				);
 				return 'boxnow' === self::courier( $order ) ? $types['locker'] : ( $types[ $type ] ?? $type );
@@ -356,9 +394,15 @@ class Fields {
 			case 'items_count':
 				return $object->get_item_count();
 			case 'products':
-				return implode( ', ', array_map( function ( $line ) {
-					return $line->get_name() . ' x ' . $line->get_quantity();
-				}, array_values( $object->get_items() ) ) );
+				return implode(
+					', ',
+					array_map(
+						function ( $line ) {
+							return $line->get_name() . ' x ' . $line->get_quantity();
+						},
+						array_values( $object->get_items() )
+					)
+				);
 			case 'document_type':
 				$types = self::document_types();
 				return $doc ? ( $types[ $doc[0] ] ?? $doc[0] ) : '';
@@ -379,14 +423,14 @@ class Fields {
 
 			if ( '' === (string) $value && 0 === strpos( $id, 'shipping_' ) ) {
 				$billing = 'get_billing_' . substr( $id, 9 );
-				$value = is_callable( array( $order, $billing ) ) ? $order->$billing() : '';
+				$value   = is_callable( array( $order, $billing ) ) ? $order->$billing() : '';
 			}
 
 			return $value;
 		}
 
 		if ( $item && 0 === strpos( $id, 'item_' ) ) {
-			$product = $item->get_product();
+			$product  = $item->get_product();
 			$quantity = max( 1, (float) $item->get_quantity() );
 
 			switch ( $id ) {

@@ -20,26 +20,26 @@ class Builder {
 
 	public static function defaults() {
 		return array(
-			'name' => '',
-			'source' => 'orders',
-			'date_field' => 'created',
-			'from' => gmdate( 'Y-m-01', strtotime( 'first day of last month' ) ),
-			'to' => gmdate( 'Y-m-t', strtotime( 'first day of last month' ) ),
-			'statuses' => array(),
-			'payments' => array(),
-			'couriers' => array(),
-			'doc_types' => array(),
+			'name'         => '',
+			'source'       => 'orders',
+			'date_field'   => 'created',
+			'from'         => gmdate( 'Y-m-01', strtotime( 'first day of last month' ) ),
+			'to'           => gmdate( 'Y-m-t', strtotime( 'first day of last month' ) ),
+			'statuses'     => array(),
+			'payments'     => array(),
+			'couriers'     => array(),
+			'doc_types'    => array(),
 			'company_only' => false,
-			'columns' => array(),
-			'format' => 'csv',
-			'separator' => ';',
-			'encoding' => 'utf8bom',
-			'header' => true,
-			'decimal' => ',',
-			'date_format' => 'd.m.Y',
-			'filename' => '{source}-{from}-{to}',
-			'xml_root' => 'export',
-			'xml_row' => 'row',
+			'columns'      => array(),
+			'format'       => 'csv',
+			'separator'    => ';',
+			'encoding'     => 'utf8bom',
+			'header'       => true,
+			'decimal'      => ',',
+			'date_format'  => 'd.m.Y',
+			'filename'     => '{source}-{from}-{to}',
+			'xml_root'     => 'export',
+			'xml_row'      => 'row',
 		);
 	}
 
@@ -48,31 +48,46 @@ class Builder {
 	 */
 	public static function presets() {
 		$col = function ( $ids ) {
-			return array_map( function ( $id ) {
-				$field = Fields::get( $id );
+			return array_map(
+				function ( $id ) {
+					$field = Fields::get( $id );
 
-				return array( 'field' => $id, 'label' => $field ? $field['label'] : $id );
-			}, $ids );
+					return array(
+						'field' => $id,
+						'label' => $field ? $field['label'] : $id,
+					);
+				},
+				$ids
+			);
 		};
 
 		return array(
-			'accounting' => array_merge( self::defaults(), array(
-				'name' => __( 'Sales for the accountant', 'nashenski-commerce' ),
-				'source' => 'documents',
-				'columns' => $col( array( 'document_type', 'document_number', 'document_date', 'order_number', 'buyer', 'company_eik', 'company_vat', 'payment_method', 'total_without_vat', 'vat', 'total' ) ),
-			) ),
-			'products' => array_merge( self::defaults(), array(
-				'name' => __( 'Products sold', 'nashenski-commerce' ),
-				'source' => 'lines',
-				'statuses' => array( 'wc-processing', 'wc-completed' ),
-				'columns' => $col( array( 'order_number', 'date_created', 'item_name', 'item_sku', 'item_quantity', 'item_unit_price', 'item_total' ) ),
-			) ),
-			'shipments' => array_merge( self::defaults(), array(
-				'name' => __( 'Shipments', 'nashenski-commerce' ),
-				'source' => 'orders',
-				'statuses' => array( 'wc-processing', 'wc-completed' ),
-				'columns' => $col( array( 'order_number', 'date_created', 'shipping_full_name', 'shipping_phone', 'courier', 'delivery_type', 'shipping_city', 'shipping_address_1', 'waybill', 'payment_method', 'total' ) ),
-			) ),
+			'accounting' => array_merge(
+				self::defaults(),
+				array(
+					'name'    => __( 'Sales for the accountant', 'nashenski-commerce' ),
+					'source'  => 'documents',
+					'columns' => $col( array( 'document_type', 'document_number', 'document_date', 'order_number', 'buyer', 'company_eik', 'company_vat', 'payment_method', 'total_without_vat', 'vat', 'total' ) ),
+				)
+			),
+			'products'   => array_merge(
+				self::defaults(),
+				array(
+					'name'     => __( 'Products sold', 'nashenski-commerce' ),
+					'source'   => 'lines',
+					'statuses' => array( 'wc-processing', 'wc-completed' ),
+					'columns'  => $col( array( 'order_number', 'date_created', 'item_name', 'item_sku', 'item_quantity', 'item_unit_price', 'item_total' ) ),
+				)
+			),
+			'shipments'  => array_merge(
+				self::defaults(),
+				array(
+					'name'     => __( 'Shipments', 'nashenski-commerce' ),
+					'source'   => 'orders',
+					'statuses' => array( 'wc-processing', 'wc-completed' ),
+					'columns'  => $col( array( 'order_number', 'date_created', 'shipping_full_name', 'shipping_phone', 'courier', 'delivery_type', 'shipping_city', 'shipping_address_1', 'waybill', 'payment_method', 'total' ) ),
+				)
+			),
 		);
 	}
 
@@ -86,9 +101,9 @@ class Builder {
 	 * Keep only known keys and safe values.
 	 */
 	public static function normalize( $raw ) {
-		$raw = is_array( $raw ) ? $raw : array();
+		$raw    = is_array( $raw ) ? $raw : array();
 		$config = self::defaults();
-		$pick = function ( $key, $allowed ) use ( $raw, &$config ) {
+		$pick   = function ( $key, $allowed ) use ( $raw, &$config ) {
 			if ( isset( $raw[ $key ] ) && in_array( $raw[ $key ], $allowed, true ) ) {
 				$config[ $key ] = $raw[ $key ];
 			}
@@ -108,18 +123,18 @@ class Builder {
 			}
 		}
 
-		$statuses = array_keys( wc_get_order_statuses() );
-		$config['statuses'] = array_values( array_intersect( (array) ( $raw['statuses'] ?? array() ), $statuses ) );
-		$config['payments'] = array_values( array_filter( array_map( 'sanitize_key', (array) ( $raw['payments'] ?? array() ) ) ) );
-		$config['couriers'] = array_values( array_intersect( (array) ( $raw['couriers'] ?? array() ), array_merge( \Nashenski\Plugin::COURIERS, array( 'other' ) ) ) );
-		$config['doc_types'] = array_values( array_intersect( (array) ( $raw['doc_types'] ?? array() ), array_keys( Fields::document_types() ) ) );
+		$statuses               = array_keys( wc_get_order_statuses() );
+		$config['statuses']     = array_values( array_intersect( (array) ( $raw['statuses'] ?? array() ), $statuses ) );
+		$config['payments']     = array_values( array_filter( array_map( 'sanitize_key', (array) ( $raw['payments'] ?? array() ) ) ) );
+		$config['couriers']     = array_values( array_intersect( (array) ( $raw['couriers'] ?? array() ), array_merge( \Nashenski\Plugin::COURIERS, array( 'other' ) ) ) );
+		$config['doc_types']    = array_values( array_intersect( (array) ( $raw['doc_types'] ?? array() ), array_keys( Fields::document_types() ) ) );
 		$config['company_only'] = ! empty( $raw['company_only'] );
-		$config['header'] = ! isset( $raw['header'] ) || ! empty( $raw['header'] );
-		$config['date_format'] = preg_match( '/^[dDjlNSwzWFmMntLoYyaABgGhHisuveIOPTZcrU .\/:\-]{1,20}$/', (string) ( $raw['date_format'] ?? '' ) ) ? $raw['date_format'] : $config['date_format'];
-		$config['filename'] = preg_replace( '/[^a-zA-Z0-9_\-{}.]/', '-', (string) ( $raw['filename'] ?? $config['filename'] ) ) ?: $config['filename'];
+		$config['header']       = ! isset( $raw['header'] ) || ! empty( $raw['header'] );
+		$config['date_format']  = preg_match( '/^[dDjlNSwzWFmMntLoYyaABgGhHisuveIOPTZcrU .\/:\-]{1,20}$/', (string) ( $raw['date_format'] ?? '' ) ) ? $raw['date_format'] : $config['date_format'];
+		$config['filename']     = preg_replace( '/[^a-zA-Z0-9_\-{}.]/', '-', (string) ( $raw['filename'] ?? $config['filename'] ) ) ?: $config['filename'];
 
 		foreach ( array( 'xml_root', 'xml_row' ) as $key ) {
-			$name = preg_replace( '/[^a-zA-Z0-9_\-]/', '', (string) ( $raw[ $key ] ?? '' ) );
+			$name           = preg_replace( '/[^a-zA-Z0-9_\-]/', '', (string) ( $raw[ $key ] ?? '' ) );
 			$config[ $key ] = $name && ! preg_match( '/^[0-9\-]/', $name ) ? $name : $config[ $key ];
 		}
 
@@ -138,8 +153,11 @@ class Builder {
 				continue;
 			}
 
-			$label = sanitize_text_field( (string) ( $column['label'] ?? '' ) );
-			$config['columns'][] = array( 'field' => $field, 'label' => '' !== $label ? $label : $definition['label'] );
+			$label               = sanitize_text_field( (string) ( $column['label'] ?? '' ) );
+			$config['columns'][] = array(
+				'field' => $field,
+				'label' => '' !== $label ? $label : $definition['label'],
+			);
 		}
 
 		return $config;
@@ -150,20 +168,20 @@ class Builder {
 	 */
 	private static function query_ids( $config ) {
 		$from = strtotime( $config['from'] . ' 00:00:00 ' . wp_timezone_string() );
-		$to = strtotime( $config['to'] . ' 23:59:59 ' . wp_timezone_string() );
+		$to   = strtotime( $config['to'] . ' 23:59:59 ' . wp_timezone_string() );
 		$args = array(
-			'limit' => -1,
-			'return' => 'ids',
+			'limit'   => -1,
+			'return'  => 'ids',
 			'orderby' => 'date',
-			'order' => 'ASC',
-			'type' => 'documents' === $config['source'] ? array( 'shop_order', 'shop_order_refund' ) : 'shop_order',
+			'order'   => 'ASC',
+			'type'    => 'documents' === $config['source'] ? array( 'shop_order', 'shop_order_refund' ) : 'shop_order',
 		);
 
 		// Documents are filtered on their own date in rows(); a document is never dated before its order.
 		if ( 'documents' === $config['source'] ) {
 			$args['date_created'] = '<=' . $to;
 		} else {
-			$args['date_' . $config['date_field']] = $from . '...' . $to;
+			$args[ 'date_' . $config['date_field'] ] = $from . '...' . $to;
 		}
 
 		if ( $config['statuses'] && 'documents' !== $config['source'] ) {
@@ -207,10 +225,10 @@ class Builder {
 	 * @return array array( 'rows' => array, 'total' => int (rows before the limit, when known) )
 	 */
 	public static function rows( $config, $limit = 0 ) {
-		$rows = array();
+		$rows  = array();
 		$count = 0;
-		$from = strtotime( $config['from'] . ' 00:00:00 ' . wp_timezone_string() );
-		$to = strtotime( $config['to'] . ' 23:59:59 ' . wp_timezone_string() );
+		$from  = strtotime( $config['from'] . ' 00:00:00 ' . wp_timezone_string() );
+		$to    = strtotime( $config['to'] . ' 23:59:59 ' . wp_timezone_string() );
 
 		foreach ( self::query_ids( $config ) as $index => $id ) {
 			$object = wc_get_order( $id );
@@ -229,7 +247,12 @@ class Builder {
 
 			if ( 'lines' === $config['source'] ) {
 				foreach ( $order->get_items() as $item ) {
-					$records[] = array( 'order' => $order, 'object' => $order, 'item' => $item, 'doc' => null );
+					$records[] = array(
+						'order'  => $order,
+						'object' => $order,
+						'item'   => $item,
+						'doc'    => null,
+					);
 				}
 			} elseif ( 'documents' === $config['source'] ) {
 				foreach ( Fields::documents( $object ) as $doc ) {
@@ -240,15 +263,25 @@ class Builder {
 					}
 
 					if ( ! $config['doc_types'] || in_array( $doc[0], $config['doc_types'], true ) ) {
-						$records[] = array( 'order' => $order, 'object' => $object, 'item' => null, 'doc' => $doc );
+						$records[] = array(
+							'order'  => $order,
+							'object' => $object,
+							'item'   => null,
+							'doc'    => $doc,
+						);
 					}
 				}
 			} else {
-				$records[] = array( 'order' => $order, 'object' => $order, 'item' => null, 'doc' => null );
+				$records[] = array(
+					'order'  => $order,
+					'object' => $order,
+					'item'   => null,
+					'doc'    => null,
+				);
 			}
 
 			foreach ( $records as $record ) {
-				$count++;
+				++$count;
 
 				if ( $limit && count( $rows ) >= $limit ) {
 					continue;
@@ -268,7 +301,10 @@ class Builder {
 			}
 		}
 
-		return array( 'rows' => $rows, 'total' => $count );
+		return array(
+			'rows'  => $rows,
+			'total' => $count,
+		);
 	}
 
 	/**
@@ -298,14 +334,22 @@ class Builder {
 	}
 
 	public static function filename( $config ) {
-		$name = strtr( $config['filename'], array(
-			'{from}' => $config['from'],
-			'{to}' => $config['to'],
-			'{source}' => $config['source'],
-			'{today}' => wp_date( 'Y-m-d' ),
-		) );
-		$name = sanitize_file_name( $name ) ?: 'export';
-		$extension = array( 'csv' => 'csv', 'xlsx' => 'xlsx', 'json' => 'json', 'xml' => 'xml' );
+		$name      = strtr(
+			$config['filename'],
+			array(
+				'{from}'   => $config['from'],
+				'{to}'     => $config['to'],
+				'{source}' => $config['source'],
+				'{today}'  => wp_date( 'Y-m-d' ),
+			)
+		);
+		$name      = sanitize_file_name( $name ) ?: 'export';
+		$extension = array(
+			'csv'  => 'csv',
+			'xlsx' => 'xlsx',
+			'json' => 'json',
+			'xml'  => 'xml',
+		);
 
 		return preg_replace( '/\.(csv|xlsx|json|xml)$/i', '', $name ) . '.' . $extension[ $config['format'] ];
 	}

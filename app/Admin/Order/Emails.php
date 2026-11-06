@@ -18,7 +18,7 @@ class Emails {
 	}
 
 	public static function attach_invoice_to_mail( $attachments, $email_id, $order, $email ) {
-		if ( !is_object( $order ) || !is_a( $order, 'WC_Order' ) ) {
+		if ( ! is_object( $order ) || ! is_a( $order, 'WC_Order' ) ) {
 			return $attachments;
 		}
 
@@ -26,26 +26,26 @@ class Emails {
 
 		$order_documents_trigger = nashenski_get_option( 'invoice', 'trigger' );
 
-		if ( !$order_documents_trigger || $order_documents_trigger === 'order_created' ) {
+		if ( ! $order_documents_trigger || $order_documents_trigger === 'order_created' ) {
 			$email_ids = array( 'customer_processing_order', 'customer_on_hold_order', 'customer_processing_renewal_order' );
-		} else if ( $order_documents_trigger === 'order_completed' ) {
+		} elseif ( $order_documents_trigger === 'order_completed' ) {
 			$email_ids = array( 'customer_completed_order', 'customer_completed_renewal_order' );
 		}
 
 		$email_ids[] = 'customer_invoice';
 
-		if ( in_array ( $email_id, $email_ids ) ) {
+		if ( in_array( $email_id, $email_ids ) ) {
 			$order_doc_id = $order->get_meta( 'nashenski_order_document' );
-			$proform_id = $order->get_meta( 'nashenski_proform_document' );
-			$invoice_id = $order->get_meta( 'nashenski_invoice_document' );
+			$proform_id   = $order->get_meta( 'nashenski_proform_document' );
+			$invoice_id   = $order->get_meta( 'nashenski_invoice_document' );
 
 			if ( $order_doc_id ) {
 				$attachments[] = get_attached_file( $order_doc_id );
 			}
-			
+
 			if ( $email_id === 'customer_on_hold_order' && $proform_id ) {
 				$attachments[] = get_attached_file( $proform_id );
-			} else if ( $invoice_id ) {
+			} elseif ( $invoice_id ) {
 				$attachments[] = get_attached_file( $invoice_id );
 			}
 		}
@@ -54,16 +54,16 @@ class Emails {
 	}
 
 	public static function attach_refund_pdfs_to_mail( $attachments, $email_id, $order, $email ) {
-		if ( !is_object( $order ) || !is_a( $order, 'WC_Order' ) ) {
+		if ( ! is_object( $order ) || ! is_a( $order, 'WC_Order' ) ) {
 			return $attachments;
 		}
-		
+
 		$order = wc_get_order( $order->get_id() );
 
 		$email_ids = array( 'customer_refunded_order', 'customer_invoice' );
 
-		if ( in_array ( $email_id, $email_ids ) ) {
-			$ids = [ $order->get_id() ];
+		if ( in_array( $email_id, $email_ids ) ) {
+			$ids = array( $order->get_id() );
 
 			if ( $refunds = $order->get_refunds() ) {
 				foreach ( $refunds as $refund ) {
@@ -87,14 +87,14 @@ class Emails {
 	}
 
 	public static function attach_proform_to_mail( $attachments, $email_id, $order, $email ) {
-		if ( !is_object( $order ) || !is_a( $order, 'WC_Order' ) ) {
+		if ( ! is_object( $order ) || ! is_a( $order, 'WC_Order' ) ) {
 			return $attachments;
 		}
 
 		$email_ids = array( 'customer_on_hold_order' );
 
-		if ( in_array ( $email_id, $email_ids ) ) {
-			$order = wc_get_order( $order->get_id() );
+		if ( in_array( $email_id, $email_ids ) ) {
+			$order      = wc_get_order( $order->get_id() );
 			$proform_id = $order->get_meta( 'nashenski_proform_document' );
 
 			// attach_invoice_to_mail() may have added the same proforma already.

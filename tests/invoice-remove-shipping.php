@@ -3,21 +3,32 @@
 namespace {
 	define( 'ABSPATH', __DIR__ . '/fixtures/' );
 	$options = array();
-	function get_option( $name ) { return $GLOBALS['options'][ $name ] ?? ''; }
-	class WC_Order_Refund { public $parent; public function get_parent_id() { return 1; } }
+	function get_option( $name ) {
+		return $GLOBALS['options'][ $name ] ?? ''; }
+	class WC_Order_Refund {
+		public $parent;
+		public function get_parent_id() {
+			return 1; }
+	}
 	class FakeOrder {
 		public $payment, $methods;
-		public function __construct( $payment, $methods ) { $this->payment = $payment; $this->methods = $methods; }
-		public function get_payment_method() { return $this->payment; }
-		public function get_shipping_methods() { return $this->methods; }
+		public function __construct( $payment, $methods ) {
+			$this->payment = $payment;
+			$this->methods = $methods; }
+		public function get_payment_method() {
+			return $this->payment; }
+		public function get_shipping_methods() {
+			return $this->methods; }
 	}
-	function wc_get_order( $id ) { return $GLOBALS['parent']; }
+	function wc_get_order( $id ) {
+		return $GLOBALS['parent']; }
 	require __DIR__ . '/../app/functions.php';
 
 	$checks = 0;
 	function expect( $condition, $message ) {
-		$GLOBALS['checks']++;
-		if ( ! $condition ) { throw new RuntimeException( $message ); }
+		++$GLOBALS['checks'];
+		if ( ! $condition ) {
+			throw new RuntimeException( $message ); }
 	}
 	$econt = array( array( 'method_id' => 'nashenski_econt' ) );
 	$local = array( array( 'method_id' => 'local_pickup' ) );

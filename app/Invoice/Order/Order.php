@@ -16,7 +16,7 @@ class Order {
 		$this->set_remove_shipping();
 
 		if ( nashenski_get_option( 'invoice', 'total_text' ) === 'yes' ) {
-			add_action( 'nashenski/invoice/pdf/default_template/after_table', [ __CLASS__, 'print_total_in_words' ], 10, 2 );
+			add_action( 'nashenski/invoice/pdf/default_template/after_table', array( __CLASS__, 'print_total_in_words' ), 10, 2 );
 		}
 	}
 
@@ -25,11 +25,11 @@ class Order {
 	}
 
 	private function set_vat_and_taxes() {
-		$this->vat_group = nashenski_get_option( 'shop', 'vat_group' );
+		$this->vat_group       = nashenski_get_option( 'shop', 'vat_group' );
 		$this->vat_percentages = nashenski_get_vat_groups();
-		$this->_tax = new \WC_Tax();
+		$this->_tax            = new \WC_Tax();
 		// No VAT group chosen yet (Settings > Shop): same null as before, without the PHP warning.
-		$this->vat = $this->vat_percentages[ $this->vat_group ] ?? null;
+		$this->vat         = $this->vat_percentages[ $this->vat_group ] ?? null;
 		$this->order_taxes = $this->woo_order->get_taxes();
 	}
 
@@ -48,61 +48,66 @@ class Order {
 			$this->woo_order->calculate_totals( true );
 		}
 
-		$items = array();
-		$order_items = array_merge( $this->woo_order->get_items(), $this->woo_order->get_items('fee') );
+		$items       = array();
+		$order_items = array_merge( $this->woo_order->get_items(), $this->woo_order->get_items( 'fee' ) );
 
 		if ( empty( $order_items ) ) {
 			$parent_order = wc_get_order( $this->woo_order->get_parent_id() );
 
 			if ( $parent_order && abs( $parent_order->get_total() ) === abs( $this->woo_order->get_total() ) ) {
-				$this->woo_order = $parent_order;
-				$order_items = array_merge( $parent_order->get_items(), $parent_order->get_items('fee') );
+				$this->woo_order   = $parent_order;
+				$order_items       = array_merge( $parent_order->get_items(), $parent_order->get_items( 'fee' ) );
 				$this->order_taxes = $this->woo_order->get_taxes();
 			} else {
 				$items[] = array(
-					'name' => apply_filters( 'nashenski/invoice/order/item_name', $this->woo_order->get_reason(), null ),
-					'quantity' => 1, 
-					'vat_rate' => '', 
-					'price' => wc_price( abs( $this->woo_order->get_total() ), array( 'currency' => $this->woo_order->get_currency() ) ),
-					'total' => wc_price( abs( $this->woo_order->get_total() ), array( 'currency' => $this->woo_order->get_currency() ) )
+					'name'     => apply_filters( 'nashenski/invoice/order/item_name', $this->woo_order->get_reason(), null ),
+					'quantity' => 1,
+					'vat_rate' => '',
+					'price'    => wc_price( abs( $this->woo_order->get_total() ), array( 'currency' => $this->woo_order->get_currency() ) ),
+					'total'    => wc_price( abs( $this->woo_order->get_total() ), array( 'currency' => $this->woo_order->get_currency() ) ),
 				);
 			}
 		}
 
-		if ( !empty( $order_items ) ) {
+		if ( ! empty( $order_items ) ) {
 			foreach ( $order_items as $key => $item ) {
 				$qty = ( abs( $item->get_quantity() ) ) ? abs( $item->get_quantity() ) : 1;
 
 				$subtotal = ( method_exists( $item, 'get_subtotal' ) ) ? $item->get_subtotal() : $item->get_total();
-				
-				$items[] = apply_filters( 'nashenski/invoice/order/item', array(
-					'name' => apply_filters( 'nashenski/invoice/order/item_name', $item->get_name(), $item ),
-					'quantity' => $qty, 
-					'vat_rate' => nashenski_get_order_item_vat_rate( $item, $this->woo_order, 1 ) . "%", 
-					'price' => wc_price( abs( $subtotal / $qty ), array( 'currency' => $this->woo_order->get_currency() ) ),
-					'total' => wc_price( abs( $subtotal ), array( 'currency' => $this->woo_order->get_currency() ) )
-				), $item, $this );
+
+				$items[] = apply_filters(
+					'nashenski/invoice/order/item',
+					array(
+						'name'     => apply_filters( 'nashenski/invoice/order/item_name', $item->get_name(), $item ),
+						'quantity' => $qty,
+						'vat_rate' => nashenski_get_order_item_vat_rate( $item, $this->woo_order, 1 ) . '%',
+						'price'    => wc_price( abs( $subtotal / $qty ), array( 'currency' => $this->woo_order->get_currency() ) ),
+						'total'    => wc_price( abs( $subtotal ), array( 'currency' => $this->woo_order->get_currency() ) ),
+					),
+					$item,
+					$this
+				);
 			}
 		}
 
-		if ( sizeof( $this->woo_order->get_items( 'shipping' ) ) > 0 && $this->remove_shipping !== 'yes') {
+		if ( sizeof( $this->woo_order->get_items( 'shipping' ) ) > 0 && $this->remove_shipping !== 'yes' ) {
 			$shipping_vat = nashenski_get_order_shipping_vat( $this->woo_order );
 
 			foreach ( $this->woo_order->get_items( 'shipping' ) as $item ) {
-				if ( !$item->get_total() ) {
+				if ( ! $item->get_total() ) {
 					$item_price = 0;
 				} else {
 					$item_price = $item->get_total() / absint( $item->get_quantity() );
 				}
 
-				$item_vat = $this->vat;
-				$item_tax = $item->get_total_tax();
+				$item_vat        = $this->vat;
+				$item_tax        = $item->get_total_tax();
 				$item_tax_status = 'taxable';
 
 				if ( in_array( $item->get_method_id(), self::get_default_taxable_shipping_rates() ) ) {
-					if ( $instance = \WC_Shipping_Zones::get_shipping_method ( $item->get_instance_id() ) ) {
+					if ( $instance = \WC_Shipping_Zones::get_shipping_method( $item->get_instance_id() ) ) {
 						$item_tax_status = $instance->get_instance_option( 'tax_status' );
-						
+
 						if ( $item_tax_status === 'none' ) {
 							$item_vat = 0;
 						}
@@ -113,21 +118,35 @@ class Order {
 					if ( $item->get_total_tax() ) {
 						$item_vat = $shipping_vat;
 					} else {
-						$item_tax = $this->_tax::calc_tax(  $item_price, array( array('compound' => 'yes', 'rate' => $this->vat ) ), true )[0];
+						$item_tax   = $this->_tax::calc_tax(
+							$item_price,
+							array(
+								array(
+									'compound' => 'yes',
+									'rate'     => $this->vat,
+								),
+							),
+							true
+						)[0];
 						$item_price = $item_price - $item_tax;
 					}
 				}
 
 				$item_total = $item_price * $item->get_quantity();
 
-				$items[] = apply_filters( 'nashenski/invoice/order/item', array(
-					/* translators: %s: shipping method name */
-					'name' => apply_filters( 'nashenski/invoice/order/item_name', sprintf( __('Shipping: %s', 'nashenski-commerce'), $item->get_name() ), $item ),
-					'quantity' => abs( $item->get_quantity() ), 
-					'vat_rate' => nashenski_maybe_add_rate_group( $item_vat ) . "%", 
-					'price' => wc_price( abs( $item_price ), array( 'currency' => $this->woo_order->get_currency() ) ),
-					'total' => wc_price( abs( $item_total ), array( 'currency' => $this->woo_order->get_currency() ) )
-				), $item, $this );
+				$items[] = apply_filters(
+					'nashenski/invoice/order/item',
+					array(
+						/* translators: %s: shipping method name */
+						'name'     => apply_filters( 'nashenski/invoice/order/item_name', sprintf( __( 'Shipping: %s', 'nashenski-commerce' ), $item->get_name() ), $item ),
+						'quantity' => abs( $item->get_quantity() ),
+						'vat_rate' => nashenski_maybe_add_rate_group( $item_vat ) . '%',
+						'price'    => wc_price( abs( $item_price ), array( 'currency' => $this->woo_order->get_currency() ) ),
+						'total'    => wc_price( abs( $item_total ), array( 'currency' => $this->woo_order->get_currency() ) ),
+					),
+					$item,
+					$this
+				);
 			}
 		}
 
@@ -140,20 +159,20 @@ class Order {
 						$item->add_meta_data( $data['key'], $data['value'], true );
 					}
 				}
-				
+
 				$this->woo_order->add_item( $item );
 			}
 
-			$this->woo_order->calculate_totals( true);
+			$this->woo_order->calculate_totals( true );
 		}
 
 		return apply_filters( 'nashenski/invoice/order/items', $items, $this );
 	}
-	
+
 	public function get_total_items() {
 		$shipping_items = $this->woo_order->get_items( 'shipping' );
 		$shipping_total = $this->woo_order->get_shipping_total();
-		$subtotal = abs( $this->woo_order->get_subtotal() + $shipping_total + $this->woo_order->get_total_fees() );
+		$subtotal       = abs( $this->woo_order->get_subtotal() + $shipping_total + $this->woo_order->get_total_fees() );
 
 		if ( $this->woo_order instanceof \WC_Order_Refund ) {
 			// get_order_item_totals() fires a third-party filter that fatals on refunds, so build the only two rows used below, as WooCommerce does.
@@ -164,7 +183,7 @@ class Order {
 					'type'  => 'subtotal',
 					'label' => __( 'Subtotal:', 'woocommerce' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				);
-				$order_total_items['discount'] = array();
+				$order_total_items['discount']      = array();
 			}
 		} else {
 			$order_total_items = $this->woo_order->get_order_item_totals();
@@ -176,9 +195,9 @@ class Order {
 
 		foreach ( $shipping_items as $item ) {
 			if ( in_array( $item->get_method_id(), self::get_default_taxable_shipping_rates() ) ) {
-				if ( $instance = \WC_Shipping_Zones::get_shipping_method ( $item->get_instance_id() ) ) {
+				if ( $instance = \WC_Shipping_Zones::get_shipping_method( $item->get_instance_id() ) ) {
 					$item_tax_status = $instance->get_instance_option( 'tax_status' );
-					
+
 					if ( $item_tax_status === 'none' ) {
 						$shipping_total = 0;
 					}
@@ -191,46 +210,44 @@ class Order {
 				$this->woo_order->remove_item( $item_id );
 			}
 
-			$this->woo_order->calculate_totals( true);
+			$this->woo_order->calculate_totals( true );
 
 			$subtotal = abs( $this->woo_order->get_subtotal() + $this->woo_order->get_total_fees() );
 		}
 
-
 		if ( isset( $order_total_items['discount'] ) ) {
 			$discount_amount = $this->woo_order->get_total_discount();
 
-			$items['all'] = $order_total_items['cart_subtotal'];
-			$items['all']['value'] = wc_price(  $subtotal, array( 'currency' => $this->woo_order->get_currency() ) );
+			$items['all']          = $order_total_items['cart_subtotal'];
+			$items['all']['value'] = wc_price( $subtotal, array( 'currency' => $this->woo_order->get_currency() ) );
 
 			$items['discount'] = array(
-				'label' => __( "Discount", 'nashenski-commerce' ) . ":",
-				'value' => wc_price( $discount_amount , array( 'currency' => $this->woo_order->get_currency() ) ),
+				'label' => __( 'Discount', 'nashenski-commerce' ) . ':',
+				'value' => wc_price( $discount_amount, array( 'currency' => $this->woo_order->get_currency() ) ),
 			);
 			$items['subtotal'] = array(
-				'label' => __( "Total", 'nashenski-commerce' ) . ":",
-				'value' => wc_price(  $subtotal - $discount_amount, array( 'currency' => $this->woo_order->get_currency() ) ),
+				'label' => __( 'Total', 'nashenski-commerce' ) . ':',
+				'value' => wc_price( $subtotal - $discount_amount, array( 'currency' => $this->woo_order->get_currency() ) ),
 			);
 		} else {
 			$items['subtotal'] = array(
-				'label' => __( "Total", 'nashenski-commerce' ) . ":",
-				'value' => wc_price(  $subtotal, array( 'currency' => $this->woo_order->get_currency() ) ),
+				'label' => __( 'Total', 'nashenski-commerce' ) . ':',
+				'value' => wc_price( $subtotal, array( 'currency' => $this->woo_order->get_currency() ) ),
 			);
 		}
 
-
 		if ( wc_tax_enabled() ) {
 			foreach ( $this->woo_order->get_tax_totals() as $code => $tax_total ) {
-				$items['tax-' . sanitize_title_with_dashes( $code )] = array(
-					'label' => esc_html( $tax_total->label ) . ":",
+				$items[ 'tax-' . sanitize_title_with_dashes( $code ) ] = array(
+					'label' => esc_html( $tax_total->label ) . ':',
 					'value' => wc_price( wc_round_tax_total( abs( $tax_total->amount ) ), array( 'currency' => $this->woo_order->get_currency() ) ),
 				);
 			}
 		}
 
 		$items['total'] = array(
-			'label' => __( "Total due", 'nashenski-commerce' ) . ":",
-			'value' => wc_price( abs( $this->woo_order->get_total() ), array( 'currency' => $this->woo_order->get_currency() ) ),
+			'label'        => __( 'Total due', 'nashenski-commerce' ) . ':',
+			'value'        => wc_price( abs( $this->woo_order->get_total() ), array( 'currency' => $this->woo_order->get_currency() ) ),
 			'value_number' => abs( $this->woo_order->get_total() ),
 		);
 
@@ -247,7 +264,7 @@ class Order {
 				$this->woo_order->add_item( $item );
 			}
 
-			$this->woo_order->calculate_totals( true);
+			$this->woo_order->calculate_totals( true );
 		}
 
 		return apply_filters( 'nashenski/invoice/order/total_items', $items, $this );
@@ -255,7 +272,7 @@ class Order {
 
 	public static function print_total_in_words( $woo_order, $pdf ) {
 		$total_items = $pdf->document->order->get_total_items();
-		$words = CurrencyToString::amount_in_words( $total_items['total']['value_number'], $woo_order->get_currency() );
+		$words       = CurrencyToString::amount_in_words( $total_items['total']['value_number'], $woo_order->get_currency() );
 
 		if ( $words ) {
 			echo wp_kses_post( '<p class="fz-12"><strong>Словом</strong>: ' . esc_html( $words ) . '</p>' );

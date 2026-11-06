@@ -68,13 +68,17 @@ class Number_Allocator {
 
 	private static function advance( $name, $next ) {
 		global $wpdb;
-		$key = 'nashenski_settings_invoice_' . $name;
+		$key   = 'nashenski_settings_invoice_' . $name;
 		$value = str_pad( $next, 10, '0', STR_PAD_LEFT );
 		self::forget();
-		if ( false === $wpdb->query( $wpdb->prepare(
-			"INSERT INTO $wpdb->options (option_name, option_value, autoload) VALUES (%s, %s, 'no') ON DUPLICATE KEY UPDATE option_value = %s",
-			$key, $value, $value
-		) ) ) {
+		if ( false === $wpdb->query(
+			$wpdb->prepare(
+				"INSERT INTO $wpdb->options (option_name, option_value, autoload) VALUES (%s, %s, 'no') ON DUPLICATE KEY UPDATE option_value = %s",
+				$key,
+				$value,
+				$value
+			)
+		) ) {
 			throw new \RuntimeException( 'Could not reserve document number.' );
 		}
 		wp_cache_delete( $key, 'options' );
@@ -92,9 +96,9 @@ class Number_Allocator {
 	private static function saved( $order, $meta ) {
 		global $wpdb;
 		list( $table, $column, $id ) = self::storage();
-		$args = array( $id, $table, $column, $order->get_id(), $meta, $id );
-		$key  = self::key( 'saved', $args );
-		$rows = wp_cache_get( $key, self::CACHE_GROUP );
+		$args                        = array( $id, $table, $column, $order->get_id(), $meta, $id );
+		$key                         = self::key( 'saved', $args );
+		$rows                        = wp_cache_get( $key, self::CACHE_GROUP );
 		if ( ! is_array( $rows ) ) {
 			// Read the authoritative store, including when HPOS metadata caching is enabled.
 			$rows = $wpdb->get_results( $wpdb->prepare( 'SELECT %i AS meta_id, meta_value FROM %i WHERE %i = %d AND meta_key = %s ORDER BY %i', $id, $table, $column, $order->get_id(), $meta, $id ) );
@@ -106,8 +110,8 @@ class Number_Allocator {
 		if ( $rows ) {
 			return $rows[0];
 		}
-		$empty = new \stdClass();
-		$empty->meta_id = 0;
+		$empty             = new \stdClass();
+		$empty->meta_id    = 0;
 		$empty->meta_value = '';
 		return $empty;
 	}
@@ -140,10 +144,10 @@ class Number_Allocator {
 	private static function used( $number, $option, $except = 0 ) {
 		global $wpdb;
 		list( $table, $column ) = self::storage();
-		$keys = self::keys( $option );
-		$args = array_merge( array( $column, $table ), $keys, array( $number, $column, $except ) );
-		$key  = self::key( 'used', $args );
-		$hit  = wp_cache_get( $key, self::CACHE_GROUP );
+		$keys                   = self::keys( $option );
+		$args                   = array_merge( array( $column, $table ), $keys, array( $number, $column, $except ) );
+		$key                    = self::key( 'used', $args );
+		$hit                    = wp_cache_get( $key, self::CACHE_GROUP );
 		if ( is_array( $hit ) ) {
 			return $hit[0];
 		}
@@ -158,9 +162,9 @@ class Number_Allocator {
 	private static function highest( $keys ) {
 		global $wpdb;
 		list( $table ) = self::storage();
-		$args = array_merge( array( $table ), $keys );
-		$key  = self::key( 'highest', $args );
-		$hit  = wp_cache_get( $key, self::CACHE_GROUP );
+		$args          = array_merge( array( $table ), $keys );
+		$key           = self::key( 'highest', $args );
+		$hit           = wp_cache_get( $key, self::CACHE_GROUP );
 		if ( is_array( $hit ) ) {
 			return $hit[0];
 		}
@@ -196,74 +200,80 @@ class Number_Allocator {
 	}
 
 	public static function allocate( $order, $meta, $option, $replace = false ) {
-		return self::locked( function () use ( $order, $meta, $option, $replace ) {
-			if ( ! $order->get_id() || ! in_array( $option, array( 'next_invoice_number', 'next_invoice_separate_number' ), true ) || ! in_array( $meta, self::keys( $option ), true ) ) {
-				throw new \InvalidArgumentException( 'Invalid document numbering sequence.' );
+		return self::locked(
+			function () use ( $order, $meta, $option, $replace ) {
+				if ( ! $order->get_id() || ! in_array( $option, array( 'next_invoice_number', 'next_invoice_separate_number' ), true ) || ! in_array( $meta, self::keys( $option ), true ) ) {
+						throw new \InvalidArgumentException( 'Invalid document numbering sequence.' );
+				}
+				$row = self::saved( $order, $meta );
+				if ( $row->meta_value && ! $replace ) {
+					self::sync( $order, $meta, $row->meta_value, $row, true );
+					return $row->meta_value;
+				}
+				// Renewals replace an existing reference; unnumbered orders remain untouched.
+				if ( $replace && ! $row->meta_value ) {
+					return '';
+				}
+				// A number this order already owns (e.g. issued at checkout) stays; only another order's number is replaced.
+				if ( $replace && ! self::used( (int) $row->meta_value, $option, $order->get_id() ) ) {
+					self::sync( $order, $meta, $row->meta_value, $row, true );
+					return $row->meta_value;
+				}
+				$number = max( 1, (int) self::option( $option ) );
+				if ( self::used( $number, $option ) ) {
+					$number = max( $number, (int) self::highest( self::keys( $option ) ) + 1 );
+				}
+				if ( ! is_int( $number ) || $number >= PHP_INT_MAX ) {
+					throw new \RuntimeException( 'Document numbering sequence exhausted.' );
+				}
+				self::advance( $option, $number + 1 ); // Keep this reservation even if saving fails.
+				self::persist( $order, $meta, $number, $row );
+				return $number;
 			}
-			$row = self::saved( $order, $meta );
-			if ( $row->meta_value && ! $replace ) {
-				self::sync( $order, $meta, $row->meta_value, $row, true );
-				return $row->meta_value;
-			}
-			// Renewals replace an existing reference; unnumbered orders remain untouched.
-			if ( $replace && ! $row->meta_value ) {
-				return '';
-			}
-			// A number this order already owns (e.g. issued at checkout) stays; only another order's number is replaced.
-			if ( $replace && ! self::used( (int) $row->meta_value, $option, $order->get_id() ) ) {
-				self::sync( $order, $meta, $row->meta_value, $row, true );
-				return $row->meta_value;
-			}
-			$number = max( 1, (int) self::option( $option ) );
-			if ( self::used( $number, $option ) ) {
-				$number = max( $number, (int) self::highest( self::keys( $option ) ) + 1 );
-			}
-			if ( ! is_int( $number ) || $number >= PHP_INT_MAX ) {
-				throw new \RuntimeException( 'Document numbering sequence exhausted.' );
-			}
-			self::advance( $option, $number + 1 ); // Keep this reservation even if saving fails.
-			self::persist( $order, $meta, $number, $row );
-			return $number;
-		} );
+		);
 	}
 
 	/** $own_program: the number comes from the shop's own invoicing program, so the website sequence stays as it is. */
 	public static function manual( $order, $number, $own_program = false ) {
-		return self::locked( function () use ( $order, $number, $own_program ) {
-			$option = self::option( 'next_invoice_separate_number' ) ? 'next_invoice_separate_number' : 'next_invoice_number';
-			if ( self::used( (int) $number, $option, $order->get_id() ) ) {
-				/* translators: %s: invoice number */
-				return sprintf( __( 'Number %s is already used by another order. Choose another invoice number.', 'nashenski-commerce' ), str_pad( (int) $number, 10, '0', STR_PAD_LEFT ) );
+		return self::locked(
+			function () use ( $order, $number, $own_program ) {
+				$option = self::option( 'next_invoice_separate_number' ) ? 'next_invoice_separate_number' : 'next_invoice_number';
+				if ( self::used( (int) $number, $option, $order->get_id() ) ) {
+						/* translators: %s: invoice number */
+						return sprintf( __( 'Number %s is already used by another order. Choose another invoice number.', 'nashenski-commerce' ), str_pad( (int) $number, 10, '0', STR_PAD_LEFT ) );
+				}
+				if ( $own_program ) {
+					$order->update_meta_data( 'nashenski_invoice_own_program', 'yes' );
+				} elseif ( (int) $number >= (int) self::option( $option ) ) {
+					self::advance( $option, (int) $number + 1 );
+				}
+				self::persist( $order, 'nashenski_order_invoice_number', (int) $number, self::saved( $order, 'nashenski_order_invoice_number' ) );
+				return '';
 			}
-			if ( $own_program ) {
-				$order->update_meta_data( 'nashenski_invoice_own_program', 'yes' );
-			} elseif ( (int) $number >= (int) self::option( $option ) ) {
-				self::advance( $option, (int) $number + 1 );
-			}
-			self::persist( $order, 'nashenski_order_invoice_number', (int) $number, self::saved( $order, 'nashenski_order_invoice_number' ) );
-			return '';
-		} );
+		);
 	}
 
 	/** Keep historical references unchanged, but never import one over another order's number. */
 	public static function import_number( $order, $meta, $number, $option ) {
-		return self::locked( function () use ( $order, $meta, $number, $option ) {
-			$row = self::saved( $order, $meta );
-			if ( $row->meta_value ) {
-				self::sync( $order, $meta, $row->meta_value, $row, true );
-				return false;
+		return self::locked(
+			function () use ( $order, $meta, $number, $option ) {
+				$row = self::saved( $order, $meta );
+				if ( $row->meta_value ) {
+						self::sync( $order, $meta, $row->meta_value, $row, true );
+						return false;
+				}
+				// Shared numbering (empty separate counter) draws from the shared pool, so check every key it uses.
+				$check = ( 'next_invoice_separate_number' === $option && ! self::option( $option ) ) ? 'next_invoice_number' : $option;
+				if ( ! preg_match( '/^\d{1,10}$/', (string) $number ) || ! (int) $number || self::used( (int) $number, $check, $order->get_id() ) ) {
+					throw new \RuntimeException( 'Cannot import a conflicting or invalid document number. The historical reference was not changed.' );
+				}
+				// $check is the shared counter when the separate one is empty; advancing the empty one would switch the shop to separate numbering.
+				if ( (int) $number >= (int) self::option( $check ) ) {
+					self::advance( $check, (int) $number + 1 );
+				}
+				self::persist( $order, $meta, (int) $number, $row );
+				return true;
 			}
-			// Shared numbering (empty separate counter) draws from the shared pool, so check every key it uses.
-			$check = ( 'next_invoice_separate_number' === $option && ! self::option( $option ) ) ? 'next_invoice_number' : $option;
-			if ( ! preg_match( '/^\d{1,10}$/', (string) $number ) || ! (int) $number || self::used( (int) $number, $check, $order->get_id() ) ) {
-				throw new \RuntimeException( 'Cannot import a conflicting or invalid document number. The historical reference was not changed.' );
-			}
-			// $check is the shared counter when the separate one is empty; advancing the empty one would switch the shop to separate numbering.
-			if ( (int) $number >= (int) self::option( $check ) ) {
-				self::advance( $check, (int) $number + 1 );
-			}
-			self::persist( $order, $meta, (int) $number, $row );
-			return true;
-		} );
+		);
 	}
 }

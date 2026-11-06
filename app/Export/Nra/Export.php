@@ -10,62 +10,68 @@ class Export {
 
 	function __construct( $date, $generate_files ) {
 		$this->payment_methods = nashenski_get_payment_types_for_meta();
-		$this->generate_files = $generate_files;
-		$this->date = $date;
+		$this->generate_files  = $generate_files;
+		$this->date            = $date;
 		$this->load_woo_orders();
 	}
 
 	protected function load_woo_orders() {
 		$timespan = strtotime( 'first day of ' . $this->date . ' ' . wp_timezone_string() ) . '...' . strtotime( 'last day of ' . $this->date . ' 23:59:59 ' . wp_timezone_string() );
 
-		$order_args = array(
+		$order_args          = array(
 			'date_paid' => $timespan,
-			'status' => apply_filters( 'nashenski/admin/export/orders_statuses', array( 'wc-completed', 'wc-processing' ) ),
+			'status'    => apply_filters( 'nashenski/admin/export/orders_statuses', array( 'wc-completed', 'wc-processing' ) ),
 		);
 		$refunded_order_args = array(
 			'date_created' => $timespan,
-			'status' => apply_filters( 'nashenski/admin/export/refunded_orders_statuses', array( 'wc-completed', 'wc-refunded' ) ),
+			'status'       => apply_filters( 'nashenski/admin/export/refunded_orders_statuses', array( 'wc-completed', 'wc-refunded' ) ),
 		);
 
 		$this->completed_orders_ids = array();
-		$this->refunded_orders_ids = array();
+		$this->refunded_orders_ids  = array();
 
-		$this->walk_orders( $order_args, 'orders', function( $order ) {
-			if ( 
-				is_a( $order, 'Automattic\WooCommerce\Admin\Overrides\OrderRefund' ) || 
+		$this->walk_orders(
+			$order_args,
+			'orders',
+			function ( $order ) {
+				if ( is_a( $order, 'Automattic\WooCommerce\Admin\Overrides\OrderRefund' ) ||
 				is_a( $order, 'WC_Order_Refund' )
-			) {
-				return;
-			} elseif ( ! Documents::own_invoice( $order ) ) {
-				$this->completed_orders_ids[] = $order->get_id();
-			}
-		} );
-
-		$this->walk_orders( $refunded_order_args, 'refunded', function( $order ) {
-			if ( 
-				is_a( $order, 'Automattic\WooCommerce\Admin\Overrides\OrderRefund' ) || 
-				is_a( $order, 'WC_Order_Refund' )
-			) {
-				if ( $order->get_parent_id() ) {
-					$parent_order = wc_get_order( $order->get_parent_id() );
-				} else {
-					$parent_order = $order;
-				}
-
-				// Invoiced in the shop's own program: left out of the NRA audit file (setting Invoice numbering).
-				if ( ! $parent_order || Documents::own_invoice( $parent_order ) ) {
+				) {
 					return;
-				}
-
-				$this->refunded_orders_ids[] = $parent_order->get_id();
-
-				if ( $parent_order->get_date_paid() && wp_date( 'Y-m', $parent_order->get_date_paid()->getTimestamp() ) === $this->date  ) {
-					$this->completed_orders_ids[] = $parent_order->get_id();
+				} elseif ( ! Documents::own_invoice( $order ) ) {
+					$this->completed_orders_ids[] = $order->get_id();
 				}
 			}
-		} );
+		);
 
-		$this->refunded_orders_ids = array_reverse( array_unique( $this->refunded_orders_ids ) );
+		$this->walk_orders(
+			$refunded_order_args,
+			'refunded',
+			function ( $order ) {
+				if ( is_a( $order, 'Automattic\WooCommerce\Admin\Overrides\OrderRefund' ) ||
+				is_a( $order, 'WC_Order_Refund' )
+				) {
+					if ( $order->get_parent_id() ) {
+						$parent_order = wc_get_order( $order->get_parent_id() );
+					} else {
+						$parent_order = $order;
+					}
+
+					// Invoiced in the shop's own program: left out of the NRA audit file (setting Invoice numbering).
+					if ( ! $parent_order || Documents::own_invoice( $parent_order ) ) {
+						return;
+					}
+
+					$this->refunded_orders_ids[] = $parent_order->get_id();
+
+					if ( $parent_order->get_date_paid() && wp_date( 'Y-m', $parent_order->get_date_paid()->getTimestamp() ) === $this->date ) {
+						$this->completed_orders_ids[] = $parent_order->get_id();
+					}
+				}
+			}
+		);
+
+		$this->refunded_orders_ids  = array_reverse( array_unique( $this->refunded_orders_ids ) );
 		$this->completed_orders_ids = array_reverse( array_unique( $this->completed_orders_ids ) );
 	}
 
@@ -93,16 +99,21 @@ class Export {
 			return;
 		}
 
-		$page = 1;
+		$page  = 1;
 		$limit = (int) apply_filters( 'nashenski/admin/export/query_batch_size', 100, $this );
 		$limit = max( 1, $limit );
 
 		do {
-			$order_ids = wc_get_orders( array_merge( $args, array(
-				'limit'  => $limit,
-				'page'   => $page,
-				'return' => 'ids',
-			) ) );
+			$order_ids = wc_get_orders(
+				array_merge(
+					$args,
+					array(
+						'limit'  => $limit,
+						'page'   => $page,
+						'return' => 'ids',
+					)
+				)
+			);
 
 			foreach ( $order_ids as $order_id ) {
 				$order = wc_get_order( $order_id );
@@ -115,7 +126,7 @@ class Export {
 			}
 
 			$this->flush_runtime_cache();
-			$page++;
+			++$page;
 		} while ( count( $order_ids ) === $limit );
 	}
 
@@ -124,13 +135,13 @@ class Export {
 	}
 
 	protected function get_shop_data() {
-		return [
-			'eik' => nashenski_get_option( 'nap', 'eik' ) ?: '',
+		return array(
+			'eik'        => nashenski_get_option( 'nap', 'eik' ) ?: '',
 			'nap_number' => nashenski_get_option( 'nap', 'nap_number' ) ?: '',
-			'domain' => nashenski_get_option( 'nap', 'domain' ) ?: '',
-			'year' => gmdate('Y', strtotime( $this->date ) ), 
-			'month' => gmdate('m', strtotime( $this->date ) )
-		];
+			'domain'     => nashenski_get_option( 'nap', 'domain' ) ?: '',
+			'year'       => gmdate( 'Y', strtotime( $this->date ) ),
+			'month'      => gmdate( 'm', strtotime( $this->date ) ),
+		);
 	}
 
 	public function get_xml_file() {
@@ -138,12 +149,12 @@ class Export {
 			return;
 		}
 
-		$args = [
+		$args = array(
 			'tax_rounding_mode' => wc_get_tax_rounding_mode(),
-			'shop' => $this->get_shop_data(),
-			'orders' => [],
-			'refunded_orders' => [],
-		];
+			'shop'              => $this->get_shop_data(),
+			'orders'            => array(),
+			'refunded_orders'   => array(),
+		);
 
 		foreach ( $this->completed_orders_ids as $index => $order_id ) {
 			$woo_order = wc_get_order( $order_id );
@@ -168,7 +179,7 @@ class Export {
 				$this->maybe_flush_runtime_cache( $index );
 				continue;
 			}
-			
+
 			$args['orders'][] = $order_data;
 
 			unset( $order, $woo_order, $order_data );
@@ -178,7 +189,7 @@ class Export {
 
 		foreach ( $this->refunded_orders_ids as $index => $order_id ) {
 			$order = wc_get_order( $order_id );
-			
+
 			if ( $order && method_exists( $order, 'get_refunds' ) ) {
 				$refunded_order = new RefundedOrder( $order, $this->date );
 
@@ -200,24 +211,24 @@ class Export {
 	}
 
 	protected function upload_xml( $args ) {
-		$data = self::generate_xml_file( $args );
+		$data   = self::generate_xml_file( $args );
 		$errors = '';
 		$totals = '';
 
-		if ( !empty( $data['content'] ) ) {
+		if ( ! empty( $data['content'] ) ) {
 			$attach_id = \Nashenski\Document_Storage::save( uniqid( wp_rand(), true ), 'xml', $data['content'] );
 
 			if ( ! $attach_id ) {
 				return;
 			}
 
-			if( !empty( $data['totals'] ) ) {
-				$totals  = sprintf( 
+			if ( ! empty( $data['totals'] ) ) {
+				$totals = sprintf(
 					/* translators: 1: total, 2: VAT, 3: refunded total */
-					__( 'Total: %1$s | Total vat: %2$s | Returned Total: %3$s', 'nashenski-commerce' ), 
-					wc_price( $data['totals']['orders_total'] ), 
+					__( 'Total: %1$s | Total vat: %2$s | Returned Total: %3$s', 'nashenski-commerce' ),
+					wc_price( $data['totals']['orders_total'] ),
 					wc_price( $data['totals']['orders_total_vat'] ),
-					wc_price( $data['totals']['returned_orders_total'] ) 
+					wc_price( $data['totals']['returned_orders_total'] )
 				);
 			}
 
@@ -227,21 +238,21 @@ class Export {
 		}
 
 		return array(
-			'file' => ( isset($attach_id) ) ? \Nashenski\Document_Storage::export_url( $attach_id ) : '',
-			'attachment_id' => isset( $attach_id ) ? $attach_id : 0,
+			'file'                => ( isset( $attach_id ) ) ? \Nashenski\Document_Storage::export_url( $attach_id ) : '',
+			'attachment_id'       => isset( $attach_id ) ? $attach_id : 0,
 			'not_included_orders' => $this->not_included_orders,
-			'totals' => $totals,
-			'errors' => $errors,
+			'totals'              => $totals,
+			'errors'              => $errors,
 		);
 	}
 
 	protected function get_file_errors( $attach_id ) {
-		if ( !empty( $this->completed_orders_ids ) || !empty( $this->refunded_orders_ids ) ) {
-			libxml_use_internal_errors(true);
+		if ( ! empty( $this->completed_orders_ids ) || ! empty( $this->refunded_orders_ids ) ) {
+			libxml_use_internal_errors( true );
 			$doc = new \DOMDocument();
 			$doc->load( get_attached_file( $attach_id ) );
 
-			if ( !$doc->schemaValidate( __DIR__ . '/dex_audit.xsd' ) ) {
+			if ( ! $doc->schemaValidate( __DIR__ . '/dex_audit.xsd' ) ) {
 				return wp_list_pluck( libxml_get_errors(), 'message' );
 			}
 		}
@@ -250,7 +261,7 @@ class Export {
 	protected function generate_xml_file( $args ) {
 		// Built on the site, no order limit.
 		if ( ! class_exists( '\XMLWriter' ) ) {
-			return [ 'error' => __( 'The PHP XMLWriter extension is required to create the NRA XML file.', 'nashenski-commerce' ) ];
+			return array( 'error' => __( 'The PHP XMLWriter extension is required to create the NRA XML file.', 'nashenski-commerce' ) );
 		}
 
 		return XmlBuilder::build( $args );

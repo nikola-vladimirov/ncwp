@@ -1,5 +1,6 @@
 <?php
 namespace Nashenski\Client\Pigeon;
+
 use Nashenski\Container\Client;
 use Nashenski\Transliteration;
 use Nashenski\File;
@@ -9,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 class Cities {
 	const CITIES_ENDPOINT = '/cities';
 
-	private $cities = [];
+	private $cities = array();
 	private $container;
 
 	public function __construct( $container ) {
@@ -22,11 +23,11 @@ class Cities {
 		}
 
 		$cities_file = $this->container[ Client::PIGEON ]::CACHE_FOLDER . 'cities-' . $country_code . '.json';
-		$cities = File::get_file( $cities_file );
+		$cities      = File::get_file( $cities_file );
 
-		if ( !$cities ) {
-			$all_cities = [];
-			$complete = false;
+		if ( ! $cities ) {
+			$all_cities = array();
+			$complete   = false;
 
 			// Cap the pages; cache only when every page answered.
 			for ( $page = 1; $page <= 200; $page++ ) {
@@ -44,9 +45,9 @@ class Cities {
 				}
 			}
 
-			if ( !empty( $all_cities ) ) {
-				$cities = wp_json_encode( [ 'cities' => $all_cities ] );
-				
+			if ( ! empty( $all_cities ) ) {
+				$cities = wp_json_encode( array( 'cities' => $all_cities ) );
+
 				if ( $complete ) {
 					File::put_to_file( $cities_file, $cities );
 				}
@@ -62,27 +63,33 @@ class Cities {
 	}
 
 	function get_page( $page = 1 ) {
-		return $this->container[ Client::PIGEON ]->api_call( self::CITIES_ENDPOINT, [
-			'page' => $page,
-		] );
+		return $this->container[ Client::PIGEON ]->api_call(
+			self::CITIES_ENDPOINT,
+			array(
+				'page' => $page,
+			)
+		);
 	}
 
 	public function find_city( $query ) {
 		$city_search = null;
 
-		$query = mb_substr( (string) $query, 0, 64 );
-		$hash = md5( $query );
-		$city_file = $this->container[ Client::PIGEON ]::CACHE_FOLDER . 'city-search-' . $hash . '.json';
+		$query       = mb_substr( (string) $query, 0, 64 );
+		$hash        = md5( $query );
+		$city_file   = $this->container[ Client::PIGEON ]::CACHE_FOLDER . 'city-search-' . $hash . '.json';
 		$city_search = File::get_file( $city_file );
 
 		$miss_key = 'nashenski_miss_' . md5( $city_file );
 
 		// An empty answer is remembered for 5 minutes, so the same lookup does not call the courier again.
-		if ( !$city_search && !get_transient( $miss_key ) ) {
-			$request = $this->container[ Client::PIGEON ]->api_call( self::CITIES_ENDPOINT, [
-				'page' => 1,
-				'name' => $query,
-			] );
+		if ( ! $city_search && ! get_transient( $miss_key ) ) {
+			$request = $this->container[ Client::PIGEON ]->api_call(
+				self::CITIES_ENDPOINT,
+				array(
+					'page' => 1,
+					'name' => $query,
+				)
+			);
 
 			if ( ! empty( $request['success'] ) && ! empty( $request['data'] ) && is_array( $request['data'] ) ) {
 				$city_search = wp_json_encode( $request['data'] );
@@ -92,36 +99,39 @@ class Cities {
 				set_transient( $miss_key, 1, 5 * MINUTE_IN_SECONDS );
 			}
 		}
-		
+
 		$city_search = json_decode( $city_search, 1 );
 
 		return $city_search;
 	}
 
 	public function get_formatted_cities( $country_code = 'BG' ) {
-		$cities = $this->get_cities( $country_code );
-		$formatted = [];
+		$cities    = $this->get_cities( $country_code );
+		$formatted = array();
 
 		if ( is_array( $cities ) && isset( $cities['cities'] ) && is_array( $cities['cities'] ) ) {
 			foreach ( $cities['cities'] as $city ) {
-				$label = $city['name'] ?? '';
+				$label    = $city['name'] ?? '';
 				$district = $city['district'] ?? '';
-	
+
 				if ( $district && $district !== $label ) {
-					$label = $district . " - " . $label;
+					$label = $district . ' - ' . $label;
 				}
-	
+
 				if ( ! empty( $city['name'] ) && $district ) {
 					$formatted[ 'cityID-' . $city['id'] ] = array(
-						'id' => 'cityID-' . $city['id'],
+						'id'    => 'cityID-' . $city['id'],
 						'label' => $label,
 					);
 				}
 			}
-	
-			uasort( $formatted, function( $a, $b ) {
-				return strcmp( $a["label"], $b["label"] );
-			} );
+
+			uasort(
+				$formatted,
+				function ( $a, $b ) {
+					return strcmp( $a['label'], $b['label'] );
+				}
+			);
 		}
 
 		unset( $this->cities[ $country_code ], $cities );
@@ -129,7 +139,7 @@ class Cities {
 		return $formatted;
 	}
 
-	//Getters
+	// Getters
 	public function get_cities( $country_code = 'BG' ) {
 		if ( empty( $this->cities[ $country_code ] ) ) {
 			$this->load_cities( $country_code );
@@ -150,36 +160,36 @@ class Cities {
 
 	public function get_filtered_cities( $query, $state ) {
 		if ( empty( $state ) ) {
-			return [
-				'city' => '',
-				'cities' => [],
-				'cities_only_names' => [],
-				'cities_search_names' => [],
-				'cities_only_names_dropdowns' => [],
-				'city_key' => false,
-			];
+			return array(
+				'city'                        => '',
+				'cities'                      => array(),
+				'cities_only_names'           => array(),
+				'cities_search_names'         => array(),
+				'cities_only_names_dropdowns' => array(),
+				'city_key'                    => false,
+			);
 		}
 
 		$city = $this->normalize_city_name( $query );
 		// The state can be a code (BG-22) or a region name ("София (столица)"); the list uses names as districts.
 		$state_name = $this->get_state_name( $this->region_code( $state ) );
-		$cities = $this->find_city( $city );
+		$cities     = $this->find_city( $city );
 
-		$cities_only_names = [];
-		$cities_search_names = [];
-		$cities_only_names_dropdowns = [];
-		
-		if ( !empty( $cities ) ) {
+		$cities_only_names           = array();
+		$cities_search_names         = array();
+		$cities_only_names_dropdowns = array();
+
+		if ( ! empty( $cities ) ) {
 			foreach ( $cities as $temp_city ) {
 				// A state we cannot place takes every district; the exact match is then only used when it is unique.
 				if ( $state_name && $this->normalize_text( $temp_city['district'] ) !== $this->normalize_text( $state_name ) ) {
 					continue;
 				}
-				
-				$cities_only_names_dropdowns[] = $temp_city[ 'name' ];
-				$temp_city[ 'name' ] = $this->normalize_city_name( $temp_city[ 'name' ] );
-				$cities_only_names[] = $temp_city[ 'name' ];
-				$cities_search_names[] = $temp_city;
+
+				$cities_only_names_dropdowns[] = $temp_city['name'];
+				$temp_city['name']             = $this->normalize_city_name( $temp_city['name'] );
+				$cities_only_names[]           = $temp_city['name'];
+				$cities_search_names[]         = $temp_city;
 			}
 		}
 
@@ -189,14 +199,14 @@ class Cities {
 			$city_key = false;
 		}
 
-		return [
-			'city' => $city,
-			'cities' => $cities,
-			'cities_only_names' => $cities_only_names,
-			'cities_search_names' => $cities_search_names,
+		return array(
+			'city'                        => $city,
+			'cities'                      => $cities,
+			'cities_only_names'           => $cities_only_names,
+			'cities_search_names'         => $cities_search_names,
 			'cities_only_names_dropdowns' => $cities_only_names_dropdowns,
-			'city_key' => $city_key,
-		];
+			'city_key'                    => $city_key,
+		);
 	}
 
 	/**
@@ -232,8 +242,8 @@ class Cities {
 	}
 
 	public function get_regions( $country_code = 'BG' ) {
-		$states = [ 
-			'BG' => [
+		$states = array(
+			'BG' => array(
 				'BG-01' => 'Благоевград',
 				'BG-02' => 'Бургас',
 				'BG-03' => 'Варна',
@@ -262,13 +272,13 @@ class Cities {
 				'BG-26' => 'Хасково',
 				'BG-27' => 'Шумен',
 				'BG-28' => 'Ямбол',
-			] 
-		];
+			),
+		);
 
 		return $states[ $country_code ];
 	}
-	
-	//Setters
+
+	// Setters
 	private function set_cities( $cities, $country_code = 'BG' ) {
 		$this->cities[ $country_code ] = $cities;
 	}

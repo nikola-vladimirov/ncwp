@@ -4,18 +4,18 @@ namespace Nashenski\Client;
 defined( 'ABSPATH' ) || exit;
 
 class Connectix {
-	const LIVE_URL = 'https://api.connectix.bg/';
-    const SANDBOX_URL = 'https://api-sandbox.connectix.bg/';
-    const INTEGRATION_ENDPOINT = "integration/register";
-    const CHECK_ENDPOINT = 'shopper/check';
-	const TRACKING_ENDPOINT = 'trackings';
+	const LIVE_URL             = 'https://api.connectix.bg/';
+	const SANDBOX_URL          = 'https://api-sandbox.connectix.bg/';
+	const INTEGRATION_ENDPOINT = 'integration/register';
+	const CHECK_ENDPOINT       = 'shopper/check';
+	const TRACKING_ENDPOINT    = 'trackings';
 
-    private $env = '';
-    private $token = '';
-    private $integration_token = '';
-    private $base_endpoint;
+	private $env               = '';
+	private $token             = '';
+	private $integration_token = '';
+	private $base_endpoint;
 
-	public function __construct() {	
+	public function __construct() {
 		$this->set_env( nashenski_get_option( 'connectix', 'env' ) );
 		$this->load_token();
 		$this->load_base_endpoint();
@@ -23,43 +23,52 @@ class Connectix {
 
 	public function api_call( $endpoint, $args ) {
 		if ( empty( $this->get_token() ) ) {
-	        return;
-	    }
-	    
-		$request = wp_remote_post( $this->get_base_endpoint() . $endpoint, array(
-			'headers' => array(
-				'Content-Type' => 'application/json',
-				'Authorization' => $this->get_token(),
-			),
-			'body' => wp_json_encode( $args ),
-			'timeout' => 15,
-		) );
+			return;
+		}
+
+		$request = wp_remote_post(
+			$this->get_base_endpoint() . $endpoint,
+			array(
+				'headers' => array(
+					'Content-Type'  => 'application/json',
+					'Authorization' => $this->get_token(),
+				),
+				'body'    => wp_json_encode( $args ),
+				'timeout' => 15,
+			)
+		);
 
 		if ( is_wp_error( $request ) ) {
-			return array( 'success' => false, 'error' => $request->get_error_message() );
+			return array(
+				'success' => false,
+				'error'   => $request->get_error_message(),
+			);
 		}
 
 		return json_decode( wp_remote_retrieve_body( $request ), 1 );
 	}
 
-    public function validate_access() {
-        $has_access = false;
+	public function validate_access() {
+		$has_access = false;
 
-		$response = $this->api_call( self::INTEGRATION_ENDPOINT, [
-            "type" => "ecommerce",
-            "platform" => "Nashenski Commerce",
-            "secret" => $this->get_secret(),
-        ] );
+		$response = $this->api_call(
+			self::INTEGRATION_ENDPOINT,
+			array(
+				'type'     => 'ecommerce',
+				'platform' => 'Nashenski Commerce',
+				'secret'   => $this->get_secret(),
+			)
+		);
 
-        if ( !empty( $response ) && !empty( $response['token'] ) ) {
-            $this->set_integration_token( $response['token'] );
-            $has_access = true;
-        }
+		if ( ! empty( $response ) && ! empty( $response['token'] ) ) {
+			$this->set_integration_token( $response['token'] );
+			$has_access = true;
+		}
 
-        return $has_access;
+		return $has_access;
 	}
 
-	//Loaders
+	// Loaders
 	public function load_token() {
 		$this->set_token( nashenski_get_option( 'connectix', 'token' ) );
 	}
@@ -74,18 +83,18 @@ class Connectix {
 		$this->set_base_endpoint( $base_endpoint );
 	}
 
-	//Getters
+	// Getters
 	public function get_token() {
 		return $this->token;
 	}
 
-    public function get_integration_token() {
-        if ( !$this->integration_token ) {
-            $this->validate_access();
-        }
+	public function get_integration_token() {
+		if ( ! $this->integration_token ) {
+			$this->validate_access();
+		}
 
-        return $this->integration_token;
-    }
+		return $this->integration_token;
+	}
 
 	public function get_env() {
 		return $this->env;
@@ -95,48 +104,48 @@ class Connectix {
 		return $this->base_endpoint;
 	}
 
-    public function get_secret() {
-        $secret = nashenski_get_option( 'connectix', 'secret' );
-        
-        if ( !$secret ) {
-            $secret = wp_generate_password( 32, false );
-            nashenski_set_option( 'connectix', 'secret', $secret );
-        }
+	public function get_secret() {
+		$secret = nashenski_get_option( 'connectix', 'secret' );
 
-        return $secret;
-    }
+		if ( ! $secret ) {
+			$secret = wp_generate_password( 32, false );
+			nashenski_set_option( 'connectix', 'secret', $secret );
+		}
 
-	public static function get_levels_of_probability() {
-		return [
-			[ 
-				'key' => 'no_info',
-				'label' => __('No Info', 'nashenski-commerce'),
-			],
-			[ 
-				'key' => 'low',
-				'label' => __('Low', 'nashenski-commerce'),
-			],
-			[ 
-				'key' => 'medium',
-				'label' => __('Medium', 'nashenski-commerce'),
-			],
-			[ 
-				'key' => 'high',
-				'label' => __('High', 'nashenski-commerce'),
-			],
-			[ 
-				'key' => 'ultra_high',
-				'label' => __('Ultra high', 'nashenski-commerce'),
-			],
-		];
+		return $secret;
 	}
 
-	//Setters
+	public static function get_levels_of_probability() {
+		return array(
+			array(
+				'key'   => 'no_info',
+				'label' => __( 'No Info', 'nashenski-commerce' ),
+			),
+			array(
+				'key'   => 'low',
+				'label' => __( 'Low', 'nashenski-commerce' ),
+			),
+			array(
+				'key'   => 'medium',
+				'label' => __( 'Medium', 'nashenski-commerce' ),
+			),
+			array(
+				'key'   => 'high',
+				'label' => __( 'High', 'nashenski-commerce' ),
+			),
+			array(
+				'key'   => 'ultra_high',
+				'label' => __( 'Ultra high', 'nashenski-commerce' ),
+			),
+		);
+	}
+
+	// Setters
 	private function set_token( $token ) {
 		$this->token = $token;
 	}
 
-    private function set_integration_token( $token ) {
+	private function set_integration_token( $token ) {
 		$this->integration_token = $token;
 	}
 

@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 
 class Admin_Menus {
 	public function __construct() {
-		add_action( 'wp_loaded', array(  __CLASS__, 'after_setup_theme' ) );
+		add_action( 'wp_loaded', array( __CLASS__, 'after_setup_theme' ) );
 		add_filter( 'woocommerce_get_settings_pages', array( __CLASS__, 'add_settings_page' ) );
 		// WordPress refuses unknown admin pages before admin_init, so redirect just before that.
 		add_action( 'admin_page_access_denied', array( __CLASS__, 'redirect_old_page' ) );
@@ -59,7 +59,7 @@ class Admin_Menus {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$section = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
-		$args = array();
+		$args    = array();
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! empty( $_GET['nashenski_imported'] ) ) {
@@ -68,18 +68,18 @@ class Admin_Menus {
 
 		// Old tab slugs -> new sections.
 		$map = array(
-			'settings' => '',
-			'shipping' => 'checkout',
-			'fields' => 'checkout',
-			'export' => 'exports',
-			'connectix' => 'checks',
-			'nepostop' => 'checks',
+			'settings'   => '',
+			'shipping'   => 'checkout',
+			'fields'     => 'checkout',
+			'export'     => 'exports',
+			'connectix'  => 'checks',
+			'nepostop'   => 'checks',
 			'nekorekten' => 'checks',
 		);
 
 		if ( in_array( $section, \Nashenski\Plugin::COURIERS, true ) ) {
 			$args['courier'] = $section;
-			$section = 'couriers';
+			$section         = 'couriers';
 		} elseif ( isset( $map[ $section ] ) ) {
 			$section = $map[ $section ];
 		}
@@ -167,7 +167,7 @@ class Admin_Menus {
 	}
 
 	public static function render_fragment( $fragment, $atts = array() ) {
-		$fragment_dir = __DIR__ . DIRECTORY_SEPARATOR ."fragments" . DIRECTORY_SEPARATOR . $fragment . ".php";
+		$fragment_dir = __DIR__ . DIRECTORY_SEPARATOR . 'fragments' . DIRECTORY_SEPARATOR . $fragment . '.php';
 
 		if ( ! is_readable( $fragment_dir ) ) {
 			return;
@@ -175,12 +175,12 @@ class Admin_Menus {
 
 		extract( $atts );
 
-		include( $fragment_dir );
+		include $fragment_dir;
 	}
 
 	public static function allow_upload_xml( $mimes ) {
-	    $mimes = array_merge( $mimes, array( 'xml' => 'application/xml' ) );
+		$mimes = array_merge( $mimes, array( 'xml' => 'application/xml' ) );
 
-	    return $mimes;
+		return $mimes;
 	}
 }

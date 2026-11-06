@@ -11,8 +11,8 @@ class Courier_Logos {
 	 * Logo URL per courier slug (the part after "nashenski_" in the shipping method ID).
 	 */
 	public static function get_logos() {
-		$dir = nashenski()->plugin_dir_path() . 'assets/images/couriers/';
-		$url = nashenski()->plugin_dir_url() . 'assets/images/couriers/';
+		$dir   = nashenski()->plugin_dir_path() . 'assets/images/couriers/';
+		$url   = nashenski()->plugin_dir_url() . 'assets/images/couriers/';
 		$logos = array();
 
 		foreach ( \Nashenski\Plugin::COURIERS as $courier ) {

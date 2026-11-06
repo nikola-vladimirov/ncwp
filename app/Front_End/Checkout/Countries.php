@@ -65,7 +65,7 @@ class Countries {
 
 	public static function hide_country_field( $fields ) {
 		if ( isset( $fields['country'] ) ) {
-			$fields['country']['class'] = array_merge( (array) ( $fields['country']['class'] ?? array() ), array( 'nashenski-hidden-field' ) );
+			$fields['country']['class']   = array_merge( (array) ( $fields['country']['class'] ?? array() ), array( 'nashenski-hidden-field' ) );
 			$fields['country']['default'] = 'BG';
 		}
 
@@ -76,8 +76,14 @@ class Countries {
 	 * The block checkout reads "hidden" from the country locale.
 	 */
 	public static function hide_country_locale( $locales ) {
-		$locales['BG'] = isset( $locales['BG'] ) && is_array( $locales['BG'] ) ? $locales['BG'] : array();
-		$locales['BG']['country'] = array_merge( (array) ( $locales['BG']['country'] ?? array() ), array( 'hidden' => true, 'required' => false ) );
+		$locales['BG']            = isset( $locales['BG'] ) && is_array( $locales['BG'] ) ? $locales['BG'] : array();
+		$locales['BG']['country'] = array_merge(
+			(array) ( $locales['BG']['country'] ?? array() ),
+			array(
+				'hidden'   => true,
+				'required' => false,
+			)
+		);
 
 		return $locales;
 	}

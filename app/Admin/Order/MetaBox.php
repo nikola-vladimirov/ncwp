@@ -22,21 +22,21 @@ class MetaBox {
 	public static function pdf_actions_meta_box( $post ) {
 		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
 			$order = $post;
-			$ids = [ $order->get_id() ];
+			$ids   = array( $order->get_id() );
 		} else {
-			$ids = [ $post->ID ];
+			$ids   = array( $post->ID );
 			$order = wc_get_order( $post->ID );
 		}
 
 		$files = Documents::get_order_documents( $order );
 		?>
 		<ul class="wpo_wcpdf-actions">
-			<?php foreach ( $files as $file ): ?>
+			<?php foreach ( $files as $file ) : ?>
 				<li>
-					<a target="_blank" href="<?php echo esc_url( $file[ 'file_url' ] ); ?>" class="button">
+					<a target="_blank" href="<?php echo esc_url( $file['file_url'] ); ?>" class="button">
 						<div class="wp-menu-image dashicons-before dashicons-pdf"></div>
 						
-						<?php echo esc_html( $file['name'] ) ?>
+						<?php echo esc_html( $file['name'] ); ?>
 					</a>
 					<?php if ( $file['file_url_en'] ) : ?>
 						<a target="_blank" href="<?php echo esc_url( $file['file_url_en'] ); ?>" class="button" lang="en"><?php esc_html_e( 'EN', 'nashenski-commerce' ); ?></a>

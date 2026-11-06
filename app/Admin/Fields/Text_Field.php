@@ -16,12 +16,12 @@ class Text_Field extends Base_Field {
 		$this->set_validation_rules( $validation_rules );
 	}
 
-	//Getters
+	// Getters
 	public function get_subtype() {
 		return $this->subtype;
 	}
 
-	//Setters
+	// Setters
 	public function set_subtype( $subtype ) {
 		return $this->subtype = sanitize_title_with_dashes( $subtype );
 	}
