@@ -119,6 +119,17 @@ namespace {
 		public function put_contents( $f, $d, $m = null ) {
 			return false !== file_put_contents( $f, $d ); }
 		/**
+		 * Moves a file.
+		 *
+		 * @param string $a From.
+		 * @param string $b To.
+		 * @param bool   $o Overwrite.
+		 *
+		 * @return bool
+		 */
+		public function move( $a, $b, $o = false ) {
+			return ( $o || ! file_exists( $b ) ) && rename( $a, $b ); }
+		/**
 		 * Reads a file.
 		 *
 		 * @param string $f File.

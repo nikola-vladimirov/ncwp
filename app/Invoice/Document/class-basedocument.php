@@ -698,8 +698,8 @@ class BaseDocument {
 
 		$type                  = wp_check_filetype( $file );
 		$mime                  = $type['type'] ? $type['type'] : 'image/png';
-		$data                  = base64_encode( file_get_contents( $file ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents, WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- local logo file embedded as a data URI.
-		$size                  = 'image/svg+xml' === $mime ? false : @getimagesize( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- unreadable images just get no size.
+		$data                  = base64_encode( (string) File::get_file( $file ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- the logo goes into the PDF as a data URI.
+		$size                  = 'image/svg+xml' === $mime ? false : wp_getimagesize( $file );
 		list( $box_w, $box_h ) = \Nashenski\Invoice\PDF\Style::logo_box();
 		$attrs                 = sprintf( 'height="%d"', $box_h );
 

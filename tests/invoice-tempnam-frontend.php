@@ -60,6 +60,17 @@ namespace {
 			return false !== file_put_contents( $file, $data );
 		}
 		/**
+		 * Moves a file.
+		 *
+		 * @param string $from From.
+		 * @param string $to   To.
+		 * @param bool   $over Overwrite.
+		 * @return bool
+		 */
+		public function move( $from, $to, $over = false ) {
+			return ( $over || ! file_exists( $to ) ) && rename( $from, $to );
+		}
+		/**
 		 * Deletes a file.
 		 *
 		 * @param string $file Path.

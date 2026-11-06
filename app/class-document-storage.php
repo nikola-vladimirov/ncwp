@@ -597,7 +597,7 @@ class Document_Storage {
 			$old = get_attached_file( $id );
 			$new = $private . '/' . basename( $old );
 
-			if ( $old && file_exists( $old ) && ( file_exists( $new ) || ! @rename( $old, $new ) ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename -- a failed move leaves the file where it was.
+			if ( $old && file_exists( $old ) && ( file_exists( $new ) || ! File::move( $old, $new ) ) ) {
 				$failed[] = $id;
 				continue;
 			}

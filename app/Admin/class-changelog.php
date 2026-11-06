@@ -65,7 +65,7 @@ class Changelog {
 		check_admin_referer( self::ACTION );
 
 		$file = nashenski()->plugin_dir_path() . 'CHANGELOG.md';
-		$md   = is_readable( $file ) ? (string) file_get_contents( $file ) : ''; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local file.
+		$md   = is_readable( $file ) ? (string) \Nashenski\File::get_file( $file ) : '';
 
 		header( 'Content-Type: text/html; charset=utf-8' );
 		?>

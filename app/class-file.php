@@ -37,12 +37,30 @@ class File {
 			return false;
 		}
 
-		if ( ! @rename( $tmp, $file ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename -- same folder; Windows may refuse to overwrite.
+		if ( ! $wp_filesystem->move( $tmp, $file, true ) ) {
 			$wp_filesystem->delete( $tmp );
 			return $wp_filesystem->put_contents( $file, $data, FS_CHMOD_FILE );
 		}
 
 		return true;
+	}
+
+	/**
+	 * Moves a file, leaving an existing target alone.
+	 *
+	 * @param string $from Full path of the file.
+	 * @param string $to   Full path of the new place.
+	 * @return bool Whether the file was moved.
+	 */
+	public static function move( $from, $to ) {
+		global $wp_filesystem;
+
+		if ( ! $wp_filesystem ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+
+		return $wp_filesystem->move( $from, $to, false );
 	}
 
 	/**
