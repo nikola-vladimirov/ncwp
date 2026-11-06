@@ -133,6 +133,18 @@ class Settings_Command {
 	}
 
 	/**
+	 * Refuse a value the settings screen would not save: "required", "email", "digits", a number from zero up.
+	 *
+	 * @param array $setting Setting.
+	 * @param mixed $value   Parsed value.
+	 */
+	private static function check_rules( $setting, $value ) {
+		if ( ! Settings_Page::rules_valid( $value, $setting ) ) {
+			\WP_CLI::error( 'The value is not valid, so the earlier one stays.' );
+		}
+	}
+
+	/**
 	 * A secret as "(set)" or "(empty)".
 	 *
 	 * @param mixed $value Saved value.
@@ -175,6 +187,8 @@ class Settings_Command {
 		}
 
 		$value = self::parse( $setting, $raw );
+
+		self::check_rules( $setting, $value );
 
 		if ( 0 === strpos( $setting['type'], 'nashenski_' ) ) {
 			// The same sanitizers the settings page runs on save (price lists, rows, methods, layout, style, image).

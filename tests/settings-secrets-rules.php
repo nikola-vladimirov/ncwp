@@ -41,6 +41,21 @@ namespace {
 	}
 
 	/**
+	 * WP-CLI: an error ends the command, here as an exception.
+	 */
+	class WP_CLI {
+		/**
+		 * Error.
+		 *
+		 * @param string $text Text.
+		 * @throws RuntimeException Always.
+		 */
+		public static function error( $text ) {
+			throw new RuntimeException( $text );
+		}
+	}
+
+	/**
 	 * Add action.
 	 */
 	function add_action() {}
@@ -299,6 +314,49 @@ namespace {
 		),
 		'the command line get shows an ordinary setting'
 	);
+	// S04: `setting set` refuses what the settings screen refuses.
+	$cli_check = new ReflectionMethod( 'Nashenski\CLI\Settings_Command', 'check_rules' );
+	if ( PHP_VERSION_ID < 80100 ) {
+		$cli_check->setAccessible( true );
+	}
+	$cli_refused = function ( $id, $type, $rules, $value ) use ( $cli_check ) {
+		try {
+			$cli_check->invoke(
+				null,
+				array(
+					'id'              => $id,
+					'title'           => 'Title',
+					'type'            => $type,
+					'nashenski_rules' => $rules,
+				),
+				$value
+			);
+			return false;
+		} catch ( RuntimeException $e ) {
+			return 'The value is not valid, so the earlier one stays.' === $e->getMessage();
+		}
+	};
+	$GLOBALS['options']['nashenski_settings_nap_company_name'] = 'Shop Ltd';
+	foreach ( array(
+		array( 'nashenski_settings_invoice_next_invoice_number', 'text', 'required|digits', '12a' ),
+		array( 'nashenski_settings_invoice_due_days', 'text', 'digits', '-3' ),
+		array( 'nashenski_settings_abandoned_carts_coupon_amount', 'number', '', '-5' ),
+		array( 'nashenski_settings_withdrawal_days', 'number', '', '-14' ),
+		array( 'nashenski_settings_invoice_delete_receipts_days', 'number', '', '-1' ),
+		array( 'nashenski_settings_nap_company_name', 'text', 'required', '' ),
+	) as $case ) {
+		expect( $cli_refused( $case[0], $case[1], $case[2], $case[3] ), "the command line set refuses \"$case[3]\" for $case[0]" );
+	}
+	foreach ( array(
+		array( 'nashenski_settings_invoice_next_invoice_number', 'text', 'required|digits', '0000000012' ),
+		array( 'nashenski_settings_invoice_due_days', 'text', 'digits', '3' ),
+		array( 'nashenski_settings_abandoned_carts_coupon_amount', 'number', '', '5.5' ),
+		array( 'nashenski_settings_withdrawal_days', 'number', '', '14' ),
+		array( 'nashenski_settings_nap_company_name', 'text', 'required', 'Shop Ltd' ),
+		array( 'nashenski_settings_econt_password', 'password', 'required', '' ),
+	) as $case ) {
+		expect( ! $cli_refused( $case[0], $case[1], $case[2], $case[3] ), "the command line set accepts \"$case[3]\" for $case[0]" );
+	}
 
 	// 6. BOX NOW price rows: a negative value refuses the whole list with a notice, the saved list stays; a good list is saved.
 	$GLOBALS['options']['nashenski_settings_boxnow_price_from_to_kg'] = '[{"from":"0","to":"5","price":"3"}]';

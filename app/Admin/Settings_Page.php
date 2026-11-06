@@ -984,33 +984,7 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @return mixed
 	 */
 	public static function sanitize_rules_field( $value, $option, $raw_value ) {
-		// Runs on every WooCommerce settings page; leave other plugins' and WooCommerce's own fields alone.
-		if ( 0 !== strpos( (string) ( $option['id'] ?? '' ), 'nashenski_settings_' ) ) {
-			return $value;
-		}
-
-		$rules = array_filter( explode( '|', (string) ( $option['nashenski_rules'] ?? '' ) ) );
-
-		if ( 'number' === ( $option['type'] ?? '' ) ) {
-			$rules[] = 'amount';
-		}
-
-		if ( ! $rules || ! is_string( $value ) ) {
-			return $value;
-		}
-
-		$text = trim( $value );
-
-		if ( '' === $text ) {
-			// A required field that was never filled in stays as it is, without a notice on every save; only wiping a saved value is refused. A login or key can be cleared on purpose.
-			$valid = ! in_array( 'required', $rules, true ) || self::is_secret( (string) $option['id'], (string) ( $option['type'] ?? '' ) ) || '' === trim( (string) get_option( $option['id'], '' ) );
-		} else {
-			$valid = ( ! in_array( 'email', $rules, true ) || is_email( $text ) )
-				&& ( ! in_array( 'digits', $rules, true ) || ctype_digit( $text ) )
-				&& ( ! in_array( 'amount', $rules, true ) || '' !== \Nashenski\Pricing\Price_Lists::non_negative( $text ) );
-		}
-
-		if ( $valid ) {
+		if ( self::rules_valid( $value, $option ) ) {
 			return $value;
 		}
 
@@ -1020,6 +994,41 @@ class Settings_Page extends \WC_Settings_Page {
 		}
 
 		return get_option( $option['id'], '' );
+	}
+
+	/**
+	 * Whether a value passes the rules its field declares (see sanitize_rules_field()). WP-CLI checks with it too.
+	 *
+	 * @param mixed $value  Value.
+	 * @param array $option Setting definition.
+	 * @return bool
+	 */
+	public static function rules_valid( $value, $option ) {
+		// Runs on every WooCommerce settings page; leave other plugins' and WooCommerce's own fields alone.
+		if ( 0 !== strpos( (string) ( $option['id'] ?? '' ), 'nashenski_settings_' ) ) {
+			return true;
+		}
+
+		$rules = array_filter( explode( '|', (string) ( $option['nashenski_rules'] ?? '' ) ) );
+
+		if ( 'number' === ( $option['type'] ?? '' ) ) {
+			$rules[] = 'amount';
+		}
+
+		if ( ! $rules || ! is_string( $value ) ) {
+			return true;
+		}
+
+		$text = trim( $value );
+
+		if ( '' === $text ) {
+			// A required field that was never filled in stays as it is, without a notice on every save; only wiping a saved value is refused. A login or key can be cleared on purpose.
+			return ! in_array( 'required', $rules, true ) || self::is_secret( (string) $option['id'], (string) ( $option['type'] ?? '' ) ) || '' === trim( (string) get_option( $option['id'], '' ) );
+		}
+
+		return ( ! in_array( 'email', $rules, true ) || is_email( $text ) )
+			&& ( ! in_array( 'digits', $rules, true ) || ctype_digit( $text ) )
+			&& ( ! in_array( 'amount', $rules, true ) || '' !== \Nashenski\Pricing\Price_Lists::non_negative( $text ) );
 	}
 
 	/**
