@@ -943,22 +943,25 @@ class Field_Editor {
 					<tbody>
 						<?php
 						foreach ( self::table_rows() as $i => $row ) {
-							echo self::row_html( $name, 'r' . $i, $row ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in row_html().
+							echo wp_kses( self::row_html( $name, 'r' . $i, $row ), nashenski_allowed_html() );
 						}
 						?>
 					</tbody>
 				</table>
 				<template class="nashenski-layout__template">
 				<?php
-				echo self::row_html( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in row_html().
-					$name,
-					'__uid__',
-					array(
-						'key'   => '',
-						'type'  => 'text',
-						'rule'  => 'optional',
-						'width' => 'full',
-					)
+				echo wp_kses(
+					self::row_html(
+						$name,
+						'__uid__',
+						array(
+							'key'   => '',
+							'type'  => 'text',
+							'rule'  => 'optional',
+							'width' => 'full',
+						)
+					),
+					nashenski_allowed_html()
 				);
 				?>
 				</template>
@@ -1024,7 +1027,7 @@ class Field_Editor {
 					</template>
 					<p><button type="button" class="button nashenski-layout__add"><?php esc_html_e( 'Add your own field', 'nashenski-commerce' ); ?></button></p>
 				<p class="description"><?php esc_html_e( 'Use the arrows to change the order. Two half-width fields next to each other share a line. With company invoice fields on, the company name belongs to them.', 'nashenski-commerce' ); ?></p>
-				<?php echo \Nashenski\Admin\Checkout_Fields_Import::html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in html(). ?>
+				<?php echo wp_kses( \Nashenski\Admin\Checkout_Fields_Import::html(), nashenski_allowed_html() ); ?>
 				<details class="nashenski-more">
 					<summary><?php esc_html_e( 'Which checkouts follow what', 'nashenski-commerce' ); ?></summary>
 					<p class="description"><?php esc_html_e( 'Show, required and hidden apply to the billing and shipping address in every checkout. Order and width also apply to the address in the block checkout, where the email always comes first and your own fields come after it. The place of the email applies to the classic checkout and to builder checkouts that show WooCommerce\'s billing fields. Builder checkouts made of single field elements keep the order you placed them in. When the town or region is hidden, the courier fields ask for the town (from Econt\'s list of towns when Econt is on).', 'nashenski-commerce' ); ?></p>

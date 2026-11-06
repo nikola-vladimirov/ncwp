@@ -175,7 +175,7 @@ class Withdrawal {
 	 */
 	public static function footer_link() {
 		if ( 'none' !== nashenski_get_option( self::GROUP, 'placement' ) && ! self::in_builder() ) {
-			echo '<p class="nashenski-withdrawal-bar">' . self::link( self::url() ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in link().
+			echo wp_kses_post( '<p class="nashenski-withdrawal-bar">' . self::link( self::url() ) . '</p>' );
 		}
 	}
 
@@ -203,7 +203,7 @@ class Withdrawal {
 	 */
 	public static function login_link() {
 		if ( is_account_page() && ! is_user_logged_in() && ! self::in_builder() ) {
-			echo '<p class="nashenski-withdrawal-account">' . esc_html__( 'Ordered without an account?', 'nashenski-commerce' ) . ' ' . self::link( self::url(), true ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in link().
+			echo wp_kses_post( '<p class="nashenski-withdrawal-account">' . esc_html__( 'Ordered without an account?', 'nashenski-commerce' ) . ' ' . self::link( self::url(), true ) . '</p>' );
 		}
 	}
 
@@ -214,7 +214,7 @@ class Withdrawal {
 	 */
 	public static function order_link( $order ) {
 		if ( self::in_period( $order ) && ! self::in_builder() ) {
-			echo '<p class="nashenski-withdrawal-order">' . self::link( self::url( $order ), true ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in link().
+			echo wp_kses_post( '<p class="nashenski-withdrawal-order">' . self::link( self::url( $order ), true ) . '</p>' );
 		}
 	}
 
@@ -234,7 +234,7 @@ class Withdrawal {
 		if ( $plain_text ) {
 			echo "\n" . esc_html( self::label() ) . ': ' . esc_url_raw( self::url( $order ) ) . "\n";
 		} else {
-			echo '<p style="margin:16px 0">' . self::link( self::url( $order ) ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in link().
+			echo wp_kses_post( '<p style="margin:16px 0">' . self::link( self::url( $order ) ) . '</p>' );
 		}
 	}
 
@@ -432,7 +432,7 @@ class Withdrawal {
 
 		$details = (string) ( $request['additional_details'] ?? '' );
 
-		echo self::pill(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in pill().
+		echo wp_kses_post( self::pill() );
 		printf(
 			'<small class="nashenski-withdrawal-summary">%1$s<br>%2$s%3$s</small>',
 			esc_html( self::date( $request ) ),
@@ -452,7 +452,7 @@ class Withdrawal {
 		if ( $request ) {
 			printf(
 				'<p class="form-field form-field-wide nashenski-reports-status">%1$s <a href="#nashenski_withdrawal">%2$s</a></p>',
-				self::pill(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in pill().
+				wp_kses_post( self::pill() ),
 				esc_html(
 					sprintf(
 					/* translators: %s: date and time */

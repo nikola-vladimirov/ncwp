@@ -1367,3 +1367,51 @@ function nashenski_chosen_rate( $key, $rate_id ) {
 
 	return $package['rates'][ $rate_id ] ?? WC()->shipping()->get_packages()[ $key ]['rates'][ $rate_id ] ?? null;
 }
+
+/**
+ * The HTML the plugin's own screens and forms may print: what wp_kses_post allows, plus form controls.
+ *
+ * @return array
+ */
+function nashenski_allowed_html() {
+	$attrs = array(
+		'class'        => true,
+		'id'           => true,
+		'style'        => true,
+		'title'        => true,
+		'data-*'       => true,
+		'aria-*'       => true,
+		'name'         => true,
+		'value'        => true,
+		'type'         => true,
+		'for'          => true,
+		'disabled'     => true,
+		'readonly'     => true,
+		'required'     => true,
+		'checked'      => true,
+		'selected'     => true,
+		'hidden'       => true,
+		'placeholder'  => true,
+		'autocomplete' => true,
+		'inputmode'    => true,
+		'pattern'      => true,
+		'maxlength'    => true,
+		'min'          => true,
+		'max'          => true,
+		'step'         => true,
+		'rows'         => true,
+		'cols'         => true,
+		'multiple'     => true,
+		'tabindex'     => true,
+		'method'       => true,
+		'action'       => true,
+		'novalidate'   => true,
+	);
+	$tags  = array();
+
+	foreach ( array( 'form', 'input', 'select', 'option', 'optgroup', 'textarea', 'button', 'label', 'fieldset', 'legend', 'template' ) as $tag ) {
+		$tags[ $tag ] = $attrs;
+	}
+
+	return array_merge( wp_kses_allowed_html( 'post' ), $tags );
+}

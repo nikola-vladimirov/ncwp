@@ -86,7 +86,7 @@ p { margin: 0 0 8px; }
 </style>
 </head>
 <body>
-		<?php echo self::html( $md ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in html(). ?>
+		<?php echo wp_kses_post( self::html( $md ) ); ?>
 </body>
 </html>
 		<?php

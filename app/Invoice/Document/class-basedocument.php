@@ -744,7 +744,7 @@ class BaseDocument {
 		$details = $this->get_site_details();
 
 		if ( $logo ) {
-			echo $logo; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts in get_logo_img().
+			echo wp_kses_post( $logo );
 		}
 
 		if ( $details ) {

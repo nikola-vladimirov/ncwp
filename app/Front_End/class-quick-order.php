@@ -472,7 +472,7 @@ document.addEventListener("submit",function(e){
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		// The fragment is escaped in its template; wp_kses_post would strip the form tags.
-		echo self::form_html( $context, $product_id, $quantity ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wp_kses( self::form_html( $context, $product_id, $quantity ), nashenski_allowed_html() );
 		wp_die();
 	}
 

@@ -208,7 +208,7 @@ class Reports {
 		$reports = self::get_all_reports( $order, $refresh );
 		?>
 		<p class="form-field form-field-wide nashenski-reports-status">
-			<?php echo self::pill( count( $reports ), true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in pill(). ?>
+			<?php echo wp_kses_post( self::pill( count( $reports ), true ) ); ?>
 			<a href="#nashenski_customer_reports">
 				<?php
 				echo esc_html(
@@ -344,7 +344,7 @@ class Reports {
 			}
 		}
 
-		echo self::pill( $count, $checked ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in pill().
+		echo wp_kses_post( self::pill( $count, $checked ) );
 	}
 
 	/**

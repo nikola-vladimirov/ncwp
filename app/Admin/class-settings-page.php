@@ -889,9 +889,9 @@ class Settings_Page extends \WC_Settings_Page {
 					<tbody>
 						<?php foreach ( $list['bands'] as $i => $band ) : ?>
 							<tr>
-								<td><?php echo $number( $name . '[bands][' . $i . '][to]', $band['to'], '0.001' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in $number. ?></td>
+								<td><?php echo wp_kses( $number( $name . '[bands][' . $i . '][to]', $band['to'], '0.001' ), nashenski_allowed_html() ); ?></td>
 								<?php foreach ( array_keys( $kinds ) as $kind ) : ?>
-									<td><?php echo $number( $name . '[bands][' . $i . '][' . $kind . ']', $band[ $kind ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+									<td><?php echo wp_kses( $number( $name . '[bands][' . $i . '][' . $kind . ']', $band[ $kind ] ), nashenski_allowed_html() ); ?></td>
 								<?php endforeach; ?>
 								<td class="nashenski-rows__remove"><button type="button" class="button-link nashenski-price-list__delete" aria-label="<?php esc_attr_e( 'Remove row', 'nashenski-commerce' ); ?>">&times;</button></td>
 							</tr>
@@ -901,14 +901,14 @@ class Settings_Page extends \WC_Settings_Page {
 						<tr>
 							<th><?php esc_html_e( 'Heavier: base', 'nashenski-commerce' ); ?></th>
 							<?php foreach ( array_keys( $kinds ) as $kind ) : ?>
-								<td><?php echo $number( $name . '[over][base][' . $kind . ']', $list['over']['base'][ $kind ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+								<td><?php echo wp_kses( $number( $name . '[over][base][' . $kind . ']', $list['over']['base'][ $kind ] ), nashenski_allowed_html() ); ?></td>
 							<?php endforeach; ?>
 							<td></td>
 						</tr>
 						<tr>
 							<th><?php esc_html_e( '+ per kg above the last row', 'nashenski-commerce' ); ?></th>
 							<?php foreach ( array_keys( $kinds ) as $kind ) : ?>
-								<td><?php echo $number( $name . '[over][per_kg][' . $kind . ']', $list['over']['per_kg'][ $kind ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+								<td><?php echo wp_kses( $number( $name . '[over][per_kg][' . $kind . ']', $list['over']['per_kg'][ $kind ] ), nashenski_allowed_html() ); ?></td>
 							<?php endforeach; ?>
 							<td></td>
 						</tr>
@@ -918,9 +918,9 @@ class Settings_Page extends \WC_Settings_Page {
 
 				<div class="nashenski-price-list__extras">
 					<label><input type="checkbox" name="<?php echo esc_attr( $name ); ?>[vat_included]" value="1" <?php checked( $list['vat_included'] ); ?>> <?php esc_html_e( 'Prices include VAT', 'nashenski-commerce' ); ?></label>
-					<label><?php esc_html_e( 'Extra surcharge (fuel, toll) %', 'nashenski-commerce' ); ?> <?php echo $number( $name . '[surcharge]', $list['surcharge'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
-					<label><?php esc_html_e( 'Cash on delivery fee %', 'nashenski-commerce' ); ?> <?php echo $number( $name . '[cod][percent]', $list['cod']['percent'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
-					<label><?php esc_html_e( 'at least', 'nashenski-commerce' ); ?> <?php echo $number( $name . '[cod][min]', $list['cod']['min'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
+					<label><?php esc_html_e( 'Extra surcharge (fuel, toll) %', 'nashenski-commerce' ); ?> <?php echo wp_kses( $number( $name . '[surcharge]', $list['surcharge'] ), nashenski_allowed_html() ); ?></label>
+					<label><?php esc_html_e( 'Cash on delivery fee %', 'nashenski-commerce' ); ?> <?php echo wp_kses( $number( $name . '[cod][percent]', $list['cod']['percent'] ), nashenski_allowed_html() ); ?></label>
+					<label><?php esc_html_e( 'at least', 'nashenski-commerce' ); ?> <?php echo wp_kses( $number( $name . '[cod][min]', $list['cod']['min'] ), nashenski_allowed_html() ); ?></label>
 					<label><?php esc_html_e( 'Valid from', 'nashenski-commerce' ); ?> <input type="date" name="<?php echo esc_attr( $name ); ?>[valid_from]" value="<?php echo esc_attr( $list['valid_from'] ); ?>"></label>
 					<input type="hidden" name="<?php echo esc_attr( $name ); ?>[source]" value="<?php echo esc_attr( $list['source'] ); ?>">
 				</div>

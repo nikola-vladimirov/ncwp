@@ -282,7 +282,7 @@ class Abandoned_Carts_Page {
 					);
 				}
 
-				echo implode( ' | ', $links ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with escaped parts above.
+				echo wp_kses_post( implode( ' | ', $links ) );
 				?>
 			</ul>
 
