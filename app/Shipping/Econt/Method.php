@@ -144,7 +144,7 @@ class Method extends \WC_Shipping_Method {
 		$this->title              = $this->get_option( 'title' );
 		$this->delivery_type      = $this->get_option( 'delivery_type' );
 		$this->free_shipping_over = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
-		$this->fixed_price        = Price_Lists::non_negative( $this->get_option( 'fixed_price' ) );
+		$this->fixed_price        = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
 		$this->test               = $this->get_option( 'test' );
 		$this->sms                = $this->get_option( 'sms' );
 		$this->tax_status         = ( wc_tax_enabled() ) ? 'taxable' : 'none';

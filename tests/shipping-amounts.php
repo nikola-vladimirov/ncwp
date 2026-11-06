@@ -216,6 +216,18 @@ foreach ( array( 'Econt', 'Pigeon', 'Speedy' ) as $courier ) {
 		$m->init();
 		expect( '25' === $m->$key, "$courier keeps a good $key" );
 	}
+
+	// A fixed price of zero in any spelling means "not set", so the normal rate applies; a real price is kept.
+	foreach ( array(
+		'0.00' => '',
+		'0'    => '',
+		''     => '',
+		'4.50' => '4.50',
+	) as $stored => $read ) {
+		$m->saved = array( 'fixed_price' => $stored );
+		$m->init();
+		expect( $read === $m->fixed_price, "$courier reads a stored fixed price '$stored' as '$read'" );
+	}
 }
 
 // The REST API saves zone settings without the form's validators; the filter WooCommerce runs on every save cleans them.

@@ -294,6 +294,16 @@ class Price_Lists {
 	}
 
 	/**
+	 * A money setting as typed when it is a number above zero, or an empty string: a price of 0 or 0.00 means "not set".
+	 *
+	 * @param mixed $value Value.
+	 * @return mixed
+	 */
+	public static function positive( $value ) {
+		return is_numeric( $value ) && (float) $value > 0 ? $value : '';
+	}
+
+	/**
 	 * The amounts of a zone shipping method as saved: a negative or non-numeric value becomes empty.
 	 * Hooked to woocommerce_shipping_{id}_instance_settings_values, which the form save and the REST API both run.
 	 *
