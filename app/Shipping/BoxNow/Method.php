@@ -197,6 +197,9 @@ class Method extends \WC_Shipping_Method {
 					$rate['taxes'] = nashenski_get_shipping_rate_taxes( $rate['cost'], $country );
 				}
 			}
+		} else {
+			// No price type chosen means no prices at all: no rate, never a free one.
+			return;
 		}
 
 		$rate['meta_data']['cookie_data'] = $this->cookie_data;

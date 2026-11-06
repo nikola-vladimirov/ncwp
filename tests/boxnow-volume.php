@@ -188,7 +188,12 @@ function get_option( $key ) {
  * @return mixed Result.
  */
 function nashenski_get_option( $group, $name ) {
-	return 'hide_over' === $name ? $GLOBALS['hide_over'] : ( $GLOBALS['boxnow_options'][ $name ] ?? '' ); }
+	// Until a test sets its own options, the store has one weight band that holds every cart (a store with no price type gets no rate).
+	$options = $GLOBALS['boxnow_options'] ?? array(
+		'price_type' => 'from_to_kg',
+		'from_to_kg' => '[{"from":"0","to":"20","price":"3"}]',
+	);
+	return 'hide_over' === $name ? $GLOBALS['hide_over'] : ( $options[ $name ] ?? '' ); }
 /**
  * Wp json encode.
  *
@@ -501,6 +506,13 @@ foreach ( array(
 		expect( array() === band_rates( $type, $rows, $cart[0], $cart[1] ), "BOX NOW $name: a cart outside every band (weight {$cart[0]}, total {$cart[1]}) gets no rate" );
 	}
 }
+// No price type chosen: no rate, never a free one. A chosen type with its rows still gives its price.
+$GLOBALS['boxnow_options'] = array( 'from_to_kg' => wp_json_encode( $kg_rows ) );
+expect( array() === calculate( array( line( 1 ) ), 'card', 2, false, '', 30 )->rates, 'BOX NOW with no price type chosen gets no rate, even with rows saved' );
+$GLOBALS['boxnow_options'] = array();
+expect( array() === calculate( array( line( 1 ) ), 'card', 2, false, '', 30 )->rates, 'BOX NOW with nothing configured gets no rate' );
+$rates = band_rates( 'from_to_kg', $kg_rows, 2, 30 );
+expect( 1 === count( $rates ) && '3' === $rates[0]['cost'], 'BOX NOW with a chosen price type and its rows still gives its price' );
 $GLOBALS['boxnow_options'] = array();
 // A missing or zero dimension, whatever its type (int, float, numeric string, empty, text), takes the default size.
 foreach ( array( 0, 0.0, '0', '0.0', '', null, 'abc' ) as $zero ) {
