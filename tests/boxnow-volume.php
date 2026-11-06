@@ -188,7 +188,28 @@ function get_option( $key ) {
  * @return mixed Result.
  */
 function nashenski_get_option( $group, $name ) {
-	return 'hide_over' === $name ? $GLOBALS['hide_over'] : ''; }
+	return 'hide_over' === $name ? $GLOBALS['hide_over'] : ( $GLOBALS['boxnow_options'][ $name ] ?? '' ); }
+/**
+ * Wp json encode.
+ *
+ * @param mixed $data Data.
+ * @return string Result.
+ */
+function wp_json_encode( $data ) {
+	return json_encode( $data ); }
+/**
+ * Wc tax enabled.
+ */
+function wc_tax_enabled() {
+	return false; }
+/**
+ * Nashenski tax based price.
+ *
+ * @param mixed $price Price.
+ * @return mixed Result.
+ */
+function nashenski_tax_based_price( $price ) {
+	return $price; }
 /**
  * Nashenski get package total.
  *
@@ -365,6 +386,28 @@ $m = calculate( array( line( '1e300' ) ) );
 expect( 1 === $m->capacity_checks && ! $m->rates, 'Oversize-quantity COD cart must not get a rate' );
 $m = calculate( array( line( 6 ) ), 'card' );
 expect( 0 === $m->capacity_checks && 1 === count( $m->rates ), 'Prepaid multi-box behavior must remain unchanged' );
+// A stored price row below zero (saved before negatives were refused) gives no charge, never a negative rate.
+foreach ( array(
+	'-5' => 0,
+	'0'  => 0,
+	'5'  => '5',
+) as $stored => $cost ) {
+	$GLOBALS['boxnow_options'] = array(
+		'price_type' => 'from_to_kg',
+		'from_to_kg' => wp_json_encode(
+			array(
+				array(
+					'from'  => '0',
+					'to'    => '20',
+					'price' => (string) $stored,
+				),
+			)
+		),
+	);
+	$m                         = calculate( array( line( 1 ) ) );
+	expect( 1 === count( $m->rates ) && $cost === $m->rates[0]['cost'], "A stored price row of $stored gives a rate cost of $cost" );
+}
+$GLOBALS['boxnow_options'] = array();
 // A missing or zero dimension, whatever its type (int, float, numeric string, empty, text), takes the default size.
 foreach ( array( 0, 0.0, '0', '0.0', '', null, 'abc' ) as $zero ) {
 	foreach ( array( array( $zero, 10, 10 ), array( 10, $zero, 10 ), array( 10, 10, $zero ) ) as list( $h, $w, $l ) ) {

@@ -184,7 +184,7 @@ class Method extends \WC_Shipping_Method {
 					break;
 			}
 
-			if ( $price ) {
+			if ( (float) $price > 0 ) {
 				$tax_rate     = apply_filters( 'nashenski/shipping/fixed_price_tax_rate', 20, $country );
 				$rate['cost'] = nashenski_tax_based_price( $price, $tax_rate );
 

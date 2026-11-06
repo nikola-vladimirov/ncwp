@@ -139,7 +139,8 @@ class Settings_Page extends \WC_Settings_Page {
 			),
 			'checkout'        => array(
 				'label' => __( 'Checkout', 'nashenski-commerce' ),
-				'parts' => array( array( 'shipping', null ), array( 'fields', null, null, array( \Nashenski\Front_End\Checkout\Company_Fields::GROUP ) ) ),
+				// The company group moves to Documents only while that section exists; with documents off its switch stays here.
+				'parts' => array( array( 'shipping', null ), array( 'fields', null, null, $this->tab( 'documents' ) ? array( \Nashenski\Front_End\Checkout\Company_Fields::GROUP ) : array() ) ),
 			),
 			// Always in the menu: the on/off switch first, the settings once it is on.
 			'quick_order'     => array(
@@ -738,7 +739,7 @@ class Settings_Page extends \WC_Settings_Page {
 
 		// Courier and customer check parts check the login and fill profile data after saving.
 		foreach ( $this->section_tabs( $id ) as $tab ) {
-			do_action( 'nashenski/admin/settings/after_save_fields/' . get_class( $tab ) );
+			self::run_after_save_fields( get_class( $tab ) );
 		}
 	}
 
@@ -904,6 +905,16 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 
 	/**
+	 * Runs the after-save hook of a tab: the current name, and the old misspelt one for add-ons still listening on it.
+	 *
+	 * @param string $tab_class Tab class name.
+	 */
+	public static function run_after_save_fields( $tab_class ) {
+		do_action( 'nashenski/admin/settings/after_save_fields/' . $tab_class );
+		do_action_deprecated( 'nashenski/admin/settings/afte_save_fields/' . $tab_class, array(), '0.19.9', 'nashenski/admin/settings/after_save_fields/' . $tab_class );
+	}
+
+	/**
 	 * Whether a setting holds a login, key or secret (the screen shows a mask for it, WP-CLI the word "set").
 	 *
 	 * @param string $id   Option name.
@@ -911,7 +922,12 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @return bool
 	 */
 	public static function is_secret( $id, $type = '' ) {
-		return 'password' === $type || (bool) preg_match( '/^nashenski_settings_.*(key|token|secret|password|_user|client_id)$/', $id );
+		// The filters run on every WooCommerce settings page; only our own settings are masked.
+		if ( 0 !== strpos( (string) $id, 'nashenski_settings_' ) ) {
+			return false;
+		}
+
+		return 'password' === $type || (bool) preg_match( '/(key|token|secret|password|_user|client_id)$/', $id );
 	}
 
 	/**
@@ -940,6 +956,11 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @return mixed
 	 */
 	public static function sanitize_rules_field( $value, $option, $raw_value ) {
+		// Runs on every WooCommerce settings page; leave other plugins' and WooCommerce's own fields alone.
+		if ( 0 !== strpos( (string) ( $option['id'] ?? '' ), 'nashenski_settings_' ) ) {
+			return $value;
+		}
+
 		$rules = array_filter( explode( '|', (string) ( $option['nashenski_rules'] ?? '' ) ) );
 
 		if ( 'number' === ( $option['type'] ?? '' ) ) {
@@ -1088,7 +1109,7 @@ class Settings_Page extends \WC_Settings_Page {
 			$clean = array();
 
 			foreach ( $columns as $column ) {
-				$clean[ $column ] = isset( $row[ $column ] ) && '' !== $row[ $column ] ? wc_format_decimal( $row[ $column ] ) : '';
+				$clean[ $column ] = isset( $row[ $column ] ) && '' !== $row[ $column ] ? \Nashenski\Pricing\Price_Lists::non_negative( wc_format_decimal( $row[ $column ] ) ) : '';
 			}
 
 			if ( implode( '', $clean ) !== '' ) {

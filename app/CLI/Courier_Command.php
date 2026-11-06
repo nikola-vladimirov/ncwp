@@ -62,7 +62,7 @@ class Courier_Command {
 		$class   = 'Nashenski\\Admin\\Tabs\\' . self::tab_class( $courier );
 		$tab     = new $class();
 
-		do_action( 'nashenski/admin/settings/after_save_fields/' . $class );
+		\Nashenski\Admin\Settings_Page::run_after_save_fields( $class );
 
 		$connected = method_exists( $tab, 'connected' ) && $tab->connected();
 

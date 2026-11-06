@@ -294,6 +294,27 @@ class Price_Lists {
 	}
 
 	/**
+	 * The amounts of a zone shipping method as saved: a negative or non-numeric value becomes empty.
+	 * Hooked to woocommerce_shipping_{id}_instance_settings_values, which the form save and the REST API both run.
+	 *
+	 * @param mixed $settings Instance settings.
+	 * @return mixed
+	 */
+	public static function clean_amounts( $settings ) {
+		if ( ! is_array( $settings ) ) {
+			return $settings;
+		}
+
+		foreach ( array( 'free_shipping_over', 'fixed_price' ) as $key ) {
+			if ( isset( $settings[ $key ] ) ) {
+				$settings[ $key ] = self::non_negative( $settings[ $key ] );
+			}
+		}
+
+		return $settings;
+	}
+
+	/**
 	 * Clean a list (from the form, the updater or storage).
 	 *
 	 * @param mixed $prices Prices.

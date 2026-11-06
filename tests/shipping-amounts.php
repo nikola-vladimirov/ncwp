@@ -13,6 +13,36 @@ define( 'ABSPATH', __DIR__ . '/fixtures/' );
  */
 class WC_Shipping_Method {
 	/**
+	 * Properties WooCommerce declares on the real class (the constructors set them).
+	 *
+	 * @var mixed
+	 */
+	public $enabled;
+	/**
+	 * Instance id.
+	 *
+	 * @var mixed
+	 */
+	public $instance_id;
+	/**
+	 * Method title.
+	 *
+	 * @var mixed
+	 */
+	public $method_title;
+	/**
+	 * Method description.
+	 *
+	 * @var mixed
+	 */
+	public $method_description;
+	/**
+	 * Supports.
+	 *
+	 * @var mixed
+	 */
+	public $supports;
+	/**
 	 * Saved settings.
 	 *
 	 * @var array
@@ -92,6 +122,36 @@ function __( $text ) {
  */
 function add_action() {}
 /**
+ * Add filter: keeps the callbacks so the test can run them like WooCommerce does.
+ *
+ * @param string $name     Hook.
+ * @param mixed  $callback Callback.
+ */
+function add_filter( $name, $callback ) {
+	$GLOBALS['filters'][ $name ][] = $callback;
+}
+/**
+ * Absint.
+ *
+ * @param mixed $value Value.
+ */
+function absint( $value ) {
+	return abs( (int) $value );
+}
+/**
+ * Nashenski.
+ */
+function nashenski() {
+	return new class() {
+		/**
+		 * Container.
+		 */
+		public function container() {
+			return array();
+		}
+	};
+}
+/**
  * Wc tax enabled.
  */
 function wc_tax_enabled() {
@@ -156,6 +216,30 @@ foreach ( array( 'Econt', 'Pigeon', 'Speedy' ) as $courier ) {
 		$m->init();
 		expect( '25' === $m->$key, "$courier keeps a good $key" );
 	}
+}
+
+// The REST API saves zone settings without the form's validators; the filter WooCommerce runs on every save cleans them.
+foreach ( array( 'Econt', 'Pigeon', 'Speedy' ) as $courier ) {
+	$class = 'Nashenski\\Shipping\\' . $courier . '\\Method';
+	$m     = new $class( 7 );
+	$hook  = 'woocommerce_shipping_' . $m->id . '_instance_settings_values';
+	expect( ! empty( $GLOBALS['filters'][ $hook ] ), "$courier cleans its zone settings on every save" );
+	$settings = array(
+		'title'              => 'Econt',
+		'free_shipping_over' => '-1',
+		'fixed_price'        => 'abc',
+	);
+	foreach ( $GLOBALS['filters'][ $hook ] as $callback ) {
+		$settings = call_user_func( $callback, $settings, $m );
+	}
+	expect( '' === $settings['free_shipping_over'] && '' === $settings['fixed_price'] && 'Econt' === $settings['title'], "$courier saves a REST -1 as empty and keeps the rest" );
+	$settings = \Nashenski\Pricing\Price_Lists::clean_amounts(
+		array(
+			'free_shipping_over' => '30',
+			'fixed_price'        => '0',
+		)
+	);
+	expect( '30' === $settings['free_shipping_over'] && '0' === $settings['fixed_price'], "$courier keeps good amounts" );
 }
 
 $m                         = ( new ReflectionClass( 'Nashenski\Shipping\BoxNow\Method' ) )->newInstanceWithoutConstructor();

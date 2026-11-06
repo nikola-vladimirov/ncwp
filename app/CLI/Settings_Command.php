@@ -387,7 +387,7 @@ class Settings_Command {
 	 * @param mixed $setting Setting.
 	 */
 	private static function is_secret( $setting ) {
-		return 'password' === $setting['type'] || ( 'text' === $setting['type'] && (bool) preg_match( '/key|token|secret|password/i', $setting['id'] ) );
+		return \Nashenski\Admin\Settings_Page::is_secret( $setting['id'], $setting['type'] );
 	}
 
 	/**
@@ -419,7 +419,7 @@ class Settings_Command {
 		$container->register( new \Nashenski\Container\Client() );
 
 		if ( ! empty( $setting['tab_class'] ) ) {
-			do_action( 'nashenski/admin/settings/after_save_fields/' . $setting['tab_class'] );
+			Settings_Page::run_after_save_fields( $setting['tab_class'] );
 		}
 	}
 }

@@ -89,6 +89,22 @@ namespace {
 		return (bool) preg_match( '/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i', $text );
 	}
 	/**
+	 * Wc format decimal.
+	 *
+	 * @param mixed $value Value.
+	 */
+	function wc_format_decimal( $value ) {
+		return trim( (string) $value );
+	}
+	/**
+	 * Wp json encode.
+	 *
+	 * @param mixed $data Data.
+	 */
+	function wp_json_encode( $data ) {
+		return json_encode( $data );
+	}
+	/**
 	 * Get option.
 	 *
 	 * @param mixed $name Name.
@@ -202,6 +218,69 @@ namespace {
 	expect( array( '12.5', 0 ) === $check( '', 'number', '12.5' ), 'a decimal number is saved' );
 	expect( array( '0', 0 ) === $check( '', 'number', '0' ), 'zero is saved' );
 	expect( array( '', 0 ) === $check( '', 'number', '' ), 'an empty number is saved empty' );
+
+	// 4. The filters run on every WooCommerce settings page: another plugin's password, key or number field is left alone.
+	$GLOBALS['options']['woocommerce_stripe_secret_key'] = 'sk_live_x';
+	$foreign = array(
+		'id'    => 'woocommerce_stripe_secret_key',
+		'title' => 'Secret key',
+		'type'  => 'password',
+	);
+	expect( ! Settings_Page::is_secret( 'woocommerce_stripe_secret_key', 'password' ), 'a secret of another plugin is not ours to mask' );
+	expect( '********' === Settings_Page::keep_secret( '********', $foreign, '********' ), 'the mask is not swapped for another plugin\'s saved value' );
+	WC_Admin_Settings::$errors = array();
+	$number                    = array(
+		'id'    => 'woocommerce_price_decimals',
+		'title' => 'Number',
+		'type'  => 'number',
+	);
+	expect( '-1' === Settings_Page::sanitize_rules_field( '-1', $number, '-1' ) && ! WC_Admin_Settings::$errors, 'a number field of another plugin is not checked' );
+	expect( Settings_Page::is_secret( 'nashenski_settings_econt_password', 'password' ) && Settings_Page::is_secret( 'nashenski_settings_econt_user', 'text' ), 'our own logins and keys are still secrets' );
+
+	// 5. WP-CLI hides the same secrets as the screen.
+	require __DIR__ . '/../app/CLI/Settings_Command.php';
+	$cli_secret = new ReflectionMethod( 'Nashenski\CLI\Settings_Command', 'is_secret' );
+	if ( PHP_VERSION_ID < 80100 ) {
+		$cli_secret->setAccessible( true );
+	}
+	foreach ( array(
+		'nashenski_settings_econt_user'     => true,
+		'nashenski_settings_pigeon_api_key' => true,
+		'nashenski_settings_econt_name'     => false,
+	) as $id => $hidden ) {
+		expect(
+			$hidden === $cli_secret->invoke(
+				null,
+				array(
+					'id'   => $id,
+					'type' => 'text',
+				)
+			),
+			'the command line ' . ( $hidden ? 'hides' : 'shows' ) . " $id"
+		);
+	}
+
+	// 6. BOX NOW price rows never keep a negative amount.
+	$rows = json_decode(
+		Settings_Page::sanitize_rows_field(
+			'',
+			array( 'type' => 'nashenski_rows' ),
+			array(
+				array(
+					'from'  => '0',
+					'to'    => '5',
+					'price' => '-5',
+				),
+				array(
+					'from'  => '5',
+					'to'    => '10',
+					'price' => '7.5',
+				),
+			)
+		),
+		true
+	);
+	expect( '' === $rows[0]['price'] && '7.5' === $rows[1]['price'], 'a negative price row is saved empty, a good one is kept' );
 
 	echo 'PASS: ' . $checks . " settings secret and rule assertions\n";
 }

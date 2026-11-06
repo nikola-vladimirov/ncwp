@@ -67,6 +67,11 @@ class Help_Page {
 	 * @return string Result.
 	 */
 	private static function link( $section, $label ) {
+		// The Documents section is not in the menu while documents are off.
+		if ( 'documents' === $section && 'yes' !== nashenski_get_option( 'apis', 'enable_documents' ) ) {
+			return esc_html( $label );
+		}
+
 		return '<a href="' . esc_url( Settings::url( $section ) ) . '">' . esc_html( $label ) . '</a>';
 	}
 
