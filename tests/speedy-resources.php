@@ -111,6 +111,7 @@ namespace {
 			$this->rates[] = $rate; }
 	}
 	require __DIR__ . '/../vendor/autoload.php';
+	require_once __DIR__ . '/../app/autoload.php';
 
 	$options = array();
 	$filters = array();

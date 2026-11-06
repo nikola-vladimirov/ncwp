@@ -125,6 +125,7 @@ namespace Nashenski\Invoice {
 namespace {
 	define( 'ABSPATH', __DIR__ . '/fixtures/' );
 	require __DIR__ . '/../vendor/autoload.php';
+	require_once __DIR__ . '/../app/autoload.php';
 
 	/**
 	 * Order stub.

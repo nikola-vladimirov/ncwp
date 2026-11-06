@@ -16,8 +16,8 @@ define( 'ABSPATH', __DIR__ . '/fixtures/' );
 function apply_filters( $hook, $value ) {
 	return $value; }
 
-require __DIR__ . '/../app/Pricing/Price_Lists.php';
-require __DIR__ . '/../app/Pricing/Econt_Tariff.php';
+require __DIR__ . '/../app/Pricing/class-price-lists.php';
+require __DIR__ . '/../app/Pricing/class-econt-tariff.php';
 
 use Nashenski\Pricing\Econt_Tariff;
 

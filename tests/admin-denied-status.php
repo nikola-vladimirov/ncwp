@@ -75,13 +75,13 @@ namespace {
 		throw new Died( (string) $code ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- test stub, the message is the status code the test reads back.
 	}
 
-	require __DIR__ . '/../app/Admin/Abandoned_Carts_Page.php';
-	require __DIR__ . '/../app/Admin/Checkout_Fields_Import.php';
-	require __DIR__ . '/../app/Admin/Export_Builder.php';
-	require __DIR__ . '/../app/Admin/Import_Sources.php';
-	require __DIR__ . '/../app/Admin/ImpossibleVatPrice.php';
-	require __DIR__ . '/../app/Admin/Migration.php';
-	require __DIR__ . '/../app/Admin/Recommended_Settings.php';
+	require __DIR__ . '/../app/Admin/class-abandoned-carts-page.php';
+	require __DIR__ . '/../app/Admin/class-checkout-fields-import.php';
+	require __DIR__ . '/../app/Admin/class-export-builder.php';
+	require __DIR__ . '/../app/Admin/class-import-sources.php';
+	require __DIR__ . '/../app/Admin/class-impossiblevatprice.php';
+	require __DIR__ . '/../app/Admin/class-migration.php';
+	require __DIR__ . '/../app/Admin/class-recommended-settings.php';
 
 	$checks = 0;
 	/**

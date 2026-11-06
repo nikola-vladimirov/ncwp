@@ -190,12 +190,12 @@ function nashenski_get_option() {
 	return '';
 }
 
-require __DIR__ . '/../app/Shipping/Packer/Packing_Limit_Exceeded.php';
-require __DIR__ . '/../app/Shipping/Packer/Packing_Budget.php';
-require __DIR__ . '/../app/Pricing/Price_Lists.php';
-require __DIR__ . '/../app/Pricing/Public_Price.php';
-require __DIR__ . '/../app/Shipping/Econt/Method.php';
-require __DIR__ . '/../app/Shipping/Speedy/Method.php';
+require __DIR__ . '/../app/Shipping/Packer/class-packing-limit-exceeded.php';
+require __DIR__ . '/../app/Shipping/Packer/class-packing-budget.php';
+require __DIR__ . '/../app/Pricing/class-price-lists.php';
+require __DIR__ . '/../app/Pricing/class-public-price.php';
+require __DIR__ . '/../app/Shipping/Econt/class-method.php';
+require __DIR__ . '/../app/Shipping/Speedy/class-method.php';
 
 use Nashenski\Pricing\Price_Lists;
 

@@ -173,9 +173,9 @@ function nashenski_get_option( $group, $name ) {
 	return $GLOBALS['boxnow_options'][ $name ] ?? false;
 }
 
-require __DIR__ . '/../app/Pricing/Price_Lists.php';
+require __DIR__ . '/../app/Pricing/class-price-lists.php';
 foreach ( array( 'BoxNow', 'Econt', 'Pigeon', 'Speedy' ) as $courier ) {
-	require __DIR__ . "/../app/Shipping/$courier/Method.php";
+	require __DIR__ . "/../app/Shipping/$courier/class-method.php";
 }
 
 $checks = 0;

@@ -5,7 +5,7 @@
  * @package Nashenski_Commerce
  */
 
-$src = file_get_contents( __DIR__ . '/../app/Admin/Settings_Page.php' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- offline test.
+$src = file_get_contents( __DIR__ . '/../app/Admin/class-settings-page.php' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- offline test.
 preg_match( "/'checkout'\s*=> array\((.*?)\n\t\t\t\),/s", $src, $checkout );
 preg_match( "/'documents'\s*=> array\((.*?)\n\t\t\t\),/s", $src, $documents );
 $fail = 0;

@@ -165,7 +165,7 @@ namespace {
 			$this->saved = true; }
 	}
 
-	require __DIR__ . '/../app/Document_Storage.php';
+	require __DIR__ . '/../app/class-document-storage.php';
 
 	/**
 	 * Check.

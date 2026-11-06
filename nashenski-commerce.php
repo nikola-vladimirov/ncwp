@@ -135,6 +135,7 @@ function nashenski_init() {
 
 	if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 		require_once __DIR__ . '/vendor/autoload.php';
+		require_once __DIR__ . '/app/autoload.php';
 	} else {
 		add_action(
 			'admin_notices',

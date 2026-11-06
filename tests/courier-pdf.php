@@ -18,6 +18,7 @@ if ( 'Numbering tests' !== get_option( 'blogname' ) ) {
 	throw new RuntimeException( 'Dedicated test site required.' ); }
 wp_set_current_user( get_user_by( 'login', 'numbering-test' )->ID );
 require dirname( __DIR__ ) . '/vendor/autoload.php';
+require_once dirname( __DIR__ ) . '/app/autoload.php';
 require dirname( __DIR__ ) . '/app/functions.php';
 
 use Nashenski\Admin\Courier_Pdf;

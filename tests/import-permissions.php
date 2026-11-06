@@ -316,10 +316,10 @@ namespace {
 		return gmdate( 'Y-m-d', $timestamp ); }
 
 	// Main's Migration::handle() calls Document_Storage::schedule_migration(); without Action Scheduler it returns early.
-	require __DIR__ . '/../app/Document_Storage.php';
-	require __DIR__ . '/../app/Admin/Migration.php';
-	require __DIR__ . '/../app/Admin/Import_Sources.php';
-	require __DIR__ . '/../app/Admin/Help_Page.php';
+	require __DIR__ . '/../app/class-document-storage.php';
+	require __DIR__ . '/../app/Admin/class-migration.php';
+	require __DIR__ . '/../app/Admin/class-import-sources.php';
+	require __DIR__ . '/../app/Admin/class-help-page.php';
 
 	/**
 	 * Resets the fixture state.

@@ -92,9 +92,9 @@ function expect( $condition, $message ) {
 	}
 }
 
-require __DIR__ . '/../app/Shipping/Packer/Packing_Limit_Exceeded.php';
-require __DIR__ . '/../app/Shipping/BoxNow/Method.php';
-require __DIR__ . '/../app/Admin/BoxNow.php';
+require __DIR__ . '/../app/Shipping/Packer/class-packing-limit-exceeded.php';
+require __DIR__ . '/../app/Shipping/BoxNow/class-method.php';
+require __DIR__ . '/../app/Admin/class-boxnow.php';
 
 /**
  * Product stub.

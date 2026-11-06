@@ -63,7 +63,7 @@ namespace {
 	function update_option( $key, $value, $autoload = null ) {
 		$GLOBALS['options'][ $key ] = $value; }
 
-	require __DIR__ . '/../app/Admin/Migration.php';
+	require __DIR__ . '/../app/Admin/class-migration.php';
 
 	$GLOBALS['wpdb']    = new CounterDatabase();
 	$GLOBALS['options'] = array(

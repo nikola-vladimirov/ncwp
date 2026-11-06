@@ -172,9 +172,9 @@ namespace Nashenski\Test {
 }
 
 namespace Nashenski {
-	require __DIR__ . '/../app/File.php';
-	require __DIR__ . '/../app/Document_Storage.php';
-	require __DIR__ . '/../app/Client/BoxNow/Origins.php';
+	require __DIR__ . '/../app/class-file.php';
+	require __DIR__ . '/../app/class-document-storage.php';
+	require __DIR__ . '/../app/Client/BoxNow/class-origins.php';
 
 	$checks = 0;
 	/**

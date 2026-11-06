@@ -91,16 +91,16 @@ namespace {
 	}
 
 	require __DIR__ . '/../app/functions.php';
-	foreach ( array( 'Base_Field', 'Select_Field', 'Text_Field', 'TrueFalse_Field', 'Image_Field', 'Color_Field', 'Multi_Field', 'Multi_Two_Field' ) as $class ) {
-		require __DIR__ . "/../app/Admin/Fields/$class.php";
+	foreach ( array( 'base-field', 'select-field', 'text-field', 'truefalse-field', 'image-field', 'color-field', 'multi-field', 'multi-two-field' ) as $class ) {
+		require __DIR__ . "/../app/Admin/Fields/class-$class.php";
 	}
-	foreach ( array( 'Base_Tab', 'Econt_Tab', 'BoxNow_Tab', 'Pigeon_Tab', 'Nra_Tab' ) as $class ) {
-		require __DIR__ . "/../app/Admin/Tabs/$class.php";
+	foreach ( array( 'base-tab', 'econt-tab', 'boxnow-tab', 'pigeon-tab', 'nra-tab' ) as $class ) {
+		require __DIR__ . "/../app/Admin/Tabs/class-$class.php";
 	}
-	require __DIR__ . '/../app/Admin/Settings.php';
-	require __DIR__ . '/../app/Admin/Settings_Page.php';
-	require __DIR__ . '/../app/Invoice/PDF/Style.php';
-	require __DIR__ . '/../app/Client/Courier_Client.php';
+	require __DIR__ . '/../app/Admin/class-settings.php';
+	require __DIR__ . '/../app/Admin/class-settings-page.php';
+	require __DIR__ . '/../app/Invoice/PDF/class-style.php';
+	require __DIR__ . '/../app/Client/class-courier-client.php';
 
 	$checks = 0;
 	/**

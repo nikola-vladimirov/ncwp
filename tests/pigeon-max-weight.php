@@ -50,8 +50,8 @@ function apply_filters( $hook, $value ) {
 	return $value;
 }
 
-require __DIR__ . '/../app/Pricing/Price_Lists.php';
-require __DIR__ . '/../app/Pricing/Public_Price.php';
+require __DIR__ . '/../app/Pricing/class-price-lists.php';
+require __DIR__ . '/../app/Pricing/class-public-price.php';
 
 $cases = array(
 	array( 'pigeon', 30, 3.5, 'Pigeon 30 kg keeps its price' ),

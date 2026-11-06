@@ -129,11 +129,11 @@ namespace {
 		return $GLOBALS['options'][ $name ] ?? $default;
 	}
 
-	require __DIR__ . '/../app/Admin/Settings.php';
-	require __DIR__ . '/../app/Pricing/Price_Lists.php';
-	require __DIR__ . '/../app/Admin/Fields/Base_Field.php';
-	require __DIR__ . '/../app/Admin/Fields/Text_Field.php';
-	require __DIR__ . '/../app/Admin/Settings_Page.php';
+	require __DIR__ . '/../app/Admin/class-settings.php';
+	require __DIR__ . '/../app/Pricing/class-price-lists.php';
+	require __DIR__ . '/../app/Admin/Fields/class-base-field.php';
+	require __DIR__ . '/../app/Admin/Fields/class-text-field.php';
+	require __DIR__ . '/../app/Admin/class-settings-page.php';
 
 	use Nashenski\Admin\Fields\Text_Field;
 	use Nashenski\Admin\Settings_Page;
@@ -253,7 +253,7 @@ namespace {
 	expect( Settings_Page::is_secret( 'nashenski_settings_econt_password', 'password' ) && Settings_Page::is_secret( 'nashenski_settings_econt_user', 'text' ), 'our own logins and keys are still secrets' );
 
 	// 5. WP-CLI hides the same secrets as the screen.
-	require __DIR__ . '/../app/CLI/Settings_Command.php';
+	require __DIR__ . '/../app/CLI/class-settings-command.php';
 	$cli_secret = new ReflectionMethod( 'Nashenski\CLI\Settings_Command', 'is_secret' );
 	if ( PHP_VERSION_ID < 80100 ) {
 		$cli_secret->setAccessible( true );

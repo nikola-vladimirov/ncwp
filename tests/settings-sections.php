@@ -97,9 +97,9 @@ namespace {
 		return $GLOBALS['documents_on'] ? 'yes' : 'no';
 	}
 
-	require __DIR__ . '/../app/Admin/Settings.php';
-	require __DIR__ . '/../app/Admin/Settings_Page.php';
-	require __DIR__ . '/../app/Admin/Help_Page.php';
+	require __DIR__ . '/../app/Admin/class-settings.php';
+	require __DIR__ . '/../app/Admin/class-settings-page.php';
+	require __DIR__ . '/../app/Admin/class-help-page.php';
 	$checks = 0;
 	/**
 	 * Expect.
@@ -182,9 +182,9 @@ namespace {
 	expect( 1 === ( $GLOBALS['fired']['nashenski/admin/settings/afte_save_fields/Nashenski\Admin\Tabs\Econt_Tab'] ?? 0 ), 'the old misspelt hook fires once for add-ons on it' );
 	// The three callers (the page, and two WP-CLI commands) go through the helper; the helper holds the only do_action of the name.
 	foreach ( array(
-		'app/Admin/Settings_Page.php'  => 'self::',
-		'app/CLI/Courier_Command.php'  => '\Nashenski\Admin\Settings_Page::',
-		'app/CLI/Settings_Command.php' => 'Settings_Page::',
+		'app/Admin/class-settings-page.php'  => 'self::',
+		'app/CLI/class-courier-command.php'  => '\Nashenski\Admin\Settings_Page::',
+		'app/CLI/class-settings-command.php' => 'Settings_Page::',
 	) as $caller => $prefix ) {
 		expect( false !== strpos( file_get_contents( __DIR__ . '/../' . $caller ), $prefix . 'run_after_save_fields(' ), "$caller runs both hook names through run_after_save_fields" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- offline test.
 	}

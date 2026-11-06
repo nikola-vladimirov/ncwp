@@ -7,6 +7,7 @@ if ( ! $numbering_wp || ! is_file( $numbering_wp . '/wp-load.php' ) ) {
 }
 require $numbering_wp . '/wp-load.php';
 require dirname( __DIR__ ) . '/vendor/autoload.php';
+require_once dirname( __DIR__ ) . '/app/autoload.php';
 require dirname( __DIR__ ) . '/app/functions.php';
 if ( get_option( 'blogname' ) !== 'Numbering tests' ) {
 	throw new RuntimeException( 'Refusing to run outside the disposable Numbering tests site.' );

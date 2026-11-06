@@ -506,7 +506,7 @@ namespace {
 		}
 	}
 
-	require __DIR__ . '/../app/Shipping/Automation.php';
+	require __DIR__ . '/../app/Shipping/class-automation.php';
 
 	/**
 	 * Check.

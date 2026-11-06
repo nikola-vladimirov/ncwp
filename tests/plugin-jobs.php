@@ -163,11 +163,11 @@ namespace {
 		$GLOBALS['scheduled'][] = $hook;
 		$GLOBALS['created'][]   = array( $hook, $group ); }
 
-	require __DIR__ . '/../app/Abandoned_Carts/Tracker.php';
-	require __DIR__ . '/../app/Document_Storage.php';
+	require __DIR__ . '/../app/Abandoned_Carts/class-tracker.php';
+	require __DIR__ . '/../app/class-document-storage.php';
 	require __DIR__ . '/../nashenski-commerce.php';
-	require __DIR__ . '/../app/File.php';
-	require __DIR__ . '/../app/Plugin.php';
+	require __DIR__ . '/../app/class-file.php';
+	require __DIR__ . '/../app/class-plugin.php';
 
 	/**
 	 * Check.
