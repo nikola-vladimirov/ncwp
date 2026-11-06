@@ -407,14 +407,14 @@ class Method extends \WC_Shipping_Method {
 
 	/**
 	 * Country the courier prices for: 'BG' (the Bulgarian rules) only when the widget and the package agree,
-	 * otherwise the foreign one of the two (the package when the widget gives none).
+	 * otherwise the foreign one of the two. A blank side defers to the other.
 	 *
 	 * @return string ISO code, or '' when none is known.
 	 */
 	public function courier_country() {
 		$widget  = (string) ( $this->cookie_data['country'] ?? '' );
 		$package = (string) ( $this->package['destination']['country'] ?? '' );
-		return '' !== $widget && 'BG' !== $widget ? $widget : $package;
+		return '' !== $widget && ( 'BG' !== $widget || '' === $package ) ? $widget : $package;
 	}
 
 	/**
@@ -496,7 +496,8 @@ class Method extends \WC_Shipping_Method {
 
 		$services_data   = '';
 		$payment_by_data = '';
-		$country         = $this->courier_country();
+		// The service follows the recipient above (the widget's office or address), so the API prices what is sent.
+		$country = $this->cookie_data['country'] ?? $this->courier_country();
 
 		if ( 'BG' !== $country ) {
 			$services_data   = $this->generate_services_data( '202', $country );

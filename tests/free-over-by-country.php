@@ -40,12 +40,12 @@ class WC_Shipping_Method {
 	/**
 	 * Get option.
 	 *
-	 * @param string $key     Key.
-	 * @param mixed  $default Default.
+	 * @param string $key      Key.
+	 * @param mixed  $fallback Default.
 	 * @return mixed
 	 */
-	public function get_option( $key, $default = '' ) {
-		return $default;
+	public function get_option( $key, $fallback = '' ) {
+		return $fallback;
 	}
 
 	/**
@@ -145,7 +145,7 @@ $checks = 0;
 function expect( $condition, $message ) {
 	++$GLOBALS['checks'];
 	if ( ! $condition ) {
-		fwrite( STDERR, 'FAIL: ' . $message . "\n" );
+		fwrite( STDERR, 'FAIL: ' . $message . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 		exit( 1 );
 	}
 }
@@ -154,6 +154,12 @@ function expect( $condition, $message ) {
 $parsed = Price_Lists::free_over_list( 'ro=150, GR = 200.5' );
 expect( 2 === count( $parsed ) && '150' === $parsed['RO'] && '200.5' === $parsed['GR'], 'valid pairs parse, any case and spacing' );
 expect( array( 'GR' => '200' ) === Price_Lists::free_over_list( "RO=abc;GR=200\nDE=-5,XYZ=10,=7,HU,BG=50" ), 'malformed pairs and BG are skipped' );
+$thousands = array(
+	'GR' => '1000',
+	'RO' => '1500000.5',
+);
+expect( Price_Lists::free_over_list( 'GR=1,000, RO = 1,500,000.5' ) === $thousands, 'a thousands comma stays in the amount' );
+expect( array( 'HU' => '9' ) === Price_Lists::free_over_list( 'GR=1,00, RO=1,0000;HU=9' ), 'any other comma inside an amount rejects that pair' );
 expect( array() === Price_Lists::free_over_list( '' ) && array() === Price_Lists::free_over_list( null ) && array() === Price_Lists::free_over_list( array( 'RO' ) ), 'empty or non-text gives no list' );
 expect( 'RO=150, GR=200' === Price_Lists::clean_amounts( array( 'free_shipping_by_country' => ' ro=150 ,bad, GR=200 ' ) )['free_shipping_by_country'], 'the saved text is cleaned to valid pairs' );
 

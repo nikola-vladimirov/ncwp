@@ -319,8 +319,10 @@ class Price_Lists {
 	public static function free_over_list( $value ) {
 		$list = array();
 
-		foreach ( preg_split( '/[,;\n]+/', strtoupper( is_string( $value ) ? $value : '' ) ) as $pair ) {
-			if ( preg_match( '/^([A-Z]{2})=(\d+(?:\.\d+)?)$/', preg_replace( '/\s+/', '', $pair ), $m ) && 'BG' !== $m[1] ) {
+		// A comma before a digit stays inside the amount: "1,000" is a thousands separator, any other such comma rejects the pair.
+		foreach ( preg_split( '/[,;\n]+(?!\s*\d)/', strtoupper( is_string( $value ) ? $value : '' ) ) as $pair ) {
+			$pair = preg_replace( '/(?<=\d),(?=\d{3}(?!\d))/', '', preg_replace( '/\s+/', '', $pair ) );
+			if ( preg_match( '/^([A-Z]{2})=(\d+(?:\.\d+)?)$/', $pair, $m ) && 'BG' !== $m[1] ) {
 				$list[ $m[1] ] = $m[2];
 			}
 		}
