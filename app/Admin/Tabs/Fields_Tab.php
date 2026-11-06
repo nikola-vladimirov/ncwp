@@ -5,6 +5,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
@@ -29,7 +31,7 @@ class Fields_Tab extends Base_Tab {
 	 */
 	public function load_fields() {
 		$fields = apply_filters(
-			'nashenski/admin/settings/fields/fields',
+			'nashenski/admin/settings/fields/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 			array(
 				\Nashenski\Front_End\Checkout\Company_Fields::GROUP => array(
 					( new Fields\TrueFalse_Field( 'fields', __( 'Company invoice fields', 'nashenski-commerce' ), null, null, __( 'Add "I want an invoice for a company" to the checkout. When ticked, the customer fills in company name, EIK, VAT number, MOL, town and address.', 'nashenski-commerce' ) ) )->set_default( \Nashenski\Front_End\Checkout\Company_Fields::enabled() ? 'yes' : 'no' ),

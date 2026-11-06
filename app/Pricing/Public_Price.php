@@ -1,4 +1,12 @@
 <?php
+/**
+ * Public courier price lists.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Pricing;
 
 defined( 'ABSPATH' ) || exit;
@@ -18,6 +26,9 @@ class Public_Price {
 
 	/**
 	 * Delivery type of a shipping method -> price list column.
+	 *
+	 * @param string $delivery_type Delivery type.
+	 * @return string
 	 */
 	public static function kind( $delivery_type ) {
 		$map = array(
@@ -95,6 +106,7 @@ class Public_Price {
 			$price += max( $list['cod']['min'], $cod_amount * $list['cod']['percent'] / 100 );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		$price = round( (float) apply_filters( 'nashenski/public_price', $price, $courier, $kind, $weight, $cod_amount ), 2 );
 
 		// A shipping rate is never negative.
@@ -103,6 +115,9 @@ class Public_Price {
 
 	/**
 	 * Package weight in kg.
+	 *
+	 * @param array $package Shipping package.
+	 * @return float
 	 */
 	public static function package_weight( $package ) {
 		$weight = 0.0;
@@ -118,6 +133,9 @@ class Public_Price {
 
 	/**
 	 * Goods value of a package with tax, the amount collected on delivery.
+	 *
+	 * @param array $package Shipping package.
+	 * @return float
 	 */
 	public static function package_value( $package ) {
 		$value = 0.0;

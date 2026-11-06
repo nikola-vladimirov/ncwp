@@ -1,9 +1,23 @@
 <?php
+/**
+ * Company invoice fields of the checkout.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Front_End\Checkout;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Company invoice fields at checkout and on the order screen, and the Bulgarian states.
+ */
 class Company {
+	/**
+	 * Hook the fields.
+	 */
 	public function __construct() {
 		add_filter( 'woocommerce_checkout_fields', array( __CLASS__, 'vat_number_field' ), 20 );
 		add_action( 'woocommerce_admin_billing_fields', array( __CLASS__, 'admin_billing_fields' ) );
@@ -13,6 +27,12 @@ class Company {
 		add_filter( 'woocommerce_form_field_checkbox', array( __CLASS__, 'checkbox_without_optional' ), 10, 2 );
 	}
 
+	/**
+	 * Add the company fields to the checkout billing fields.
+	 *
+	 * @param array $fields Checkout fields.
+	 * @return array
+	 */
 	public static function vat_number_field( $fields ) {
 		if ( class_exists( 'WC_EU_VAT_Number_Init' ) && isset( $fields['billing']['billing_vat_number'] ) ) {
 			$fields['billing']['billing_vat_number']['required'] = ( nashenski_get_option( 'nap', 'dds_number_required' ) === 'yes' );
@@ -93,11 +113,21 @@ class Company {
 
 	/**
 	 * A checkbox is never "required", so WooCommerce would call it optional.
+	 *
+	 * @param string $field Field HTML.
+	 * @param string $key   Field key.
+	 * @return string
 	 */
 	public static function checkbox_without_optional( $field, $key ) {
 		return 'billing_to_company' === $key ? preg_replace( '#\s*<span class="optional">.*?</span>#', '', $field ) : $field;
 	}
 
+	/**
+	 * Add the company fields to the order screen billing fields.
+	 *
+	 * @param array $fields Billing fields.
+	 * @return array
+	 */
 	public static function admin_billing_fields( $fields ) {
 		unset( $fields['company'] );
 
@@ -139,6 +169,12 @@ class Company {
 		return $fields;
 	}
 
+	/**
+	 * Drop the "required" errors of the company fields when no company invoice is wanted.
+	 *
+	 * @param array     $data   Posted checkout data.
+	 * @param \WP_Error $errors Checkout errors.
+	 */
 	public static function validate_fields( $data, $errors ) {
 		$fields = array(
 			'billing_company',
@@ -157,6 +193,12 @@ class Company {
 		}
 	}
 
+	/**
+	 * Bulgarian states in alphabetical order.
+	 *
+	 * @param array $states States by country.
+	 * @return array
+	 */
 	public static function reorder_bg_states( $states ) {
 		$oblasti = $states['BG'];
 		asort( $oblasti );
@@ -165,6 +207,12 @@ class Company {
 		return $states;
 	}
 
+	/**
+	 * The state is required in Bulgaria.
+	 *
+	 * @param array $fields Address fields by country.
+	 * @return array
+	 */
 	public static function bg_locale_fields( $fields ) {
 		if ( isset( $fields['BG']['state']['required'] ) ) {
 			$fields['BG']['state']['required'] = true;

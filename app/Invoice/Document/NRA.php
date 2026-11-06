@@ -1,4 +1,12 @@
 <?php
+/**
+ * The N-18 order document.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Invoice\Document;
 
 use Nashenski\Image_Uploader;
@@ -6,15 +14,27 @@ use chillerlan\QRCode\QRCode;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The order document of Ordinance N-18, with its QR code.
+ */
 class NRA extends BaseDocument {
-	function __construct( $order ) {
+	/**
+	 * Set the title, the file meta key and the QR code.
+	 *
+	 * @param \WC_Order $order Order.
+	 */
+	public function __construct( $order ) {
 		parent::__construct( $order );
 
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		$this->set_title( apply_filters( 'nashenski/admin/invoice/order_document_title', __( 'Order - Original', 'nashenski-commerce' ) ) );
 		$this->meta = 'nashenski_order_document';
 		$this->generate_QR_code();
 	}
 
+	/**
+	 * Make the QR code of the order (NRA number, order number, transaction, date, time, total).
+	 */
 	public function generate_QR_code() {
 		$qr_code_pieces = array(
 			$this->nap_number,

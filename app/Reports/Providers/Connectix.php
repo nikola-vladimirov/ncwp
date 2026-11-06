@@ -1,15 +1,36 @@
 <?php
+/**
+ * Connectix customer check.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Reports\Providers;
 
 defined( 'ABSPATH' ) || exit;
 
 use Nashenski\Container\Client;
 
+/**
+ * Connectix: the chance that the customer will not pick up the shipment.
+ */
 class Connectix extends Provider_Base {
+	/**
+	 * Set the provider name.
+	 */
 	public function __construct() {
 		$this->set_name( __( 'Connectix', 'nashenski-commerce' ) );
 	}
 
+	/**
+	 * The order's check, asked from Connectix unless saved on the order.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @param bool      $force Ask Connectix again.
+	 * @return array
+	 */
 	public static function get_all_reports( $order, $force = false ) {
 		$container = nashenski()->container();
 		$phone     = ( $order->get_shipping_phone() ) ? $order->get_shipping_phone() : $order->get_billing_phone();
@@ -33,7 +54,7 @@ class Connectix extends Provider_Base {
 		$args['result'] = $result;
 		$result_index   = array_search( $result, array_column( $levels, 'key' ), true );
 
-		if ( $result_index !== false ) {
+		if ( false !== $result_index ) {
 			$option_index = array_search( nashenski_get_option( 'connectix', 'level_of_warning' ), array_column( $levels, 'key' ), true );
 
 			if ( false !== $option_index && $result_index >= $option_index ) {
@@ -57,6 +78,12 @@ class Connectix extends Provider_Base {
 		return $args;
 	}
 
+	/**
+	 * The order's saved check.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return array
+	 */
 	public static function get_all_reports_from_meta( $order ) {
 		$container    = nashenski()->container();
 		$levels       = $container[ Client::CONNECTIX ]::get_levels_of_probability();
@@ -66,7 +93,7 @@ class Connectix extends Provider_Base {
 		$result       = $order->get_meta( $meta_key );
 		$result_index = array_search( $result, array_column( $levels, 'key' ), true );
 
-		if ( $result_index !== false ) {
+		if ( false !== $result_index ) {
 			$option_index = array_search( nashenski_get_option( 'connectix', 'level_of_warning' ), array_column( $levels, 'key' ), true );
 
 			if ( false !== $option_index && $result_index >= $option_index ) {
@@ -78,11 +105,16 @@ class Connectix extends Provider_Base {
 		return $args;
 	}
 
-	function print_reports_html( $order ) {
+	/**
+	 * Print the order's check on the order screen.
+	 *
+	 * @param \WC_Order $order Order.
+	 */
+	public function print_reports_html( $order ) {
 		$reports      = self::get_all_reports( $order );
 		$result_index = array_search( $reports['result'], array_column( $reports['levels'], 'key' ), true );
 
-		if ( $result_index !== false ) {
+		if ( false !== $result_index ) {
 			/* translators: %s: level, for example High */
 			$title = sprintf( esc_html__( 'Possibility that the shipment will not be picked up: %s', 'nashenski-commerce' ), $reports['levels'][ $result_index ]['label'] );
 		} else {
@@ -95,6 +127,12 @@ class Connectix extends Provider_Base {
 		<?php
 	}
 
+	/**
+	 * Warnings for a phone number at checkout.
+	 *
+	 * @param string $phone Phone number.
+	 * @return array
+	 */
 	public static function check_for_reports_on_checkout( $phone ) {
 		$container    = nashenski()->container();
 		$levels       = $container[ Client::CONNECTIX ]::get_levels_of_probability();
@@ -102,7 +140,7 @@ class Connectix extends Provider_Base {
 		$result_index = array_search( $result, array_column( $levels, 'key' ), true );
 		$reports      = array();
 
-		if ( $result_index !== false ) {
+		if ( false !== $result_index ) {
 			$option_index = array_search( nashenski_get_option( 'connectix', 'level_of_warning' ), array_column( $levels, 'key' ), true );
 
 			if ( false !== $option_index && $result_index >= $option_index ) {

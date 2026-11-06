@@ -1,4 +1,12 @@
 <?php
+/**
+ * Pigeon Express address picker.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Shipping\Pigeon;
 
 use Nashenski\Container\Client;
@@ -6,9 +14,20 @@ use Nashenski\Transliteration;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * City and street lists for the Pigeon Express address picker.
+ */
 class Address {
+	/**
+	 * Client container.
+	 *
+	 * @var \Pimple\Container|null
+	 */
 	private static $container = null;
 
+	/**
+	 * Hook the picker requests.
+	 */
 	public function __construct() {
 
 		add_action( 'wp_ajax_nashenski_pigeon_load_streets', array( __CLASS__, 'load_streets' ) );
@@ -18,6 +37,9 @@ class Address {
 		add_action( 'wp_ajax_nopriv_nashenski_pigeon_search_address', array( __CLASS__, 'search_address' ) );
 	}
 
+	/**
+	 * Picker request: streets matching the query in the city, or the matching cities.
+	 */
 	public static function search_address() {
 		nashenski_check_picker_request();
 
@@ -29,7 +51,7 @@ class Address {
 		$raw_state   = nashenski_picker_request( 'state' );
 		$cities_data = self::$container[ Client::PIGEON_CITIES ]->get_filtered_cities( $raw_city, $raw_state );
 
-		if ( in_array( $cities_data['city'], $cities_data['cities_only_names'] ) ) {
+		if ( in_array( $cities_data['city'], $cities_data['cities_only_names'], true ) ) {
 			$city_id         = $cities_data['cities_search_names'][ $cities_data['city_key'] ]['id'];
 			$args['streets'] = nashenski_return_array_for_select( self::get_streets_for_query( $city_id, $query ), 0, array( 'type' => 'streets' ) );
 			$args['has_any'] = ! empty( self::get_streets_for_query( $city_id, '' ) );
@@ -42,6 +64,9 @@ class Address {
 		wp_die();
 	}
 
+	/**
+	 * Picker request: all streets of the city, or the matching cities.
+	 */
 	public static function load_streets() {
 		nashenski_check_picker_request();
 
@@ -52,7 +77,7 @@ class Address {
 		$raw_state   = nashenski_picker_request( 'state' );
 		$cities_data = self::$container[ Client::PIGEON_CITIES ]->get_filtered_cities( $raw_city, $raw_state );
 
-		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'] ) ) {
+		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'], true ) ) {
 			$args['cities'] = nashenski_return_array_for_select( $cities_data['cities_only_names_dropdowns'], 1, array( 'type' => 'city' ) );
 			$args['status'] = 'invalid-city';
 		} else {
@@ -68,6 +93,13 @@ class Address {
 		wp_die();
 	}
 
+	/**
+	 * Streets of a city matching the query, best matches first.
+	 *
+	 * @param int|string $city_id City id.
+	 * @param string     $query   Query.
+	 * @return array
+	 */
 	public static function get_streets_for_query( $city_id, $query ) {
 		if ( ! self::$container ) {
 			self::$container = nashenski()->container();
@@ -85,6 +117,12 @@ class Address {
 		return $streets;
 	}
 
+	/**
+	 * The query for the API: no street prefix, in Cyrillic, single spaces.
+	 *
+	 * @param string $query Query.
+	 * @return string
+	 */
 	private static function normalize_api_query( $query ) {
 		$query = nashenski_strip_street_prefix( trim( (string) $query ) );
 		$query = Transliteration::latin2cyrillic( $query );
@@ -92,6 +130,12 @@ class Address {
 		return trim( preg_replace( '/[\s\p{Zs}]+/u', ' ', $query ) );
 	}
 
+	/**
+	 * Text for matching: no street prefix, lower case, letters and digits only.
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
 	private static function normalize_match_text( $text ) {
 		$text = nashenski_strip_street_prefix( trim( (string) $text ) );
 		$text = mb_strtolower( $text );
@@ -100,10 +144,17 @@ class Address {
 		return trim( preg_replace( '/\s+/u', ' ', $text ) );
 	}
 
+	/**
+	 * Names sorted by how well they match the query, keys kept.
+	 *
+	 * @param array  $names Key => name.
+	 * @param string $query Query.
+	 * @return array
+	 */
 	private static function rank_names( $names, $query ) {
 		$query = self::normalize_match_text( $query );
 
-		if ( $query === '' ) {
+		if ( '' === $query ) {
 			return $names;
 		}
 
@@ -123,7 +174,7 @@ class Address {
 				}
 			}
 
-			$rank     = $normalized_name === $query ? 0 : ( $position === 0 ? 1 : ( $position !== false ? 2 : ( $all_tokens_match ? 3 : 4 ) ) );
+			$rank     = $normalized_name === $query ? 0 : ( 0 === $position ? 1 : ( false !== $position ? 2 : ( $all_tokens_match ? 3 : 4 ) ) );
 			$ranked[] = array(
 				'key'   => $key,
 				'name'  => $name,

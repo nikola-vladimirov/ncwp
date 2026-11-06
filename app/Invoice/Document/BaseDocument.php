@@ -1,4 +1,12 @@
 <?php
+/**
+ * Base class of the order documents.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Invoice\Document;
 
 use Nashenski\Invoice\Order\Order;
@@ -8,10 +16,191 @@ use Clegginabox\PDFMerger\PDFMerger;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * An order document (invoice, credit note, order document) and its PDF.
+ */
 class BaseDocument {
-	public $order, $pdf, $woo_order, $nap_number, $company_name, $mol, $eik, $vat_number, $address, $city, $phone_number, $email, $color, $add_shipping, $prepared_by, $identification_code, $footer_text, $meta, $payment_method, $transaction_id, $title, $document_number_meta, $document_number_option, $logo, $qr;
+	/**
+	 * Order data for the document.
+	 *
+	 * @var Order
+	 */
+	public $order;
 
-	function __construct( $order ) {
+	/**
+	 * PDF printer.
+	 *
+	 * @var PDF
+	 */
+	public $pdf;
+
+	/**
+	 * WooCommerce order or refund.
+	 *
+	 * @var \WC_Order|\WC_Order_Refund
+	 */
+	public $woo_order;
+
+	/**
+	 * NRA registration number of the store.
+	 *
+	 * @var string
+	 */
+	public $nap_number;
+
+	/**
+	 * Company name of the store.
+	 *
+	 * @var string
+	 */
+	public $company_name;
+
+	/**
+	 * Responsible person (MOL) of the store.
+	 *
+	 * @var string
+	 */
+	public $mol;
+
+	/**
+	 * Company EIK of the store.
+	 *
+	 * @var string
+	 */
+	public $eik;
+
+	/**
+	 * VAT number of the store.
+	 *
+	 * @var string
+	 */
+	public $vat_number;
+
+	/**
+	 * Address of the store.
+	 *
+	 * @var string
+	 */
+	public $address;
+
+	/**
+	 * City of the store.
+	 *
+	 * @var string
+	 */
+	public $city;
+
+	/**
+	 * Phone number of the store.
+	 *
+	 * @var string
+	 */
+	public $phone_number;
+
+	/**
+	 * Email of the store.
+	 *
+	 * @var string
+	 */
+	public $email;
+
+	/**
+	 * Accent color of the PDF.
+	 *
+	 * @var string
+	 */
+	public $color;
+
+	/**
+	 * Whether the shipping is a document line.
+	 *
+	 * @var string
+	 */
+	public $add_shipping;
+
+	/**
+	 * Name of the person who prepared the document.
+	 *
+	 * @var string
+	 */
+	public $prepared_by;
+
+	/**
+	 * Identification code of that person.
+	 *
+	 * @var string
+	 */
+	public $identification_code;
+
+	/**
+	 * Footer text of the PDF.
+	 *
+	 * @var string
+	 */
+	public $footer_text;
+
+	/**
+	 * Order meta key of the saved file.
+	 *
+	 * @var string
+	 */
+	public $meta;
+
+	/**
+	 * Payment method title.
+	 *
+	 * @var string
+	 */
+	public $payment_method;
+
+	/**
+	 * Payment transaction id.
+	 *
+	 * @var string
+	 */
+	public $transaction_id;
+
+	/**
+	 * Document title.
+	 *
+	 * @var string
+	 */
+	public $title;
+
+	/**
+	 * Order meta key of the document number.
+	 *
+	 * @var string
+	 */
+	public $document_number_meta;
+
+	/**
+	 * Setting that holds the next document number.
+	 *
+	 * @var string
+	 */
+	public $document_number_option;
+
+	/**
+	 * Logo.
+	 *
+	 * @var mixed
+	 */
+	public $logo;
+
+	/**
+	 * QR code image of the document.
+	 *
+	 * @var string
+	 */
+	public $qr;
+
+	/**
+	 * Read the store details and settings.
+	 *
+	 * @param \WC_Order|\WC_Order_Refund $order Order or refund.
+	 */
+	public function __construct( $order ) {
 		$this->woo_order    = $order;
 		$this->order        = new Order( $order );
 		$this->company_name = nashenski_get_option( 'nap', 'company_name' );
@@ -45,10 +234,16 @@ class BaseDocument {
 		}
 	}
 
+	/**
+	 * Number, dates, place and order number at the top of the document.
+	 *
+	 * @return array
+	 */
 	public function get_head_items() {
-		$items = array();
+		$items           = array();
+		$document_number = $this->get_document_number();
 
-		if ( $document_number = $this->get_document_number() ) {
+		if ( $document_number ) {
 			$items['reference'] = array(
 				'label' => '№',
 				'value' => str_pad( $document_number, 10, '0', STR_PAD_LEFT ),
@@ -81,12 +276,18 @@ class BaseDocument {
 			)
 		);
 
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		return apply_filters( 'nashenski/invoice/head_items', $items, $this );
 	}
 
+	/**
+	 * Column headers of the products table.
+	 *
+	 * @return array
+	 */
 	public function get_cart_headers() {
 		return apply_filters(
-			'nashenski/invoice/cart_headers',
+			'nashenski/invoice/cart_headers', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 			array(
 				array(
 					'label' => __( 'Product', 'nashenski-commerce' ),
@@ -122,6 +323,9 @@ class BaseDocument {
 
 	/**
 	 * Lines of a From or To box without the empty ones.
+	 *
+	 * @param array $lines Lines.
+	 * @return array
 	 */
 	protected static function lines( $lines ) {
 		return array_filter(
@@ -135,11 +339,16 @@ class BaseDocument {
 		);
 	}
 
+	/**
+	 * Lines of the From box: the store.
+	 *
+	 * @return array
+	 */
 	public function get_from_items() {
 		$contacts = 'no' !== \Nashenski\Invoice\PDF\Style::get()['show_contacts'];
 
 		return apply_filters(
-			'nashenski/invoice/from_items',
+			'nashenski/invoice/from_items', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 			self::lines(
 				array(
 					'company_name' => $this->company_name,
@@ -160,6 +369,11 @@ class BaseDocument {
 		);
 	}
 
+	/**
+	 * Lines of the To box: the customer or their company.
+	 *
+	 * @return array
+	 */
 	public function get_to_items() {
 		$order    = $this->customer_order();
 		$contacts = 'no' !== \Nashenski\Invoice\PDF\Style::get()['show_contacts'];
@@ -174,7 +388,7 @@ class BaseDocument {
 			$mol = $order->get_meta( '_billing_company_mol' );
 
 			$items = apply_filters(
-				'nashenski/invoice/set_to_company',
+				'nashenski/invoice/set_to_company', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 				array(
 					$order->get_billing_company(),
 					/* translators: %s: company EIK */
@@ -191,7 +405,7 @@ class BaseDocument {
 			);
 		} else {
 			$items = apply_filters(
-				'nashenski/invoice/set_to_person',
+				'nashenski/invoice/set_to_person', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 				array(
 					$order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
 					implode( ', ', self::lines( array( $order->get_billing_address_1() . ' ' . $order->get_billing_address_2(), $order->get_billing_city() . ' ' . $order->get_billing_postcode() ) ) ),
@@ -202,6 +416,7 @@ class BaseDocument {
 			);
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		return apply_filters( 'nashenski/invoice/to_items', self::lines( $items ), $this );
 	}
 
@@ -212,6 +427,11 @@ class BaseDocument {
 		return 'no' !== \Nashenski\Invoice\PDF\Style::get()['show_received'];
 	}
 
+	/**
+	 * Labels of the payment and signature lines at the bottom.
+	 *
+	 * @return array
+	 */
 	public function get_additional_items_labels() {
 		$items = array();
 
@@ -235,13 +455,24 @@ class BaseDocument {
 			$items[] = __( 'Received', 'nashenski-commerce' );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		return apply_filters( 'nashenski/invoice/additional_items_labels', $items, $this );
 	}
 
+	/**
+	 * Whether the order is paid by bank transfer.
+	 *
+	 * @return bool
+	 */
 	private function pays_by_bank() {
 		return method_exists( $this->woo_order, 'get_payment_method' ) && $this->woo_order->get_payment_method() === 'bacs';
 	}
 
+	/**
+	 * Values of the payment and signature lines at the bottom.
+	 *
+	 * @return array
+	 */
 	public function get_additional_items() {
 		$items = array();
 
@@ -279,29 +510,56 @@ class BaseDocument {
 			$items[] = $this->customer_order()->get_billing_first_name() . ' ' . $this->customer_order()->get_billing_last_name();
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		return apply_filters( 'nashenski/invoice/additional_items', $items, $this );
 	}
 
+	/**
+	 * The document number, allocated on first use.
+	 *
+	 * @return mixed
+	 */
 	public function get_document_number() {
 		return \Nashenski\Invoice\Number_Allocator::allocate( $this->woo_order, $this->document_number_meta, $this->document_number_option );
 	}
 
+	/**
+	 * The document date.
+	 *
+	 * @return \WC_DateTime|string|null
+	 */
 	public function get_document_date() {
 		return $this->woo_order->get_date_created();
 	}
 
+	/**
+	 * The due date.
+	 *
+	 * @return \WC_DateTime|string|null
+	 */
 	public function get_document_due_date() {
 		return $this->get_document_date();
 	}
 
+	/**
+	 * Create the PDF printer.
+	 */
 	private function set_pdf_printer() {
 		$this->pdf = new PDF( $this );
 	}
 
+	/**
+	 * Set the document title.
+	 *
+	 * @param string $title Title.
+	 */
 	public function set_title( $title ) {
 		$this->title = $title;
 	}
 
+	/**
+	 * Runs after the file is saved. Documents override it.
+	 */
 	public function after_file_generated() {}
 
 	/**
@@ -351,6 +609,8 @@ class BaseDocument {
 	/**
 	 * Original and copy in one PDF; only the original when the store keeps copies as separate
 	 * documents (Documents > Generate separate copy documents).
+	 *
+	 * @param string $copy_title Title of the copy.
 	 */
 	protected function generate_original_and_copy( $copy_title ) {
 		if ( nashenski_get_option( 'invoice', 'separate_copy_documents' ) === 'yes' ) {
@@ -385,8 +645,11 @@ class BaseDocument {
 	/**
 	 * Store the PDF privately (Document_Storage), attach it to the order (replacing the old file)
 	 * and run after_file_generated().
+	 *
+	 * @param string $contents PDF contents.
 	 */
 	protected function save_pdf( $contents ) {
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		$name      = apply_filters( 'nashenski/admin/invoice/file_name', uniqid( wp_rand(), true ), $this );
 		$attach_id = \Nashenski\Document_Storage::save( $name, 'pdf', $contents );
 
@@ -394,7 +657,9 @@ class BaseDocument {
 			return;
 		}
 
-		if ( $old_file = $this->woo_order->get_meta( $this->meta ) ) {
+		$old_file = $this->woo_order->get_meta( $this->meta );
+
+		if ( $old_file ) {
 			wp_delete_attachment( $old_file );
 		}
 
@@ -420,6 +685,7 @@ class BaseDocument {
 			$id = absint( get_option( 'site_icon' ) );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		return (int) apply_filters( 'nashenski/invoice/logo_id', $id );
 	}
 
@@ -460,7 +726,7 @@ class BaseDocument {
 		$email = $this->email ? $this->email : get_option( 'woocommerce_email_from_address' );
 
 		return apply_filters(
-			'nashenski/invoice/site_details',
+			'nashenski/invoice/site_details', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 			array_filter(
 				array(
 					'name'  => get_bloginfo( 'name' ),
@@ -473,6 +739,9 @@ class BaseDocument {
 		);
 	}
 
+	/**
+	 * Print the logo and the site details.
+	 */
 	public function render_pdf_logo() {
 		$logo    = self::get_logo_img();
 		$details = $this->get_site_details();
@@ -496,6 +765,7 @@ class BaseDocument {
 	 * QR code of the N-18 order document (empty for other documents).
 	 */
 	public function render_pdf_qr() {
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		$qr = apply_filters( 'nashenski/invoice/pdf/default_template/qr', $this->qr, $this );
 
 		if ( ! $qr ) {

@@ -1,4 +1,12 @@
 <?php
+/**
+ * Nekorekten settings section.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
@@ -7,17 +15,23 @@ use Nashenski\Client\Nekorekten;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * nekorekten.com settings section.
+ * The nekorekten.com settings section.
  */
 class Nekorekten_Tab extends Base_Tab {
+	/**
+	 * Set the section name and slug.
+	 */
 	public function __construct() {
 		$this->set_name( __( 'nekorekten.com', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'nekorekten' );
 	}
 
+	/**
+	 * Load the section's fields.
+	 */
 	public function load_fields() {
 		$fields = apply_filters(
-			'nashenski/admin/settings/nekorekten/fields',
+			'nashenski/admin/settings/nekorekten/fields', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 			array(
 				'nekorekten' => array(
 					new Fields\Text_Field(
@@ -48,6 +62,11 @@ class Nekorekten_Tab extends Base_Tab {
 		$this->set_fields( $fields );
 	}
 
+	/**
+	 * Titles of the field groups.
+	 *
+	 * @return array
+	 */
 	public function get_groups_titles() {
 		return array(
 			'nekorekten' => array(
@@ -56,6 +75,11 @@ class Nekorekten_Tab extends Base_Tab {
 		);
 	}
 
+	/**
+	 * Why the API key does not work, or '' when it does.
+	 *
+	 * @return string
+	 */
 	public function auth_test() {
 		$client = new Nekorekten();
 

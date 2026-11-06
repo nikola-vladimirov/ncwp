@@ -1,4 +1,12 @@
 <?php
+/**
+ * Pigeon Express office picker.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Shipping\Pigeon;
 
 use Nashenski\Container\Client;
@@ -6,18 +14,32 @@ use Nashenski\Transliteration;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Office list for the Pigeon Express office picker.
+ */
 class Office {
 	/** The offices and lockers Pigeon Express publishes on its website (its location finder). */
 	const PUBLIC_URL = 'https://pigeonexpress.com/api/locations';
 
+	/**
+	 * Client container.
+	 *
+	 * @var \Pimple\Container|null
+	 */
 	private static $container = null;
 
+	/**
+	 * Hook the picker request.
+	 */
 	public function __construct() {
 
 		add_action( 'wp_ajax_nashenski_pigeon_load_offices', array( __CLASS__, 'load_offices' ) );
 		add_action( 'wp_ajax_nopriv_nashenski_pigeon_load_offices', array( __CLASS__, 'load_offices' ) );
 	}
 
+	/**
+	 * Picker request: the offices in the city.
+	 */
 	public static function load_offices() {
 		nashenski_check_picker_request();
 
@@ -25,7 +47,7 @@ class Office {
 		if ( ! \Nashenski\Front_End\Checkout\Pickers::connected( 'pigeon' ) ) {
 			wp_send_json_success(
 				array(
-					'offices' => apply_filters( 'nashenski/shipping_method/pigeon/offices', self::public_list( 'office', nashenski_picker_request( 'city' ) ) ),
+					'offices' => apply_filters( 'nashenski/shipping_method/pigeon/offices', self::public_list( 'office', nashenski_picker_request( 'city' ) ) ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 					'status'  => 'valid-city',
 				)
 			);
@@ -39,7 +61,7 @@ class Office {
 		$raw_city        = Transliteration::latin2cyrillic( nashenski_picker_request( 'city' ) );
 		$cities_data     = self::$container[ Client::PIGEON_CITIES ]->get_filtered_cities( $raw_city, $raw_state );
 
-		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'] ) || ! $raw_city ) {
+		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'], true ) || ! $raw_city ) {
 			$args['status'] = 'invalid-city';
 
 			if ( ! $state ) {
@@ -61,6 +83,7 @@ class Office {
 				$offices = $offices;
 			}
 
+			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 			$args['offices'] = apply_filters( 'nashenski/shipping_method/pigeon/offices', $offices );
 			$args['status']  = 'valid-city';
 		}
@@ -73,6 +96,10 @@ class Office {
 	/**
 	 * Offices or lockers ( $type office|locker ) in a town from Pigeon Express's public list,
 	 * kept in the cache folder until the weekly clean-up.
+	 *
+	 * @param string $type office or locker.
+	 * @param string $city Town.
+	 * @return array
 	 */
 	public static function public_list( $type, $city ) {
 		$folder = nashenski()->container()[ Client::PIGEON ]::CACHE_FOLDER;
@@ -105,7 +132,7 @@ class Office {
 			array_filter(
 				(array) $list,
 				function ( $place ) use ( $type, $city ) {
-					return $type === ( $place['type'] ?? '' ) && '' !== $city && mb_strtolower( trim( (string) ( $place['city'] ?? '' ) ) ) === $city;
+					return ( $place['type'] ?? '' ) === $type && '' !== $city && mb_strtolower( trim( (string) ( $place['city'] ?? '' ) ) ) === $city;
 				}
 			)
 		);

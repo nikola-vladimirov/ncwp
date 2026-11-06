@@ -1,4 +1,12 @@
 <?php
+/**
+ * Pigeon Express streets.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Client\Pigeon;
 
 use Nashenski\Container\Client;
@@ -6,16 +14,42 @@ use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Pigeon Express streets of a city, cached in files.
+ */
 class Streets {
 	const STREETS_ENDPOINT = '/cities/{cityID}/streets';
 
+	/**
+	 * Streets by city id and query hash.
+	 *
+	 * @var array
+	 */
 	private $streets = array();
+
+	/**
+	 * Client container.
+	 *
+	 * @var \Pimple\Container
+	 */
 	private $container;
 
+	/**
+	 * Keep the client container.
+	 *
+	 * @param \Pimple\Container $container Client container.
+	 */
 	public function __construct( $container ) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Load the streets of a city matching the query, from the cache or the API.
+	 *
+	 * @param int|string $city_id City id.
+	 * @param string     $query   Query.
+	 * @return array|null
+	 */
 	protected function load_streets_by_city( $city_id, $query = '' ) {
 		if ( ! is_dir( $this->container[ Client::PIGEON ]::CACHE_FOLDER ) ) {
 			wp_mkdir_p( $this->container[ Client::PIGEON ]::CACHE_FOLDER );
@@ -68,7 +102,14 @@ class Streets {
 		return $streets;
 	}
 
-	// Getters
+	/**
+	 * One page of a city's streets from the API.
+	 *
+	 * @param int|string $city_id City id.
+	 * @param int        $page    Page.
+	 * @param string     $query   Query.
+	 * @return array
+	 */
 	public function get_page( $city_id, $page = 1, $query = '' ) {
 		$endpoint = str_replace( '{cityID}', $city_id, self::STREETS_ENDPOINT );
 		$args     = array(
@@ -83,6 +124,13 @@ class Streets {
 		return $this->container[ Client::PIGEON ]->api_call( $endpoint, $args );
 	}
 
+	/**
+	 * Streets of a city matching the query.
+	 *
+	 * @param int|string $city_id City id.
+	 * @param string     $query   Query.
+	 * @return array|null
+	 */
 	public function get_streets_by_city( $city_id, $query ) {
 		$query = mb_substr( (string) $query, 0, 64 );
 		$hash  = md5( $query );
@@ -94,11 +142,23 @@ class Streets {
 		return $this->streets[ $city_id ][ $hash ];
 	}
 
-	// Setters
+	/**
+	 * Keep the streets of a city and query.
+	 *
+	 * @param array|null $streets Streets.
+	 * @param int|string $city_id City id.
+	 * @param string     $hash    Query hash.
+	 */
 	private function set_streets( $streets, $city_id, $hash ) {
 		$this->streets[ $city_id ][ $hash ] = $streets;
 	}
 
+	/**
+	 * Streets as "street-id" => "type name".
+	 *
+	 * @param array $streets Streets.
+	 * @return array
+	 */
 	public function format_streets( $streets ) {
 		$formatted = array();
 
@@ -109,6 +169,12 @@ class Streets {
 		return $formatted;
 	}
 
+	/**
+	 * The street type shortened: ул., бул. and so on.
+	 *
+	 * @param string $type Street type.
+	 * @return string
+	 */
 	public static function format_type( $type ) {
 		if ( ! $type ) {
 			return '';

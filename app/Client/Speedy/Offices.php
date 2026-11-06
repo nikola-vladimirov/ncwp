@@ -1,4 +1,12 @@
 <?php
+/**
+ * Speedy offices.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Client\Speedy;
 
 use Nashenski\Container\Client;
@@ -6,16 +14,42 @@ use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Speedy offices and automats of a city, cached in files.
+ */
 class Offices {
 	const OFFICES_ENDPOINT = 'location/office/';
 
+	/**
+	 * Offices by city id.
+	 *
+	 * @var array
+	 */
 	private $offices = array();
+
+	/**
+	 * Client container.
+	 *
+	 * @var \Pimple\Container
+	 */
 	private $container;
 
+	/**
+	 * Keep the client container.
+	 *
+	 * @param \Pimple\Container $container Client container.
+	 */
 	public function __construct( $container ) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Load the offices of a city, from the cache or the API.
+	 *
+	 * @param int|string $city_id    City id.
+	 * @param int        $country_id Country id.
+	 * @return array|null
+	 */
 	protected function load_offices( $city_id, $country_id = 100 ) {
 		if ( ! is_dir( $this->container[ Client::SPEEDY ]::CACHE_FOLDER ) ) {
 			wp_mkdir_p( $this->container[ Client::SPEEDY ]::CACHE_FOLDER );
@@ -51,7 +85,13 @@ class Offices {
 		return $offices;
 	}
 
-	// Getters
+	/**
+	 * The offices of a city.
+	 *
+	 * @param int|string $city_id    City id.
+	 * @param int        $country_id Country id.
+	 * @return array|null
+	 */
 	public function get_offices( $city_id, $country_id = 100 ) {
 		if ( empty( $this->offices[ $city_id ] ) ) {
 			$this->load_offices( $city_id, $country_id );
@@ -60,11 +100,23 @@ class Offices {
 		return $this->offices[ $city_id ];
 	}
 
-	// Setters
+	/**
+	 * Keep the offices of a city.
+	 *
+	 * @param int|string $city_id City id.
+	 * @param array|null $offices Offices.
+	 */
 	private function set_offices( $city_id, $offices ) {
 		$this->offices[ $city_id ] = $offices;
 	}
 
+	/**
+	 * The offices (shops) and automats (aps) of a city for the picker.
+	 *
+	 * @param string $city       City id, as cityID-123.
+	 * @param int    $country_id Country id.
+	 * @return array
+	 */
 	public function get_formatted_offices( $city, $country_id = 100 ) {
 		$city_id = str_replace( 'cityID-', '', $city );
 		$offices = $this->get_offices( $city_id, $country_id );
@@ -78,7 +130,7 @@ class Offices {
 					'label' => $office['name'] . ' (' . $office['address']['fullAddressString'] . ')',
 				);
 
-				if ( $office['type'] === 'APT' ) {
+				if ( 'APT' === $office['type'] ) {
 					$aps[ 'officeID-' . $office['id'] ] = $data;
 				} else {
 					$shops[ 'officeID-' . $office['id'] ] = $data;

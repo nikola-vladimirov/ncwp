@@ -1,4 +1,12 @@
 <?php
+/**
+ * Courier API clients in the service container.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Container;
 
 defined( 'ABSPATH' ) || exit;
@@ -7,6 +15,9 @@ use Nashenski\Client as Api;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
+/**
+ * Registers the courier API clients, one shared instance each.
+ */
 class Client implements ServiceProviderInterface {
 	const ECONT           = 'client.econt';
 	const ECONT_PROFILE   = 'client.econt.profile';
@@ -68,6 +79,11 @@ class Client implements ServiceProviderInterface {
 		self::PIGEON_STREETS      => Api\Pigeon\Streets::class,
 	);
 
+	/**
+	 * Register the clients.
+	 *
+	 * @param Container $container Service container.
+	 */
 	public function register( Container $container ) {
 		foreach ( self::SERVICES as $id => $class ) {
 			$container[ $id ] = function ( Container $container ) use ( $class ) {

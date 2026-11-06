@@ -1,10 +1,18 @@
 <?php
+/**
+ * Nekorekten API client.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Client;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * nekorekten.com API (https://nekorekten.com/bg/api/doc).
+ * The nekorekten.com API (https://nekorekten.com/bg/api/doc).
  * Auth: "Api-Key" header. Limit: 10 requests per minute, so answers are cached.
  */
 class Nekorekten {
@@ -13,17 +21,34 @@ class Nekorekten {
 	const USAGE_ENDPOINT   = 'api-keys/current/usage';
 	const CACHE_SECONDS    = 600;
 
+	/**
+	 * API key.
+	 *
+	 * @var string
+	 */
 	private $api_key = '';
 
+	/**
+	 * Load the API key from the settings.
+	 */
 	public function __construct() {
 		$this->api_key = (string) nashenski_get_option( 'nekorekten', 'api_key' );
 	}
 
+	/**
+	 * The API key.
+	 *
+	 * @return string
+	 */
 	public function get_api_key() {
 		return $this->api_key;
 	}
 
 	/**
+	 * GET an endpoint.
+	 *
+	 * @param string $endpoint Endpoint path.
+	 * @param array  $query    Query arguments.
 	 * @return array|null Decoded JSON, or null when there is no key or no usable answer.
 	 */
 	private function get( $endpoint, $query = array() ) {
@@ -53,6 +78,10 @@ class Nekorekten {
 
 	/**
 	 * Reports about a phone number: array( 'count' => int, 'items' => array ), or null on error.
+	 *
+	 * @param string $phone Phone number.
+	 * @param bool   $force Skip the cache.
+	 * @return array|null
 	 */
 	public function find_by_phone( $phone, $force = false ) {
 		$phone = preg_replace( '/[^0-9+]/', '', (string) $phone );
@@ -95,6 +124,9 @@ class Nekorekten {
 	/**
 	 * POST, PATCH or DELETE on reports.
 	 *
+	 * @param string     $method   HTTP method.
+	 * @param string     $endpoint Endpoint path.
+	 * @param array|null $fields   Request body.
 	 * @return array|string The decoded answer on a 2xx, else the reason to show.
 	 */
 	private function write( $method, $endpoint, $fields = null ) {
@@ -136,6 +168,7 @@ class Nekorekten {
 	/**
 	 * Sends a report: text plus a phone or email, names optional.
 	 *
+	 * @param array $fields Report fields.
 	 * @return array|string array( 'id' => report id, '' when the answer had none ), else the reason.
 	 */
 	public function send_report( $fields ) {
@@ -145,7 +178,11 @@ class Nekorekten {
 	}
 
 	/**
-	 * @return true|string
+	 * Change a report.
+	 *
+	 * @param string $id     Report id.
+	 * @param array  $fields Report fields.
+	 * @return true|string True, else the reason.
 	 */
 	public function edit_report( $id, $fields ) {
 		$data = $this->write( 'PATCH', self::REPORTS_ENDPOINT . '/' . rawurlencode( $id ), $fields );
@@ -154,7 +191,10 @@ class Nekorekten {
 	}
 
 	/**
-	 * @return true|string
+	 * Delete a report.
+	 *
+	 * @param string $id Report id.
+	 * @return true|string True, else the reason.
 	 */
 	public function delete_report( $id ) {
 		$data = $this->write( 'DELETE', self::REPORTS_ENDPOINT . '/' . rawurlencode( $id ) );
@@ -162,6 +202,11 @@ class Nekorekten {
 		return is_array( $data ) ? true : $data;
 	}
 
+	/**
+	 * Whether the API key works.
+	 *
+	 * @return bool
+	 */
 	public function validate_access() {
 		return null !== $this->get( self::USAGE_ENDPOINT );
 	}

@@ -1,4 +1,12 @@
 <?php
+/**
+ * Document number allocation.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Invoice;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
@@ -9,11 +17,21 @@ defined( 'ABSPATH' ) || exit;
 
 /** Serialize all issuers, including shared order/refund and manually typed numbers. */
 class Number_Allocator {
+	/**
+	 * Whether this request holds the numbering lock.
+	 *
+	 * @var bool
+	 */
 	private static $issuing = false;
 
 	/** Cache group for reads inside one locked section; see forget(). */
 	const CACHE_GROUP = 'nashenski_numbers';
 
+	/**
+	 * Cache key salt of the current locked section.
+	 *
+	 * @var string
+	 */
 	private static $token = '';
 
 	/**
@@ -25,10 +43,24 @@ class Number_Allocator {
 		self::$token = wp_generate_uuid4();
 	}
 
+	/**
+	 * Cache key of a read in the current locked section.
+	 *
+	 * @param string $query Read name.
+	 * @param array  $args  Read arguments.
+	 * @return string
+	 */
 	private static function key( $query, $args ) {
 		return md5( self::$token . $query . wp_json_encode( $args ) );
 	}
 
+	/**
+	 * Run the callback while holding the numbering lock.
+	 *
+	 * @param callable $callback Code to run.
+	 * @return mixed
+	 * @throws \RuntimeException When the lock cannot be taken.
+	 */
 	private static function locked( $callback ) {
 		global $wpdb;
 		$lock = 'nashenski_numbers_' . md5( DB_NAME . ':' . $wpdb->options );
@@ -49,6 +81,13 @@ class Number_Allocator {
 		}
 	}
 
+	/**
+	 * A numbering setting, read from the database.
+	 *
+	 * @param string $name Setting name.
+	 * @return string|null
+	 * @throws \RuntimeException When the read fails.
+	 */
 	private static function option( $name ) {
 		global $wpdb;
 		$args = array( $wpdb->options, 'nashenski_settings_invoice_' . $name );
@@ -66,6 +105,13 @@ class Number_Allocator {
 		return $value;
 	}
 
+	/**
+	 * Save the next number of a sequence.
+	 *
+	 * @param string $name Setting name.
+	 * @param int    $next Next number.
+	 * @throws \RuntimeException When the write fails.
+	 */
 	private static function advance( $name, $next ) {
 		global $wpdb;
 		$key   = 'nashenski_settings_invoice_' . $name;
@@ -86,6 +132,11 @@ class Number_Allocator {
 		wp_cache_delete( 'notoptions', 'options' );
 	}
 
+	/**
+	 * Order meta table, its order id column and its row id column.
+	 *
+	 * @return array
+	 */
 	public static function storage() {
 		global $wpdb;
 		return OrderUtil::custom_orders_table_usage_is_enabled()
@@ -93,6 +144,14 @@ class Number_Allocator {
 			: array( $wpdb->postmeta, 'post_id', 'meta_id' );
 	}
 
+	/**
+	 * The saved number row of an order, or an empty row.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @param string    $meta  Meta key.
+	 * @return object
+	 * @throws \RuntimeException When the read fails.
+	 */
 	private static function saved( $order, $meta ) {
 		global $wpdb;
 		list( $table, $column, $id ) = self::storage();
@@ -116,6 +175,15 @@ class Number_Allocator {
 		return $empty;
 	}
 
+	/**
+	 * Put the number on the order object, tied to its database row.
+	 *
+	 * @param \WC_Order $order  Order.
+	 * @param string    $meta   Meta key.
+	 * @param string    $number Number.
+	 * @param object    $row    Saved row.
+	 * @param bool      $clean  Mark the meta as saved.
+	 */
 	private static function sync( $order, $meta, $number, $row, $clean = false ) {
 		$order->update_meta_data( $meta, $number );
 		// A stale order may not know the row inserted by another request. Keep its ID
@@ -130,8 +198,14 @@ class Number_Allocator {
 		}
 	}
 
+	/**
+	 * Meta keys that share a sequence.
+	 *
+	 * @param string $option Sequence setting.
+	 * @return array
+	 */
 	private static function keys( $option ) {
-		if ( $option === 'next_invoice_separate_number' ) {
+		if ( 'next_invoice_separate_number' === $option ) {
 			return array( 'nashenski_order_invoice_number' );
 		}
 		$keys = array( 'nashenski_order_number', 'nashenski_refunded_order_number' );
@@ -141,6 +215,15 @@ class Number_Allocator {
 		return $keys;
 	}
 
+	/**
+	 * Id of an order that already uses the number in the sequence, or null.
+	 *
+	 * @param int    $number Number.
+	 * @param string $option Sequence setting.
+	 * @param int    $except Order id to leave out.
+	 * @return string|null
+	 * @throws \RuntimeException When the read fails.
+	 */
 	private static function used( $number, $option, $except = 0 ) {
 		global $wpdb;
 		list( $table, $column ) = self::storage();
@@ -159,6 +242,13 @@ class Number_Allocator {
 		return $value;
 	}
 
+	/**
+	 * Highest number saved under the meta keys.
+	 *
+	 * @param array $keys Meta keys.
+	 * @return string|null
+	 * @throws \RuntimeException When the read fails.
+	 */
 	private static function highest( $keys ) {
 		global $wpdb;
 		list( $table ) = self::storage();
@@ -176,6 +266,16 @@ class Number_Allocator {
 		return $value;
 	}
 
+	/**
+	 * Save the number on the order and check it was written.
+	 *
+	 * @param \WC_Order $order  Order.
+	 * @param string    $meta   Meta key.
+	 * @param int       $number Number.
+	 * @param object    $row    Saved row.
+	 * @throws \RuntimeException When the number was not saved.
+	 * @throws \Throwable When the order save fails.
+	 */
 	private static function persist( $order, $meta, $number, $row ) {
 		$padded = str_pad( $number, 10, '0', STR_PAD_LEFT );
 		self::sync( $order, $meta, $padded, $row );
@@ -199,6 +299,15 @@ class Number_Allocator {
 		}
 	}
 
+	/**
+	 * The order's document number: the saved one, or the next one of the sequence.
+	 *
+	 * @param \WC_Order $order   Order.
+	 * @param string    $meta    Meta key.
+	 * @param string    $option  Sequence setting.
+	 * @param bool      $replace Replace a number another order also has.
+	 * @return mixed
+	 */
 	public static function allocate( $order, $meta, $option, $replace = false ) {
 		return self::locked(
 			function () use ( $order, $meta, $option, $replace ) {
@@ -233,7 +342,14 @@ class Number_Allocator {
 		);
 	}
 
-	/** $own_program: the number comes from the shop's own invoicing program, so the website sequence stays as it is. */
+	/**
+	 * $own_program: the number comes from the shop's own invoicing program, so the website sequence stays as it is.
+	 *
+	 * @param \WC_Order  $order       Order.
+	 * @param int|string $number      Invoice number.
+	 * @param bool       $own_program Whether the shop's own program issued it.
+	 * @return string Error message, or ''.
+	 */
 	public static function manual( $order, $number, $own_program = false ) {
 		return self::locked(
 			function () use ( $order, $number, $own_program ) {
@@ -253,7 +369,15 @@ class Number_Allocator {
 		);
 	}
 
-	/** Keep historical references unchanged, but never import one over another order's number. */
+	/**
+	 * Keep historical references unchanged, but never import one over another order's number.
+	 *
+	 * @param \WC_Order  $order  Order.
+	 * @param string     $meta   Meta key.
+	 * @param int|string $number Imported number.
+	 * @param string     $option Sequence setting.
+	 * @return bool Whether the number was imported.
+	 */
 	public static function import_number( $order, $meta, $number, $option ) {
 		return self::locked(
 			function () use ( $order, $meta, $number, $option ) {

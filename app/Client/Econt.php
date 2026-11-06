@@ -1,10 +1,21 @@
 <?php
+/**
+ * Econt API client.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Client;
 
 use Nashenski\File;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Calls the Econt API with the store's login.
+ */
 class Econt {
 	use Courier_Client;
 
@@ -16,14 +27,46 @@ class Econt {
 	const SHIPMENT_STATUS_ENDPOINT = 'Shipments/ShipmentService.getShipmentStatuses.json';
 	const CACHE_FOLDER             = File::CACHE_FOLDER . 'econt' . DIRECTORY_SEPARATOR;
 
-	private $env      = '';
-	private $user     = '';
+	/**
+	 * Environment: live or demo.
+	 *
+	 * @var string
+	 */
+	private $env = '';
+
+	/**
+	 * API user.
+	 *
+	 * @var string
+	 */
+	private $user = '';
+
+	/**
+	 * API password.
+	 *
+	 * @var string
+	 */
 	private $password = '';
+
+	/**
+	 * Base URL of the API.
+	 *
+	 * @var string
+	 */
 	private $base_endpoint;
+
+	/**
+	 * Cache files kept when the cache is cleared.
+	 *
+	 * @var string[]
+	 */
 	public static $skip_cached_files = array(
 		'cities-BG.json',
 	);
 
+	/**
+	 * Load the login and the endpoint from the settings.
+	 */
 	public function __construct() {
 		$this->set_env( nashenski_get_option( 'econt', 'env' ) );
 		$this->load_user();
@@ -31,6 +74,13 @@ class Econt {
 		$this->load_base_endpoint();
 	}
 
+	/**
+	 * Call an endpoint. Always an array.
+	 *
+	 * @param string $endpoint Endpoint path.
+	 * @param array  $args     Request body.
+	 * @return array
+	 */
 	public function api_call( $endpoint, $args ) {
 		// Countries, cities, offices, streets and quarters are public at Econt. Sending a
 		// login there only makes them fail when the login is wrong, so send it only elsewhere.
@@ -71,6 +121,14 @@ class Econt {
 		);
 	}
 
+	/**
+	 * Calculate, create, update or delete a label. Null without a login or for an unknown type.
+	 *
+	 * @param string $type         calculate, create, update or delete.
+	 * @param array  $request_body Request body.
+	 * @param array  $destination  Destination city details.
+	 * @return array|null
+	 */
 	public function label_request( $type, $request_body, $destination = array() ) {
 		if ( empty( $this->get_user() ) || empty( $this->get_password() ) ) {
 			return;
@@ -97,6 +155,10 @@ class Econt {
 	/**
 	 * When the receiver address has no Econt city ID, give Econt the country, name and
 	 * postcode so it can find the city itself (needed outside Bulgaria).
+	 *
+	 * @param array $request_body Request body.
+	 * @param array $destination  Destination city details.
+	 * @return array
 	 */
 	private function fill_receiver_city( $request_body, $destination ) {
 		if ( empty( $request_body['label']['receiverAddress'] ) || ! empty( $destination['id'] ) ) {
@@ -124,6 +186,13 @@ class Econt {
 		return $request_body;
 	}
 
+	/**
+	 * The receiver city details, from the request or else from the destination.
+	 *
+	 * @param array $request_body Request body.
+	 * @param array $destination  Destination city details.
+	 * @return array
+	 */
 	private function get_destination_data( $request_body, $destination ) {
 		$city = $request_body['label']['receiverAddress']['city'] ?? array();
 
@@ -140,62 +209,112 @@ class Econt {
 				'post_code'    => $city['postCode'] ?? ( $destination['post_code'] ?? '' ),
 			),
 			function ( $value ) {
-				return $value !== '' && $value !== null;
+				return '' !== $value && null !== $value;
 			}
 		);
 	}
 
+	/**
+	 * Whether an API answer means the login works. Null when the answer is not an array.
+	 *
+	 * @param mixed $api_call API answer.
+	 * @return bool|null
+	 */
 	public static function validate_access( $api_call ) {
 		if ( is_array( $api_call ) ) {
-			return ! ( isset( $api_call['type'] ) && $api_call['type'] == 'ExInvalidParam' );
+			return ! ( isset( $api_call['type'] ) && 'ExInvalidParam' === $api_call['type'] );
 		}
 	}
 
-	// Loaders
+	/**
+	 * Load the API user from the settings.
+	 */
 	public function load_user() {
 		$this->set_user( nashenski_get_option( 'econt', 'user' ) );
 	}
 
+	/**
+	 * Load the API password from the settings.
+	 */
 	public function load_password() {
 		$this->set_password( nashenski_get_option( 'econt', 'password' ) );
 	}
 
-	// Getters
-
+	/**
+	 * The API user.
+	 *
+	 * @return string
+	 */
 	public function get_user() {
 		return $this->user;
 	}
 
+	/**
+	 * The API password.
+	 *
+	 * @return string
+	 */
 	public function get_password() {
 		return $this->password;
 	}
 
+	/**
+	 * The environment: live or demo.
+	 *
+	 * @return string
+	 */
 	public function get_env() {
 		return $this->env;
 	}
 
+	/**
+	 * Base URL of the API.
+	 *
+	 * @return string
+	 */
 	public function get_base_endpoint() {
 		return $this->base_endpoint;
 	}
 
-	// Setters
-
+	/**
+	 * Set the API user.
+	 *
+	 * @param string $user User.
+	 */
 	private function set_user( $user ) {
 		$this->user = $user;
 	}
 
+	/**
+	 * Set the API password.
+	 *
+	 * @param string $password Password.
+	 */
 	private function set_password( $password ) {
 		$this->password = $password;
 	}
 
+	/**
+	 * Set the environment.
+	 *
+	 * @param string $env live or demo.
+	 */
 	public function set_env( $env ) {
 		$this->env = $env;
 	}
 
+	/**
+	 * Set the base URL of the API.
+	 *
+	 * @param string $endpoint Base URL.
+	 */
 	private function set_base_endpoint( $endpoint ) {
 		$this->base_endpoint = $endpoint;
 	}
 
+	/**
+	 * Forget the saved Econt profile.
+	 */
 	public static function clear_profile_data() {
 		nashenski_set_option( 'econt', 'profile_data', '' );
 	}

@@ -5,6 +5,8 @@
  * @package Nashenski_Commerce
  */
 
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Admin\Tabs;
 
 use Nashenski\Admin\Fields;
@@ -70,7 +72,7 @@ class BoxNow_Tab extends Base_Tab {
 			),
 		);
 
-		$fields = apply_filters( 'nashenski/admin/settings/boxnow/fields', $fields );
+		$fields = apply_filters( 'nashenski/admin/settings/boxnow/fields', $fields ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 
 		$this->set_fields( $fields );
 	}
@@ -219,7 +221,7 @@ class BoxNow_Tab extends Base_Tab {
 	 */
 	public function get_groups_titles() {
 		$titles = apply_filters(
-			'nashenski/admin/settings/boxnow/groups_titles',
+			'nashenski/admin/settings/boxnow/groups_titles', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 			array(
 				'boxnow'           => array(
 					'title' => __( 'BOX NOW account', 'nashenski-commerce' ),

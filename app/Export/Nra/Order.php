@@ -1,31 +1,125 @@
 <?php
+/**
+ * One order of the NRA audit file.
+ *
+ * @package Nashenski
+ */
+
+// phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the file name to match the class name.
+
 namespace Nashenski\Export\Nra;
 
 use Nashenski\Admin\Order\Documents;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * An order's data for the NRA audit file.
+ */
 class Order {
-	public $payment_method_type, $order_id_to_show, $woo_order, $order_document_number, $payment_method, $pos_number, $identifier, $vat_group, $vat_groups, $_tax;
+	/**
+	 * Payment type id.
+	 *
+	 * @var mixed
+	 */
+	public $payment_method_type;
 
-	function __construct( $woo_order, $generate_files ) {
-		$this->woo_order        = $woo_order;
+	/**
+	 * Order number shown in the file.
+	 *
+	 * @var string
+	 */
+	public $order_id_to_show;
+
+	/**
+	 * WooCommerce order.
+	 *
+	 * @var \WC_Order
+	 */
+	public $woo_order;
+
+	/**
+	 * Order document number.
+	 *
+	 * @var string
+	 */
+	public $order_document_number;
+
+	/**
+	 * Saved payment method details of the order.
+	 *
+	 * @var mixed
+	 */
+	public $payment_method;
+
+	/**
+	 * Virtual POS terminal number.
+	 *
+	 * @var string|null
+	 */
+	public $pos_number;
+
+	/**
+	 * Payment provider identifier.
+	 *
+	 * @var string|null
+	 */
+	public $identifier;
+
+	/**
+	 * VAT group of the shop.
+	 *
+	 * @var string
+	 */
+	public $vat_group;
+
+	/**
+	 * VAT group letter => rate.
+	 *
+	 * @var array
+	 */
+	public $vat_groups;
+
+	/**
+	 * Tax helper.
+	 *
+	 * @var \WC_Tax
+	 */
+	public $tax;
+
+	/**
+	 * Load the order's data.
+	 *
+	 * @param \WC_Order $woo_order      Order.
+	 * @param string    $generate_files 'true' to create missing documents.
+	 */
+	public function __construct( $woo_order, $generate_files ) {
+		$this->woo_order = $woo_order;
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		$this->order_id_to_show = apply_filters( 'nashenski/admin/export/order_id', $this->woo_order->get_order_number(), $this->woo_order );
 		$this->load_order_number( $generate_files );
 		$this->load_vat_groups();
 		$this->load_payment_method();
 	}
 
+	/**
+	 * Load the VAT groups.
+	 */
 	protected function load_vat_groups() {
 		$this->vat_group  = nashenski_get_option( 'shop', 'vat_group' );
 		$this->vat_groups = nashenski_get_vat_groups();
-		$this->_tax       = new \WC_Tax();
+		$this->tax        = new \WC_Tax();
 	}
 
+	/**
+	 * Load the order document number, creating the documents when asked.
+	 *
+	 * @param string $generate_files 'true' to create missing documents.
+	 */
 	protected function load_order_number( $generate_files ) {
 		$order_document_number = $this->woo_order->get_meta( 'nashenski_order_number' );
 
-		if ( $generate_files == 'true' && ! $order_document_number ) {
+		if ( 'true' === $generate_files && ! $order_document_number ) {
 			Documents::generate_documents( $this->woo_order->get_id() );
 			$this->woo_order       = wc_get_order( $this->woo_order->get_id() );
 			$order_document_number = $this->woo_order->get_meta( 'nashenski_order_number' );
@@ -34,6 +128,9 @@ class Order {
 		$this->order_document_number = $order_document_number;
 	}
 
+	/**
+	 * Load the payment type, POS number and identifier.
+	 */
 	protected function load_payment_method() {
 		$this->payment_method      = $this->woo_order->get_meta( 'nashenski_payment_method' );
 		$this->payment_method_type = null;
@@ -46,8 +143,10 @@ class Order {
 			$this->identifier = null;
 
 			if ( isset( $gateways[ $gateway ] ) && wc_string_to_bool( $gateways[ $gateway ]->enabled ) ) {
-				$this->pos_number          = nashenski_get_option( $gateway, 'virtual_pos_number' ) ?: '';
-				$this->identifier          = nashenski_get_option( $gateway, 'identifier' ) ?: '';
+				$pos_number                = nashenski_get_option( $gateway, 'virtual_pos_number' );
+				$identifier                = nashenski_get_option( $gateway, 'identifier' );
+				$this->pos_number          = $pos_number ? $pos_number : '';
+				$this->identifier          = $identifier ? $identifier : '';
 				$this->payment_method_type = nashenski_get_choice( $gateway, 'payment_type', nashenski_get_payment_types() );
 			}
 		} else {
@@ -57,6 +156,11 @@ class Order {
 		}
 	}
 
+	/**
+	 * Product, fee and shipping lines of the order.
+	 *
+	 * @return array
+	 */
 	protected function get_items_from_order() {
 		$items        = array();
 		$shipping_vat = nashenski_get_order_shipping_vat( $this->woo_order );
@@ -69,7 +173,7 @@ class Order {
 			}
 
 			$item_vat_rate = apply_filters(
-				'nashenski/admin/export/item_vat',
+				'nashenski/admin/export/item_vat', // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 				nashenski_get_order_item_vat_rate( $item, $this->woo_order ),
 				$item,
 				$this->woo_order
@@ -114,8 +218,8 @@ class Order {
 				}
 			}
 
-			$price    = apply_filters( 'nashenski/admin/export/item_price', $price, $item, $this->woo_order );
-			$item_vat = apply_filters( 'nashenski/admin/export/item_vat', $item_vat, $item, $this->woo_order );
+			$price    = apply_filters( 'nashenski/admin/export/item_price', $price, $item, $this->woo_order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
+			$item_vat = apply_filters( 'nashenski/admin/export/item_vat', $item_vat, $item, $this->woo_order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 
 			$items[] = array(
 				/* translators: %s: shipping method name */
@@ -126,14 +230,20 @@ class Order {
 			);
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		return apply_filters( 'nashenski/admin/nra_export/items', $items, $this->woo_order );
 	}
 
+	/**
+	 * The order's data for the audit file. Lines run without the shipping when the documents leave it out.
+	 *
+	 * @return array
+	 */
 	public function get_order_data() {
 		$remove_shipping = nashenski_maybe_remove_shipping( $this->woo_order );
 		$shipping_items  = $this->woo_order->get_items( 'shipping' );
 
-		if ( sizeof( $shipping_items ) > 0 && $remove_shipping === 'yes' ) {
+		if ( count( $shipping_items ) > 0 && 'yes' === $remove_shipping ) {
 			foreach ( $shipping_items as $item_id => $item ) {
 				$this->woo_order->remove_item( $item_id );
 			}
@@ -142,6 +252,7 @@ class Order {
 		}
 
 		$discount = ( wc_tax_enabled() ) ? $this->woo_order->get_total_discount() : nashenski_tax_based_price( $this->woo_order->get_total_discount(), $this->vat_groups[ $this->vat_group ], true );
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks add-ons.
 		$discount = apply_filters( 'nashenski/admin/nra_export/order_total_discount', $discount, $this->woo_order );
 
 		$data = array(
@@ -157,9 +268,11 @@ class Order {
 			'items'                 => $this->get_items_from_order(),
 		);
 
-		if ( sizeof( $shipping_items ) > 0 && $remove_shipping === 'yes' ) {
+		if ( count( $shipping_items ) > 0 && 'yes' === $remove_shipping ) {
 			foreach ( $shipping_items as $item_id => $item ) {
-				if ( $metas = $item->get_meta_data() ) {
+				$metas = $item->get_meta_data();
+
+				if ( $metas ) {
 					foreach ( $metas as $meta ) {
 						$meta_data = $meta->get_data();
 
