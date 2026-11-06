@@ -65,6 +65,36 @@ namespace {
 	$GLOBALS['options']   = array();
 	$GLOBALS['labels']    = array(); // Order id => label array; an order without one has no waybill.
 	$GLOBALS['delivered'] = ''; // The status the owner chose for a delivered parcel.
+	$GLOBALS['nest']      = false; // When true, the next wc_get_orders() runs a nested refund query, as compile_orders does.
+
+	/**
+	 * The query object posts_orderby receives: WP_Query::get() reads the query args.
+	 */
+	class Mock_Query {
+		/**
+		 * Query args.
+		 *
+		 * @var array
+		 */
+		private $args;
+
+		/**
+		 * Constructor.
+		 *
+		 * @param array $args Query args.
+		 */
+		public function __construct( $args ) {
+			$this->args = $args; }
+
+		/**
+		 * Get a query arg.
+		 *
+		 * @param string $k Key.
+		 * @return mixed Value or null.
+		 */
+		public function get( $k ) {
+			return $this->args[ $k ] ?? null; }
+	}
 
 	/**
 	 * Get option.
@@ -213,7 +243,7 @@ namespace {
 		foreach ( $GLOBALS['filters']['woocommerce_order_data_store_cpt_get_orders_query'] ?? array() as $cb ) {
 			$wp = $cb( $wp, $a, null ); }
 		$GLOBALS['wp_args'][]  = $wp;
-		$orderby               = ! empty( $GLOBALS['filters']['posts_orderby'] ) ? $GLOBALS['filters']['posts_orderby'][0]( '' ) : ''; // What the posts_orderby filter returns while the query runs.
+		$orderby               = ! empty( $GLOBALS['filters']['posts_orderby'] ) ? $GLOBALS['filters']['posts_orderby'][0]( '', new Mock_Query( $wp ) ) : ''; // What the posts_orderby filter returns while the query runs.
 		$GLOBALS['orderbys'][] = $orderby;
 		if ( $GLOBALS['throw'] ) {
 			throw new RuntimeException( 'query failed' ); }
@@ -270,6 +300,18 @@ namespace {
 				return $by_date ? array( $key( $x ), $x->id ) <=> array( $key( $y ), $y->id ) : $x->id <=> $y->id;
 			}
 		);
+		if ( $GLOBALS['nest'] ) {
+			// Once: the refund query WC runs inside compile_orders, during this query. It is recorded apart from the main query.
+			$GLOBALS['nest'] = false;
+			wc_get_orders(
+				array(
+					'status' => array( 'wc-refunded' ),
+					'limit'  => -1,
+				)
+			);
+			$GLOBALS['nested_wp']      = end( $GLOBALS['wp_args'] );
+			$GLOBALS['nested_orderby'] = end( $GLOBALS['orderbys'] );
+		}
 		$r = array_slice( $r, $a['offset'] ?? 0, $a['limit'] > 0 ? $a['limit'] : null );
 		return array_map(
 			function ( $o ) {
@@ -604,11 +646,11 @@ namespace {
 	$q = end( $GLOBALS['queries'] );
 	check( -1 === $q['limit'] && ! isset( $q['offset'] ) && abs( cursor() - ( $before - 60 * 86400 ) ) <= 2, 'limit -1 is passed through unchanged, no paging, the cursor is not touched' );
 
-	// Note 24: a limit of 0 or below -1 would cap the query at 10 and read the same first orders every run, so it becomes -1.
-	foreach ( array( 0, -2, -50 ) as $bad ) {
+	// Note 29: a limit below 1 other than -1 (0, negative, null, text) becomes the default 100, never -1 (no time budget, every order at once).
+	foreach ( array( 0, -2, -50, null, 'abc' ) as $bad ) {
 		$GLOBALS['limit'] = $bad;
 		run();
-		check( -1 === end( $GLOBALS['queries'] )['limit'], "limit $bad is read as -1 (no cap at 10)" );
+		check( 100 === end( $GLOBALS['queries'] )['limit'], 'limit ' . json_encode( $bad ) . ' is read as 100' );
 	}
 	$GLOBALS['limit'] = 100;
 
@@ -620,6 +662,18 @@ namespace {
 	} catch ( RuntimeException $e ) {
 		$thrown = true; }
 	check( $thrown && empty( $GLOBALS['filters'][ $hook ] ) && empty( $GLOBALS['filters']['posts_orderby'] ), 'legacy: both filters are removed when the query throws' );
+
+	// Note 28: a nested refund query in the same run gets neither the window nor the GMT sort; the main query keeps both.
+	$GLOBALS['throw'] = false;
+	$GLOBALS['limit'] = 100;
+	$GLOBALS['nest']  = true;
+	run();
+	$n    = count( $GLOBALS['wp_args'] );
+	$main = $GLOBALS['wp_args'][ $n - 2 ];
+	check( ! isset( $GLOBALS['nested_wp']['date_query'] ) && ! isset( $GLOBALS['nested_wp']['nashenski_shipments_check'] ), 'nested legacy query: no date window and no marker' );
+	check( '' === $GLOBALS['nested_orderby'], 'nested legacy query: posts_orderby keeps WordPress order' );
+	check( isset( $main['date_query'][0]['after'] ) && 'post_date_gmt ASC' === $GLOBALS['orderbys'][ count( $GLOBALS['orderbys'] ) - 2 ], 'main legacy query: window and GMT sort still applied' );
+	check( empty( $GLOBALS['filters'][ $hook ] ) && empty( $GLOBALS['filters']['posts_orderby'] ), 'nested run: both filters removed afterwards' );
 
 	// HPOS: the condition stays in the query, no filter.
 	$GLOBALS['throw'] = false;

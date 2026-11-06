@@ -253,9 +253,9 @@ class Automation {
 		// ponytail: 100 open orders per hour, created in the last 60 days; a busier store can raise it.
 		$limit = (int) apply_filters( 'nashenski/shipments/check_limit', 100 );
 
-		// A limit of 0 or below -1 would cap the query at 10 and read the same first orders every run; -1 stays "all".
+		// A value below 1 other than -1 (0, negative, null, text) becomes the default 100: -1 would drop the time budget and load every open order at once.
 		if ( $limit < 1 && -1 !== $limit ) {
-			$limit = -1;
+			$limit = 100;
 		}
 
 		// Each run reads the open orders from the creation second the last run reached, oldest first, skipping the IDs already read in that second:
@@ -298,7 +298,9 @@ class Automation {
 				array( 'year', 'month', 'day', 'hour', 'minute', 'second' ),
 				array_map( 'intval', explode( ' ', gmdate( 'Y n j G i s', $from ) ) )
 			);
-			$add   = function ( $wp_query_args ) use ( $open, $parts ) {
+			// The window goes on the first query built only: a nested query in the same run (refunds, inside compile_orders) must not get it.
+			$add   = function ( $wp_query_args ) use ( $open, $parts, &$add ) {
+				remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
 				$wp_query_args['meta_query'] = array_merge( isset( $wp_query_args['meta_query'] ) ? (array) $wp_query_args['meta_query'] : array(), array( $open ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				$wp_query_args['date_query'] = array(
 					array(
@@ -307,11 +309,13 @@ class Automation {
 						'after'     => $parts,
 					),
 				);
+				// Marks this query, so the GMT sort below applies to it only.
+				$wp_query_args['nashenski_shipments_check'] = true;
 
 				return $wp_query_args;
 			};
-			$order = function () {
-				return 'post_date_gmt ASC';
+			$order = function ( $orderby, $query ) {
+				return $query->get( 'nashenski_shipments_check' ) ? 'post_date_gmt ASC' : $orderby;
 			};
 			add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
 			add_filter( 'posts_orderby', $order );
