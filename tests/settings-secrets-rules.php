@@ -182,6 +182,18 @@ namespace {
 	expect( array( 'a@b.bg', 0 ) === $check( 'required|email', 'email', 'a@b.bg' ), 'a good e-mail is saved' );
 	expect( array( 'before', 1 ) === $check( 'required', 'text', '   ' ), 'an empty required field keeps the earlier value' );
 	expect( array( '', 0 ) === $check( '', 'text', '' ), 'an empty field without rules is saved empty' );
+	expect( array( '', 0 ) === $check( 'required', 'text', '', '' ), 'a required field that was never filled in saves empty without a notice' );
+	$secret = Settings_Page::sanitize_rules_field(
+		'',
+		array(
+			'id'              => 'nashenski_settings_nepostop_api_key',
+			'title'           => 'Key',
+			'type'            => 'text',
+			'nashenski_rules' => 'required',
+		),
+		''
+	);
+	expect( '' === $secret, 'a required login or key can be cleared on purpose' );
 	expect( array( 'before', 1 ) === $check( 'required|digits', 'text', 'R28 plain text' ), 'a counter with letters is refused' );
 	expect( array( '0000000100', 0 ) === $check( 'required|digits', 'text', '0000000100' ), 'a counter of digits is saved' );
 	expect( array( '', 0 ) === $check( 'digits', 'text', '' ), 'an empty optional counter is saved' );

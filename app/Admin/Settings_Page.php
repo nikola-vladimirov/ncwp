@@ -953,7 +953,8 @@ class Settings_Page extends \WC_Settings_Page {
 		$text = trim( $value );
 
 		if ( '' === $text ) {
-			$valid = ! in_array( 'required', $rules, true );
+			// A required field that was never filled in stays as it is, without a notice on every save; only wiping a saved value is refused. A login or key can be cleared on purpose.
+			$valid = ! in_array( 'required', $rules, true ) || self::is_secret( (string) $option['id'], (string) ( $option['type'] ?? '' ) ) || '' === trim( (string) get_option( $option['id'], '' ) );
 		} else {
 			$valid = ( ! in_array( 'email', $rules, true ) || is_email( $text ) )
 				&& ( ! in_array( 'digits', $rules, true ) || ctype_digit( $text ) )
