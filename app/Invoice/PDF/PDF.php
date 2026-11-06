@@ -46,7 +46,8 @@ class PDF {
 		ob_start();
 		$this->render_template();
 		$html = ob_get_clean();
-		$dompdf->loadHtml( $html );
+		// Pass the encoding: for large HTML on PHP 8.3+ dompdf's guess is ASCII and Cyrillic prints as "?".
+		$dompdf->loadHtml( $html, 'UTF-8' );
 
 		$dompdf->render();
 		self::inject_page_count( $dompdf );
