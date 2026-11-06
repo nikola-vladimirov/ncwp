@@ -85,14 +85,14 @@ class Document_Storage {
 				'post_status'    => 'any',
 				'fields'         => 'ids',
 				'posts_per_page' => self::CLEANUP_BATCH,
-				'meta_query'     => array(
+				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- daily background job.
 					array(
 						'key'     => self::EXPORT_UNTIL_META,
 						'value'   => time(),
 						'compare' => '<',
 						'type'    => 'NUMERIC',
 					),
-				), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- daily background job.
+				),
 			)
 		);
 
@@ -570,9 +570,9 @@ class Document_Storage {
 		$uploads = wp_upload_dir( null, false );
 
 		// In ID order after $after, so a file that cannot be moved is skipped instead of blocking the rest.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration, batched.
 		$ids = array_map(
 			'absint',
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time migration, batched.
 			$wpdb->get_col(
 				$wpdb->prepare(
 					"SELECT p.ID FROM {$wpdb->posts} p
