@@ -695,6 +695,11 @@ class Settings_Page extends \WC_Settings_Page {
 			) . '</p></div>';
 		}
 
+		// BOX NOW gives no rate until the price type is saved (Shipping\BoxNow\Method).
+		if ( 'boxnow' === $slug && ! nashenski_get_option( 'boxnow_price', 'price_type' ) ) {
+			echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'BOX NOW delivery is off. Click Save to choose how prices are set. After you save, BOX NOW delivery will work.', 'nashenski-commerce' ) . '</p></div>';
+		}
+
 		if ( $is_courier ) {
 			$url = wp_nonce_url(
 				add_query_arg(

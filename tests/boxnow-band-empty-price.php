@@ -339,4 +339,9 @@ foreach ( array(
 	$rates                     = calculate( array( line( 1 ) ), 'card', 2, false, '', 30 )->rates;
 	expect( 1 === count( $rates ) && 0 === $rates[0]['cost'], "BOX NOW $type: a typed price of 0 is still a free rate" );
 }
+// B04: price rows saved but no price type saved gives no rate; saving the type brings the rate back.
+$GLOBALS['boxnow_options'] = array( 'from_to_kg' => '[{"from":"0","to":"20","price":"3"}]' );
+expect( array() === calculate( array( line( 1 ) ), 'card', 2, false, '', 30 )->rates, 'BOX NOW with no saved price type gives no rate' );
+$GLOBALS['boxnow_options']['price_type'] = 'from_to_kg';
+expect( 1 === count( calculate( array( line( 1 ) ), 'card', 2, false, '', 30 )->rates ), 'BOX NOW with a saved price type gives a rate' );
 echo 'PASS: ' . $checks . " BOX NOW band price assertions\n";

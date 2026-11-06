@@ -506,10 +506,9 @@ foreach ( array(
 		expect( array() === band_rates( $type, $rows, $cart[0], $cart[1] ), "BOX NOW $name: a cart outside every band (weight {$cart[0]}, total {$cart[1]}) gets no rate" );
 	}
 }
-// No price type saved: the weight bands (the select's first choice) apply. No rows: no rate, never a free one.
+// No price type saved: no rate, even with weight rows (B04). No rows: no rate, never a free one.
 $GLOBALS['boxnow_options'] = array( 'from_to_kg' => wp_json_encode( $kg_rows ) );
-$rates                     = calculate( array( line( 1 ) ), 'card', 2, false, '', 30 )->rates;
-expect( 1 === count( $rates ) && '3' === $rates[0]['cost'], 'BOX NOW with no price type saved uses the weight bands' );
+expect( array() === calculate( array( line( 1 ) ), 'card', 2, false, '', 30 )->rates, 'BOX NOW with no price type saved gives no rate' );
 $GLOBALS['boxnow_options']['price_type'] = 'from_to_order_total';
 expect( array() === calculate( array( line( 1 ) ), 'card', 2, false, '', 30 )->rates, 'BOX NOW: a saved price type wins over the default (order total, no order total rows: no rate)' );
 $GLOBALS['boxnow_options'] = array();

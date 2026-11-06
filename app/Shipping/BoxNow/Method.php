@@ -167,8 +167,11 @@ class Method extends \WC_Shipping_Method {
 			'meta_data' => array(),
 		);
 
-		// Unsaved means the first choice of the settings select, as for a store that saved it.
-		$price_type = nashenski_get_option( 'boxnow_price', 'price_type' ) ? nashenski_get_option( 'boxnow_price', 'price_type' ) : 'from_to_kg';
+		// No saved price type: no rate, even with price rows (B04). The BOX NOW tab asks the owner to save.
+		$price_type = nashenski_get_option( 'boxnow_price', 'price_type' );
+		if ( ! $price_type ) {
+			return;
+		}
 
 		if ( (float) $this->free_shipping_over > 0 && nashenski_get_package_total() >= $this->free_shipping_over ) {
 			$rate['meta_data']['free_shipping'] = true;
