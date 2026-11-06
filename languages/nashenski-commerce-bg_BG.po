@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.19.9\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-06 11:13+0000\n"
-"PO-Revision-Date: 2026-11-06 11:13+0000\n"
+"POT-Creation-Date: 2026-11-06 11:39+0000\n"
+"PO-Revision-Date: 2026-11-06 11:39+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2408,13 +2408,13 @@ msgstr "Цените са за пратки, предадени в офис на
 #: app/Admin/Settings_Page.php:991
 #, php-format
 msgid "\"%s\" was not saved: the value is not valid, so the earlier one stays."
-msgstr "„%s“ не е запазено: стойността не е валидна, затова остава предишната."
+msgstr "„%s“ не е запазено, защото стойността не е валидна. Остава предишната."
 
 #. translators: %s: name of the setting
 #: app/Admin/Settings_Page.php:1129
 #, php-format
 msgid "\"%s\" was not saved: a weight or price must be a number from zero up, and every band needs a price, so the earlier list stays."
-msgstr "„%s“ не е запазено: теглото или цената трябва да са число от нула нагоре и всеки диапазон има нужда от цена, затова остава предишният списък."
+msgstr "„%s“ не е запазено: теглото и цената трябва да са числа от нула нагоре, а всеки диапазон трябва да има цена. Остава предишният списък."
 
 #: app/Admin/Settings_Page.php:1159
 msgid "No payment method is turned on in WooCommerce yet."
