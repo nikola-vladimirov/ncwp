@@ -332,6 +332,11 @@ function nashenski_maybe_remove_shipping( $order ) {
 		return $remove_shipping;
 	}
 
+	// Only a cash on delivery courier receipts the delivery charge; paid orders keep it.
+	if ( 'cod' !== $order->get_payment_method() ) {
+		return 'no';
+	}
+
 	$shipping_methods = $order->get_shipping_methods();
 
 	if ( ! empty( $shipping_methods ) ) {
