@@ -210,7 +210,7 @@ class Method extends \WC_Shipping_Method {
 		) {
 			$request_data = $this->calculate_shipping_price_from_api();
 			// The public list has Bulgarian prices only; foreign orders wait for the courier's own price.
-			if ( 'BG' === $package['destination']['country'] ) {
+			if ( 'BG' === $this->courier_country() ) {
 				$request_data = \Nashenski\Pricing\Public_Price::fallback( 'econt', $request_data, $this );
 			}
 
@@ -400,7 +400,16 @@ class Method extends \WC_Shipping_Method {
 	 */
 	public function is_available( $package ) {
 		$countries = 'yes' === $this->get_option( 'international', 'no' ) ? array( 'BG', 'RO', 'GR' ) : array( 'BG' );
-		return in_array( $package['destination']['country'], apply_filters( 'nashenski/econt/available_countries', $countries ), true );
+		return in_array( $package['destination']['country'] ?? '', apply_filters( 'nashenski/econt/available_countries', $countries ), true );
+	}
+
+	/**
+	 * Country the courier prices for: the widget's choice, else the package destination.
+	 *
+	 * @return string ISO code, or '' when none is known.
+	 */
+	public function courier_country() {
+		return $this->cookie_data['country'] ?? ( $this->package['destination']['country'] ?? '' );
 	}
 
 	/**

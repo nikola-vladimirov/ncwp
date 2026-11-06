@@ -212,8 +212,10 @@ class Method extends \WC_Shipping_Method {
 
 		do_action( 'nashenski/speedy/rate/before_calculate', $this );
 
+		$fixed_price = $this->applicable_fixed_price();
+
 		if ( is_array( $this->cookie_data ) ) {
-			$this->cookie_data['fixed_price'] = $this->fixed_price;
+			$this->cookie_data['fixed_price'] = $fixed_price;
 		}
 
 		$rate = array(
@@ -238,7 +240,7 @@ class Method extends \WC_Shipping_Method {
 		) {
 			$request_data = $this->calculate_shipping_price_from_api();
 			// The public list has Bulgarian prices only; foreign orders wait for the courier's own price.
-			if ( 'BG' === $package['destination']['country'] ) {
+			if ( 'BG' === $this->courier_country() ) {
 				$request_data = \Nashenski\Pricing\Public_Price::fallback( 'speedy', $request_data, $this );
 			}
 
@@ -266,9 +268,9 @@ class Method extends \WC_Shipping_Method {
 			unset( $rate['taxes'] );
 		}
 
-		if ( ! $this->free_shipping && ! empty( $this->fixed_price ) ) {
+		if ( ! $this->free_shipping && ! empty( $fixed_price ) ) {
 			$tax_rate     = apply_filters( 'nashenski/shipping/fixed_price_tax_rate', 20, $country );
-			$rate['cost'] = nashenski_tax_based_price( $this->fixed_price, $tax_rate );
+			$rate['cost'] = nashenski_tax_based_price( $fixed_price, $tax_rate );
 
 			if ( wc_tax_enabled() ) {
 				$rate['taxes'] = nashenski_get_shipping_rate_taxes( $rate['cost'], $country );
@@ -379,7 +381,25 @@ class Method extends \WC_Shipping_Method {
 	public function is_available( $package ) {
 		// Speedy's published CEE price list (services.speedy.bg/pricelist, 06.11.2026). shortcut: other EU countries need their own price rows.
 		$countries = 'yes' === $this->get_option( 'international', 'no' ) ? array( 'BG', 'RO', 'GR', 'CY', 'HU', 'CZ', 'HR', 'PL', 'SK', 'SI' ) : array( 'BG' );
-		return in_array( $package['destination']['country'], apply_filters( 'nashenski/speedy/available_countries', $countries ), true );
+		return in_array( $package['destination']['country'] ?? '', apply_filters( 'nashenski/speedy/available_countries', $countries ), true );
+	}
+
+	/**
+	 * Country the courier prices for: the widget's choice, else the package destination.
+	 *
+	 * @return string ISO code, or '' when none is known.
+	 */
+	public function courier_country() {
+		return $this->cookie_data['country'] ?? ( $this->package['destination']['country'] ?? '' );
+	}
+
+	/**
+	 * Fixed price for this order: like Econt, it applies to Bulgaria only.
+	 *
+	 * @return mixed The fixed price, or '' when none applies.
+	 */
+	public function applicable_fixed_price() {
+		return 'BG' === $this->courier_country() ? $this->fixed_price : '';
 	}
 
 	/**
@@ -1132,7 +1152,7 @@ class Method extends \WC_Shipping_Method {
 			$payment['packagePayer']        = 'SENDER';
 		}
 
-		if ( ! empty( $this->fixed_price ) && 'RECIPIENT' === $payment['courierServicePayer'] ) {
+		if ( ! empty( $this->applicable_fixed_price() ) && 'RECIPIENT' === $payment['courierServicePayer'] ) {
 			$payment['courierServicePayer'] = 'SENDER';
 		}
 

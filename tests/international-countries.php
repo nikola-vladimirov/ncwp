@@ -1,6 +1,6 @@
 <?php
 /**
- * Offline test: Econt and Speedy accept Romania and Greece (and Speedy only Greece) only when "Ship abroad" is on. Run: php tests/international-countries.php
+ * Offline test: Econt and Speedy accept foreign countries only when "Ship abroad" is on; the public price and Speedy's fixed price stay Bulgarian. Run: php tests/international-countries.php
  *
  * @package Nashenski_Commerce
  */
@@ -87,3 +87,32 @@ foreach ( array( 'RO', 'CY', 'HU', 'CZ', 'HR', 'PL', 'SK', 'SI' ) as $c ) {
 	nashenski_intl_assert( nashenski_intl_accepts( $speedy, 'yes', $c ), "Speedy: $c accepted when on" );
 }
 nashenski_intl_assert( ! nashenski_intl_accepts( $speedy, 'yes', 'DE' ), 'Speedy: Germany refused (not on the price list)' );
+
+$no_country = ( new ReflectionClass( $speedy ) )->newInstanceWithoutConstructor();
+nashenski_intl_assert( ! $no_country->is_available( array( 'destination' => array() ) ), 'Speedy: missing country refused without a warning' );
+
+/**
+ * A method with a widget country (or none) and a package country.
+ *
+ * @param string      $courier Method class.
+ * @param string|null $widget  Widget country, null when no widget choice yet.
+ * @param string      $country Package country.
+ * @return object
+ */
+function nashenski_intl_method( $courier, $widget, $country ) {
+	$method              = ( new ReflectionClass( $courier ) )->newInstanceWithoutConstructor();
+	$method->cookie_data = null === $widget ? null : array( 'country' => $widget );
+	$method->package     = array( 'destination' => array( 'country' => $country ) );
+	$method->fixed_price = 5;
+	return $method;
+}
+
+foreach ( array( $econt, $speedy ) as $class ) {
+	$name = substr( $class, 19, -7 );
+	nashenski_intl_assert( 'RO' === nashenski_intl_method( $class, 'RO', 'BG' )->courier_country(), "$name: Romanian widget with a Bulgarian package prices Romania (no public price)" );
+	nashenski_intl_assert( 'BG' === nashenski_intl_method( $class, null, 'BG' )->courier_country(), "$name: no widget yet falls back to the package country" );
+}
+
+nashenski_intl_assert( '' === nashenski_intl_method( $speedy, null, 'GR' )->applicable_fixed_price(), 'Speedy: fixed price 5 not used for Greece' );
+nashenski_intl_assert( '' === nashenski_intl_method( $speedy, 'GR', 'BG' )->applicable_fixed_price(), 'Speedy: fixed price 5 not used for a Greek widget' );
+nashenski_intl_assert( 5 === nashenski_intl_method( $speedy, 'BG', 'BG' )->applicable_fixed_price(), 'Speedy: fixed price 5 used for Bulgaria' );
