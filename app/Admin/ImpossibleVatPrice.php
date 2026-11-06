@@ -119,7 +119,7 @@ class ImpossibleVatPrice {
 	 */
 	public static function render_admin_page() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'You do not have permission to access this page.', 'nashenski-commerce' ) );
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
 		$prices_include_tax = ( 'yes' === get_option( 'woocommerce_prices_include_tax' ) );

@@ -15,6 +15,7 @@ use Nashenski\Shipping\Packer\Product;
 use Nashenski\Shipping\Packer\Size;
 use Nashenski\Shipping\Packer\Packing_Budget;
 use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
+use Nashenski\Pricing\Price_Lists;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -155,8 +156,8 @@ class Method extends \WC_Shipping_Method {
 
 		$this->title              = $this->get_option( 'title' );
 		$this->delivery_type      = $this->get_option( 'delivery_type' );
-		$this->free_shipping_over = $this->get_option( 'free_shipping_over' );
-		$this->fixed_price        = $this->get_option( 'fixed_price' );
+		$this->free_shipping_over = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
+		$this->fixed_price        = Price_Lists::non_negative( $this->get_option( 'fixed_price' ) );
 		$this->test               = $this->get_option( 'test' );
 		$this->tax_status         = ( wc_tax_enabled() ) ? 'taxable' : 'none';
 
@@ -289,6 +290,17 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Both "number" settings here are amounts: a negative or non-numeric value is saved empty.
+	 *
+	 * @param string $key   Setting key.
+	 * @param string $value Posted value.
+	 * @return mixed
+	 */
+	public function validate_number_field( $key, $value ) {
+		return Price_Lists::non_negative( $this->validate_text_field( $key, $value ) );
 	}
 
 	/**

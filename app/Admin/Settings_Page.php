@@ -45,6 +45,11 @@ class Settings_Page extends \WC_Settings_Page {
 	const SENDER_FIELDS = array( 'name', 'phone', 'email', 'send_from' );
 
 	/**
+	 * Shown in place of a saved login, key or secret, so the page source never holds it. Posting it back keeps the saved value.
+	 */
+	const SECRET_MASK = '********';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -58,6 +63,8 @@ class Settings_Page extends \WC_Settings_Page {
 		add_action( 'woocommerce_admin_field_nashenski_more', array( __CLASS__, 'output_more' ) );
 		add_action( 'woocommerce_admin_field_nashenski_rows', array( __CLASS__, 'output_rows_field' ) );
 		add_action( 'woocommerce_admin_field_nashenski_methods', array( __CLASS__, 'output_methods_field' ) );
+		add_filter( 'woocommerce_admin_settings_sanitize_option', array( __CLASS__, 'keep_secret' ), 5, 3 );
+		add_filter( 'woocommerce_admin_settings_sanitize_option', array( __CLASS__, 'sanitize_rules_field' ), 6, 3 );
 		add_filter( 'woocommerce_admin_settings_sanitize_option', array( __CLASS__, 'sanitize_rows_field' ), 10, 3 );
 		add_filter( 'woocommerce_admin_settings_sanitize_option', array( __CLASS__, 'sanitize_methods_field' ), 10, 3 );
 		add_action( 'woocommerce_admin_field_nashenski_image', array( __CLASS__, 'output_image_field' ) );
@@ -175,7 +182,8 @@ class Settings_Page extends \WC_Settings_Page {
 				)
 			);
 
-			if ( ! $layout[ $id ]['parts'] && '' !== $id ) {
+			// With documents off the section would only hold the company fields, which nothing uses.
+			if ( ( ! $layout[ $id ]['parts'] || ( 'documents' === $id && ! $this->tab( 'documents' ) ) ) && '' !== $id ) {
 				unset( $layout[ $id ] );
 			}
 		}
@@ -529,6 +537,12 @@ class Settings_Page extends \WC_Settings_Page {
 				if ( null !== $field->get_default() ) {
 					$setting['default'] = $field->get_default();
 				}
+
+				$setting['nashenski_rules'] = $rules;
+
+				if ( self::is_secret( $setting['id'], $setting['type'] ) && '' !== (string) get_option( $setting['id'], '' ) ) {
+					$setting['value'] = self::SECRET_MASK;
+				}
 				break;
 		}
 
@@ -724,7 +738,7 @@ class Settings_Page extends \WC_Settings_Page {
 
 		// Courier and customer check parts check the login and fill profile data after saving.
 		foreach ( $this->section_tabs( $id ) as $tab ) {
-			do_action( 'nashenski/admin/settings/afte_save_fields/' . get_class( $tab ) );
+			do_action( 'nashenski/admin/settings/after_save_fields/' . get_class( $tab ) );
 		}
 	}
 
@@ -890,6 +904,75 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 
 	/**
+	 * Whether a setting holds a login, key or secret (the screen shows a mask for it, WP-CLI the word "set").
+	 *
+	 * @param string $id   Option name.
+	 * @param string $type Setting type.
+	 * @return bool
+	 */
+	public static function is_secret( $id, $type = '' ) {
+		return 'password' === $type || (bool) preg_match( '/^nashenski_settings_.*(key|token|secret|password|_user|client_id)$/', $id );
+	}
+
+	/**
+	 * The mask posted back unchanged means "keep the saved value".
+	 *
+	 * @param mixed $value     Value.
+	 * @param array $option    Setting definition.
+	 * @param mixed $raw_value Raw value.
+	 * @return mixed
+	 */
+	public static function keep_secret( $value, $option, $raw_value ) {
+		if ( self::SECRET_MASK === $raw_value && self::is_secret( (string) ( $option['id'] ?? '' ), (string) ( $option['type'] ?? '' ) ) ) {
+			return get_option( $option['id'], '' );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Server-side check of what a text field declares: "required", "email" and "digits" in its rules, and a number field is never negative.
+	 * A value that fails keeps the earlier one and tells the user, because the browser check alone is no check.
+	 *
+	 * @param mixed $value     Value.
+	 * @param array $option    Setting definition.
+	 * @param mixed $raw_value Raw value.
+	 * @return mixed
+	 */
+	public static function sanitize_rules_field( $value, $option, $raw_value ) {
+		$rules = array_filter( explode( '|', (string) ( $option['nashenski_rules'] ?? '' ) ) );
+
+		if ( 'number' === ( $option['type'] ?? '' ) ) {
+			$rules[] = 'amount';
+		}
+
+		if ( ! $rules || ! is_string( $value ) ) {
+			return $value;
+		}
+
+		$text = trim( $value );
+
+		if ( '' === $text ) {
+			$valid = ! in_array( 'required', $rules, true );
+		} else {
+			$valid = ( ! in_array( 'email', $rules, true ) || is_email( $text ) )
+				&& ( ! in_array( 'digits', $rules, true ) || ctype_digit( $text ) )
+				&& ( ! in_array( 'amount', $rules, true ) || '' !== \Nashenski\Pricing\Price_Lists::non_negative( $text ) );
+		}
+
+		if ( $valid ) {
+			return $value;
+		}
+
+		if ( class_exists( 'WC_Admin_Settings' ) ) {
+			/* translators: %s: name of the setting */
+			\WC_Admin_Settings::add_error( sprintf( __( '"%s" was not saved: the value is not valid, so the earlier one stays.', 'nashenski-commerce' ), $option['title'] ?? $option['id'] ) );
+		}
+
+		return get_option( $option['id'], '' );
+	}
+
+	/**
 	 * Runs the sanitizers of the custom field types, the same ones the settings screen runs on save.
 	 * The command line calls this instead of the WooCommerce filter. Each sanitizer ignores the types it does not handle.
 	 *
@@ -898,6 +981,7 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @return mixed
 	 */
 	public static function sanitize_value( $value, $option ) {
+		$value = self::sanitize_rules_field( $value, $option, $value );
 		$value = self::sanitize_rows_field( $value, $option, $value );
 		$value = self::sanitize_methods_field( $value, $option, $value );
 		$value = self::sanitize_image_field( $value, $option, $value );

@@ -154,7 +154,7 @@ class Abandoned_Carts_Page {
 	 */
 	private static function guard( $action ) {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ) );
+			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
 		check_admin_referer( $action );

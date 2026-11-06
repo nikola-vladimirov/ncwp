@@ -284,6 +284,16 @@ class Price_Lists {
 	}
 
 	/**
+	 * A money setting as typed when it is a number that is not negative, or an empty string.
+	 *
+	 * @param mixed $value Value.
+	 * @return mixed
+	 */
+	public static function non_negative( $value ) {
+		return is_numeric( $value ) && (float) $value >= 0 ? $value : '';
+	}
+
+	/**
 	 * Clean a list (from the form, the updater or storage).
 	 *
 	 * @param mixed $prices Prices.
@@ -294,7 +304,8 @@ class Price_Lists {
 		$number = function ( $value ) {
 			$value = str_replace( ',', '.', (string) $value );
 
-			return is_numeric( $value ) ? round( (float) $value, 4 ) : null;
+			// A negative price, surcharge or fee would give a negative shipping rate, so it counts as not filled in.
+			return '' !== self::non_negative( $value ) ? round( (float) $value, 4 ) : null;
 		};
 		$bands  = array();
 

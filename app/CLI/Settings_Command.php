@@ -1,4 +1,10 @@
 <?php
+/**
+ * Settings Command.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\CLI;
 
 use Nashenski\Admin\Settings_Page;
@@ -7,7 +13,7 @@ use Nashenski\Pricing\Price_Lists;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * wp nashenski setting list|get|set|reset: every setting the admin shows, by its option name.
+ * The command `wp nashenski setting list|get|set|reset`: every setting the admin shows, by its option name.
  * The short name drops the prefix, so `apis_enable_econt` is `nashenski_settings_apis_enable_econt`.
  */
 class Settings_Command {
@@ -62,6 +68,9 @@ class Settings_Command {
 	 *     wp nashenski setting list --format=json
 	 *
 	 * @subcommand list
+	 *
+	 * @param mixed $args Args.
+	 * @param mixed $assoc Assoc.
 	 */
 	public function list_( $args, $assoc ) {
 		$rows = array();
@@ -100,10 +109,12 @@ class Settings_Command {
 	 * ## EXAMPLES
 	 *
 	 *     wp nashenski setting get apis_enable_econt
+	 *
+	 * @param mixed $args Args.
 	 */
 	public function get( $args ) {
 		$setting = self::find( $args[0] );
-		$value = get_option( $setting['id'] );
+		$value   = get_option( $setting['id'] );
 
 		\WP_CLI::line( is_scalar( $value ) || null === $value ? (string) $value : wp_json_encode( $value ) );
 	}
@@ -130,10 +141,12 @@ class Settings_Command {
 	 *     wp nashenski setting set econt_user iasp-dev
 	 *     echo "$ECONT_PASSWORD" | wp nashenski setting set econt_password -
 	 *     wp nashenski setting set prices_econt '[{"from":"0","to":"5","price":"4.50"}]'
+	 *
+	 * @param mixed $args Args.
 	 */
 	public function set( $args ) {
 		$setting = self::find( $args[0] );
-		$raw = $args[1] ?? '';
+		$raw     = $args[1] ?? '';
 
 		if ( '-' === $raw ) {
 			$raw = rtrim( (string) stream_get_contents( STDIN ), "\r\n" );
@@ -163,6 +176,8 @@ class Settings_Command {
 	 * ## EXAMPLES
 	 *
 	 *     wp nashenski setting reset apis_enable_econt
+	 *
+	 * @param mixed $args Args.
 	 */
 	public function reset( $args ) {
 		$setting = self::find( $args[0] );
@@ -197,7 +212,7 @@ class Settings_Command {
 
 		foreach ( self::TABS as $tab_class ) {
 			$class = 'Nashenski\\Admin\\Tabs\\' . $tab_class;
-			$tab = new $class();
+			$tab   = new $class();
 			$tab->load_fields();
 
 			foreach ( (array) $tab->get_fields() as $group => $fields ) {
@@ -223,8 +238,29 @@ class Settings_Command {
 
 		// Public price lists: one switch and one table per courier that has a list.
 		foreach ( Price_Lists::COURIERS as $courier ) {
-			self::add( $all, array( 'id' => 'nashenski_settings_prices_use_public_' . $courier, 'type' => 'checkbox', 'default' => 'yes', 'title' => 'Use public prices, ' . $courier ), 'prices', $courier );
-			self::add( $all, array( 'id' => Price_Lists::option_name( $courier ), 'type' => 'nashenski_price_list', 'courier' => $courier, 'default' => null, 'title' => 'Public prices, ' . $courier ), 'prices', $courier );
+			self::add(
+				$all,
+				array(
+					'id'      => 'nashenski_settings_prices_use_public_' . $courier,
+					'type'    => 'checkbox',
+					'default' => 'yes',
+					'title'   => 'Use public prices, ' . $courier,
+				),
+				'prices',
+				$courier
+			);
+			self::add(
+				$all,
+				array(
+					'id'      => Price_Lists::option_name( $courier ),
+					'type'    => 'nashenski_price_list',
+					'courier' => $courier,
+					'default' => null,
+					'title'   => 'Public prices, ' . $courier,
+				),
+				'prices',
+				$courier
+			);
 		}
 
 		ksort( $all );
@@ -232,17 +268,31 @@ class Settings_Command {
 		return $all;
 	}
 
+	/**
+	 * Add.
+	 *
+	 * @param array $all All.
+	 * @param mixed $setting Setting.
+	 * @param mixed $tab Tab.
+	 * @param mixed $group Group.
+	 * @param mixed $tab_class Tab class.
+	 */
 	private static function add( array &$all, $setting, $tab, $group, $tab_class = null ) {
 		if ( empty( $setting['id'] ) || in_array( $setting['type'] ?? '', self::NOT_VALUES, true ) || isset( $all[ $setting['id'] ] ) ) {
 			return;
 		}
 
-		$setting['tab'] = $tab;
-		$setting['group'] = $group;
-		$setting['tab_class'] = $tab_class;
+		$setting['tab']        = $tab;
+		$setting['group']      = $group;
+		$setting['tab_class']  = $tab_class;
 		$all[ $setting['id'] ] = $setting;
 	}
 
+	/**
+	 * Find.
+	 *
+	 * @param mixed $name Name.
+	 */
 	private static function find( $name ) {
 		$all = self::all();
 
@@ -257,6 +307,9 @@ class Settings_Command {
 
 	/**
 	 * The stored value for a setting, from the text the command line gave.
+	 *
+	 * @param mixed $setting Setting.
+	 * @param mixed $raw Raw.
 	 */
 	private static function parse( $setting, $raw ) {
 		$raw = (string) $raw;
@@ -284,6 +337,7 @@ class Settings_Command {
 
 				\WP_CLI::error( 'Use yes or no.' );
 
+				// No break: WP_CLI::error() ends the command.
 			case 'select':
 				$keys = array_map( 'strval', array_keys( (array) ( $setting['options'] ?? array() ) ) );
 
@@ -327,10 +381,20 @@ class Settings_Command {
 		}
 	}
 
+	/**
+	 * Is secret.
+	 *
+	 * @param mixed $setting Setting.
+	 */
 	private static function is_secret( $setting ) {
 		return 'password' === $setting['type'] || ( 'text' === $setting['type'] && (bool) preg_match( '/key|token|secret|password/i', $setting['id'] ) );
 	}
 
+	/**
+	 * Show.
+	 *
+	 * @param mixed $value Value.
+	 */
 	private static function show( $value ) {
 		if ( is_array( $value ) ) {
 			return wp_json_encode( $value );
@@ -342,6 +406,8 @@ class Settings_Command {
 	/**
 	 * What saving the settings page does after the values change: rebuild the courier clients and let the
 	 * tab check its login or fill its profile data.
+	 *
+	 * @param mixed $setting Setting.
 	 */
 	private static function after_save( $setting ) {
 		$container = nashenski()->container();
@@ -353,7 +419,7 @@ class Settings_Command {
 		$container->register( new \Nashenski\Container\Client() );
 
 		if ( ! empty( $setting['tab_class'] ) ) {
-			do_action( 'nashenski/admin/settings/afte_save_fields/' . $setting['tab_class'] );
+			do_action( 'nashenski/admin/settings/after_save_fields/' . $setting['tab_class'] );
 		}
 	}
 }

@@ -1,10 +1,16 @@
 <?php
+/**
+ * Courier Command.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\CLI;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * wp nashenski courier reload|check: the two buttons on each courier's settings tab, from the command line.
+ * The command `wp nashenski courier reload|check`: the two buttons on each courier's settings tab, from the command line.
  */
 class Courier_Command {
 
@@ -21,10 +27,12 @@ class Courier_Command {
 	 * ## EXAMPLES
 	 *
 	 *     wp nashenski courier reload econt
+	 *
+	 * @param mixed $args Args.
 	 */
 	public function reload( $args ) {
 		$courier = self::courier( $args[0] );
-		$class = nashenski()->container()[ 'client.' . $courier ];
+		$class   = nashenski()->container()[ 'client.' . $courier ];
 
 		$class::clear_cache_folder();
 
@@ -46,19 +54,26 @@ class Courier_Command {
 	 * ## EXAMPLES
 	 *
 	 *     wp nashenski courier check boxnow
+	 *
+	 * @param mixed $args Args.
 	 */
 	public function check( $args ) {
 		$courier = self::courier( $args[0] );
-		$class = 'Nashenski\\Admin\\Tabs\\' . self::tab_class( $courier );
-		$tab = new $class();
+		$class   = 'Nashenski\\Admin\\Tabs\\' . self::tab_class( $courier );
+		$tab     = new $class();
 
-		do_action( 'nashenski/admin/settings/afte_save_fields/' . $class );
+		do_action( 'nashenski/admin/settings/after_save_fields/' . $class );
 
 		$connected = method_exists( $tab, 'connected' ) && $tab->connected();
 
 		\WP_CLI::line( sprintf( '%s login: %s', ucfirst( $courier ), $connected ? 'works' : 'does not work (see the courier tab for the reason)' ) );
 	}
 
+	/**
+	 * Courier.
+	 *
+	 * @param mixed $name Name.
+	 */
 	private static function courier( $name ) {
 		$name = strtolower( (string) $name );
 
@@ -69,6 +84,11 @@ class Courier_Command {
 		return $name;
 	}
 
+	/**
+	 * Tab class.
+	 *
+	 * @param mixed $courier Courier.
+	 */
 	private static function tab_class( $courier ) {
 		$map = array(
 			'econt'  => 'Econt_Tab',

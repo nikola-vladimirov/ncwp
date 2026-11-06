@@ -8,6 +8,7 @@
 namespace Nashenski\Shipping\BoxNow;
 
 use Nashenski\Container\Client;
+use Nashenski\Pricing\Price_Lists;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -120,7 +121,7 @@ class Method extends \WC_Shipping_Method {
 		$this->init_settings(); // This is part of the settings API. Loads settings you previously init.
 
 		$this->title              = $this->get_option( 'title' );
-		$this->free_shipping_over = nashenski_get_option( 'boxnow_price', 'free_shipping_over' );
+		$this->free_shipping_over = Price_Lists::non_negative( nashenski_get_option( 'boxnow_price', 'free_shipping_over' ) );
 		$this->tax_status         = ( wc_tax_enabled() ) ? 'taxable' : 'none';
 
 		// Save settings in admin if you have any defined.

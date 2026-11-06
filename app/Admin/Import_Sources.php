@@ -236,7 +236,7 @@ class Import_Sources {
 	 */
 	public static function handle() {
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! current_user_can( 'activate_plugins' ) ) {
-			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ) );
+			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
 		check_admin_referer( self::ACTION );
@@ -480,7 +480,7 @@ class Import_Sources {
 	 */
 	public static function switch_off( $files ) {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
-			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ) );
+			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
 		if ( ! function_exists( 'deactivate_plugins' ) ) {

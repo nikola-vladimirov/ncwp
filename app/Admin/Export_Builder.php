@@ -139,7 +139,7 @@ class Export_Builder {
 		$config = self::posted_config();
 
 		if ( ! $config['columns'] ) {
-			wp_die( esc_html__( 'Add at least one column.', 'nashenski-commerce' ) );
+			wp_die( esc_html__( 'Add at least one column.', 'nashenski-commerce' ), '', array( 'response' => 400 ) );
 		}
 
 		if ( 'xlsx' === $config['format'] && ! class_exists( 'ZipArchive' ) ) {
@@ -154,7 +154,23 @@ class Export_Builder {
 		$path   = Writer::write( $config, $result['rows'] );
 		$name   = Builder::filename( $config );
 
-		nashenski_send_download( $path, $name, Writer::mime( $config['format'] ) . ( in_array( $config['format'], array( 'csv', 'json', 'xml' ), true ) && 'cp1251' !== $config['encoding'] ? '; charset=utf-8' : '' ) );
+		nashenski_send_download( $path, $name, self::content_type( $config ) );
+	}
+
+	/**
+	 * Content type of a download. The text formats name their character set, Windows-1251 included, so the browser reads the file the way it was written.
+	 *
+	 * @param array $config Export settings.
+	 * @return string
+	 */
+	public static function content_type( $config ) {
+		$type = Writer::mime( $config['format'] );
+
+		if ( in_array( $config['format'], array( 'csv', 'json', 'xml' ), true ) ) {
+			$type .= '; charset=' . ( 'cp1251' === $config['encoding'] ? 'windows-1251' : 'utf-8' );
+		}
+
+		return $type;
 	}
 
 	/**
