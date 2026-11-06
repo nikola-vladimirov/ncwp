@@ -254,7 +254,7 @@ function method( array $contents ) {
 	return $m;
 }
 /**
- * A bounded version of the previous calculation, used only for small compatibility fixtures.
+ * A bounded per-unit version of the capacity calculation (cm store), used only for small compatibility fixtures.
  *
  * @param array $contents Cart lines.
  * @return bool Whether the cart needs more than one box.
@@ -265,8 +265,8 @@ function previous_capacity( array $contents ) {
 		for ( $i = 0; $i < $item['quantity']; $i++ ) {
 			$p       = $item['data'];
 			$height  = $p->get_height() ? (float) $p->get_height() : 7;
-			$width   = $p->get_height() ? (float) $p->get_width() : 44;
-			$length  = $p->get_height() ? (float) $p->get_width() : 58;
+			$width   = $p->get_width() ? (float) $p->get_width() : 44;
+			$length  = $p->get_length() ? (float) $p->get_length() : 58;
 			$size    = \Nashenski\Shipping\BoxNow\Method::determine_item_size( $height, $width, $length );
 			$volume += $size['volume'];
 			if ( $size['oversize'] || $size['volume'] > 89320 || $volume > 89320 ) {
@@ -291,8 +291,10 @@ foreach ( array(
 	array( 'zero quantity oversize line ignored', array( line( 0, 100, 100, 100 ) ), false ),
 	array( 'negative quantity line ignored', array( line( -2, 100, 100, 100 ) ), false ),
 	array( 'oversize product', array( line( 1, 100, 100, 100 ) ), true ),
-	array( 'dimension fallback', array( line( 3, 1, 0, 2 ) ), true ),
-	array( 'custom dimensions', array( line( 10, 2, 3, 90 ) ), false ),
+	array( 'dimension fallback, each dimension on its own', array( line( 3, 1, 0, 2 ) ), false ),
+	array( 'height-only fallback fills width and length', array( line( 7, 1 ) ), false ),
+	array( 'custom dimensions', array( line( 10, 2, 3, 50 ) ), false ),
+	array( 'item longer than the box', array( line( 1, 2, 3, 90 ) ), true ),
 ) as list( $name, $contents, $expected ) ) {
 	expect( previous_capacity( $contents ) === $expected, 'Legacy fixture mismatch: ' . $name );
 	expect( method( $contents )->has_more_than_one_box() === $expected, $name );
@@ -311,6 +313,14 @@ foreach ( array( '1000000000000', '1e300', PHP_INT_MAX ) as $quantity ) {
 }
 foreach ( array( INF, NAN, '1e999', 'invalid', array( 1 ) ) as $quantity ) {
 	expect( method( array( line( $quantity ) ) )->has_more_than_one_box(), 'Malformed quantity must not bypass capacity' );
+}
+// Each dimension is read from its own getter and converted to cm (BOX NOW box 44 x 58 cm, 89320 cm3).
+foreach ( array( 'cm', 'mm' ) as $unit ) {
+	$k                         = 'mm' === $unit ? 10 : 1;
+	$GLOBALS['dimension_unit'] = $unit;
+	expect( method( array( line( 3, (string) ( 30 * $k ), (string) ( 20 * $k ), (string) ( 50 * $k ) ) ) )->has_more_than_one_box(), 'Three 30 x 20 x 50 cm items need two boxes on a ' . $unit . ' store' );
+	expect( ! method( array( line( 4, (string) ( 10 * $k ), (string) ( 50 * $k ), (string) ( 20 * $k ) ) ) )->has_more_than_one_box(), 'Four 10 x 50 x 20 cm items fit one box on a ' . $unit . ' store' );
+	unset( $GLOBALS['dimension_unit'] );
 }
 expect( ! method( array( line( 1000000000, 0.000001, 1, 1 ) ) )->has_more_than_one_box(), 'Large quantities of tiny products must not be rejected by an arbitrary unit cap' );
 expect( ! method( array( line( 893200, 0.1, 1, 1 ) ) )->has_more_than_one_box(), 'Fractional item volume at mathematical capacity must fit' );

@@ -262,9 +262,10 @@ class Method extends \WC_Shipping_Method {
 			$quantity = ceil( (float) $quantity );
 			$_product = $order_item['data'];
 
-			$height = ( $_product->get_height() ) ? (float) $_product->get_height() : 7;
-			$width  = ( $_product->get_height() ) ? (float) $_product->get_width() : 44;
-			$length = ( $_product->get_height() ) ? (float) $_product->get_width() : 58;
+			$unit   = get_option( 'woocommerce_dimension_unit' );
+			$height = $_product->get_height() ? wc_get_dimension( (float) $_product->get_height(), 'cm', $unit ) : 7;
+			$width  = $_product->get_width() ? wc_get_dimension( (float) $_product->get_width(), 'cm', $unit ) : 44;
+			$length = $_product->get_length() ? wc_get_dimension( (float) $_product->get_length(), 'cm', $unit ) : 58;
 
 			$item_sizes      = self::determine_item_size( $height, $width, $length );
 			$current_volume += $item_sizes['volume'] * $quantity;
