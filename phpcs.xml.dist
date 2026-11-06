@@ -7,6 +7,14 @@
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<arg name="extensions" value="php"/>
 	<rule ref="WordPress"/>
+	<!-- The language file is named after the locale, as WordPress names them. -->
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+		<exclude-pattern>*/languages/*</exclude-pattern>
+	</rule>
+	<!-- Offline tests define small stand-ins for WordPress and plugin classes. -->
+	<rule ref="Generic.Classes.DuplicateClassName">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
 	<!-- WooCommerce registers these capabilities on the shop manager and administrator roles. -->
 	<rule ref="WordPress.WP.Capabilities">
 		<properties>

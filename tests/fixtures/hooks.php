@@ -1,11 +1,13 @@
 <?php
 /**
- * Offline stand-ins for the WordPress deprecated-hook functions that Nashenski\Hooks calls.
+ * Offline stand-ins for the deprecated-hook functions that Nashenski\Hooks calls.
+ *
  * The old name runs through the test's own apply_filters() and do_action() stubs.
  *
  * @package Nashenski_Commerce
  */
 
+// Load the helper under test.
 require_once dirname( __DIR__, 2 ) . '/app/class-hooks.php';
 
 if ( ! function_exists( 'apply_filters_deprecated' ) ) {
