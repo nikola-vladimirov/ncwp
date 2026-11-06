@@ -12,9 +12,9 @@ Description:  WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shippi
 Requires Plugins: woocommerce
 Author:       PristaDigital
 Author URI:   https://pristadigital.com/
-Version:      0.21.1
+Version:      0.21.2
 Requires at least: 6.5
-Requires PHP: 7.4
+Requires PHP: 8.2
 WC requires at least: 9.4.0
 WC tested up to: 11.1
 Text Domain:  nashenski-commerce
@@ -30,7 +30,7 @@ License URI:  https://www.gnu.org/licenses/gpl-3.0.html
  */
 
 defined( 'ABSPATH' ) || exit;
-define( 'NASHENSKI_PHP_MINIMUM_VERSION', '7.4' );
+define( 'NASHENSKI_PHP_MINIMUM_VERSION', '8.2' );
 define( 'NASHENSKI_WP_MINIMUM_VERSION', '6.5' );
 
 // Stop the plugin's scheduled jobs on deactivation; no data is deleted (see uninstall.php).

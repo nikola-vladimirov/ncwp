@@ -24,7 +24,7 @@ Based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3 or later). 
 
 ## Requirements
 
-- WordPress 6.5 or newer (tested up to 7.1), PHP 7.4 or newer.
+- WordPress 6.5 or newer (tested up to 7.1), PHP 8.2 or newer.
 - WooCommerce 9.4 or newer (tested up to 11.1). The EU withdrawal function needs WooCommerce 11.1.
 - For live courier prices and labels: an account with each courier you use. Without one, checkout
   prices come from the courier's public price list, which is built in.
@@ -173,7 +173,7 @@ document again from the order.
 
 ## For developers
 
-- PHP 7.4+, namespace `Nashenski\` in `app/`, front-end templates in `templates/`, readable JS and CSS
+- PHP 8.2+, namespace `Nashenski\` in `app/`, front-end templates in `templates/`, readable JS and CSS
   in `assets/`, bundled PHP libraries in `vendor/` (do not edit). There is no compiled code: the old `dist/` bundles were rewritten as readable JS ([plan](docs/plans/dist-rewrite.md)).
 - Options are `nashenski_settings_{group}_{name}`, read and written with `nashenski_get_option()` and
   `nashenski_set_option()`.

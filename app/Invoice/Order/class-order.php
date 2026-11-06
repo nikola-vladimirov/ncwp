@@ -136,7 +136,7 @@ class Order {
 				$this->order_taxes = $this->woo_order->get_taxes();
 			} else {
 				$items[] = array(
-					'name'     => \Nashenski\Hooks::filter( 'nashenski_invoice_order_item_name', 'nashenski/invoice/order/item_name', $this->woo_order->get_reason(), null ),
+					'name'     => \Nashenski\Hooks::filter( 'nashenski_invoice_order_item_name', 'nashenski/invoice/order/item_name', ( method_exists( $this->woo_order, 'get_reason' ) ? $this->woo_order->get_reason() : '' ), null ),
 					'quantity' => 1,
 					'vat_rate' => '',
 					'price'    => wc_price( abs( $this->woo_order->get_total() ), array( 'currency' => $this->woo_order->get_currency() ) ),

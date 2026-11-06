@@ -2,6 +2,14 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.21.2 (2026-11-07)
+
+### Fixes
+- Issuing an invoice for an order with no items and a zero total no longer ends in a server error.
+
+### Changes
+- The plugin needs PHP 8.2 or newer.
+
 ## 0.21.1 (2026-11-07)
 
 ### Fixes
