@@ -122,7 +122,8 @@ class BoxNow_Tab extends Base_Tab {
 			__( 'After you select the option, you must save the settings in order the correct price settings to be shown.', 'nashenski-commerce' )
 		);
 
-		$price_type = nashenski_get_option( 'boxnow_price', 'price_type' );
+		// Unsaved, the select shows its first choice, so the weight table shows with it (Method uses the same default).
+		$price_type = nashenski_get_option( 'boxnow_price', 'price_type' ) ? nashenski_get_option( 'boxnow_price', 'price_type' ) : 'from_to_kg';
 		if ( $price_type ) {
 			switch ( $price_type ) {
 				case 'from_to_kg':

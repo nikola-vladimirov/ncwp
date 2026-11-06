@@ -149,7 +149,7 @@ class Nra_Tab extends Base_Tab {
 		$defaults = \Nashenski\Invoice\PDF\Style::field_defaults();
 		$fields   = array(
 			new Fields\Image_Field( 'logo', __( 'Logo', 'nashenski-commerce' ), null, __( 'Shown at the top of every document. Without one, the site logo from the theme or the site icon is used.', 'nashenski-commerce' ) ),
-			new Fields\Select_Field(
+			( new Fields\Select_Field(
 				array(
 					'small'  => array(
 						'id'    => 'small',
@@ -166,7 +166,7 @@ class Nra_Tab extends Base_Tab {
 				),
 				'logo_size',
 				__( 'Logo size', 'nashenski-commerce' )
-			),
+			) )->set_default( $defaults['logo_size'] ),
 			( new Fields\TrueFalse_Field( 'show_site_details', __( 'Website details', 'nashenski-commerce' ), null, null, __( 'Show the website name, address, email and phone under the logo', 'nashenski-commerce' ) ) )->set_default( 'yes' ),
 		);
 

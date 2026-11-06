@@ -50,7 +50,7 @@ class Pigeon_Tab extends Base_Tab {
 	public function load_fields() {
 		$fields = array(
 			'pigeon' => array(
-				new Fields\Select_Field(
+				( new Fields\Select_Field(
 					array(
 						'live'    => array(
 							'id'    => 'live',
@@ -66,7 +66,7 @@ class Pigeon_Tab extends Base_Tab {
 					null,
 					null,
 					__( 'Select used environment.', 'nashenski-commerce' )
-				),
+				) )->set_default( 'sandbox' ), // Matches the client, which uses the sandbox until Live is saved.
 				new Fields\Text_Field( 'api_key', __( 'API Key', 'nashenski-commerce' ), __( 'Enter your API key.', 'nashenski-commerce' ), 'required' ),
 				new Fields\Text_Field( 'api_secret', __( 'API Secret', 'nashenski-commerce' ), __( 'Enter your API secret.', 'nashenski-commerce' ), 'required', null, 'password' ),
 			),
