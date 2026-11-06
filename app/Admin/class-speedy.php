@@ -1110,7 +1110,7 @@ class Speedy {
 	 * Print labels endpoint.
 	 */
 	public static function print_labels_endpoint() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 

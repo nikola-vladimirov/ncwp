@@ -229,7 +229,7 @@ class Delivery_Box {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_nonce'] ) ), self::NONCE ) || ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_nonce'] ) ), self::NONCE ) || ! current_user_can( 'edit_shop_orders' ) ) {
 			return;
 		}
 

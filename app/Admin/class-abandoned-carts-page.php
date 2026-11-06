@@ -54,7 +54,7 @@ class Abandoned_Carts_Page {
 			'woocommerce',
 			__( 'Abandoned carts', 'nashenski-commerce' ),
 			__( 'Abandoned carts', 'nashenski-commerce' ),
-			'manage_woocommerce', // phpcs:ignore WordPress.WP.Capabilities.Unknown -- manage_woocommerce is WooCommerce's own capability.
+			'manage_woocommerce',
 			self::SLUG,
 			array( __CLASS__, 'render' )
 		);
@@ -153,7 +153,7 @@ class Abandoned_Carts_Page {
 	 * @param mixed $action Action.
 	 */
 	private static function guard( $action ) {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- manage_woocommerce is WooCommerce's own capability.
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 

@@ -568,7 +568,7 @@ class Updater {
 	 * AJAX: reads a courier's price list and sends it with the changes.
 	 */
 	public static function ajax_check() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_ajax_referer( 'nashenski_check_prices', 'nonce', false ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_ajax_referer( 'nashenski_check_prices', 'nonce', false ) ) {
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
 		}
 

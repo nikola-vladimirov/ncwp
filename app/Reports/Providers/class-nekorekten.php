@@ -206,7 +206,7 @@ class Nekorekten extends Provider_Base {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_nk_nonce'] ) ), 'nashenski_nk_report' ) || ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers this capability.
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_nk_nonce'] ) ), 'nashenski_nk_report' ) || ! current_user_can( 'edit_shop_orders' ) ) {
 			return;
 		}
 

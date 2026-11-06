@@ -192,7 +192,7 @@ class Actions {
 	public static function make_invoice( $order_id ) {
 		$request = nashenski_verified_request( null, array(), 'nashenski_make_invoice_nonce', 'nashenski_make_invoice' );
 
-		if ( empty( $request['nashenski_make_invoice'] ) || ! current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( empty( $request['nashenski_make_invoice'] ) || ! current_user_can( 'edit_shop_orders' ) ) {
 			return;
 		}
 

@@ -257,7 +257,7 @@ class Document_Storage {
 	 * The "Delete all now" button of the documents settings.
 	 */
 	public static function delete_receipts_now() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You cannot do this.', 'nashenski-commerce' ), 403 );
 		}
 
@@ -278,7 +278,7 @@ class Document_Storage {
 	 * Receipts deleted notice.
 	 */
 	public static function receipts_deleted_notice() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended , WordPress.WP.Capabilities.Unknown -- only shows a notice; manage_woocommerce is a WooCommerce capability.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only shows a notice.
 		if ( empty( $_GET['nashenski-receipts-deleted'] ) || ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
@@ -452,7 +452,7 @@ class Document_Storage {
 			if ( $main_order && self::is_document_meta( $meta ) && self::can_download( $main_order, $signed ) ) {
 				$attach_id = absint( $order->get_meta( $meta ) );
 			}
-		} elseif ( $file_id && current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		} elseif ( $file_id && current_user_can( 'manage_woocommerce' ) ) {
 			$attach_id = $file_id;
 		}
 
@@ -485,10 +485,10 @@ class Document_Storage {
 	 * @param bool      $signed The link's signature is valid and not expired.
 	 */
 	private static function can_download( $order, $signed ) {
-		if ( current_user_can( 'manage_woocommerce' ) || current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( current_user_can( 'manage_woocommerce' ) || current_user_can( 'edit_shop_orders' ) ) {
 			$allowed = true;
 		} elseif ( $order->get_customer_id() ) {
-			$allowed = current_user_can( 'view_order', $order->get_id() ); // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+			$allowed = current_user_can( 'view_order', $order->get_id() );
 		} else {
 			$allowed = $signed;
 		}

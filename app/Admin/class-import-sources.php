@@ -148,7 +148,7 @@ class Import_Sources {
 	 * The notice: the report of the last import, or the sources still to import.
 	 */
 	public static function render() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
 
@@ -214,7 +214,7 @@ class Import_Sources {
 	 * Dismiss.
 	 */
 	public static function dismiss() {
-		if ( current_user_can( 'manage_woocommerce' ) && check_admin_referer( self::DISMISS ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( current_user_can( 'manage_woocommerce' ) && check_admin_referer( self::DISMISS ) ) {
 			update_option( self::DISMISS_OPTION, array_keys( self::open_names() ), false );
 		}
 
@@ -235,7 +235,7 @@ class Import_Sources {
 	 * Handle.
 	 */
 	public static function handle() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! current_user_can( 'activate_plugins' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! current_user_can( 'activate_plugins' ) ) {
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 

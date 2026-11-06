@@ -588,7 +588,7 @@ function nashenski_check_admin_label_actions() {
 		$errors[] = __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' );
 	}
 
-	if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers this capability.
+	if ( ! current_user_can( 'manage_woocommerce' ) ) {
 		$errors[] = __( 'You cannot create labels.', 'nashenski-commerce' );
 	}
 

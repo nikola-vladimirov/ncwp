@@ -202,7 +202,7 @@ class Reports {
 		$refresh = false;
 
 		// "Refresh data" asks the services again (it carries its own nonce).
-		if ( isset( $_GET['nashenski--reports-refresh'], $_GET['nashenski_reports_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nashenski_reports_nonce'] ) ), 'nashenski_reports_refresh' ) && current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( isset( $_GET['nashenski--reports-refresh'], $_GET['nashenski_reports_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nashenski_reports_nonce'] ) ), 'nashenski_reports_refresh' ) && current_user_can( 'manage_woocommerce' ) ) {
 			$refresh = true;
 		}
 		$reports = self::get_all_reports( $order, $refresh );

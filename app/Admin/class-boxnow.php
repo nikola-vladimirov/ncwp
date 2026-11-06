@@ -707,7 +707,7 @@ class BoxNow {
 	 * AJAX: streams the label PDF of a parcel.
 	 */
 	public static function print_label_endpoint() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
@@ -740,7 +740,7 @@ class BoxNow {
 	 * AJAX: hides the BOX NOW notice.
 	 */
 	public static function message_dismiss_callback() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( -1, 403 );
 		}
 

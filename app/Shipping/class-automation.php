@@ -495,7 +495,7 @@ class Automation {
 	 * @return mixed Result.
 	 */
 	public static function handle_bulk_action( $redirect, $action, $ids ) {
-		if ( isset( self::actions()[ $action ] ) && current_user_can( 'edit_shop_orders' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce registers this capability.
+		if ( isset( self::actions()[ $action ] ) && current_user_can( 'edit_shop_orders' ) ) {
 			self::notice( self::run( $action, array_filter( array_map( 'wc_get_order', (array) $ids ) ) ) );
 		}
 

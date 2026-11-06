@@ -248,7 +248,7 @@ class Help_Page {
 	 */
 	private static function output_import() {
 		$rows       = array();
-		$can_import = current_user_can( 'manage_woocommerce' ) && current_user_can( 'activate_plugins' ); // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
+		$can_import = current_user_can( 'manage_woocommerce' ) && current_user_can( 'activate_plugins' );
 
 		if ( Migration::has_old_data() ) {
 			$rows[] = array( __( 'Bulgarisation for WooCommerce', 'nashenski-commerce' ), get_option( Migration::DONE_OPTION ), $can_import ? wp_nonce_url( admin_url( 'admin-post.php?action=' . Migration::ACTION ), Migration::ACTION ) : '' );
