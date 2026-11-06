@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName, Universal.Namespaces, Generic.Files.OneObjectStructurePerFile, Universal.Files.SeparateFunctionsFromOO, Generic.Classes.DuplicateClassName -- offline test: WordPress stubs stand in for the real classes and share one file with the test.
 /**
  * Offline regressions: php -d memory_limit=64M tests/pigeon-resources.php
  *
@@ -13,10 +13,9 @@ namespace Nashenski\Front_End\Checkout {
 		/**
 		 * Connected.
 		 *
-		 * @param mixed $name Name.
 		 * @return mixed Result.
 		 */
-		public static function connected( $name ) {
+		public static function connected() {
 			return $GLOBALS['connected']; }
 	}
 }
@@ -29,10 +28,9 @@ namespace Nashenski\Pricing {
 		/**
 		 * Get.
 		 *
-		 * @param mixed $courier Courier.
 		 * @return array Result.
 		 */
-		public static function get( $courier ) {
+		public static function get() {
 			++$GLOBALS['public_quotes'];
 			return array(
 				'bands'        => array(
@@ -90,9 +88,9 @@ namespace {
 			$this->rates[] = $rate; }
 	}
 	require __DIR__ . '/../vendor/autoload.php';
-	set_error_handler(
+	set_error_handler( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- offline test turns warnings into failures.
 		function ( $severity, $message, $file, $line ) {
-			throw new \ErrorException( $message, 0, $severity, $file, $line );
+			throw new \ErrorException( $message, 0, $severity, $file, $line ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- CLI test failure message, not HTML.
 		}
 	);
 
@@ -105,12 +103,12 @@ namespace {
 	/**
 	 * Get option.
 	 *
-	 * @param mixed  $name Name.
-	 * @param string $default Default.
+	 * @param mixed  $name          Name.
+	 * @param string $default_value Default.
 	 * @return string Result.
 	 */
-	function get_option( $name, $default = '' ) {
-		return 'woocommerce_dimension_unit' === $name ? 'cm' : $default; }
+	function get_option( $name, $default_value = '' ) {
+		return 'woocommerce_dimension_unit' === $name ? 'cm' : $default_value; }
 	/**
 	 * Absint.
 	 *
@@ -123,10 +121,9 @@ namespace {
 	 * Nashenski normalize text for label.
 	 *
 	 * @param mixed $value Value.
-	 * @param int   $length Length.
 	 * @return mixed Result.
 	 */
-	function nashenski_normalize_text_for_label( $value, $length = 0 ) {
+	function nashenski_normalize_text_for_label( $value ) {
 		return $value; }
 	/**
 	 * Wc get dimension.
@@ -142,10 +139,9 @@ namespace {
 	 * Wc get weight.
 	 *
 	 * @param mixed $value Value.
-	 * @param mixed $to To.
 	 * @return mixed Result.
 	 */
-	function wc_get_weight( $value, $to ) {
+	function wc_get_weight( $value ) {
 		return (float) $value; }
 	/**
 	 * Nashenski get option.
@@ -167,11 +163,10 @@ namespace {
 	/**
 	 * .
 	 *
-	 * @param mixed  $value Value.
-	 * @param string $domain Domain.
+	 * @param mixed $value Value.
 	 * @return mixed Result.
 	 */
-	function __( $value, $domain = '' ) {
+	function __( $value ) {
 		return $value; }
 	/**
 	 * Esc html.
@@ -184,10 +179,9 @@ namespace {
 	/**
 	 * Nashenski courier cookie.
 	 *
-	 * @param mixed $key Key.
 	 * @return mixed Result.
 	 */
-	function nashenski_courier_cookie( $key ) {
+	function nashenski_courier_cookie() {
 		return $GLOBALS['cookie']; }
 	/**
 	 * Nashenski has free shipping coupon in cart.
@@ -207,10 +201,9 @@ namespace {
 	 * Nashenski tax based price.
 	 *
 	 * @param mixed $value Value.
-	 * @param int   $tax Tax.
 	 * @return mixed Result.
 	 */
-	function nashenski_tax_based_price( $value, $tax = 20 ) {
+	function nashenski_tax_based_price( $value ) {
 		return $value; }
 	/**
 	 * Wc tax enabled.
@@ -231,7 +224,7 @@ namespace {
 	 *
 	 * @return mixed Result.
 	 */
-	function WC() {
+	function WC() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid -- stub of WooCommerce's WC().
 		return $GLOBALS['wc']; }
 	/**
 	 * Apply filters.
@@ -340,16 +333,16 @@ namespace {
 	/**
 	 * Invoke.
 	 *
-	 * @param mixed   $class Class.
-	 * @param mixed   $name Name.
+	 * @param mixed   $target Class name or object.
+	 * @param mixed   $name   Method name.
 	 * @param mixed[] ...$args Args.
 	 * @return mixed Result.
 	 */
-	function invoke( $class, $name, ...$args ) {
-		$r = new ReflectionMethod( $class, $name );
+	function invoke( $target, $name, ...$args ) {
+		$r = new ReflectionMethod( $target, $name );
 		if ( PHP_VERSION_ID < 80100 ) {
 			$r->setAccessible( true ); }
-		return $r->invoke( is_object( $class ) ? $class : null, ...$args );
+		return $r->invoke( is_object( $target ) ? $target : null, ...$args );
 	}
 	$checks = 0;
 	/**
@@ -362,7 +355,9 @@ namespace {
 	function expect( $condition, $message ) {
 		++$GLOBALS['checks'];
 		if ( ! $condition ) {
-			throw new RuntimeException( $message ); } }
+			throw new RuntimeException( $message ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- CLI test failure message, not HTML.
+		}
+	}
 	$product             = new WC_Product();
 	$product->read_limit = 5;
 	$package             = array(
@@ -426,10 +421,9 @@ namespace {
 		 *
 		 * @param mixed $endpoint Endpoint.
 		 * @param mixed $body Body.
-		 * @param mixed $method Method.
 		 * @return mixed Result.
 		 */
-		public function api_call( $endpoint, $body, $method ) {
+		public function api_call( $endpoint, $body ) {
 			++$GLOBALS['api_calls'];
 			$GLOBALS['last_request'] = $body;
 			return $GLOBALS['api_error'] ? array(
@@ -503,12 +497,12 @@ namespace {
 		);
 	}
 
-	foreach ( array( 'office', 'address' ) as $type ) {
+	foreach ( array( 'office', 'address' ) as $delivery_type ) {
 		fixture();
-		$cookie['type'] = $type;
-		$m              = new PigeonMethod( $type );
-		$m->calculate_shipping( package( 3, 0.5 ) );
-		expect( 1 === count( $m->rates ) && 12 === $m->rates[0]['cost'], 'Normal office/address quote must retain its price' );
+		$cookie['type'] = $delivery_type;
+		$pigeon_method  = new PigeonMethod( $delivery_type );
+		$pigeon_method->calculate_shipping( package( 3, 0.5 ) );
+		expect( 1 === count( $pigeon_method->rates ) && 12 === $pigeon_method->rates[0]['cost'], 'Normal office/address quote must retain its price' );
 		expect( 1 === count( $last_request['packages'] ) && 1.5 === $last_request['packages'][0]['weight'], 'Normal package weight and count must remain unchanged' );
 		expect(
 			array(
@@ -523,48 +517,48 @@ namespace {
 
 	foreach ( array( false, true ) as $disconnected ) {
 		fixture();
-		$connected = ! $disconnected;
-		$api_error = ! $disconnected;
-		$m         = new PigeonMethod();
-		$m->calculate_shipping( package( 1 ) );
-		expect( 1 === count( $m->rates ) && 9.0 === $m->rates[0]['cost'] && 1 === $public_quotes, 'Ordinary login/API errors must retain public-price fallback' );
+		$connected     = ! $disconnected;
+		$api_error     = ! $disconnected;
+		$pigeon_method = new PigeonMethod();
+		$pigeon_method->calculate_shipping( package( 1 ) );
+		expect( 1 === count( $pigeon_method->rates ) && 9.0 === $pigeon_method->rates[0]['cost'] && 1 === $public_quotes, 'Ordinary login/API errors must retain public-price fallback' );
 	}
 
 	foreach ( array( false, true ) as $auto ) {
 		foreach ( array( false, true ) as $connected_fixture ) {
-			foreach ( array( 'office', 'address' ) as $type ) {
+			foreach ( array( 'office', 'address' ) as $delivery_type ) {
 				fixture( $auto );
 				$connected      = $connected_fixture;
-				$cookie['type'] = $type;
+				$cookie['type'] = $delivery_type;
 				$filters['nashenski/pigeon/rate/disable_packages'][] = function () {
 					return false;
 				};
-				$m                = new PigeonMethod( $type );
-				$m->fixed_price   = 5;
-				$m->free_shipping = true;
-				$free_coupon      = true;
+				$pigeon_method                                       = new PigeonMethod( $delivery_type );
+				$pigeon_method->fixed_price                          = 5;
+				$pigeon_method->free_shipping                        = true;
+				$free_coupon = true;
 				$wc->session->set( 'nashenski-pigeon-label', array( 'stale' => true ) );
 				if ( function_exists( 'memory_reset_peak_usage' ) ) {
 					memory_reset_peak_usage(); }
 				$memory = memory_get_usage();
 				$start  = microtime( true );
-				$m->calculate_shipping( package( '1e300', 0 ) );
-				expect( ! $m->rates && ! $api_calls && ! $public_quotes, 'Huge unweighted quantities must not reach rate, client or any price fallback' );
+				$pigeon_method->calculate_shipping( package( '1e300', 0 ) );
+				expect( ! $pigeon_method->rates && ! $api_calls && ! $public_quotes, 'Huge unweighted quantities must not reach rate, client or any price fallback' );
 				expect( null === $wc->session->get( 'nashenski-pigeon-label' ), 'Rejection must clear stale session labels' );
 				expect( memory_get_peak_usage() - $memory < 2 * 1024 * 1024 && microtime( true ) - $start < 2, 'Rejection must not amplify quantity into memory or CPU work' );
 				expect(
 					rejected(
-						function () use ( $m ) {
-							$m->calculate_shipping_price_from_api();
+						function () use ( $pigeon_method ) {
+							$pigeon_method->calculate_shipping_price_from_api();
 						}
 					),
 					'Direct API helper must retain rejected state, including while disconnected'
 				);
-				$m->fixed_price   = 0;
-				$m->free_shipping = false;
-				$free_coupon      = false;
-				$m->calculate_shipping( package( 1 ) );
-				expect( 1 === count( $m->rates ), 'A normal subsequent calculation must reset rejected state' );
+				$pigeon_method->fixed_price   = 0;
+				$pigeon_method->free_shipping = false;
+				$free_coupon                  = false;
+				$pigeon_method->calculate_shipping( package( 1 ) );
+				expect( 1 === count( $pigeon_method->rates ), 'A normal subsequent calculation must reset rejected state' );
 			}
 		}
 	}
@@ -572,44 +566,44 @@ namespace {
 	fixture();
 	$cookie                                       = array();
 	$wc->session->data['chosen_shipping_methods'] = array();
-	$m = new PigeonMethod();
-	$m->calculate_shipping( package( PHP_INT_MAX, 0 ) );
-	expect( ! $m->rates, 'Preflight must reject even before destination selection' );
+	$pigeon_method                                = new PigeonMethod();
+	$pigeon_method->calculate_shipping( package( PHP_INT_MAX, 0 ) );
+	expect( ! $pigeon_method->rates, 'Preflight must reject even before destination selection' );
 
 	fixture( true );
 	$cookie['type'] = 'locker';
-	$m              = new PigeonMethod( 'locker' );
-	$m->calculate_shipping( package( 3, 0.5 ) );
-	expect( 1 === count( $m->rates ) && 1.5 === $last_request['packages'][0]['weight'], 'Normal locker quote must retain weight' );
+	$pigeon_method  = new PigeonMethod( 'locker' );
+	$pigeon_method->calculate_shipping( package( 3, 0.5 ) );
+	expect( 1 === count( $pigeon_method->rates ) && 1.5 === $last_request['packages'][0]['weight'], 'Normal locker quote must retain weight' );
 	expect( array( 44.0, 61.0, 8.0 ) === array( $last_request['packages'][0]['width'], $last_request['packages'][0]['length'], $last_request['packages'][0]['height'] ), 'Normal locker dimensions must retain its chosen box' );
 	$p = package( 2, 0.1, array( 60, 40, 30 ) );
 	expect( APSBoxes::package_fits_largest_locker( $p, new Packing_Budget() ), 'Early locker eligibility must remain a per-product fit test' );
 	fixture( true );
 	$cookie['type'] = 'locker';
-	$m              = new PigeonMethod( 'locker' );
-	$m->calculate_shipping( $p );
-	expect( 1 === count( $m->rates ) && 2 === count( $last_request['packages'] ), 'Locker sizing must retain legitimate multi-box output' );
+	$pigeon_method  = new PigeonMethod( 'locker' );
+	$pigeon_method->calculate_shipping( $p );
+	expect( 1 === count( $pigeon_method->rates ) && 2 === count( $last_request['packages'] ), 'Locker sizing must retain legitimate multi-box output' );
 
 	fixture();
 	$cookie['type'] = 'locker';
-	$m              = new PigeonMethod( 'locker' );
-	$m->calculate_shipping( package( 1000000, 0 ) );
-	expect( 1 === count( $m->rates ) && 1000000 === $last_request['inventory_items'][0]['quantity'], 'No blanket quantity cap may be added to non-expanding locker calculation' );
+	$pigeon_method  = new PigeonMethod( 'locker' );
+	$pigeon_method->calculate_shipping( package( 1000000, 0 ) );
+	expect( 1 === count( $pigeon_method->rates ) && 1000000 === $last_request['inventory_items'][0]['quantity'], 'No blanket quantity cap may be added to non-expanding locker calculation' );
 
 	fixture( true );
 	$cookie['type'] = 'locker';
-	$m              = new PigeonMethod( 'locker' );
-	$m->calculate_shipping( package( PHP_INT_MAX, 0 ) );
-	expect( ! $m->rates && ! $api_calls && ! $public_quotes, 'Automatic locker sizing must reject before expansion' );
+	$pigeon_method  = new PigeonMethod( 'locker' );
+	$pigeon_method->calculate_shipping( package( PHP_INT_MAX, 0 ) );
+	expect( ! $pigeon_method->rates && ! $api_calls && ! $public_quotes, 'Automatic locker sizing must reject before expansion' );
 
-	foreach ( array( 'office', 'locker' ) as $type ) {
+	foreach ( array( 'office', 'locker' ) as $delivery_type ) {
 		fixture( true );
-		$cookie['type']  = $type;
+		$cookie['type']  = $delivery_type;
 		$p               = package( 600, 0.001 );
 		$p['contents'][] = $p['contents'][0];
-		$m               = new PigeonMethod( $type );
-		$m->calculate_shipping( $p );
-		expect( ! $m->rates && ! $api_calls && ! $public_quotes, 'Expanded-unit limits must be cumulative across lines and locker paths' );
+		$pigeon_method   = new PigeonMethod( $delivery_type );
+		$pigeon_method->calculate_shipping( $p );
+		expect( ! $pigeon_method->rates && ! $api_calls && ! $public_quotes, 'Expanded-unit limits must be cumulative across lines and locker paths' );
 	}
 
 	fixture();
@@ -632,67 +626,67 @@ namespace {
 	$filters['nashenski/pigeon/label/weight'][] = function () {
 		return INF;
 	};
-	$m = new PigeonMethod();
-	$m->calculate_shipping( package( 1, 0 ) );
-	expect( ! $m->rates && ! $api_calls && ! $public_quotes, 'Nonfinite fallback weights must fail before quote fallback' );
+	$pigeon_method                              = new PigeonMethod();
+	$pigeon_method->calculate_shipping( package( 1, 0 ) );
+	expect( ! $pigeon_method->rates && ! $api_calls && ! $public_quotes, 'Nonfinite fallback weights must fail before quote fallback' );
 	fixture();
 	$filters['nashenski/pigeon/rate/disable_packages'][] = function () {
 		return false;
 	};
-	$m = new PigeonMethod();
-	$m->calculate_shipping( package( 1, 40000, array( 300, 300, 300 ) ) );
-	expect( ! $m->rates && ! $api_calls, 'Bypassing the commercial weight check must not remove the absolute split ceiling' );
+	$pigeon_method                                       = new PigeonMethod();
+	$pigeon_method->calculate_shipping( package( 1, 40000, array( 300, 300, 300 ) ) );
+	expect( ! $pigeon_method->rates && ! $api_calls, 'Bypassing the commercial weight check must not remove the absolute split ceiling' );
 	fixture();
-	$m = new PigeonMethod();
-	$m->calculate_shipping( package( 1, 65, array( 300, 300, 300 ) ) );
-	expect( 1 === count( $m->rates ) && array( 30.0, 30.0, 5.0 ) === array_column( $last_request['packages'], 'weight' ), 'Ordinary cannot-fit failures must retain weight fallback' );
+	$pigeon_method = new PigeonMethod();
+	$pigeon_method->calculate_shipping( package( 1, 65, array( 300, 300, 300 ) ) );
+	expect( 1 === count( $pigeon_method->rates ) && array( 30.0, 30.0, 5.0 ) === array_column( $last_request['packages'], 'weight' ), 'Ordinary cannot-fit failures must retain weight fallback' );
 
 	fixture();
-	$m          = new PigeonMethod();
-	$m->package = package( PHP_INT_MAX, 0 );
+	$pigeon_method          = new PigeonMethod();
+	$pigeon_method->package = package( PHP_INT_MAX, 0 );
 	expect(
 		rejected(
-			function () use ( $m ) {
-				PackageBoxes::calculate_label( array(), $m );
+			function () use ( $pigeon_method ) {
+				PackageBoxes::calculate_label( array(), $pigeon_method );
 			}
 		),
 		'Direct package filter must enforce preflight and propagate resource rejection'
 	);
-	$m          = new PigeonMethod( 'locker' );
-	$m->package = package( PHP_INT_MAX, 0 );
+	$pigeon_method          = new PigeonMethod( 'locker' );
+	$pigeon_method->package = package( PHP_INT_MAX, 0 );
 	expect(
 		rejected(
-			function () use ( $m ) {
-				APSBoxes::calculate_label( array(), $m );
+			function () use ( $pigeon_method ) {
+				APSBoxes::calculate_label( array(), $pigeon_method );
 			}
 		),
 		'Direct locker filter must propagate resource rejection'
 	);
-	$m = (object) array(
+	$pigeon_method = (object) array(
 		'delivery_type' => 'office',
 		'package'       => package( PHP_INT_MAX, 0 ),
 	);
 	expect(
 		rejected(
-			function () use ( $m ) {
-				PackageBoxes::calculate_label( array(), $m );
+			function () use ( $pigeon_method ) {
+				PackageBoxes::calculate_label( array(), $pigeon_method );
 			}
 		),
 		'Standalone package filter must obtain a bounded budget'
 	);
 
 	fixture();
-	$p          = package( 3, 0.5 );
-	$m          = new PigeonMethod();
-	$m->package = $p;
-	$property   = new ReflectionProperty( 'Nashenski\\Shipping\\Pigeon\\Method', 'packing_budget' );
+	$p                      = package( 3, 0.5 );
+	$pigeon_method          = new PigeonMethod();
+	$pigeon_method->package = $p;
+	$property               = new ReflectionProperty( 'Nashenski\\Shipping\\Pigeon\\Method', 'packing_budget' );
 	if ( PHP_VERSION_ID < 80100 ) {
 		$property->setAccessible( true ); }
-	$property->setValue( $m, new Packing_Budget( 2 ) );
+	$property->setValue( $pigeon_method, new Packing_Budget( 2 ) );
 	expect(
 		rejected(
-			function () use ( $m ) {
-				PackageBoxes::calculate_label( array(), $m );
+			function () use ( $pigeon_method ) {
+				PackageBoxes::calculate_label( array(), $pigeon_method );
 			}
 		),
 		'Shared budget exhaustion in the unit preflight must escape the weight fallback'
@@ -714,26 +708,26 @@ namespace {
 			'quantity' => 1,
 			'data'     => new WC_Product( 0, array( 1 + $i % 7, 2 + $i % 11, 3 + $i % 13 ) ),
 		); }
-	$m     = new PigeonMethod();
-	$start = microtime( true );
-	$m->calculate_shipping( $p );
-	expect( 1 === count( $m->rates ) && 1 === $api_calls && microtime( true ) - $start < 5, 'Mixed product searches that exhaust the carton budget must fall back to the weight split and keep the quote' );
+	$pigeon_method = new PigeonMethod();
+	$start         = microtime( true );
+	$pigeon_method->calculate_shipping( $p );
+	expect( 1 === count( $pigeon_method->rates ) && 1 === $api_calls && microtime( true ) - $start < 5, 'Mixed product searches that exhaust the carton budget must fall back to the weight split and keep the quote' );
 
 	fixture();
-	$m = new PigeonMethod();
-	$m->calculate_shipping( $p );
-	expect( 1 === count( $m->rates ) && 1 === count( $last_request['packages'] ), 'Large mixed cart without automatic sizing must also keep its quote' );
+	$pigeon_method = new PigeonMethod();
+	$pigeon_method->calculate_shipping( $p );
+	expect( 1 === count( $pigeon_method->rates ) && 1 === count( $last_request['packages'] ), 'Large mixed cart without automatic sizing must also keep its quote' );
 	fixture( true );
 	$p2             = $p;
 	$p2['contents'] = array_merge( $p['contents'], $p['contents'], $p['contents'], $p['contents'], $p['contents'], $p['contents'] );
-	$m              = new PigeonMethod();
-	$m->calculate_shipping( $p2 );
-	expect( 1200 === count( $p2['contents'] ) && ! $m->rates && ! $api_calls, 'The unit cap must still reject carts over 1000 units after the weight fallback was added' );
+	$pigeon_method  = new PigeonMethod();
+	$pigeon_method->calculate_shipping( $p2 );
+	expect( 1200 === count( $p2['contents'] ) && ! $pigeon_method->rates && ! $api_calls, 'The unit cap must still reject carts over 1000 units after the weight fallback was added' );
 
 	fixture();
-	$m = new PigeonMethod();
-	$m->calculate_shipping( package( 50, 0.01 ) );
-	expect( 1 === count( $m->rates ), 'A normal fifty-unit cart must remain available' );
+	$pigeon_method = new PigeonMethod();
+	$pigeon_method->calculate_shipping( package( 50, 0.01 ) );
+	expect( 1 === count( $pigeon_method->rates ), 'A normal fifty-unit cart must remain available' );
 
 	foreach ( array(
 		0  => 1,
@@ -746,13 +740,13 @@ namespace {
 	expect( 2 === count( invoke( PackageBoxes::class, 'get_product_items', package( 0.5, 0 ) ) ), 'Existing fractional helper range behavior must remain unchanged' );
 
 	fixture( true );
-	$m              = new PigeonMethod();
-	$m->package     = package( 2000, 0 );
-	$m->cookie_data = $cookie;
+	$pigeon_method              = new PigeonMethod();
+	$pigeon_method->package     = package( 2000, 0 );
+	$pigeon_method->cookie_data = $cookie;
 	expect(
 		rejected(
-			function () use ( $m ) {
-				$m->calculate_shipping_price_from_api();
+			function () use ( $pigeon_method ) {
+				$pigeon_method->calculate_shipping_price_from_api();
 			}
 		) && ! $api_calls,
 		'Direct API preparation must lazily enforce packing limits'
@@ -768,11 +762,11 @@ namespace {
 		}
 			return $label;
 	};
-	$m                = new PigeonMethod();
-	$m->fixed_price   = 5;
-	$m->free_shipping = true;
-	$m->calculate_shipping( package( 1 ) );
-	expect( ! $m->rates && ! $api_calls && ! $public_quotes, 'Swallowed label-filter rejection must not restore a quote' );
+	$pigeon_method                                 = new PigeonMethod();
+	$pigeon_method->fixed_price                    = 5;
+	$pigeon_method->free_shipping                  = true;
+	$pigeon_method->calculate_shipping( package( 1 ) );
+	expect( ! $pigeon_method->rates && ! $api_calls && ! $public_quotes, 'Swallowed label-filter rejection must not restore a quote' );
 	fixture();
 	$filters['nashenski/pigeon/rate'][] = function ( $rate, $method ) {
 		try {
@@ -783,9 +777,9 @@ namespace {
 		}
 			return $rate;
 	};
-	$m                                  = new PigeonMethod();
-	$m->calculate_shipping( package( 1 ) );
-	expect( ! $m->rates && null === $wc->session->get( 'nashenski-pigeon-label' ), 'Final rate registration must honor sticky rejection' );
+	$pigeon_method                      = new PigeonMethod();
+	$pigeon_method->calculate_shipping( package( 1 ) );
+	expect( ! $pigeon_method->rates && null === $wc->session->get( 'nashenski-pigeon-label' ), 'Final rate registration must honor sticky rejection' );
 
 	fixture();
 	$p     = package( 3, 0.1 );
@@ -802,12 +796,12 @@ namespace {
 	fixture( true );
 	$item                     = package( 1, 0 )['contents'][0];
 	$item['data']->read_limit = 5;
-	$m                        = new PigeonMethod( 'locker' );
-	$m->package               = array( 'contents' => array_fill( 0, 2000, $item ) );
+	$pigeon_method            = new PigeonMethod( 'locker' );
+	$pigeon_method->package   = array( 'contents' => array_fill( 0, 2000, $item ) );
 	expect(
 		rejected(
-			function () use ( $m ) {
-				APSBoxes::calculate_label( array(), $m );
+			function () use ( $pigeon_method ) {
+				APSBoxes::calculate_label( array(), $pigeon_method );
 			}
 		),
 		'Direct locker filtering must reject excessive rows before conversion or ordinary-error fallback'
@@ -818,11 +812,11 @@ namespace {
 		'9999'  => false,
 	) as $total => $free ) {
 		fixture();
-		$package_total         = (int) $total / 100;
-		$m                     = new PigeonMethod();
-		$m->free_shipping_over = 100;
-		$m->calculate_shipping( package( 1 ) );
-		expect( $m->free_shipping === $free, 'Pigeon free shipping at total ' . $package_total . ' must be ' . var_export( $free, true ) );
+		$package_total                     = (int) $total / 100;
+		$pigeon_method                     = new PigeonMethod();
+		$pigeon_method->free_shipping_over = 100;
+		$pigeon_method->calculate_shipping( package( 1 ) );
+		expect( $pigeon_method->free_shipping === $free, 'Pigeon free shipping at total ' . $package_total . ' must be ' . var_export( $free, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- builds the failure message.
 	}
 	unset( $package_total );
 	// A threshold that is zero in any spelling is no threshold: a cart of 99.99 does not ship free on it.
@@ -834,12 +828,12 @@ namespace {
 		'100'  => false,
 	) as $threshold => $free ) {
 		fixture();
-		$package_total         = 99.99;
-		$m                     = new PigeonMethod();
-		$m->free_shipping_over = $threshold;
-		$m->calculate_shipping( package( 1 ) );
-		expect( $m->free_shipping === $free, 'Pigeon free shipping at threshold "' . $threshold . '" must be ' . var_export( $free, true ) );
+		$package_total                     = 99.99;
+		$pigeon_method                     = new PigeonMethod();
+		$pigeon_method->free_shipping_over = $threshold;
+		$pigeon_method->calculate_shipping( package( 1 ) );
+		expect( $pigeon_method->free_shipping === $free, 'Pigeon free shipping at threshold "' . $threshold . '" must be ' . var_export( $free, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- builds the failure message.
 	}
 	unset( $package_total );
-	echo 'PASS: ' . $checks . " Pigeon assertions\n";
+	echo 'PASS: ' . (int) $checks . " Pigeon assertions\n";
 }

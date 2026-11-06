@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName, Universal.Namespaces, Generic.Files.OneObjectStructurePerFile, Universal.Files.SeparateFunctionsFromOO -- offline test: WordPress stubs and the test share one file.
 /**
  * Offline test: an admin-post action refused for a missing capability answers 403, a bad export request 400.
  * Run: php tests/admin-denied-status.php
@@ -13,10 +13,8 @@ namespace Nashenski\Export\Builder {
 	class Builder {
 		/**
 		 * Normalize.
-		 *
-		 * @param mixed $raw Raw.
 		 */
-		public static function normalize( $raw ) {
+		public static function normalize() {
 			return array(
 				'columns' => array(),
 				'format'  => 'csv',
@@ -74,7 +72,7 @@ namespace {
 	 */
 	function wp_die( $message = '', $title = '', $args = array() ) {
 		$code = is_int( $title ) ? $title : ( is_int( $args ) ? $args : ( $args['response'] ?? 500 ) );
-		throw new Died( (string) $code );
+		throw new Died( (string) $code ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- test stub, the message is the status code the test reads back.
 	}
 
 	require __DIR__ . '/../app/Admin/Abandoned_Carts_Page.php';
@@ -108,7 +106,7 @@ namespace {
 	function expect( $expected, $actual, $message ) {
 		++$GLOBALS['checks'];
 		if ( $expected !== $actual ) {
-			fwrite( STDERR, "FAIL: $message (wanted $expected, got $actual)\n" );
+			fwrite( STDERR, "FAIL: $message (wanted $expected, got $actual)\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- offline test.
 			exit( 1 ); }
 	}
 
@@ -141,5 +139,5 @@ namespace {
 	$GLOBALS['caps'] = array( 'manage_woocommerce' => true );
 	expect( 400, status_of( array( 'Nashenski\Admin\Export_Builder', 'download' ) ), 'Export_Builder::download with no columns' );
 
-	echo 'PASS: ' . $checks . " admin denied status assertions\n";
+	echo 'PASS: ' . (int) $checks . " admin denied status assertions\n";
 }

@@ -1,9 +1,21 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Email that sends order documents to the accountant.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin\Order;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Sends invoice and credit notice copies to the accountant.
+ */
 class Accountant_Email extends \WC_Email {
+	/**
+	 * Sets up the email.
+	 */
 	public function __construct() {
 		$this->id          = 'nashenski_accountant_documents';
 		$this->title       = __( 'Accountant Document Copies', 'nashenski-commerce' );
@@ -26,6 +38,12 @@ class Accountant_Email extends \WC_Email {
 		$this->recipient  = $accountant_email ? $accountant_email : '';
 	}
 
+	/**
+	 * Sends the email for an order.
+	 *
+	 * @param int   $order_id    Order ID.
+	 * @param array $attachments Files to attach.
+	 */
 	public function trigger( $order_id, $attachments = array() ) {
 		$this->setup_locale();
 
@@ -56,6 +74,11 @@ class Accountant_Email extends \WC_Email {
 		$this->restore_locale();
 	}
 
+	/**
+	 * HTML email body.
+	 *
+	 * @return string
+	 */
 	public function get_content_html() {
 		$order_number = '';
 
@@ -73,6 +96,11 @@ class Accountant_Email extends \WC_Email {
 		);
 	}
 
+	/**
+	 * Plain text email body.
+	 *
+	 * @return string
+	 */
 	public function get_content_plain() {
 		$order_number = '';
 
@@ -87,10 +115,20 @@ class Accountant_Email extends \WC_Email {
 		);
 	}
 
+	/**
+	 * Default subject.
+	 *
+	 * @return string
+	 */
 	public function get_default_subject() {
 		return __( '[{site_title}]: Document copy for order #{order_number}', 'nashenski-commerce' );
 	}
 
+	/**
+	 * Default heading.
+	 *
+	 * @return string
+	 */
 	public function get_default_heading() {
 		return __( 'Document Copy', 'nashenski-commerce' );
 	}

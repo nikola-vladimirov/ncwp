@@ -1,11 +1,27 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Cache file helpers.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Reads and writes files in the plugin cache folder.
+ */
 class File {
 	const CACHE_FOLDER = WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski' . DIRECTORY_SEPARATOR;
 
+	/**
+	 * Writes data to a file without leaving a half-written file behind.
+	 *
+	 * @param string $file Full path of the file.
+	 * @param string $data Data to write.
+	 * @return bool True on success.
+	 */
 	public static function put_to_file( $file, $data ) {
 		global $wp_filesystem;
 
@@ -29,6 +45,12 @@ class File {
 		return true;
 	}
 
+	/**
+	 * Reads a file.
+	 *
+	 * @param string $file Full path of the file.
+	 * @return string|false File contents, or an empty string when the file is missing.
+	 */
 	public static function get_file( $file ) {
 		$data = '';
 

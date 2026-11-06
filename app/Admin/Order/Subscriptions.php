@@ -1,10 +1,22 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Order documents for WooCommerce Subscriptions.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin\Order;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Keeps order numbers and documents right for subscription renewals.
+ */
 class Subscriptions {
-	function __construct() {
+	/**
+	 * Hooks the subscription events.
+	 */
+	public function __construct() {
 		add_action( 'woocommerce_checkout_subscription_created', array( __CLASS__, 'subscriptions_created' ), 20, 2 );
 		add_action( 'woocommerce_subscription_renewal_payment_complete', array( __CLASS__, 'subscriptions_created' ), 20, 2 );
 		add_filter( 'wc_subscriptions_renewal_order_data', array( __CLASS__, 'drop_document_data' ) );
@@ -15,6 +27,9 @@ class Subscriptions {
 	/**
 	 * A renewal and its subscription must not copy the earlier order's number or order document:
 	 * the renewal gets its own when its documents are made.
+	 *
+	 * @param array $data Order or subscription data to copy.
+	 * @return array
 	 */
 	public static function drop_document_data( $data ) {
 		if ( is_array( $data ) ) {
@@ -24,6 +39,12 @@ class Subscriptions {
 		return $data;
 	}
 
+	/**
+	 * Gives a renewal order its own number and documents.
+	 *
+	 * @param \WC_Subscription $subscription The subscription.
+	 * @param \WC_Order        $order        The renewal or parent order.
+	 */
 	public static function subscriptions_created( $subscription, $order ) {
 		// The checkout hook passes the parent order, which may already be numbered. Only renewals are renumbered.
 		if ( ! function_exists( 'wcs_order_contains_renewal' ) || ! wcs_order_contains_renewal( $order ) ) {
@@ -54,6 +75,11 @@ class Subscriptions {
 		Documents::generate_documents( $order->get_id() );
 	}
 
+	/**
+	 * Gives the order the next order document number.
+	 *
+	 * @param \WC_Order $order The order.
+	 */
 	public static function increase_order_doc_number( $order ) {
 		\Nashenski\Invoice\Number_Allocator::allocate( $order, 'nashenski_order_number', 'next_invoice_number', true );
 	}

@@ -1,9 +1,21 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Admin AJAX actions.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Registers the admin AJAX handlers.
+ */
 class Ajax {
+	/**
+	 * Hooks the AJAX actions.
+	 */
 	public function __construct() {
 
 		add_action( 'wp_ajax_nashenski_export_nap', array( 'Nashenski\Admin\Tabs\Export_Tab', 'nashenski_export_nap_callback' ) );

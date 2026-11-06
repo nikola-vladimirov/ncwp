@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Export file writer.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Export\Builder;
 
 defined( 'ABSPATH' ) || exit;
@@ -9,6 +15,8 @@ defined( 'ABSPATH' ) || exit;
  */
 class Writer {
 	/**
+	 * Writes the rows to a temporary file in the chosen format.
+	 *
 	 * @param array $config Normalized config.
 	 * @param array $rows   Raw values in column order.
 	 * @return string Path of the temporary file.
@@ -38,6 +46,12 @@ class Writer {
 		return $path;
 	}
 
+	/**
+	 * MIME type of an export format.
+	 *
+	 * @param string $format csv, xlsx, json or xml.
+	 * @return string
+	 */
 	public static function mime( $format ) {
 		$types = array(
 			'csv'  => 'text/csv',
@@ -49,6 +63,15 @@ class Writer {
 		return $types[ $format ] ?? 'application/octet-stream';
 	}
 
+	/**
+	 * Writes a CSV file.
+	 *
+	 * @param string $path   Temporary file path.
+	 * @param array  $config Normalized config.
+	 * @param array  $labels Column labels.
+	 * @param array  $kinds  Column kinds.
+	 * @param array  $rows   Raw values in column order.
+	 */
 	private static function csv( $path, $config, $labels, $kinds, $rows ) {
 		// phpcs:disable WordPress.WP.AlternativeFunctions -- streaming a temporary file.
 		$handle    = fopen( $path, 'w' );
@@ -99,6 +122,15 @@ class Writer {
 		return 0 === $match ? $text : "'" . $text;
 	}
 
+	/**
+	 * Writes a JSON file.
+	 *
+	 * @param string $path   Temporary file path.
+	 * @param array  $config Normalized config.
+	 * @param array  $labels Column labels.
+	 * @param array  $kinds  Column kinds.
+	 * @param array  $rows   Raw values in column order.
+	 */
 	private static function json( $path, $config, $labels, $kinds, $rows ) {
 		$keys = array_map(
 			function ( $column ) {
@@ -121,12 +153,28 @@ class Writer {
 		file_put_contents( $path, wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 	}
 
+	/**
+	 * A valid XML element name from a field name.
+	 *
+	 * @param string $text     Field name.
+	 * @param string $fallback Name used when none can be made.
+	 * @return string
+	 */
 	private static function xml_name( $text, $fallback ) {
 		$name = preg_replace( '/[^a-zA-Z0-9_\-]/', '_', remove_accents( (string) $text ) );
 
 		return $name && ! preg_match( '/^[0-9\-_]/', $name ) ? $name : $fallback;
 	}
 
+	/**
+	 * Writes an XML file.
+	 *
+	 * @param string $path   Temporary file path.
+	 * @param array  $config Normalized config.
+	 * @param array  $labels Column labels.
+	 * @param array  $kinds  Column kinds.
+	 * @param array  $rows   Raw values in column order.
+	 */
 	private static function xml( $path, $config, $labels, $kinds, $rows ) {
 		$writer = new \XMLWriter();
 		$writer->openUri( $path );
@@ -156,6 +204,12 @@ class Writer {
 		$writer->flush();
 	}
 
+	/**
+	 * Spreadsheet column letter of a zero-based index (0 is A).
+	 *
+	 * @param int $index Column index.
+	 * @return string
+	 */
 	private static function col_letter( $index ) {
 		$letter = '';
 
@@ -168,6 +222,12 @@ class Writer {
 
 	/**
 	 * A minimal Excel workbook: one sheet, text as inline strings, amounts and counts as numbers.
+	 *
+	 * @param string $path   Temporary file path.
+	 * @param array  $config Normalized config.
+	 * @param array  $labels Column labels.
+	 * @param array  $kinds  Column kinds.
+	 * @param array  $rows   Raw values in column order.
 	 */
 	private static function xlsx( $path, $config, $labels, $kinds, $rows ) {
 		$esc   = function ( $text ) {

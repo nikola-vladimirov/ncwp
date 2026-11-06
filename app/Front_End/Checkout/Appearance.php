@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Checkout shipping options appearance.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Front_End\Checkout;
 
 defined( 'ABSPATH' ) || exit;
@@ -29,10 +35,20 @@ class Appearance {
 		return '';
 	}
 
+	/**
+	 * Whether a page builder (Bricks) is active.
+	 *
+	 * @return bool
+	 */
 	public static function has_builder() {
 		return defined( 'BRICKS_VERSION' ) || 'bricks' === get_template();
 	}
 
+	/**
+	 * Chosen layout, cards or plain.
+	 *
+	 * @return string
+	 */
 	public static function layout() {
 		$layout = nashenski_get_option( self::GROUP, 'layout' );
 
@@ -43,6 +59,11 @@ class Appearance {
 		return self::framework() || self::has_builder() ? 'cards' : 'plain';
 	}
 
+	/**
+	 * Default style values for the active framework or theme.
+	 *
+	 * @return array
+	 */
 	public static function defaults() {
 		if ( self::framework() ) {
 			return array(
@@ -73,6 +94,12 @@ class Appearance {
 		);
 	}
 
+	/**
+	 * Saved style value, or its default.
+	 *
+	 * @param string $name Setting name.
+	 * @return string
+	 */
 	public static function value( $name ) {
 		$saved    = trim( (string) nashenski_get_option( self::GROUP, $name ) );
 		$defaults = self::defaults();
@@ -80,6 +107,11 @@ class Appearance {
 		return '' !== $saved ? $saved : ( $defaults[ $name ] ?? '' );
 	}
 
+	/**
+	 * The style settings as CSS custom properties.
+	 *
+	 * @return string
+	 */
 	public static function css() {
 		$lines = array();
 
@@ -98,6 +130,9 @@ class Appearance {
 	/**
 	 * A single CSS value: colours, lengths, var(), calc(), color-mix(). Nothing that could close
 	 * the declaration or the style element.
+	 *
+	 * @param string $value CSS value.
+	 * @return string The value, or an empty string when it is not safe.
 	 */
 	public static function sanitize_css_value( $value ) {
 		$value = trim( wp_strip_all_tags( (string) $value ) );
@@ -193,6 +228,11 @@ class Appearance {
 		);
 	}
 
+	/**
+	 * Prints a style setting row in the WooCommerce settings.
+	 *
+	 * @param array $value Setting data.
+	 */
 	public static function output_style_field( $value ) {
 		$current = (string) get_option( $value['id'], '' );
 		$list    = $value['id'] . '_tokens';
@@ -214,6 +254,14 @@ class Appearance {
 		<?php
 	}
 
+	/**
+	 * Sanitizes a style setting on save.
+	 *
+	 * @param mixed $value     Value WooCommerce made.
+	 * @param array $option    Setting data.
+	 * @param mixed $raw_value Posted value.
+	 * @return mixed
+	 */
 	public static function sanitize_style_field( $value, $option, $raw_value ) {
 		if ( 'nashenski_style' !== ( $option['type'] ?? '' ) ) {
 			return $value;

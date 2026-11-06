@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Checkout office, locker and address pickers.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Front_End\Checkout;
 
 defined( 'ABSPATH' ) || exit;
@@ -26,6 +32,9 @@ class Pickers {
 		'pigeon' => array( 'api_key', 'api_secret' ),
 	);
 
+	/**
+	 * Hooks the pickers into the checkout.
+	 */
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ), 20 );
 		add_action( 'woocommerce_after_shipping_rate', array( __CLASS__, 'render_container' ), 5, 2 );
@@ -102,6 +111,9 @@ class Pickers {
 
 	/**
 	 * Courier slug of a rate or method ID such as "nashenski_econt:3", or ''.
+	 *
+	 * @param string $id Rate or method ID.
+	 * @return string
 	 */
 	public static function courier_of( $id ) {
 		return preg_match( '/^nashenski_([a-z]+)/', (string) $id, $match ) && in_array( $match[1], \Nashenski\Plugin::COURIERS, true ) ? $match[1] : '';
@@ -109,6 +121,9 @@ class Pickers {
 
 	/**
 	 * Whether the store entered a login for the courier (not whether it works).
+	 *
+	 * @param string $courier Courier slug.
+	 * @return bool
 	 */
 	public static function connected( $courier ) {
 		foreach ( self::LOGIN[ $courier ] ?? array() as $key ) {
@@ -124,6 +139,9 @@ class Pickers {
 	 * Couriers whose offices customers can choose without a login: Econt publishes its office
 	 * list, Speedy has a public office map, Pigeon Express publishes its offices and lockers.
 	 * (BOX NOW lockers are public too, but BOX NOW is only offered with a login.)
+	 *
+	 * @param string $courier Courier slug.
+	 * @return bool
 	 */
 	public static function public_offices( $courier ) {
 		return in_array( $courier, array( 'econt', 'speedy', 'pigeon' ), true );
@@ -131,6 +149,9 @@ class Pickers {
 
 	/**
 	 * Delivery type of a rate: office, automat, locker, apm or address.
+	 *
+	 * @param \WC_Shipping_Rate $rate Shipping rate.
+	 * @return string
 	 */
 	public static function type_of( $rate ) {
 		$courier = self::courier_of( $rate->get_id() );
@@ -144,6 +165,12 @@ class Pickers {
 		return isset( $meta['delivery_type'] ) ? (string) $meta['delivery_type'] : 'office';
 	}
 
+	/**
+	 * Whether a rate still waits for the customer's office, locker or address.
+	 *
+	 * @param mixed $rate Shipping rate.
+	 * @return bool
+	 */
 	public static function is_pending( $rate ) {
 		if ( ! is_object( $rate ) || ! self::courier_of( $rate->get_id() ) ) {
 			return false;
@@ -158,6 +185,9 @@ class Pickers {
 	 * WooCommerce keeps calculated rates until the package changes, and the office or address
 	 * choice lives in the courier cookies. With the choice in the package, every request prices
 	 * the current choice, also an order placed before the checkout had updated the price.
+	 *
+	 * @param array $packages Shipping packages.
+	 * @return array
 	 */
 	public static function add_choice( $packages ) {
 		$choice = md5(
@@ -180,8 +210,12 @@ class Pickers {
 
 	/**
 	 * Mark rates that still wait for the customer's choice, and drop office options nobody can choose.
+	 *
+	 * @param array $rates   Package rates.
+	 * @param array $package Shipping package.
+	 * @return array
 	 */
-	public static function mark_rates( $rates, $package ) {
+	public static function mark_rates( $rates, $package ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress hook callback signature.
 		foreach ( $rates as $id => $rate ) {
 			$courier = self::courier_of( $id );
 
@@ -209,12 +243,21 @@ class Pickers {
 		return $rates;
 	}
 
+	/**
+	 * Text shown instead of a price while the choice is missing.
+	 *
+	 * @return string
+	 */
 	public static function pending_text() {
 		return __( 'Complete the fields to calculate', 'nashenski-commerce' );
 	}
 
 	/**
 	 * Classic checkout and cart: "Econt: Complete the fields to calculate" instead of a bare name.
+	 *
+	 * @param string            $label Rate label.
+	 * @param \WC_Shipping_Rate $rate  Shipping rate.
+	 * @return string
 	 */
 	public static function full_label( $label, $rate ) {
 		if ( self::is_pending( $rate ) ) {
@@ -232,6 +275,12 @@ class Pickers {
 
 	/**
 	 * The builder's shipping total tag says "Free" for any rate without a price.
+	 *
+	 * @param mixed  $value   Tag value.
+	 * @param string $tag     Dynamic data tag.
+	 * @param int    $post_id Post ID.
+	 * @param array  $filters Tag filters.
+	 * @return mixed
 	 */
 	public static function builder_shipping_total( $value, $tag, $post_id, $filters ) {
 		if ( ! is_string( $tag ) || false === strpos( $tag, 'cart_shipping_total_amount' ) || isset( $filters['value'] ) ) {
@@ -243,6 +292,11 @@ class Pickers {
 		return $rate && self::is_pending( $rate ) ? '<span class="nashenski-rate-pending">' . esc_html( self::pending_text() ) . '</span>' : $value;
 	}
 
+	/**
+	 * The chosen rate of the first package.
+	 *
+	 * @return \WC_Shipping_Rate|null
+	 */
 	private static function chosen_rate() {
 		if ( ! function_exists( 'WC' ) || ! WC()->session || ! WC()->shipping() ) {
 			return null;
@@ -258,8 +312,11 @@ class Pickers {
 	/**
 	 * Holder for the picker under each Nashenski Commerce shipping option. The script fills the
 	 * one of the chosen option.
+	 *
+	 * @param \WC_Shipping_Rate $rate  Shipping rate.
+	 * @param int               $index Package index.
 	 */
-	public static function render_container( $rate, $index ) {
+	public static function render_container( $rate, $index ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- WordPress hook callback signature.
 		$courier = self::courier_of( $rate->get_id() );
 
 		if ( ! $courier ) {
@@ -300,10 +357,21 @@ class Pickers {
 		return $types;
 	}
 
+	/**
+	 * Whether the page uses the block cart or checkout.
+	 *
+	 * @return bool
+	 */
 	public static function is_block_checkout() {
 		return is_singular() && ( has_block( 'woocommerce/checkout' ) || has_block( 'woocommerce/cart' ) );
 	}
 
+	/**
+	 * Adds the layout class on the cart and checkout.
+	 *
+	 * @param array $classes Body classes.
+	 * @return array
+	 */
 	public static function body_class( $classes ) {
 		if ( Courier_Logos::is_cart_or_checkout() ) {
 			$classes[] = 'nashenski-shipping--' . Appearance::layout();
@@ -312,6 +380,9 @@ class Pickers {
 		return $classes;
 	}
 
+	/**
+	 * Loads the picker styles and scripts on the cart and checkout.
+	 */
 	public static function enqueue() {
 		if ( ! Courier_Logos::is_cart_or_checkout() ) {
 			return;
@@ -342,6 +413,11 @@ class Pickers {
 		}
 	}
 
+	/**
+	 * Settings and texts for the picker script.
+	 *
+	 * @return array
+	 */
 	public static function config() {
 		$connected = array();
 
@@ -408,6 +484,10 @@ class Pickers {
 
 	/**
 	 * Office, locker or address text of a courier choice, as the customer saw it.
+	 *
+	 * @param mixed  $cookie Courier choice.
+	 * @param string $type   Delivery type.
+	 * @return string
 	 */
 	public static function describe_choice( $cookie, $type ) {
 		if ( ! is_array( $cookie ) ) {
@@ -445,6 +525,10 @@ class Pickers {
 	 * Put the chosen office or address into the order address when the customer did not type one
 	 * (stores often hide the address fields for office delivery). With the street field hidden the
 	 * choice always wins, so an address saved from an earlier order cannot end up on this one.
+	 *
+	 * @param int       $order_id Order ID.
+	 * @param array     $posted   Posted checkout data.
+	 * @param \WC_Order $order    The order.
 	 */
 	public static function fill_order_address( $order_id, $posted = array(), $order = null ) {
 		$order = $order instanceof \WC_Order ? $order : wc_get_order( $order_id );

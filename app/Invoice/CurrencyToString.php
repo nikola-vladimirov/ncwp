@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
+/**
+ * Amounts in Bulgarian words.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Invoice;
 
 defined( 'ABSPATH' ) || exit;
@@ -30,6 +36,12 @@ class CurrencyToString {
 		),
 	);
 
+	/**
+	 * Whether the currency has Bulgarian names here.
+	 *
+	 * @param string $currency Currency code.
+	 * @return bool
+	 */
 	public static function supports( $currency ) {
 		return isset( self::UNITS[ $currency ] );
 	}
@@ -37,6 +49,10 @@ class CurrencyToString {
 	/**
 	 * A number from 0 to 999 999 999 in words. $gender sets the form of 1 and 2: m (един, два),
 	 * f (една, две) or n (едно, две).
+	 *
+	 * @param int    $number Number.
+	 * @param string $gender m, f or n.
+	 * @return string
 	 */
 	public static function number_to_text( $number, $gender = 'm' ) {
 		$number = (int) $number;
@@ -69,7 +85,14 @@ class CurrencyToString {
 		return self::below_thousand( $number, $gender );
 	}
 
-	/* "и" goes before the last word only: 1 005 = хиляда и пет, 1 120 = хиляда сто и двадесет. */
+	/**
+	 * Words for the rest after millions or thousands. "и" goes before the last word only:
+	 * 1 005 = хиляда и пет, 1 120 = хиляда сто и двадесет.
+	 *
+	 * @param int    $rest   Rest below the group.
+	 * @param string $gender m, f or n.
+	 * @return string
+	 */
 	private static function join_rest( $rest, $gender ) {
 		if ( 0 === $rest ) {
 			return '';
@@ -78,7 +101,12 @@ class CurrencyToString {
 		return ( self::is_one_word( $rest ) ? ' и ' : ' ' ) . self::number_to_text( $rest, $gender );
 	}
 
-	/* Numbers said as one group: 7, 40, 300, 5 000, 300 000. */
+	/**
+	 * Numbers said as one group: 7, 40, 300, 5 000, 300 000.
+	 *
+	 * @param int $number Number.
+	 * @return bool
+	 */
 	private static function is_one_word( $number ) {
 		if ( $number < 20 ) {
 			return true;
@@ -95,6 +123,13 @@ class CurrencyToString {
 		return 0 === $number % 1000 && $number < 1000000 && self::is_one_word( intdiv( $number, 1000 ) );
 	}
 
+	/**
+	 * A number from 0 to 999 in words.
+	 *
+	 * @param int    $number Number.
+	 * @param string $gender m, f or n.
+	 * @return string
+	 */
 	private static function below_thousand( $number, $gender ) {
 		$ones     = array( '', 'един', 'два', 'три', 'четири', 'пет', 'шест', 'седем', 'осем', 'девет', 'десет', 'единадесет', 'дванадесет', 'тринадесет', 'четиринадесет', 'петнадесет', 'шестнадесет', 'седемнадесет', 'осемнадесет', 'деветнадесет' );
 		$tens     = array( '', '', 'двадесет', 'тридесет', 'четиридесет', 'петдесет', 'шестдесет', 'седемдесет', 'осемдесет', 'деветдесет' );
@@ -130,6 +165,14 @@ class CurrencyToString {
 		return implode( ' ', $words );
 	}
 
+	/**
+	 * The form of 1 or 2 for the gender; other digits as they are.
+	 *
+	 * @param string $word   Word of the digit.
+	 * @param int    $digit  Digit.
+	 * @param string $gender m, f or n.
+	 * @return string
+	 */
 	private static function gendered( $word, $digit, $gender ) {
 		if ( 1 === $digit ) {
 			return 'f' === $gender ? 'една' : ( 'n' === $gender ? 'едно' : 'един' );
@@ -144,6 +187,10 @@ class CurrencyToString {
 
 	/**
 	 * The amount in words in the order currency, or '' when the currency has no Bulgarian name here.
+	 *
+	 * @param float  $amount   Amount.
+	 * @param string $currency Currency code.
+	 * @return string
 	 */
 	public static function amount_in_words( $amount, $currency = 'EUR' ) {
 		if ( ! self::supports( $currency ) ) {

@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName -- PSR-4 autoloader maps the class name to the file name.
 /**
  * Recommended Settings.
  *
@@ -142,7 +142,7 @@ class Recommended_Settings {
 			);
 		}
 
-		return apply_filters( 'nashenski/recommended_settings', $items );
+		return apply_filters( 'nashenski/recommended_settings', $items ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it would break existing callbacks.
 	}
 
 	/**
@@ -179,7 +179,7 @@ class Recommended_Settings {
 	 * Handle.
 	 */
 	public static function handle() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
