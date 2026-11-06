@@ -1,18 +1,61 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
+/**
+ * Invoice archive export.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Export\InvoiceArchive;
 
 use ZipArchive;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Exports the invoice and credit note PDFs of a month as a zip file.
+ */
 class Export {
-	public $documents = array(), $woo_orders = array(), $order_ids = array(), $date;
+	/**
+	 * Documents to put in the zip.
+	 *
+	 * @var array
+	 */
+	public $documents = array();
 
-	function __construct( $date ) {
+	/**
+	 * Orders passed to the documents filter.
+	 *
+	 * @var array
+	 */
+	public $woo_orders = array();
+
+	/**
+	 * Order IDs of the month.
+	 *
+	 * @var array
+	 */
+	public $order_ids = array();
+
+	/**
+	 * Month to export, as text strtotime() reads.
+	 *
+	 * @var string
+	 */
+	public $date;
+
+	/**
+	 * Loads the orders of the month.
+	 *
+	 * @param string $date Month to export.
+	 */
+	public function __construct( $date ) {
 		$this->date = $date;
 		$this->load_woo_orders();
 	}
 
+	/**
+	 * Loads the order IDs created in the month.
+	 */
 	protected function load_woo_orders() {
 		$this->order_ids = wc_get_orders(
 			array(
@@ -23,6 +66,11 @@ class Export {
 		);
 	}
 
+	/**
+	 * Builds the zip file.
+	 *
+	 * @return array|\WP_Error
+	 */
 	public function get_file() {
 		if ( ! class_exists( 'ZipArchive' ) ) {
 			return new \WP_Error( 'zip_missing', 'PHP ZipArchive extension is not available.' );
@@ -62,12 +110,17 @@ class Export {
 
 		if ( has_filter( 'nashenski/admin/delta_export/documents' ) ) {
 			$this->woo_orders = array_filter( array_map( 'wc_get_order', $this->order_ids ) );
-			$this->documents  = apply_filters( 'nashenski/admin/delta_export/documents', $this->documents, $this->woo_orders );
+			$this->documents  = apply_filters( 'nashenski/admin/delta_export/documents', $this->documents, $this->woo_orders ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 		}
 
 		return $this->generate_zip();
 	}
 
+	/**
+	 * Writes the documents into a temporary zip file.
+	 *
+	 * @return array|\WP_Error
+	 */
 	protected function generate_zip() {
 		$zip_file_name = 'invoice-export-' . $this->date . '.zip';
 		$zip           = new \ZipArchive();

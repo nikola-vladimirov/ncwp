@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
+/**
+ * BOX NOW order meta box and labels.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin;
 
 use Nashenski\Container\Client;
@@ -7,12 +13,23 @@ use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * BOX NOW meta box on the order screen: creates, prints and deletes labels.
+ */
 class BoxNow {
 	/** Most units of one order that are packed into boxes automatically. */
 	const MAX_AUTO_PACK_UNITS = 200;
 
+	/**
+	 * Plugin container.
+	 *
+	 * @var mixed
+	 */
 	private static $container = null;
 
+	/**
+	 * Registers the hooks.
+	 */
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_boxes' ) );
 
@@ -21,10 +38,16 @@ class BoxNow {
 		add_action( 'wp_ajax_nashenski_boxnow_delete_label', array( __CLASS__, 'delete_label' ) );
 	}
 
+	/**
+	 * Adds the BOX NOW meta box.
+	 */
 	public static function add_meta_boxes() {
 		nashenski_add_courier_meta_box( 'boxnow', __( 'BOX NOW Delivery', 'nashenski-commerce' ), array( __CLASS__, 'meta_box' ) );
 	}
 
+	/**
+	 * Prints the meta box and passes the label data to the script.
+	 */
 	public static function meta_box() {
 		global $post;
 		$theorder = isset( $GLOBALS['theorder'] ) ? $GLOBALS['theorder'] : null;
@@ -37,7 +60,7 @@ class BoxNow {
 
 		if ( ! empty( $theorder->get_items( 'shipping' ) ) ) {
 			foreach ( $theorder->get_items( 'shipping' ) as $shipping ) {
-				if ( $shipping['method_id'] === 'nashenski_boxnow' ) {
+				if ( 'nashenski_boxnow' === $shipping['method_id'] ) {
 					echo '<div id="nashenski--boxnow-admin"></div>';
 
 					$label = self::generate_label_data( $theorder->get_id() );
@@ -60,7 +83,7 @@ class BoxNow {
 						foreach ( $shipping->get_meta_data() as $meta_data ) {
 							$data = $meta_data->get_data();
 
-							if ( $data['key'] == 'cookie_data' ) {
+							if ( 'cookie_data' === $data['key'] ) {
 								$cookie_data = $data['value'];
 							}
 						}
@@ -91,6 +114,11 @@ class BoxNow {
 		}
 	}
 
+	/**
+	 * Texts for the meta box script.
+	 *
+	 * @return array
+	 */
 	protected static function get_i18n() {
 		return array(
 			'sendTo'               => __( 'Send to', 'nashenski-commerce' ),
@@ -121,17 +149,23 @@ class BoxNow {
 		);
 	}
 
+	/**
+	 * Builds the label data of an order.
+	 *
+	 * @param int $order_id Order ID.
+	 * @return array
+	 */
 	public static function generate_label_data( $order_id ) {
 		$order       = wc_get_order( $order_id );
 		$cookie_data = $order->get_meta( 'nashenski_boxnow_cookie_data' );
 
 		if ( ! $cookie_data ) {
 			foreach ( $order->get_items( 'shipping' ) as $shipping ) {
-				if ( $shipping['method_id'] === 'nashenski_boxnow' ) {
+				if ( 'nashenski_boxnow' === $shipping['method_id'] ) {
 					foreach ( $shipping->get_meta_data() as $meta_data ) {
 						$data = $meta_data->get_data();
 
-						if ( $data['key'] == 'cookie_data' ) {
+						if ( 'cookie_data' === $data['key'] ) {
 							$cookie_data = $data['value'];
 						}
 					}
@@ -155,7 +189,9 @@ class BoxNow {
 			$label_data['amountToBeCollected'] = $order->get_total();
 		}
 
-		if ( $cached_items = $order->get_meta( 'nashenski--box-now-items' ) ) {
+		$cached_items = $order->get_meta( 'nashenski--box-now-items' );
+
+		if ( $cached_items ) {
 			$label_data['items'] = $cached_items;
 		} else {
 			$label_data['items'] = self::generate_items( $order );
@@ -164,6 +200,11 @@ class BoxNow {
 		return $label_data;
 	}
 
+	/**
+	 * Sender data from the settings.
+	 *
+	 * @return array
+	 */
 	public static function generate_sender_data() {
 		return array(
 			'contactName'   => nashenski_get_option( 'boxnow_send_from', 'name' ),
@@ -173,6 +214,13 @@ class BoxNow {
 		);
 	}
 
+	/**
+	 * Receiver data from the order.
+	 *
+	 * @param \WC_Order $order       Order.
+	 * @param array     $cookie_data Checkout choice of the customer.
+	 * @return array
+	 */
 	public static function generate_receiver_data( $order, $cookie_data ) {
 		if ( $order->get_shipping_phone() ) {
 			$phone = $order->get_shipping_phone();
@@ -194,6 +242,12 @@ class BoxNow {
 		);
 	}
 
+	/**
+	 * Turns a local phone number into the +359 form.
+	 *
+	 * @param string $phone Phone number.
+	 * @return string
+	 */
 	public static function format_phone( $phone ) {
 		$phone = substr( $phone, 1 );
 		$phone = '+359' . $phone;
@@ -201,21 +255,37 @@ class BoxNow {
 		return $phone;
 	}
 
+	/**
+	 * Box size from the settings.
+	 *
+	 * @return string
+	 */
 	public static function get_box_size() {
 		$box_size = ( nashenski_get_option( 'boxnow_price', 'box_size' ) ) ? nashenski_get_option( 'boxnow_price', 'box_size' ) : 'auto';
 
 		return $box_size;
 	}
 
+	/**
+	 * Notice for orders too big to pack automatically.
+	 *
+	 * @return string
+	 */
 	public static function too_many_units_message() {
 		/* translators: %d: unit limit */
 		return sprintf( __( 'This order has more than %d units, so it is not packed into BOX NOW boxes automatically. Add the boxes by hand.', 'nashenski-commerce' ), self::MAX_AUTO_PACK_UNITS );
 	}
 
+	/**
+	 * Packs the order items into boxes.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return array
+	 */
 	public static function generate_items( $order ) {
 		$box_size = self::get_box_size();
 
-		if ( $box_size === 'auto' ) {
+		if ( 'auto' === $box_size ) {
 			try {
 				$items = self::auto_generate_items_to_boxes( $order );
 			} catch ( Packing_Limit_Exceeded $e ) {
@@ -228,6 +298,13 @@ class BoxNow {
 		return $items;
 	}
 
+	/**
+	 * Packs the order items into as many boxes as their size needs.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return array
+	 * @throws Packing_Limit_Exceeded When the order has more than MAX_AUTO_PACK_UNITS units.
+	 */
 	public static function auto_generate_items_to_boxes( $order ) {
 		$default_box_values = array(
 			'name'            => '',
@@ -294,6 +371,13 @@ class BoxNow {
 		return $items;
 	}
 
+	/**
+	 * Puts all order items into one box.
+	 *
+	 * @param \WC_Order $order    Order.
+	 * @param string    $box_size small, medium or large.
+	 * @return array
+	 */
 	public static function generate_all_items_to_one_box( $order, $box_size ) {
 		$sizes = array(
 			'small'  => 1,
@@ -320,12 +404,22 @@ class BoxNow {
 		return $items;
 	}
 
+	/**
+	 * BOX NOW destinations.
+	 *
+	 * @return array
+	 */
 	public static function get_destinations() {
 		$container = nashenski()->container();
 
 		return $container[ Client::BOXNOW_DESTINATIONS ]->get_destinations();
 	}
 
+	/**
+	 * BOX NOW origins.
+	 *
+	 * @return array
+	 */
 	public static function get_origins() {
 		$container = nashenski()->container();
 
@@ -333,14 +427,33 @@ class BoxNow {
 		return array_values( (array) $container[ Client::BOXNOW_ORIGINS ]->get_origins() );
 	}
 
+	/**
+	 * Creates the label of an order.
+	 *
+	 * @param int|string $order_id Order ID.
+	 * @return array|null
+	 */
 	public static function generate_label( $order_id = '' ) {
 		return self::generate_label_for_order( $order_id );
 	}
 
+	/**
+	 * Creates the label once the order is placed.
+	 *
+	 * @param int $order_id Order ID.
+	 * @return array|null
+	 */
 	public static function generate_label_after_order_generated( $order_id ) {
 		return self::generate_label( $order_id );
 	}
 
+	/**
+	 * Creates the label of an order, optionally with the meta box form values.
+	 *
+	 * @param int|string $order_id         Order ID.
+	 * @param bool       $use_request_data Whether to read the form values.
+	 * @return array|null
+	 */
 	private static function generate_label_for_order( $order_id = '', $use_request_data = false ) {
 		if ( ! $order_id ) {
 			return;
@@ -414,6 +527,11 @@ class BoxNow {
 		return self::send_label_to_boxnow( $label_data, $order );
 	}
 
+	/**
+	 * AJAX: creates the label from the meta box.
+	 *
+	 * @param int|string $order_id Order ID when no request value is sent.
+	 */
 	public static function generate_label_ajax( $order_id = '' ) {
 		nashenski_check_admin_label_actions();
 
@@ -427,9 +545,16 @@ class BoxNow {
 		wp_die();
 	}
 
+	/**
+	 * Sends the label to BOX NOW, one parcel per box.
+	 *
+	 * @param array     $label Label data.
+	 * @param \WC_Order $order Order.
+	 * @return array
+	 */
 	public static function send_label_to_boxnow( $label, $order ) {
 		$data         = array();
-		$request_body = apply_filters( 'nashenski/boxnow/create_label', $label, $order );
+		$request_body = apply_filters( 'nashenski/boxnow/create_label', $label, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 		$orig_items   = $request_body['items'];
 		$other_labels = array();
 
@@ -447,7 +572,7 @@ class BoxNow {
 			}
 		}
 
-		if ( $order->get_payment_method() === 'cod' && ! empty( $other_labels ) ) {
+		if ( 'cod' === $order->get_payment_method() && ! empty( $other_labels ) ) {
 			return array(
 				'message' => __( 'Cash on delivery orders cannot be split into multiple packets.', 'nashenski-commerce' ),
 			);
@@ -475,11 +600,18 @@ class BoxNow {
 			nashenski_add_label_order_note( $order, 'BOX NOW', 'created', wp_list_pluck( $response['parcels'] ?? array(), 'id' ) );
 		}
 
-		do_action( 'nashenski/boxnow/after_send_label', $data, $order );
+		do_action( 'nashenski/boxnow/after_send_label', $data, $order ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 
 		return $data;
 	}
 
+	/**
+	 * Sends the labels of the second and later boxes.
+	 *
+	 * @param array     $other_labels Label data, one per box.
+	 * @param \WC_Order $order        Order.
+	 * @return array
+	 */
 	public static function send_other_labels( $other_labels, $order ) {
 		$order->update_meta_data( 'nashenski_boxnow_other_labels', $other_labels );
 		$other_labels_data = array();
@@ -504,6 +636,12 @@ class BoxNow {
 		return $other_labels_data;
 	}
 
+	/**
+	 * Sends one label request to BOX NOW.
+	 *
+	 * @param array $label Label data.
+	 * @return array Response shaped like an HTTP response, with a body.
+	 */
 	public static function send_label_request( $label ) {
 		// Direct call to BOX NOW. Callers read the result like an HTTP response body.
 		$client   = nashenski()->container()[ Client::BOXNOW ];
@@ -518,6 +656,9 @@ class BoxNow {
 		return array( 'body' => wp_json_encode( $response ) );
 	}
 
+	/**
+	 * AJAX: cancels the parcels of an order.
+	 */
 	public static function delete_label() {
 		nashenski_check_admin_label_actions();
 
@@ -538,7 +679,9 @@ class BoxNow {
 		$order->update_meta_data( 'nashenski_boxnow_shipment_status', '' );
 		$order->update_meta_data( 'nashenski_boxnow_operations', '' );
 
-		if ( $other_labels = $order->get_meta( 'nashenski_boxnow_other_labels' ) ) {
+		$other_labels = $order->get_meta( 'nashenski_boxnow_other_labels' );
+
+		if ( $other_labels ) {
 			foreach ( $other_labels as $other_label ) {
 				$parcel_numbers = array_merge( $parcel_numbers, wp_list_pluck( $other_label['shipmentStatus']['parcels'] ?? array(), 'id' ) );
 				foreach ( $other_label['shipmentStatus']['parcels'] as $parcel ) {
@@ -560,8 +703,11 @@ class BoxNow {
 		wp_die();
 	}
 
+	/**
+	 * AJAX: streams the label PDF of a parcel.
+	 */
 	public static function print_label_endpoint() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
@@ -590,8 +736,11 @@ class BoxNow {
 		wp_die();
 	}
 
+	/**
+	 * AJAX: hides the BOX NOW notice.
+	 */
 	public static function message_dismiss_callback() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			wp_die( -1, 403 );
 		}
 

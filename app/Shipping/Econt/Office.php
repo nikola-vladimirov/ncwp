@@ -1,19 +1,39 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
+/**
+ * Econt office picker.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Shipping\Econt;
 
 use Nashenski\Container\Client;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * AJAX list of the Econt offices and automats of a town.
+ */
 class Office {
+	/**
+	 * Plugin container.
+	 *
+	 * @var mixed
+	 */
 	private static $container = null;
 
+	/**
+	 * Registers the AJAX hooks.
+	 */
 	public function __construct() {
 
 		add_action( 'wp_ajax_nashenski_econt_load_offices', array( __CLASS__, 'load_offices' ) );
 		add_action( 'wp_ajax_nopriv_nashenski_econt_load_offices', array( __CLASS__, 'load_offices' ) );
 	}
 
+	/**
+	 * AJAX: sends the offices or automats of the chosen town.
+	 */
 	public static function load_offices() {
 		nashenski_check_picker_request();
 
@@ -34,7 +54,7 @@ class Office {
 			$not_found_message = __( 'No offices were found at %s.', 'nashenski-commerce' );
 		}
 
-		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'] ) || ! $raw_city ) {
+		if ( ! in_array( $cities_data['city'], $cities_data['cities_only_names'], true ) || ! $raw_city ) {
 			$args['status'] = 'invalid-city';
 
 			if ( ! $state ) {
@@ -54,21 +74,21 @@ class Office {
 			} else {
 				$offices = $offices['offices'];
 
-				if ( $delivery_type === 'automat' ) {
+				if ( 'automat' === $delivery_type ) {
 					$offices = array_values(
 						array_filter(
 							$offices,
 							function ( $office ) {
-								return ( $office['isAPS'] === true );
+								return ( true === $office['isAPS'] );
 							}
 						)
 					);
-				} elseif ( $delivery_type === 'office' ) {
+				} elseif ( 'office' === $delivery_type ) {
 					$offices = array_values(
 						array_filter(
 							$offices,
 							function ( $office ) {
-								return ( $office['isAPS'] === false );
+								return ( false === $office['isAPS'] );
 							}
 						)
 					);
@@ -79,7 +99,7 @@ class Office {
 				}
 			}
 
-			$args['offices'] = apply_filters( 'nashenski/shipping_method/econt/offices', $offices );
+			$args['offices'] = apply_filters( 'nashenski/shipping_method/econt/offices', $offices ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 			$args['status']  = 'valid-city';
 		}
 

@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName.InvalidClassFileName, Generic.Classes.DuplicateClassName, Universal.Files.SeparateFunctionsFromOO.Mixed -- standalone offline test: its stubs live in this file.
 /**
  * Offline test: Econt and Speedy accept foreign countries only when "Ship abroad" is on; the public price and Speedy's fixed price stay Bulgarian. Run: php tests/international-countries.php
  *
@@ -21,12 +21,12 @@ class WC_Shipping_Method {
 	/**
 	 * Get option.
 	 *
-	 * @param string $key     Key.
-	 * @param mixed  $default Default.
+	 * @param string $key           Key.
+	 * @param mixed  $default_value Default.
 	 * @return mixed
 	 */
-	public function get_option( $key, $default = '' ) {
-		return self::$options[ $key ] ?? $default;
+	public function get_option( $key, $default_value = '' ) {
+		return self::$options[ $key ] ?? $default_value;
 	}
 }
 
@@ -52,23 +52,23 @@ require __DIR__ . '/../app/Shipping/Speedy/Method.php';
  */
 function nashenski_intl_assert( $ok, $label ) {
 	if ( ! $ok ) {
-		echo "FAIL: $label\n";
+		echo "FAIL: $label\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CLI test output, not HTML.
 		exit( 1 );
 	}
-	echo "ok: $label\n";
+	echo "ok: $label\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CLI test output, not HTML.
 }
 
 /**
  * Whether a courier accepts a country with the given setting.
  *
- * @param string $class   Method class.
- * @param string $setting Ship abroad value.
- * @param string $country ISO code.
+ * @param string $class_name Method class.
+ * @param string $setting    Ship abroad value.
+ * @param string $country    ISO code.
  * @return bool
  */
-function nashenski_intl_accepts( $class, $setting, $country ) {
+function nashenski_intl_accepts( $class_name, $setting, $country ) {
 	WC_Shipping_Method::$options = array( 'international' => $setting );
-	$method                      = ( new ReflectionClass( $class ) )->newInstanceWithoutConstructor();
+	$method                      = ( new ReflectionClass( $class_name ) )->newInstanceWithoutConstructor();
 	return $method->is_available( array( 'destination' => array( 'country' => $country ) ) );
 }
 

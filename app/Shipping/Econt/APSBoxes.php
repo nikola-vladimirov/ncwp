@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
+/**
+ * Econt automat box sizes.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Shipping\Econt;
 
 use Nashenski\Shipping\Packer\APSPackage;
@@ -7,9 +13,17 @@ use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Packs automat parcels into the Econt automat box sizes and sends them as packs.
+ */
 class APSBoxes {
 	const OPTION_NAME = 'auto_size';
 
+	/**
+	 * Econt automat boxes, in cm and kg.
+	 *
+	 * @var array
+	 */
 	private static $box_sizes = array(
 		array(
 			'name'       => 'small',
@@ -34,12 +48,23 @@ class APSBoxes {
 		),
 	);
 
+	/**
+	 * Registers the label filter when automatic sizes are on.
+	 */
 	public function __construct() {
 		if ( nashenski_get_option( 'econt', self::OPTION_NAME ) === 'yes' ) {
 			add_filter( 'nashenski/econt/calculate_label', array( __CLASS__, 'calculate_label' ), 20, 2 );
 		}
 	}
 
+	/**
+	 * Replaces the label dimensions with the packed boxes.
+	 *
+	 * @param array  $request_body Label request.
+	 * @param object $method       Shipping method.
+	 * @return array
+	 * @throws Packing_Limit_Exceeded When the package is too big to pack.
+	 */
 	public static function calculate_label( $request_body, $method ) {
 		if ( ! self::should_handle_method( $method ) || empty( $request_body['label'] ) ) {
 			return $request_body;
@@ -63,14 +88,34 @@ class APSBoxes {
 		return $request_body;
 	}
 
+	/**
+	 * Whether the package fits the largest automat box.
+	 *
+	 * @param array               $package Shipping package.
+	 * @param Packing_Budget|null $budget  Work limit of the packer.
+	 * @return bool
+	 */
 	public static function package_fits_largest_automat( $package, ?Packing_Budget $budget = null ) {
 		return APSPackage::package_fits_largest_box( $package, self::$box_sizes, null, $budget );
 	}
 
+	/**
+	 * Whether the method sends to an automat and has a package.
+	 *
+	 * @param object $method Shipping method.
+	 * @return bool
+	 */
 	private static function should_handle_method( $method ) {
-		return isset( $method->delivery_type ) && $method->delivery_type === 'automat' && ! empty( $method->package );
+		return isset( $method->delivery_type ) && 'automat' === $method->delivery_type && ! empty( $method->package );
 	}
 
+	/**
+	 * Puts the packed boxes on the label as packs.
+	 *
+	 * @param array $label        Label.
+	 * @param array $packed_boxes Packed boxes.
+	 * @return array
+	 */
 	private static function apply_packed_boxes_to_label( $label, $packed_boxes ) {
 		$packs = self::build_packs( $packed_boxes );
 
@@ -86,6 +131,12 @@ class APSBoxes {
 		return $label;
 	}
 
+	/**
+	 * Packs for the label, one per box.
+	 *
+	 * @param array $packed_boxes Packed boxes.
+	 * @return array
+	 */
 	private static function build_packs( $packed_boxes ) {
 		$packs = array();
 
@@ -108,6 +159,12 @@ class APSBoxes {
 		return $packs;
 	}
 
+	/**
+	 * Size the items take in a box, else the box size.
+	 *
+	 * @param array $packed_box Packed box.
+	 * @return array
+	 */
 	private static function get_packed_size( $packed_box ) {
 		$box = $packed_box['box'];
 

@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
+/**
+ * Customer reports.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Reports;
 
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
@@ -6,15 +12,30 @@ use Automattic\WooCommerce\Utilities\OrderUtil;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Customer checks: asks the turned-on services about refused parcels and shows or acts on the reports.
+ */
 class Reports {
 	const CHECKOUT_SESSION_NAME = 'nashenski_reports_found';
 	const LOOKUPS_PER_HOUR      = 20;
-	protected $providers        = array();
 
+	/**
+	 * Services that are on and have a login.
+	 *
+	 * @var array
+	 */
+	protected $providers = array();
+
+	/**
+	 * Registers the init hook.
+	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'init' ) );
 	}
 
+	/**
+	 * Registers the hooks when a service is on.
+	 */
 	public function init() {
 		$this->providers = self::get_providers();
 
@@ -67,7 +88,8 @@ class Reports {
 
 		foreach ( self::SERVICES as $slug => list( $login, $class ) ) {
 			if ( 'yes' === nashenski_get_option( 'reports', 'enable_' . $slug ) ) {
-				$services[ '' === trim( (string) nashenski_get_option( $slug, $login ) ) ? 'missing' : 'ready' ][] = new $class();
+				$group                = '' === trim( (string) nashenski_get_option( $slug, $login ) ) ? 'missing' : 'ready';
+				$services[ $group ][] = new $class();
 			}
 		}
 
@@ -86,11 +108,16 @@ class Reports {
 		);
 	}
 
+	/**
+	 * Services that are on and have a login, after the providers filter.
+	 *
+	 * @return Providers\Provider_Base[]
+	 */
 	public static function get_providers() {
 		$providers = self::services()['ready'];
 
 		$providers = array_filter(
-			apply_filters( 'nashenski/reports/providers', $providers ),
+			apply_filters( 'nashenski/reports/providers', $providers ), // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 			function ( $provider ) {
 				return ( is_a( $provider, 'Nashenski\Reports\Providers\Provider_Base' ) );
 			}
@@ -99,6 +126,9 @@ class Reports {
 		return $providers;
 	}
 
+	/**
+	 * Adds the Reports meta box to the order screen.
+	 */
 	public static function add_meta_boxes() {
 		$screen = wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
 		? array( wc_get_page_screen_id( 'shop-order' ), wc_get_page_screen_id( 'shop_subscription' ) )
@@ -109,6 +139,9 @@ class Reports {
 		add_meta_box( 'nashenski_customer_reports', esc_html__( 'Reports', 'nashenski-commerce' ), array( __CLASS__, 'meta_box' ), $screen, 'normal', 'default' );
 	}
 
+	/**
+	 * Prints the Reports meta box.
+	 */
 	public static function meta_box() {
 		$theorder = isset( $GLOBALS['theorder'] ) ? $GLOBALS['theorder'] : null;
 
@@ -160,11 +193,16 @@ class Reports {
 		<?php
 	}
 
+	/**
+	 * Prints the report status under the order details.
+	 *
+	 * @param \WC_Order $order Order.
+	 */
 	public static function customer_status_info( $order ) {
 		$refresh = false;
 
 		// "Refresh data" asks the services again (it carries its own nonce).
-		if ( isset( $_GET['nashenski--reports-refresh'], $_GET['nashenski_reports_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nashenski_reports_nonce'] ) ), 'nashenski_reports_refresh' ) && current_user_can( 'manage_woocommerce' ) ) {
+		if ( isset( $_GET['nashenski--reports-refresh'], $_GET['nashenski_reports_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nashenski_reports_nonce'] ) ), 'nashenski_reports_refresh' ) && current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown -- WooCommerce capability.
 			$refresh = true;
 		}
 		$reports = self::get_all_reports( $order, $refresh );
@@ -187,6 +225,10 @@ class Reports {
 	/**
 	 * Status pill in the WooCommerce order status style: grey when nothing was found, red with the
 	 * number of reports otherwise, a dash when the order was never checked.
+	 *
+	 * @param int  $count   Number of reports.
+	 * @param bool $checked Whether the order was checked.
+	 * @return string HTML.
 	 */
 	public static function pill( $count, $checked ) {
 		if ( ! $checked ) {
@@ -202,12 +244,25 @@ class Reports {
 
 		return '<mark class="nashenski-report-pill nashenski-report-pill--found"><span>' . esc_html( $text ) . '</span></mark>';
 	}
+
+	/**
+	 * Checks the customer of a new order.
+	 *
+	 * @param int $order_id Order ID.
+	 */
 	public static function set_customer_status_info( $order_id ) {
 		$order = wc_get_order( $order_id );
 
 		self::get_all_reports( $order, 1 );
 	}
 
+	/**
+	 * Reports of all services for an order.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @param bool      $force Whether to ask the services again.
+	 * @return array
+	 */
 	public static function get_all_reports( $order, $force = false ) {
 		$providers   = self::get_providers();
 		$all_reports = array();
@@ -220,6 +275,12 @@ class Reports {
 		return $all_reports;
 	}
 
+	/**
+	 * Saved reports of all services for an order.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return array
+	 */
 	public static function get_all_reports_from_meta( $order ) {
 		$providers   = self::get_providers();
 		$all_reports = array();
@@ -234,13 +295,19 @@ class Reports {
 		return $all_reports;
 	}
 
+	/**
+	 * Adds the Reports column after the shipping address.
+	 *
+	 * @param array $columns Columns.
+	 * @return array
+	 */
 	public static function add_order_list_column( $columns ) {
 		$reordered_columns = array();
 
 		foreach ( $columns as $key => $column ) {
 			$reordered_columns[ $key ] = $column;
 
-			if ( $key == 'shipping_address' ) {
+			if ( 'shipping_address' === $key ) {
 				$reordered_columns['order_reports'] = esc_html__( 'Reports', 'nashenski-commerce' );
 			}
 		}
@@ -248,6 +315,12 @@ class Reports {
 		return $reordered_columns;
 	}
 
+	/**
+	 * Prints the Reports column.
+	 *
+	 * @param string              $column  Column key.
+	 * @param int|\WC_Order|mixed $post_id Order ID, or the order on the HPOS screen.
+	 */
 	public static function add_order_list_column_content( $column, $post_id ) {
 		if ( 'order_reports' !== $column ) {
 			return;
@@ -273,6 +346,13 @@ class Reports {
 
 		echo self::pill( $count, $checked ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in pill().
 	}
+
+	/**
+	 * Hides cash on delivery in the order review when the checkout phone has reports.
+	 *
+	 * @param array $available_gateways Payment gateways.
+	 * @return array
+	 */
 	public static function filter_payment_methods( $available_gateways ) {
 		if ( is_admin() || empty( $available_gateways['cod'] ) ) {
 			return $available_gateways;
@@ -294,8 +374,13 @@ class Reports {
 	}
 
 	/**
-	 * filter_payment_methods() only hides cash on delivery in the order review; the order itself
+	 * Refuses cash on delivery for a checkout phone with reports.
+	 *
+	 * The filter_payment_methods() method only hides cash on delivery in the order review; the order itself
 	 * (classic checkout, and the block checkout through Block_Checkout::validate()) is checked here.
+	 *
+	 * @param array     $data   Posted checkout data.
+	 * @param \WP_Error $errors Checkout errors.
 	 */
 	public static function validate_cod( $data, $errors ) {
 		$phone = (string) ( $data['billing_phone'] ?? '' );
@@ -314,6 +399,9 @@ class Reports {
 
 	/**
 	 * Reports the customer's phone has, from every service that is on.
+	 *
+	 * @param string $phone Phone number.
+	 * @return array
 	 */
 	public static function check_in_session( $phone ) {
 		$found = array();
@@ -328,6 +416,10 @@ class Reports {
 	/**
 	 * Reports one service has about the phone. Asked once per session and phone, so the checkout
 	 * does not call the service again on every price update.
+	 *
+	 * @param Providers\Provider_Base $provider Service.
+	 * @param string                  $phone    Phone number.
+	 * @return array
 	 */
 	private static function reports_for( $provider, $phone ) {
 		$cache     = WC()->session->get( self::CHECKOUT_SESSION_NAME );
@@ -383,6 +475,9 @@ class Reports {
 	/**
 	 * Hides the payment methods a service lists, when that service flags the checkout phone (its own
 	 * level of warning). Each service's list is used only while that service is on.
+	 *
+	 * @param array $gateways Payment gateways.
+	 * @return array
 	 */
 	public static function hide_payment_methods( $gateways ) {
 		if ( ( is_admin() && ! wp_doing_ajax() ) || ! WC()->session ) {
@@ -414,6 +509,9 @@ class Reports {
 
 	/**
 	 * The payment method IDs a service hides.
+	 *
+	 * @param string $slug Service slug.
+	 * @return array
 	 */
 	public static function hidden_payments( $slug ) {
 		$payments = json_decode( (string) nashenski_get_option( $slug, 'hide_payments' ), true );
@@ -435,6 +533,10 @@ class Reports {
 
 		return $choices;
 	}
+
+	/**
+	 * Forgets the checkout lookups once the order is placed.
+	 */
 	public static function unset_session() {
 		WC()->session->__unset( self::CHECKOUT_SESSION_NAME );
 	}

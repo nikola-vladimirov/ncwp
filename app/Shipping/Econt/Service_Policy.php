@@ -1,4 +1,10 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
+/**
+ * Econt service policy.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Shipping\Econt;
 
 use Nashenski\Container\Client;
@@ -7,10 +13,23 @@ defined( 'ABSPATH' ) || exit;
 
 /** Shopper display flags cannot waive merchant-configured shipment services. */
 class Service_Policy {
-	const OVERRIDES        = '_nashenski_econt_service_overrides';
+	const OVERRIDES = '_nashenski_econt_service_overrides';
+
+	/**
+	 * Label fields the policy controls.
+	 *
+	 * @var array
+	 */
 	private static $fields = array( 'declaredValueAmount', 'declaredValueCurrency', 'payAfterAccept', 'payAfterTest' );
 
-	/** Only server-side filter differences populate this session/order-only record. */
+	/**
+	 * Only server-side filter differences populate this session/order-only record.
+	 *
+	 * @param array $before    Label before the filters.
+	 * @param array $after     Label after the filters.
+	 * @param array $overrides Overrides found so far.
+	 * @return array
+	 */
 	public static function capture_overrides( $before, $after, $overrides = array() ) {
 		foreach ( self::$fields as $field ) {
 			$old         = strpos( $field, 'declaredValue' ) === 0 ? ( $before['services'] ?? array() ) : $before;
@@ -27,6 +46,13 @@ class Service_Policy {
 		return $overrides;
 	}
 
+	/**
+	 * Puts the captured filter overrides back on the label.
+	 *
+	 * @param array $label     Label.
+	 * @param array $overrides Overrides.
+	 * @return array
+	 */
 	private static function apply_overrides( $label, $overrides ) {
 		foreach ( self::$fields as $field ) {
 			if ( ! isset( $overrides[ $field ] ) ) {
@@ -42,16 +68,28 @@ class Service_Policy {
 		}
 		return $label;
 	}
+
+	/**
+	 * Office code without the officeID- prefix.
+	 *
+	 * @param mixed $value Office value.
+	 * @return string
+	 */
 	private static function office_code( $value ) {
 		return is_string( $value ) || is_int( $value ) ? preg_replace( '/^officeID-/', '', (string) $value ) : '';
 	}
 
 	/**
 	 * The catalogue decides. The shopper's own APS flag is never used: without a readable catalogue no service is waived.
+	 *
+	 * @param mixed $container   Plugin container.
+	 * @param mixed $office      Office the shopper chose.
+	 * @param array $destination Country, state and city.
+	 * @return bool
 	 */
 	public static function recipient_is_aps( $container, $office, $destination ) {
 		$code = self::office_code( $office );
-		if ( $code === '' ) {
+		if ( '' === $code ) {
 			return false;
 		}
 		$country = $destination['country'] ?? 'BG';
@@ -67,7 +105,7 @@ class Service_Policy {
 		$state   = $regions[ $state ] ?? $state;
 		$cities  = $container[ Client::ECONT_CITIES ]->get_filtered_cities( $destination['city'], $state, $country );
 		$key     = $cities['city_key'] ?? false;
-		if ( $key === false || ! isset( $cities['cities'][ $key ]['id'] ) ) {
+		if ( false === $key || ! isset( $cities['cities'][ $key ]['id'] ) ) {
 			return false;
 		}
 		$offices = $container[ Client::ECONT_OFFICES ]->get_offices( $cities['cities'][ $key ]['id'], $country );
@@ -80,21 +118,41 @@ class Service_Policy {
 		return false;
 	}
 
+	/**
+	 * Whether the label is sent from an automat.
+	 *
+	 * @param mixed $container Plugin container.
+	 * @param array $label     Label.
+	 * @return bool
+	 */
 	private static function sender_is_aps( $container, $label ) {
 		$code = self::office_code( $label['senderOfficeCode'] ?? '' );
-		if ( $code === '' || ! isset( $container[ Client::ECONT_OFFICES ] ) ) {
+		if ( '' === $code || ! isset( $container[ Client::ECONT_OFFICES ] ) ) {
 			return false;
 		}
 		$offices = $container[ Client::ECONT_OFFICES ]->get_formatted_offices( nashenski_get_option( 'econt_send_from', 'office_city' ) );
 		return isset( $offices['aps'][ 'officeID-' . $code ] );
 	}
 
-	/** Repair old prepared labels using order data, without requiring a live cart. */
+	/**
+	 * Repair old prepared labels using order data, without requiring a live cart.
+	 *
+	 * @param array                        $label     Label.
+	 * @param \WC_Order                    $order     Order.
+	 * @param mixed                        $container Plugin container.
+	 * @param \WC_Order_Item_Shipping|null $shipping  Econt shipping item; found in the order when null.
+	 * @param array                        $overrides Captured filter overrides.
+	 * @return array
+	 */
 	public static function for_order( $label, $order, $container, $shipping = null, $overrides = array() ) {
+		$country = $order->get_shipping_country();
+		$state   = $order->get_shipping_state();
+		$city    = $order->get_shipping_city();
+
 		$destination = array(
-			'country' => $order->get_shipping_country() ?: $order->get_billing_country(),
-			'state'   => $order->get_shipping_state() ?: $order->get_billing_state(),
-			'city'    => $order->get_shipping_city() ?: $order->get_billing_city(),
+			'country' => $country ? $country : $order->get_billing_country(),
+			'state'   => $state ? $state : $order->get_billing_state(),
+			'city'    => $city ? $city : $order->get_billing_city(),
 		);
 		if ( null === $shipping ) {
 			foreach ( $order->get_items( 'shipping' ) as $item ) {
@@ -109,7 +167,7 @@ class Service_Policy {
 		} elseif ( 'cod' === $order->get_payment_method() && wc_string_to_bool( nashenski_get_option( 'econt', 'declared_value' ) ) ) {
 			if ( ! isset( $label['services']['declaredValueAmount'] ) ) {
 				$amount = 0;
-				$types  = apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) ? array( 'line_item', 'fee' ) : array( 'line_item' );
+				$types  = apply_filters( 'nashenski/shipping/package_total_includes_fees', true ) ? array( 'line_item', 'fee' ) : array( 'line_item' ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 				foreach ( $order->get_items( $types ) as $item ) {
 					$amount += (float) $item->get_total() + (float) $item->get_total_tax();
 				}
@@ -130,7 +188,7 @@ class Service_Policy {
 			if ( in_array( $test, array( 'review', 'test' ), true ) && ! array_key_exists( 'payAfterAccept', $label ) ) {
 				$label['payAfterAccept'] = true;
 			}
-			if ( $test === 'test' && ! array_key_exists( 'payAfterTest', $label ) ) {
+			if ( 'test' === $test && ! array_key_exists( 'payAfterTest', $label ) ) {
 				$label['payAfterTest'] = true;
 			}
 		}

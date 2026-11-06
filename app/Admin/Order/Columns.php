@@ -1,12 +1,24 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
+/**
+ * Order list columns.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Admin\Order;
 
 use Nashenski\Admin\Admin_Menus;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Adds the Documents and Label columns to the order list.
+ */
 class Columns {
-	function __construct() {
+	/**
+	 * Registers the hooks for the legacy and the HPOS order list.
+	 */
+	public function __construct() {
 		add_filter( 'manage_edit-shop_order_columns', array( __CLASS__, 'add_order_list_column' ), 11 );
 		add_filter( 'manage_shop_order_posts_custom_column', array( __CLASS__, 'add_order_list_column_content' ), 11, 2 );
 
@@ -14,13 +26,19 @@ class Columns {
 		add_filter( 'manage_woocommerce_page_wc-orders_custom_column', array( __CLASS__, 'add_order_list_column_content' ), 11, 2 );
 	}
 
+	/**
+	 * Adds the columns after the status column.
+	 *
+	 * @param array $columns Columns.
+	 * @return array
+	 */
 	public static function add_order_list_column( $columns ) {
 		$reordered_columns = array();
 
 		foreach ( $columns as $key => $column ) {
 			$reordered_columns[ $key ] = $column;
 
-			if ( $key == 'order_status' ) {
+			if ( 'order_status' === $key ) {
 				$reordered_columns['order_docs'] = __( 'Documents', 'nashenski-commerce' );
 
 				if ( nashenski_is_shipping_enabled() ) {
@@ -32,6 +50,12 @@ class Columns {
 		return $reordered_columns;
 	}
 
+	/**
+	 * Prints the content of the plugin's columns.
+	 *
+	 * @param string              $column  Column key.
+	 * @param int|\WC_Order|mixed $post_id Order ID, or the order on the HPOS screen.
+	 */
 	public static function add_order_list_column_content( $column, $post_id ) {
 		switch ( $column ) {
 			case 'order_docs':
@@ -44,7 +68,7 @@ class Columns {
 						<a
 							href="<?php echo esc_url( $file['file_url'] ); ?>"
 							target="_blank"
-						> 
+						>
 							<i class="dashicons-before dashicons-pdf"></i>
 
 							<?php echo esc_html( $file['name'] ); ?>

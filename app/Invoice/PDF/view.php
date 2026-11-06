@@ -1,6 +1,12 @@
 <?php
+/**
+ * Default PDF template for the order documents. Included by the PDF class, so $this is that class.
+ *
+ * @package Nashenski_Commerce
+ */
+
 defined( 'ABSPATH' ) || exit;
-$nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product_name_word_wrap_length', 80, $this );
+$nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product_name_word_wrap_length', 80, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 ?>
 <!DOCTYPE html>
 <html>
@@ -59,7 +65,7 @@ $nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product
 
 	<?php echo \Nashenski\Invoice\PDF\Style::css(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- validated hex colours and a fixed font list. ?>
 
-	<?php do_action( 'nashenski/invoice/pdf/default_template/additional_css', $this ); ?>
+	<?php do_action( 'nashenski/invoice/pdf/default_template/additional_css', $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions. ?>
 </style>
 </head>
 <body>
@@ -132,7 +138,7 @@ $nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product
 		<?php foreach ( $this->document->order->get_items() as $nashenski_item ) : ?>
 			<tr>
 				<?php foreach ( $nashenski_item as $nashenski_key => $nashenski_col ) : ?>
-					<td <?php echo ( $nashenski_key !== 'name' ) ? 'align="center"' : ''; ?>><?php echo wp_kses_post( wordwrap( wp_strip_all_tags( $nashenski_col ), $nashenski_wrap, '<br>' ) ); ?></td>
+					<td <?php echo ( 'name' !== $nashenski_key ) ? 'align="center"' : ''; ?>><?php echo wp_kses_post( wordwrap( wp_strip_all_tags( $nashenski_col ), $nashenski_wrap, '<br>' ) ); ?></td>
 				<?php endforeach ?>
 			</tr>
 		<?php endforeach ?>
@@ -155,7 +161,7 @@ $nashenski_wrap = apply_filters( 'nashenski/invoice/pdf/default_template/product
 		</div> 
 	</div>
 
-	<?php do_action( 'nashenski/invoice/pdf/default_template/after_table', $this->document->order->woo_order, $this ); ?>
+	<?php do_action( 'nashenski/invoice/pdf/default_template/after_table', $this->document->order->woo_order, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions. ?>
 
 	<div class="w-100 mt-10">
 		<table class="w-100 mt-10">

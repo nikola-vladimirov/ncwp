@@ -1,16 +1,59 @@
-<?php
+<?php // phpcs:disable WordPress.Files.FileName -- PSR-4 autoloading needs the class name as the file name.
+/**
+ * Delta (Microinvest) export.
+ *
+ * @package Nashenski_Commerce
+ */
+
 namespace Nashenski\Export\Delta;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Exports the invoices and credit notes of a month as a pipe-separated text file.
+ */
 class Export {
-	public $documents = array(), $woo_orders = array(), $order_ids = array(), $date;
+	/**
+	 * Rows of the file.
+	 *
+	 * @var array
+	 */
+	public $documents = array();
 
-	function __construct( $date ) {
+	/**
+	 * Orders passed to the documents filter.
+	 *
+	 * @var array
+	 */
+	public $woo_orders = array();
+
+	/**
+	 * Order IDs of the month.
+	 *
+	 * @var array
+	 */
+	public $order_ids = array();
+
+	/**
+	 * Month to export, as text strtotime() reads.
+	 *
+	 * @var string
+	 */
+	public $date;
+
+	/**
+	 * Loads the orders of the month.
+	 *
+	 * @param string $date Month to export.
+	 */
+	public function __construct( $date ) {
 		$this->date = $date;
 		$this->load_woo_orders();
 	}
 
+	/**
+	 * Loads the order IDs created in the month.
+	 */
 	protected function load_woo_orders() {
 		$this->order_ids = wc_get_orders(
 			array(
@@ -21,6 +64,11 @@ class Export {
 		);
 	}
 
+	/**
+	 * Builds the file.
+	 *
+	 * @return array|null File URL, or null when it could not be saved.
+	 */
 	public function get_file() {
 		foreach ( $this->order_ids as $key => $order_id ) {
 			$order = wc_get_order( $order_id );
@@ -63,12 +111,17 @@ class Export {
 				$city    = $temp_order->get_billing_city();
 			}
 
-			$order_number = $order->get_meta( 'nashenski_order_invoice_number' ) ?: $order->get_meta( 'nashenski_order_number' );
+			$order_number = $order->get_meta( 'nashenski_order_invoice_number' );
+
+			if ( ! $order_number ) {
+				$order_number = $order->get_meta( 'nashenski_order_number' );
+			}
 
 			if ( $order->get_meta( 'nashenski_invoice_document' ) ) {
 				$total_due = $order->get_total();
 
 				$this->documents[] = apply_filters(
+					// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 					'nashenski/admin/export/microinvest-order',
 					array(
 						'2',
@@ -96,6 +149,7 @@ class Export {
 			if ( $order->get_meta( 'nashenski_refunded_invoice_document' ) ) {
 				$total_due         = $order->get_total();
 				$this->documents[] = apply_filters(
+					// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 					'nashenski/admin/export/microinvest-order',
 					array(
 						'2',
@@ -129,7 +183,7 @@ class Export {
 
 		if ( has_filter( 'nashenski/admin/delta_export/documents' ) ) {
 			$this->woo_orders = array_filter( array_map( 'wc_get_order', $this->order_ids ) );
-			$this->documents  = apply_filters( 'nashenski/admin/delta_export/documents', $this->documents, $this->woo_orders );
+			$this->documents  = apply_filters( 'nashenski/admin/delta_export/documents', $this->documents, $this->woo_orders ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- public hook name, renaming it breaks extensions.
 		}
 
 		return $this->upload_file();
@@ -137,11 +191,19 @@ class Export {
 
 	/**
 	 * A field of the pipe and newline separated file: the separators become spaces.
+	 *
+	 * @param mixed $value Field value.
+	 * @return string
 	 */
 	protected static function clean( $value ) {
 		return str_replace( array( '|', "\r", "\n" ), ' ', (string) $value );
 	}
 
+	/**
+	 * Saves the rows as a text file.
+	 *
+	 * @return array|null File URL, or null when it could not be saved.
+	 */
 	protected function upload_file() {
 		$name    = uniqid( wp_rand(), true );
 		$content = '';
