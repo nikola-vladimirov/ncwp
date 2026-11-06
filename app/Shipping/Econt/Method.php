@@ -209,7 +209,10 @@ class Method extends \WC_Shipping_Method {
 			)
 		) {
 			$request_data = $this->calculate_shipping_price_from_api();
-			$request_data = \Nashenski\Pricing\Public_Price::fallback( 'econt', $request_data, $this );
+			// The public list has Bulgarian prices only; foreign orders wait for the courier's own price.
+			if ( 'BG' === $package['destination']['country'] ) {
+				$request_data = \Nashenski\Pricing\Public_Price::fallback( 'econt', $request_data, $this );
+			}
 
 			if ( ! empty( $request_data['public_price'] ) ) {
 				$rate['meta_data']['price_source'] = 'public';
@@ -347,6 +350,18 @@ class Method extends \WC_Shipping_Method {
 				'default' => 'no',
 				'options' => nashenski_get_shipping_tests_options(),
 			),
+			'international'      => array(
+				'title'       => __( 'Ship abroad', 'nashenski-commerce' ),
+				'type'        => 'select',
+				'css'         => 'width: 400px;',
+				'default'     => 'no',
+				'options'     => array(
+					'no'  => __( 'No', 'nashenski-commerce' ),
+					'yes' => __( 'Yes, to Romania and Greece', 'nashenski-commerce' ),
+				),
+				'description' => __( 'Prices for these countries come only from Econt, not from the public price list.', 'nashenski-commerce' ),
+				'desc_tip'    => true,
+			),
 			'sms'                => array(
 				'title'       => __( 'SMS notification', 'nashenski-commerce' ),
 				'type'        => 'select',
@@ -384,7 +399,8 @@ class Method extends \WC_Shipping_Method {
 	 * @return mixed Result.
 	 */
 	public function is_available( $package ) {
-		return in_array( $package['destination']['country'], apply_filters( 'nashenski/econt/available_countries', array( 'BG' ) ), true );
+		$countries = 'yes' === $this->get_option( 'international', 'no' ) ? array( 'BG', 'RO', 'GR' ) : array( 'BG' );
+		return in_array( $package['destination']['country'], apply_filters( 'nashenski/econt/available_countries', $countries ), true );
 	}
 
 	/**
