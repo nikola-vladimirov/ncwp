@@ -259,6 +259,16 @@ namespace {
 			'the command line ' . ( $hidden ? 'hides' : 'shows' ) . " $id"
 		);
 	}
+	expect(
+		! $cli_secret->invoke(
+			null,
+			array(
+				'id'   => 'nashenski_settings_econt_profile_key',
+				'type' => 'select',
+			)
+		),
+		'a choice that only ends in "key" (the profile) is shown'
+	);
 
 	// 6. BOX NOW price rows never keep a negative amount.
 	$rows = json_decode(

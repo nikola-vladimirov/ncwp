@@ -922,8 +922,8 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @return bool
 	 */
 	public static function is_secret( $id, $type = '' ) {
-		// The filters run on every WooCommerce settings page; only our own settings are masked.
-		if ( 0 !== strpos( (string) $id, 'nashenski_settings_' ) ) {
+		// The filters run on every WooCommerce settings page; only our own free-text settings are masked (a choice such as profile_key is no secret).
+		if ( 0 !== strpos( (string) $id, 'nashenski_settings_' ) || in_array( $type, array( 'select', 'multiselect', 'checkbox' ), true ) ) {
 			return false;
 		}
 
