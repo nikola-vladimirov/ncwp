@@ -7,12 +7,12 @@
 
 /*
 Plugin Name:  Nashenski Commerce
-Plugin URI:   https://pristadigital.com/
+Plugin URI:   https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 Description:  WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shipping, invoices and Ordinance N-18 documents.
 Requires Plugins: woocommerce
 Author:       PristaDigital
 Author URI:   https://pristadigital.com/
-Version:      0.21.2
+Version:      0.21.3
 Requires at least: 6.5
 Requires PHP: 8.2
 WC requires at least: 9.4.0
