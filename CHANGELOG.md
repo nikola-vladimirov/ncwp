@@ -2,6 +2,11 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.21.3 (2026-11-07)
+
+### Changes
+- The plugin link in the plugin header points to the manual, so it differs from the author link (WordPress.org requires that).
+
 ## 0.21.2 (2026-11-07)
 
 ### Fixes
