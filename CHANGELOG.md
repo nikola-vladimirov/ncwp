@@ -2,6 +2,11 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.21.4 (2026-11-09)
+
+### Fixes
+- Pigeon Express: "Review before payment" can now be chosen. The shipping method option and the label on the order screen offer review or test before payment, and the label sends the one chosen. Before, only test was ever sent.
+
 ## 0.21.3 (2026-11-07)
 
 ### Changes

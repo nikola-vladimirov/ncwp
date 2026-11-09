@@ -300,7 +300,10 @@ class Pigeon {
 			'time'                 => __( 'Time:', 'nashenski-commerce' ),
 			'event'                => __( 'Event:', 'nashenski-commerce' ),
 			'details'              => __( 'Details:', 'nashenski-commerce' ),
-			'reviewAndTest'        => __( 'Review and test', 'nashenski-commerce' ),
+			'reviewOrTest'         => __( 'Review or test before payment', 'nashenski-commerce' ),
+			'reviewBeforePayment'  => __( 'Review before payment', 'nashenski-commerce' ),
+			'testBeforePayment'    => __( 'Test before payment', 'nashenski-commerce' ),
+			'no'                   => __( 'No', 'nashenski-commerce' ),
 			'declaredValue'        => __( 'Declared value', 'nashenski-commerce' ),
 			'mysticQuarter'        => __( 'Street or quarter', 'nashenski-commerce' ),
 			'description'          => __( 'Description', 'nashenski-commerce' ),
@@ -317,13 +320,19 @@ class Pigeon {
 	}
 
 	/**
-	 * Whether the label asks to test the parcel before payment.
+	 * Whether the label asks to review or to test the parcel before payment.
 	 *
 	 * @param array $label Label data.
-	 * @return string "yes" or "no".
+	 * @return string "review", "yes" (test) or "no".
 	 */
 	protected static function get_test_option( $label ) {
-		return ( ! empty( $label['service_codes']['shipment_test_before_payment'] ) ) ? 'yes' : 'no';
+		foreach ( Method::VIEW_CODES as $value => $code ) {
+			if ( ! empty( $label['service_codes'][ $code ] ) ) {
+				return $value;
+			}
+		}
+
+		return 'no';
 	}
 
 	/**
@@ -629,14 +638,13 @@ class Pigeon {
 			$type = nashenski_label_request( 'type', array() );
 			$type = $type['id'];
 
-			if ( 'locker' !== $type ) {
-				if ( 'yes' === $test ) {
-					$label['service_codes']['shipment_test_before_payment'] = true;
-				} elseif ( isset( $label['service_codes']['shipment_test_before_payment'] ) ) {
-					unset( $label['service_codes']['shipment_test_before_payment'] );
-				}
-			} elseif ( isset( $label['service_codes']['shipment_test_before_payment'] ) ) {
-				unset( $label['service_codes']['shipment_test_before_payment'] );
+			// Pigeon takes only one of review and test, and neither for a locker.
+			foreach ( Method::VIEW_CODES as $code ) {
+				unset( $label['service_codes'][ $code ] );
+			}
+
+			if ( 'locker' !== $type && is_string( $test ) && isset( Method::VIEW_CODES[ $test ] ) ) {
+				$label['service_codes'][ Method::VIEW_CODES[ $test ] ] = true;
 			}
 		}
 

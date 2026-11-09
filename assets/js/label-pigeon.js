@@ -21,6 +21,8 @@
 	var types = [ { id: 'office', label: i18n.office }, { id: 'address', label: i18n.address }, { id: 'locker', label: i18n.locker } ];
 	var sendFromTypes = [ { id: 'office', label: i18n.office }, { id: 'address', label: i18n.address } ];
 	var payers = [ { id: 'receiver', label: i18n.buyer }, { id: 'sender', label: i18n.sender }, { id: 'fixed', label: i18n.fixedPrice } ];
+	// "yes" means test before payment (the old yes/no value).
+	var views = [ { id: 'no', label: i18n.no }, { id: 'review', label: i18n.reviewBeforePayment }, { id: 'yes', label: i18n.testBeforePayment } ];
 	var label = L.copy( data.label ) || {};
 	var ajaxUrl = ( window.woocommerce_admin && window.woocommerce_admin.ajax_url ) || window.ajaxurl || '';
 
@@ -48,7 +50,7 @@
 		// Shipping price and COD come from the server, never from the guest's checkout cookie.
 		fixedPrice: undefined === data.fixedPrice ? '' : data.fixedPrice,
 		codEdited: false,
-		testOption: data.testOption,
+		testOption: views.filter( function ( view ) { return view.id === data.testOption; } )[ 0 ] || views[ 0 ],
 		returnAtMyExpense: '',
 		declaredValue: ( label.service_codes || {} ).declared_value || '',
 		shipmentStatus: data.shipmentStatus || '',
@@ -134,7 +136,7 @@
 			paymentVersion: 1,
 			// Only an explicit staff edit overrides the COD the server works out.
 			codOverride: state.codEdited ? ( label.service_codes || {} ).cod_amount : undefined,
-			testOption: state.testOption,
+			testOption: ( state.testOption || views[ 0 ] ).id,
 			returnAtMyExpense: state.returnAtMyExpense,
 			cookie_data: cookie,
 			orderId: data.orderId,
@@ -349,8 +351,7 @@
 			L.field( i18n.deliveryPayedBy, L.select( payers, state.paymentBy, choose( 'paymentBy' ), { placeholder: i18n.choose } ) ),
 			'fixed' === state.paymentBy.id ? L.field( i18n.fixedPrice, L.input( state, 'fixedPrice', { type: 'number' } ) ) : null,
 			L.field( i18n.note, L.input( label, 'note' ) ),
-			// The old box showed "no" as checked until it was clicked; the checkbox now follows the yes/no value.
-			checkbox( i18n.reviewAndTest, 'yes' === state.testOption || true === state.testOption, function ( on ) { state.testOption = on ? 'yes' : 'no'; }, 'clear:none !important;float:left !important' ),
+			L.field( i18n.reviewOrTest, L.select( views, state.testOption, choose( 'testOption' ) ) ),
 			checkbox( i18n.returnAtMyExpense, !! state.returnAtMyExpense, function ( on ) { state.returnAtMyExpense = on; }, 'float:right !important;clear:none !important' ),
 			L.el( 'p', { class: 'form-field form-field-wide' }, sent ? [
 				L.button( i18n.deleteLabel, 'button-secondary', remove ),

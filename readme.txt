@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.2
 Requires Plugins: woocommerce
-Stable tag: 0.21.3
+Stable tag: 0.21.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -200,6 +200,9 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 == Changelog ==
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+
+= 0.21.4 =
+* Fixed: Pigeon Express labels can ask for review before payment, not only test before payment.
 
 = 0.21.3 =
 * Changed: The plugin page link in the plugin header now points to the manual, so it differs from the author link.
