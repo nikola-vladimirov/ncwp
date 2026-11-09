@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.2
 Requires Plugins: woocommerce
-Stable tag: 0.21.3
+Stable tag: 0.21.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -88,7 +88,7 @@ Nashenski Commerce adds what a Bulgarian online store needs to WooCommerce. Ever
 * Waybills for many orders at once, courier requests for Econt and Speedy only (holidays skipped), the order number on the waybill, and a tracking link on the customer's order page.
 * Order statuses that follow the shipment (delivered or returned) exist for Econt, Speedy and BOX NOW only.
 * Live shipping prices at checkout with your courier account, or from the courier's public price list when you have no account yet. The price lists are built in, editable and can be checked against the courier website.
-* Labels from the order screen, label printing and shipment status updates.
+* Labels from the order screen, label printing and shipment status updates. Review or test before payment is set on each courier method in the shipping zone.
 * Works with the classic checkout, the block checkout and checkout pages built in a page builder, including multi-step checkouts.
 * Office, locker and address pickers with search, the courier's map for Econt and Speedy, and "Complete the fields to calculate" until the customer has chosen.
 * Shipping options as cards with courier logos and the delivery type, styled with the design tokens of TokenForge or another token-based CSS framework, or with your theme.
@@ -200,6 +200,9 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 == Changelog ==
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+
+= 0.21.4 =
+* Fixed: Pigeon Express labels can ask for review before payment, not only test before payment.
 
 = 0.21.3 =
 * Changed: The plugin page link in the plugin header now points to the manual, so it differs from the author link.

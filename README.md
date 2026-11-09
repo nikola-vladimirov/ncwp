@@ -74,6 +74,8 @@ plugin's own scheduled jobs (documents, abandoned cart reminders, shipment statu
 - Labels from the order screen or the order list, label printing in two sizes, shipment status,
   courier requests for Econt and Speedy, the order number on the waybill and a tracking link for the
   customer. Order statuses can follow the shipment (delivered or returned).
+- Review or test before payment, set on each courier method in the shipping zone and changeable per
+  label (Pigeon Express: review or test, one of the two).
 - Each order screen shows the courier, the delivery type and the chosen office, locker or address.
 - Ship abroad (off by default): Econt to Romania and Greece, Speedy to nine countries on its price
   list. Prices abroad come only from the courier. Free shipping over a total can be set per country,

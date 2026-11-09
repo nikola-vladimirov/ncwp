@@ -2,6 +2,11 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.21.4 (2026-11-09)
+
+### Fixes
+- Pigeon Express: "Review before payment" can now be chosen. "Review or test before payment" on the Pigeon Express shipping method (WooCommerce > Settings > Shipping, the zone, the method) and the label on the order screen offer review, or review and test (Pigeon takes one of the two, and neither for a locker). The label sends the one chosen. Before, only test was ever sent.
+
 ## 0.21.3 (2026-11-07)
 
 ### Changes

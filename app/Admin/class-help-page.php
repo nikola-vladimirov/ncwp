@@ -126,6 +126,7 @@ class Help_Page {
 				esc_html__( 'To compare, open the courier page and press "Check the courier website" in "Public prices". You see what changed, and new prices are filled in only when you choose. It also checks once a week by itself.', 'nashenski-commerce' ),
 				esc_html__( '"Public prices" shows only when "Use public prices" is ticked on the courier page.', 'nashenski-commerce' ),
 				esc_html__( 'Each shipping method in a zone can have a free shipping amount and a fixed price.', 'nashenski-commerce' ),
+				esc_html__( 'Review or test before payment is set on the courier method in the shipping zone and goes on every label. For Pigeon Express choose review or test; the order screen can change it for one label.', 'nashenski-commerce' ),
 				esc_html__( 'When a courier publishes new prices, a notice says so. Save that courier\'s prices or press Dismiss.', 'nashenski-commerce' ),
 			),
 			__( 'Shipping abroad', 'nashenski-commerce' ) => array(

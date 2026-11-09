@@ -67,7 +67,16 @@ class Method extends \WC_Shipping_Method {
 	public $fixed_price;
 
 	/**
-	 * Test.
+	 * Pigeon service code for each "test" option value ("yes" is the old value for test). Pigeon
+	 * takes only one of them (option group shipment_view).
+	 */
+	const VIEW_CODES = array(
+		'review' => 'shipment_review',
+		'yes'    => 'shipment_test_before_payment',
+	);
+
+	/**
+	 * Review or test before payment: "no", "review" or "yes" (test).
 	 *
 	 * @var mixed
 	 */
@@ -317,13 +326,16 @@ class Method extends \WC_Shipping_Method {
 				),
 			),
 			'test'               => array(
-				'title'   => __( 'Review and test', 'nashenski-commerce' ),
-				'type'    => 'select',
-				'css'     => 'width: 400px;',
-				'default' => 'no',
-				'options' => array(
-					'no'  => __( 'No', 'nashenski-commerce' ),
-					'yes' => __( 'Yes', 'nashenski-commerce' ),
+				'title'       => __( 'Review or test before payment', 'nashenski-commerce' ),
+				'type'        => 'select',
+				'css'         => 'width: 400px;',
+				'default'     => 'no',
+				'description' => __( 'Added to every label of this method. Pigeon Express takes one of the two, and neither for a locker.', 'nashenski-commerce' ),
+				'desc_tip'    => true,
+				'options'     => array(
+					'no'     => __( 'No', 'nashenski-commerce' ),
+					'review' => __( 'Review before payment', 'nashenski-commerce' ),
+					'yes'    => __( 'Review and test before payment', 'nashenski-commerce' ),
 				),
 			),
 			'free_shipping_over' => array(
@@ -678,10 +690,8 @@ class Method extends \WC_Shipping_Method {
 			$other_data['service_codes']['cod_card_fee'] = true;
 		}
 
-		if ( 'locker' !== $this->cookie_data['type'] ) {
-			if ( 'yes' === $this->test ) {
-				$other_data['service_codes']['shipment_test_before_payment'] = true;
-			}
+		if ( 'locker' !== $this->cookie_data['type'] && isset( self::VIEW_CODES[ $this->test ] ) ) {
+			$other_data['service_codes'][ self::VIEW_CODES[ $this->test ] ] = true;
 		}
 
 		$other_data['note'] = '';
