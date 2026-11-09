@@ -302,7 +302,7 @@ class Pigeon {
 			'details'              => __( 'Details:', 'nashenski-commerce' ),
 			'reviewOrTest'         => __( 'Review or test before payment', 'nashenski-commerce' ),
 			'reviewBeforePayment'  => __( 'Review before payment', 'nashenski-commerce' ),
-			'testBeforePayment'    => __( 'Test before payment', 'nashenski-commerce' ),
+			'testBeforePayment'    => __( 'Review and test before payment', 'nashenski-commerce' ),
 			'no'                   => __( 'No', 'nashenski-commerce' ),
 			'declaredValue'        => __( 'Declared value', 'nashenski-commerce' ),
 			'mysticQuarter'        => __( 'Street or quarter', 'nashenski-commerce' ),

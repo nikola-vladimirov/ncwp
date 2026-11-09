@@ -335,7 +335,7 @@ class Method extends \WC_Shipping_Method {
 				'options'     => array(
 					'no'     => __( 'No', 'nashenski-commerce' ),
 					'review' => __( 'Review before payment', 'nashenski-commerce' ),
-					'yes'    => __( 'Test before payment', 'nashenski-commerce' ),
+					'yes'    => __( 'Review and test before payment', 'nashenski-commerce' ),
 				),
 			),
 			'free_shipping_over' => array(

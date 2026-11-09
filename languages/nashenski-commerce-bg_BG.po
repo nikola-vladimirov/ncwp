@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-09 09:14+0000\n"
-"PO-Revision-Date: 2026-11-09 09:14+0000\n"
+"POT-Creation-Date: 2026-11-09 09:27+0000\n"
+"PO-Revision-Date: 2026-11-09 09:27+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -6421,8 +6421,8 @@ msgid "Review before payment"
 msgstr "Преглед преди плащане"
 
 #: app/Admin/class-pigeon.php:305 app/Shipping/Pigeon/class-method.php:338
-msgid "Test before payment"
-msgstr "Тест преди плащане"
+msgid "Review and test before payment"
+msgstr "Преглед и тест преди плащане"
 
 #: app/Shipping/Pigeon/class-method.php:333
 msgid "Added to every label of this method. Pigeon Express takes one of the two, and neither for a locker."
