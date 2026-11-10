@@ -22,6 +22,14 @@ class Setup_Wizard {
 	const DISMISS_OPTION = 'nashenski_setup_dismissed';
 	const REDUCED        = 'reduced-rate';
 
+	/** Courier => its first login field: empty means no login yet. */
+	const LOGIN = array(
+		'econt'  => 'user',
+		'speedy' => 'user',
+		'boxnow' => 'client_id',
+		'pigeon' => 'api_key',
+	);
+
 	/** Courier => wizard delivery type => the courier method's delivery_type. BOX NOW has one type. */
 	const TYPES = array(
 		'econt'  => array(
@@ -498,8 +506,7 @@ class Setup_Wizard {
 		<h2><?php esc_html_e( 'Next steps', 'nashenski-commerce' ); ?></h2>
 		<ol>
 			<?php foreach ( (array) ( $done['couriers'] ?? array() ) as $courier ) : ?>
-				<?php // Only couriers with no login yet; the first login field of each is enough to tell. ?>
-				<?php if ( isset( $names[ $courier ] ) && '' === trim( (string) nashenski_get_option( $courier, array( 'econt' => 'user', 'speedy' => 'user', 'boxnow' => 'client_id', 'pigeon' => 'api_key' )[ $courier ] ?? 'user' ) ) ) : ?>
+				<?php if ( isset( $names[ $courier ], self::LOGIN[ $courier ] ) && '' === trim( (string) nashenski_get_option( $courier, self::LOGIN[ $courier ] ) ) ) : ?>
 					<li>
 						<a href="<?php echo esc_url( add_query_arg( 'courier', $courier, Settings::url( 'couriers' ) ) ); ?>">
 							<?php
@@ -662,7 +669,7 @@ class Setup_Wizard {
 						<fieldset>
 							<legend class="screen-reader-text"><?php esc_html_e( 'Couriers', 'nashenski-commerce' ); ?></legend>
 							<?php foreach ( self::couriers() as $courier => $name ) : ?>
-								<label><input type="checkbox" name="nashenski_setup[couriers][]" value="<?php echo esc_attr( $courier ); ?>"<?php checked( 'yes' === nashenski_get_option( 'apis', 'enable_' . $courier ) ); ?>> <?php echo esc_html( $name ); ?></label><br>
+								<label><input type="checkbox" name="nashenski_setup[couriers][]" value="<?php echo esc_attr( $courier ); ?>"<?php checked( ! $have && 'yes' === nashenski_get_option( 'apis', 'enable_' . $courier ) ); ?>> <?php echo esc_html( $name ); ?></label><br>
 							<?php endforeach; ?>
 						</fieldset>
 					</td>
