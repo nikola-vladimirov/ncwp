@@ -255,6 +255,12 @@ class Method extends \WC_Shipping_Method {
 			unset( $rate['taxes'] );
 		}
 
+		// Read by the checkout's free shipping hint and progress bar.
+		$free_over = Price_Lists::free_over( $this->label_country(), $this->free_shipping_over, $this->free_shipping_by_country );
+		if ( (float) $free_over > 0 ) {
+			$rate['meta_data']['nashenski_free_over'] = $free_over;
+		}
+
 		$rate = \Nashenski\Hooks::filter( 'nashenski_econt_rate', 'nashenski/econt/rate', $rate, $this );
 
 		// Register the rate.

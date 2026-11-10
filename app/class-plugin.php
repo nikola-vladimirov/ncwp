@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * Plugin.
  */
 class Plugin {
-	const VERSION = '0.21.4';
+	const VERSION = '0.21.5';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
@@ -164,6 +164,7 @@ class Plugin {
 			new Admin\Changelog();
 			new Admin\Abandoned_Carts_Page();
 			new Admin\Recommended_Settings();
+			new Admin\Setup_Wizard();
 			new Admin\Export_Builder();
 		}
 

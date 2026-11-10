@@ -36,21 +36,26 @@
 		return '"' + String( text ).replace( /\\/g, '\\\\' ).replace( /"/g, '\\"' ).replace( /\n/g, ' ' ) + '"';
 	}
 
-	/* Rate IDs waiting for a choice, and whether the chosen one is among them. */
+	/* Rate IDs waiting for a choice, whether the chosen one is among them, and the free shipping totals. */
 	function pendingState( packages ) {
 		var pending = [];
 		var chosenPending = false;
+		var offers = {};
 
 		packages.forEach( function ( pkg ) {
 			( pkg.shipping_rates || [] ).forEach( function ( rate ) {
-				if ( 'yes' === metaOf( rate ).nashenski_pending ) {
+				var meta = metaOf( rate );
+
+				if ( 'yes' === meta.nashenski_pending ) {
 					pending.push( rate.rate_id );
 					chosenPending = chosenPending || !! rate.selected;
 				}
+
+				offers[ rate.rate_id ] = { over: parseFloat( meta.nashenski_free_over ) || 0, left: parseFloat( meta.nashenski_free_left ) || 0 };
 			} );
 		} );
 
-		return { pending: pending, chosenPending: chosenPending };
+		return { pending: pending, chosenPending: chosenPending, offers: offers };
 	}
 
 	var lastCss = null;
@@ -181,9 +186,11 @@
 		shownRate = courier ? rate.rate_id : '';
 
 		wp.element.useLayoutEffect( function () {
+			var state = pendingState( data.packages );
+
 			place();
-			writePendingCss( pendingState( data.packages ) );
-			P.decorateRates( pendingState( data.packages ).pending );
+			writePendingCss( state );
+			P.decorateRates( state.pending, state.offers );
 		} );
 
 		if ( ! courier ) {
@@ -225,7 +232,7 @@
 			var state = pendingState( cart ? cart.getShippingRates() || [] : [] );
 
 			writePendingCss( state );
-			P.decorateRates( state.pending );
+			P.decorateRates( state.pending, state.offers );
 			// The checkout re-rendered the options: keep the picker under the chosen one.
 			place();
 		}, 30 );

@@ -186,6 +186,19 @@ class Recommended_Settings {
 		check_admin_referer( self::ACTION, self::NONCE );
 
 		$chosen  = isset( $_POST['nashenski_recommended'] ) ? array_map( 'sanitize_key', (array) wp_unslash( $_POST['nashenski_recommended'] ) ) : array();
+		$applied = self::apply( $chosen );
+
+		wp_safe_redirect( add_query_arg( 'nashenski_recommended_applied', $applied, Settings::url( 'help' ) ) );
+		exit;
+	}
+
+	/**
+	 * Apply the chosen items that differ from their recommended value. Returns how many changed.
+	 *
+	 * @param string[] $chosen Item keys.
+	 * @return int
+	 */
+	public static function apply( $chosen ) {
 		$applied = 0;
 
 		foreach ( self::items() as $key => $item ) {
@@ -195,7 +208,6 @@ class Recommended_Settings {
 			}
 		}
 
-		wp_safe_redirect( add_query_arg( 'nashenski_recommended_applied', $applied, Settings::url( 'help' ) ) );
-		exit;
+		return $applied;
 	}
 }
