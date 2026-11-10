@@ -27,6 +27,7 @@ class Help_Page {
 			?>
 
 			<h2><?php esc_html_e( 'Getting started', 'nashenski-commerce' ); ?></h2>
+			<p><?php esc_html_e( 'The setup asks a few questions and fills in your company details, VAT, shipping methods and the checkout look. You can run it again at any time; it never adds a tax rate or shipping method twice.', 'nashenski-commerce' ); ?></p>
 			<p><a class="button" href="<?php echo esc_url( Setup_Wizard::url() ); ?>"><?php esc_html_e( 'Run the setup again', 'nashenski-commerce' ); ?></a></p>
 			<ol class="nashenski-help__steps">
 				<?php foreach ( self::steps() as $step ) : ?>
@@ -146,7 +147,13 @@ class Help_Page {
 				sprintf( esc_html__( 'In %s > Checkout fields you set the order, Required, Optional or Hidden and the width of every field, and add your own fields.', 'nashenski-commerce' ), $checkout ),
 				esc_html__( 'The Condition dropdown of a field shows or hides it by the value of other fields (is, is not, greater, less, empty, not empty). Conditions in one group all have to be true (and); "Add alternative (or)" adds another group, and one true group is enough (or). Example: for a "Company" field pick "Show when...", then "Invoice for a company" "is" "Yes". "Always shown" removes the rule. The classic checkout follows every condition; the block checkout follows conditions on your own fields that read your own fields (not greater or less).', 'nashenski-commerce' ),
 				esc_html__( 'Using WooCommerce Checkout Field Editor (free or Pro) before? "Import fields from Checkout Field Editor" copies its fields, rules and field conditions. Cart, product and repeat rules are left out and counted in the notice. Company invoice fields stay with Nashenski. The block checkout applies field conditions to the extra fields only, and not the "greater" and "less" ones.', 'nashenski-commerce' ),
-				esc_html__( '"Shipping options look" sets cards or the plain look of your theme. "Colours and sizes" holds the colours, borders, corners and spacing. Empty settings follow your design tokens or theme.', 'nashenski-commerce' ),
+				esc_html__( '"Shipping options look" sets cards, buttons side by side or the plain look of your theme. "Colours and sizes" holds the colours, borders, corners and spacing. Empty settings follow your design tokens or theme.', 'nashenski-commerce' ),
+				esc_html__( '"Free shipping hint" shows "Free shipping over" and the total under each option that is not free yet. "Free shipping progress bar" shows above the options how much more the customer needs to buy. Both use the "Free shipping over" total of the shipping methods.', 'nashenski-commerce' ),
+			),
+			__( 'VAT', 'nashenski-commerce' )             => array(
+				esc_html__( 'Registered for VAT: the setup turns WooCommerce taxes on, shows prices with VAT and adds a 20% rate for Bulgaria, shipping included.', 'nashenski-commerce' ),
+				esc_html__( 'Some goods at 9%: the tax class "Reduced rate" also gets a 9% rate. Set that tax class on those products.', 'nashenski-commerce' ),
+				esc_html__( 'Not registered for VAT: the setup turns WooCommerce taxes off. Your tax rates are kept.', 'nashenski-commerce' ),
 			),
 			__( 'Waybills, couriers and order statuses', 'nashenski-commerce' ) => array(
 				esc_html__( 'The "Courier choice" box on every order shows the courier, the delivery type and the chosen office, locker or address. It is only for reading.', 'nashenski-commerce' ),

@@ -428,7 +428,7 @@ class Setup_Wizard {
 		if ( '' !== $free && in_array( 'boxnow', $couriers, true ) && '' === trim( (string) nashenski_get_option( 'boxnow_price', 'free_shipping_over' ) ) ) {
 			nashenski_set_option( 'boxnow_price', 'free_shipping_over', $free );
 			/* translators: %s: order total */
-			$report[] = sprintf( __( 'BOX NOW free shipping over %s', 'nashenski-commerce' ), $free );
+			$report[] = sprintf( __( 'BOX NOW free shipping over %s', 'nashenski-commerce' ), html_entity_decode( wp_strip_all_tags( wc_price( (float) $free ) ) ) );
 		}
 
 		\WC_Cache_Helper::get_transient_version( 'shipping', true );
@@ -485,7 +485,8 @@ class Setup_Wizard {
 		<h2><?php esc_html_e( 'Next steps', 'nashenski-commerce' ); ?></h2>
 		<ol>
 			<?php foreach ( (array) ( $done['couriers'] ?? array() ) as $courier ) : ?>
-				<?php if ( isset( $names[ $courier ] ) ) : ?>
+				<?php // Only couriers with no login yet; the first login field of each is enough to tell. ?>
+				<?php if ( isset( $names[ $courier ] ) && '' === trim( (string) nashenski_get_option( $courier, array( 'econt' => 'user', 'speedy' => 'user', 'boxnow' => 'client_id', 'pigeon' => 'api_key' )[ $courier ] ?? 'user' ) ) ) : ?>
 					<li>
 						<a href="<?php echo esc_url( add_query_arg( 'courier', $courier, Settings::url( 'couriers' ) ) ); ?>">
 							<?php
@@ -558,7 +559,7 @@ class Setup_Wizard {
 					echo esc_html(
 						sprintf(
 							/* translators: %s: plugin names */
-							__( 'Moving from %s? Import its data first. It brings your courier logins, shipping methods and company details.', 'nashenski-commerce' ),
+							__( 'Moving from another plugin (%s)? Import first. It brings your courier logins, shipping methods and company details.', 'nashenski-commerce' ),
 							implode( ', ', $open )
 						)
 					);

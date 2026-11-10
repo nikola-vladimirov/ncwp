@@ -31,6 +31,10 @@ function esc_html( $text ) {
 	return htmlspecialchars( (string) $text ); }
 function sanitize_text_field( $value ) {
 	return trim( strip_tags( (string) $value ) ); }
+function wc_price( $value ) {
+	return '<span>' . number_format( (float) $value, 2, ',', '' ) . '&nbsp;&euro;</span>'; }
+function wp_strip_all_tags( $text ) {
+	return trim( strip_tags( (string) $text ) ); }
 function sanitize_key( $value ) {
 	return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( (string) $value ) ); }
 function sanitize_email( $value ) {

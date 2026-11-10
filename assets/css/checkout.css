@@ -492,7 +492,7 @@
 .nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control {
 	position: relative;
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 9em), 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5em), 1fr));
 	gap: 0.6em;
 	margin: 0;
 	padding: 0;
