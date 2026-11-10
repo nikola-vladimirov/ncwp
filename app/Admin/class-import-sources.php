@@ -353,9 +353,9 @@ class Import_Sources {
 				$free = array_filter(
 					array_map(
 						function ( $row ) {
-							return isset( $row['receiver_amount'] ) && '' !== $row['receiver_amount'] && ! (float) $row['receiver_amount'] ? max( 0.0, (float) ( $row['order_min_price'] ?? 0 ) ) : 0;
+							return isset( $row['receiver_amount'] ) && '' !== $row['receiver_amount'] && ! (float) $row['receiver_amount'] ? max( 0.01, (float) ( $row['order_min_price'] ?? 0 ) ) : 0;
 						},
-						is_array( $o['shipping_payments'] ?? null ) ? $o['shipping_payments'] : array()
+						self::free_rows( $o['shipping_payments'] ?? array() )
 					)
 				);
 				self::fill( 'boxnow_price', 'free_shipping_over', $free ? (string) min( $free ) : '', $count );
@@ -1007,6 +1007,28 @@ class Import_Sources {
 	}
 
 	/**
+	 * The price rows of an old plugin that apply to every order in Bulgaria: no country other than
+	 * Bulgaria, no shipping class, no weight limits, no top total, and shipping not added to the COD.
+	 *
+	 * @param mixed $rows Rows.
+	 * @return array
+	 */
+	private static function free_rows( $rows ) {
+		return array_filter(
+			is_array( $rows ) ? $rows : array(),
+			function ( $row ) {
+				return is_array( $row )
+					&& in_array( strtoupper( (string) ( $row['country_id'] ?? '' ) ), array( '', 'BG', 'BGR' ), true )
+					&& in_array( (string) ( $row['type'] ?? '' ), array( '', 'shared' ), true )
+					&& '' === (string) ( $row['class'] ?? '' )
+					&& ! (float) ( $row['order_min_weight'] ?? 0 )
+					&& ! (float) ( $row['order_max_weight'] ?? 0 )
+					&& ! (float) ( $row['order_max_price'] ?? 0 );
+			}
+		);
+	}
+
+	/**
 	 * Free shipping totals of a mreja.net courier as settings of the new methods, per delivery type.
 	 * Its sum per type wins; with none, its one old sum counts for every type (not addresses when it
 	 * was "to office only"). A price row where the customer pays nothing lowers the total of its type.
@@ -1032,11 +1054,15 @@ class Import_Sources {
 			}
 		}
 
-		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
-			$amount = $positive( $row['order_amount'] ?? 0 );
+		foreach ( self::free_rows( $rows ) as $row ) {
+			// A free row from 0 is free for every order: 0.01 keeps that, as 0 means no free shipping.
+			$amount = max( 0.01, $positive( $row['order_amount'] ?? 0 ) );
 
 			foreach ( $row_keys as $type => $key ) {
-				if ( $amount && isset( $row[ $key ] ) && '' !== $row[ $key ] && ! (float) $row[ $key ] && ( ! $over[ $type ] || $amount < $over[ $type ] ) ) {
+				// A missing locker price is the office price, as in the old plugins.
+				$price = $row[ $key ] ?? ( 'receiver_amount' === $key ? null : $row['receiver_amount_office'] ?? null );
+
+				if ( null !== $price && '' !== $price && ! (float) $price && ( ! $over[ $type ] || $amount < $over[ $type ] ) ) {
 					$over[ $type ] = $amount;
 				}
 			}

@@ -222,6 +222,8 @@ class Pickers {
 	 * @return array
 	 */
 	public static function mark_rates( $rates ) {
+		$total = null;
+
 		foreach ( $rates as $id => $rate ) {
 			$courier = self::courier_of( $id );
 
@@ -248,8 +250,11 @@ class Pickers {
 			}
 
 			if ( (float) ( $meta[ self::FREE_OVER_META ] ?? 0 ) > 0 ) {
-				$free = $free || ( ! $pending && (float) $rate->get_cost() <= 0 ) || nashenski_has_free_shipping_coupon_in_cart();
-				$rate->add_meta_data( self::FREE_LEFT_META, self::free_left( $meta[ self::FREE_OVER_META ], nashenski_get_package_total(), $free ) );
+				// BOX NOW does not take free shipping coupons, the other couriers do.
+				$free = $free || ( ! $pending && (float) $rate->get_cost() <= 0 ) || ( 'boxnow' !== $courier && nashenski_has_free_shipping_coupon_in_cart() );
+				// Once per call: the total runs every fee hook.
+				$total = $total ?? nashenski_get_package_total();
+				$rate->add_meta_data( self::FREE_LEFT_META, self::free_left( $meta[ self::FREE_OVER_META ], $total, $free ) );
 			}
 		}
 

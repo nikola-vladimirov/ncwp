@@ -202,6 +202,9 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
 = 0.21.5 =
+* New: A first-run setup for company details, VAT (20%, 9% for some goods, or not registered), invoices, couriers and shipping methods, and the checkout look.
+* New: Shipping options side by side, a "Free shipping over" hint under each option and a free shipping progress bar.
+* Fixed: The import turns the courier on before it adds its shipping methods.
 * Changed: The mreja.net import brings the free shipping totals of Econt, Speedy, Pigeon Express and BOX NOW, follows Econt Express 1.9 when it sits in shipping zones, and finds MrejaNet Checkout (the renamed Change Speedy and Econt Shipping Methods).
 
 = 0.21.4 =

@@ -54,12 +54,17 @@ plugin's own scheduled jobs (documents, abandoned cart reminders, shipment statu
 ## Getting started
 
 1. Install and activate WooCommerce, then this plugin.
-2. Go to WooCommerce > Settings > Nashenski Commerce. The Overview turns each part on or off:
+2. Run the setup from the notice (or Help > "Run the setup again"): company details, VAT (20%, some
+   goods at 9%, or not registered), invoices, couriers and delivery types with a free shipping total,
+   and the checkout look (cards, side by side or plain; free shipping hint and progress bar). It adds
+   the tax rates, the zone "Bulgaria" and the shipping methods, never twice. Moving from another
+   plugin? Import first (step 6). The steps below then become checks.
+3. Go to WooCommerce > Settings > Nashenski Commerce. The Overview turns each part on or off:
    couriers, invoices and N-18, quick order, abandoned carts, customer checks.
-3. For each courier you use, open its section, enter your courier login and save. The other courier
+4. For each courier you use, open its section, enter your courier login and save. The other courier
    settings unlock once the courier accepts the login. Then set "Send from" (your office or address).
-4. Add the courier shipping methods to your zones in WooCommerce > Settings > Shipping.
-5. Open WooCommerce > Settings > Nashenski Commerce > Help: it has the recommended settings (one
+5. Add the courier shipping methods to your zones in WooCommerce > Settings > Shipping.
+6. Open WooCommerce > Settings > Nashenski Commerce > Help: it has the recommended settings (one
    click to apply), the import from other plugins and how to use every part.
 
 ## Features and how to use them

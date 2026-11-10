@@ -4,9 +4,15 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
 ## 0.21.5 (2026-11-10)
 
+### New
+- Setup: a short first-run setup (notice, and Help > "Run the setup again") asks for the company details, VAT, invoices, couriers, delivery types, a free shipping total and the checkout look. Registered for VAT: WooCommerce taxes on, prices shown with VAT, a 20% rate for Bulgaria (shipping taxed); with some goods at 9%, the tax class "Reduced rate" gets a 9% rate. Not registered: taxes off, rates kept. It creates the zone "Bulgaria" when there is none and adds one method per courier and delivery type. Running it again never adds a rate or method twice. In Bulgarian and English.
+- Checkout: shipping options can show side by side, as buttons in a row, with the fields of the chosen one under the row (classic, block and page-builder checkouts; two columns on phones).
+- Checkout: "Free shipping hint" shows "Free shipping over" and the total under each option that is not free yet, and "Free shipping progress bar" shows how much more the customer needs to buy. Both are off until turned on.
+
 ### Changes
-- Import from the mreja.net plugins: the free shipping totals come along. Econt, Speedy and Pigeon Express give each new shipping method its "Free shipping over" (per delivery type, or the one old sum; a price row where the customer pays nothing counts too). BOX NOW fills "Free shipping over" in Couriers > BOX NOW when it is empty.
+- Import from the mreja.net plugins: the free shipping totals come along. Econt, Speedy and Pigeon Express give each new shipping method its "Free shipping over" (per delivery type, or the one old sum; a price row where the customer pays nothing counts too, unless it is limited to another country, a weight, a shipping class or a top total; a row free from 0 stays free for every order). BOX NOW fills "Free shipping over" in Couriers > BOX NOW when it is empty.
 - Econt Express 1.9 with shipping zones on: the Nashenski Econt methods go into the zones that had the Econt method, and that method is turned off. Before, they went into the zone of Bulgaria only.
+- The import turns the courier on in Nashenski before it adds its shipping methods. Before, a courier that was off got no methods, while the old plugin's methods were still turned off.
 - The import finds "MrejaNet Checkout", the new name of Change Speedy and Econt Shipping Methods v2 from 0.1.7, and switches it off.
 
 ## 0.21.4 (2026-11-09)

@@ -96,6 +96,7 @@ class WC_Tax {
 	public static $rates   = array();
 	public static $classes = array();
 	public static function get_rates_for_tax_class( $tax_class ) {
+		$tax_class = self::get_tax_class_by( 'slug', $tax_class ) ? $tax_class : '';
 		return array_filter(
 			self::$rates,
 			function ( $rate ) use ( $tax_class ) {
@@ -109,6 +110,9 @@ class WC_Tax {
 		}
 		return false; }
 	public static function create_tax_class( $name, $slug ) {
+		if ( self::get_tax_class_by( 'name', $name ) ) {
+			return new WP_Error();
+		}
 		self::$classes[] = array(
 			'name' => $name,
 			'slug' => $slug,
@@ -369,8 +373,29 @@ $run(
 		'recommended' => 'yes',
 	)
 );
-$check( 'recommended settings are applied', 'EUR' === get_option( 'woocommerce_currency' ) );
+$check( 'recommended settings are applied, the currency is not switched', 'required' === get_option( 'woocommerce_checkout_phone_field' ) && 'EUR' !== get_option( 'woocommerce_currency' ) );
 $check( 'unticked "entered with VAT" wins over the recommended yes', 'no' === get_option( 'woocommerce_prices_include_tax' ) );
+
+// A store that shows prices without VAT keeps that when it runs the setup again.
+$GLOBALS['options']['woocommerce_tax_display_shop'] = 'excl';
+$run( $vat20 );
+$check( 'rerun with taxes on keeps the price display', 'excl' === get_option( 'woocommerce_tax_display_shop' ) );
+
+// Documents turned off stay off when the invoice choice is the same as before.
+$GLOBALS['options']['nashenski_settings_apis_enable_documents'] = 'no';
+$run( $vat20 );
+$check( 'same invoice choice does not turn documents back on', 'no' === get_option( 'nashenski_settings_apis_enable_documents' ) );
+
+// A store installed in Bulgarian: the reduced class has a translated slug.
+WC_Tax::$rates   = array();
+WC_Tax::$classes = array(
+	array(
+		'name' => 'Reduced rate',
+		'slug' => 'namalena-stavka',
+	),
+);
+$run( array( 'vat' => 'vat9' ) + $vat20 );
+$check( 'vat9 uses the existing reduced class by its name', 1 === count( WC_Tax::$classes ) && 1 === count( $bg( 'namalena-stavka' ) ) && '9' === $bg( 'namalena-stavka' )[0]->tax_rate && true === get_option( Setup_Wizard::DONE_OPTION )['reduced'] );
 
 // The importer keeps its own titles and counts through the shared helper.
 $GLOBALS['wpdb'] = (object) array( 'prefix' => 'wp_' );

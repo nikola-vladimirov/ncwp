@@ -225,7 +225,8 @@ class Setup_Wizard {
 
 		// First, so the VAT choice below decides whether prices are entered with VAT.
 		if ( '' !== $text( 'recommended' ) ) {
-			$applied = Recommended_Settings::apply( array_keys( Recommended_Settings::items() ) );
+			// Not the currency: switching it does not convert the prices.
+			$applied = Recommended_Settings::apply( array_diff( array_keys( Recommended_Settings::items() ), array( 'currency' ) ) );
 			/* translators: %d: number of settings */
 			$report[] = sprintf( _n( '%d recommended setting applied', '%d recommended settings applied', $applied, 'nashenski-commerce' ), $applied );
 		}
@@ -264,29 +265,40 @@ class Setup_Wizard {
 		}
 
 		// VAT.
+		$taxes_on = 'yes' === get_option( 'woocommerce_calc_taxes' );
+
 		if ( 'none' === $vat ) {
 			$set( 'woocommerce_calc_taxes', 'no' );
 		} elseif ( $vat ) {
 			$set( 'woocommerce_calc_taxes', 'yes' );
 			$set( 'woocommerce_prices_include_tax', '' !== $text( 'prices_include_tax' ) ? 'yes' : 'no' );
-			$set( 'woocommerce_tax_display_shop', 'incl' );
-			$set( 'woocommerce_tax_display_cart', 'incl' );
+
+			// Only when taxes were off: a store that shows prices without VAT keeps its choice.
+			if ( ! $taxes_on ) {
+				$set( 'woocommerce_tax_display_shop', 'incl' );
+				$set( 'woocommerce_tax_display_cart', 'incl' );
+			}
 			$report[] = self::add_rate( '', '20' );
 
 			if ( 'vat9' === $vat ) {
-				$class = \WC_Tax::get_tax_class_by( 'slug', self::REDUCED );
+				$slug = self::reduced_class();
 
-				if ( ! $class ) {
+				if ( '' === $slug ) {
 					$class = \WC_Tax::create_tax_class( __( 'Reduced rate', 'nashenski-commerce' ), self::REDUCED );
-					/* translators: %s: tax class name */
-					$report[] = is_wp_error( $class ) ? '' : sprintf( __( 'Tax class added: %s', 'nashenski-commerce' ), $class['name'] );
+
+					// Without the class a 9% rate would belong to nothing.
+					if ( is_wp_error( $class ) ) {
+						$errors[] = $class->get_error_message();
+					} else {
+						$slug = $class['slug'];
+						/* translators: %s: tax class name */
+						$report[] = sprintf( __( 'Tax class added: %s', 'nashenski-commerce' ), $class['name'] );
+					}
 				}
 
-				// Without the class a 9% rate would belong to nothing.
-				if ( is_wp_error( $class ) ) {
-					$errors[] = $class->get_error_message();
-				} else {
-					$report[] = self::add_rate( self::REDUCED, '9' );
+				if ( '' !== $slug ) {
+					$report[] = self::add_rate( $slug, '9' );
+					$reduced  = self::has_bg_rate( $slug );
 				}
 			}
 		}
@@ -295,10 +307,11 @@ class Setup_Wizard {
 		$invoices = $text( 'invoices' );
 
 		if ( in_array( $invoices, array( 'always', 'only_for_company', 'disable' ), true ) ) {
+			$was = (string) nashenski_get_option( 'invoice', 'invoices' );
 			$set( 'nashenski_settings_invoice_invoices', $invoices );
 
 			// Invoices are made only while documents are on.
-			if ( 'disable' !== $invoices && 'yes' !== nashenski_get_option( 'apis', 'enable_documents' ) ) {
+			if ( 'disable' !== $invoices && $invoices !== $was && 'yes' !== nashenski_get_option( 'apis', 'enable_documents' ) ) {
 				nashenski_set_option( 'apis', 'enable_documents', 'yes' );
 				$report[] = __( 'Invoices and N-18 documents turned on.', 'nashenski-commerce' );
 			}
@@ -340,7 +353,7 @@ class Setup_Wizard {
 			'report'   => array_values( array_filter( $report ) ),
 			'errors'   => $errors,
 			'couriers' => $couriers,
-			'reduced'  => 'vat9' === $vat,
+			'reduced'  => ! empty( $reduced ),
 		);
 	}
 
@@ -521,7 +534,8 @@ class Setup_Wizard {
 		$labels = self::nap_labels();
 		$host   = wp_parse_url( home_url(), PHP_URL_HOST );
 		$taxes  = 'yes' === get_option( 'woocommerce_calc_taxes' );
-		$vat    = $taxes ? ( self::has_bg_rate( self::REDUCED ) ? 'vat9' : 'vat20' ) : 'none';
+		$slug   = self::reduced_class();
+		$vat    = $taxes ? ( '' !== $slug && self::has_bg_rate( $slug ) ? 'vat9' : 'vat20' ) : 'none';
 		$open   = Import_Sources::open_names();
 		$zone   = Import_Sources::bulgaria_zone();
 		$have   = array();
@@ -546,7 +560,7 @@ class Setup_Wizard {
 		}
 
 		$invoices = (string) nashenski_get_option( 'invoice', 'invoices' );
-		$invoices = in_array( $invoices, array( 'always', 'only_for_company', 'disable' ), true ) ? $invoices : 'only_for_company';
+		$invoices = in_array( $invoices, array( 'always', 'only_for_company', 'disable' ), true ) ? $invoices : ( 'yes' === nashenski_get_option( 'apis', 'enable_documents' ) ? 'only_for_company' : 'disable' );
 		$layout   = (string) nashenski_get_option( 'appearance', 'layout' );
 		$layout   = in_array( $layout, array( 'plain', 'cards', 'buttons' ), true ) ? $layout : \Nashenski\Front_End\Checkout\Appearance::layout();
 		?>
@@ -658,9 +672,9 @@ class Setup_Wizard {
 					<td>
 						<fieldset>
 							<legend class="screen-reader-text"><?php esc_html_e( 'Delivery types', 'nashenski-commerce' ); ?></legend>
-							<label><input type="checkbox" name="nashenski_setup[types][]" value="office" checked> <?php esc_html_e( 'To an office', 'nashenski-commerce' ); ?></label><br>
-							<label><input type="checkbox" name="nashenski_setup[types][]" value="locker" checked> <?php esc_html_e( 'To a parcel locker', 'nashenski-commerce' ); ?></label><br>
-							<label><input type="checkbox" name="nashenski_setup[types][]" value="address" checked> <?php esc_html_e( 'To an address', 'nashenski-commerce' ); ?></label>
+							<label><input type="checkbox" name="nashenski_setup[types][]" value="office"<?php checked( ! $have ); ?>> <?php esc_html_e( 'To an office', 'nashenski-commerce' ); ?></label><br>
+							<label><input type="checkbox" name="nashenski_setup[types][]" value="locker"<?php checked( ! $have ); ?>> <?php esc_html_e( 'To a parcel locker', 'nashenski-commerce' ); ?></label><br>
+							<label><input type="checkbox" name="nashenski_setup[types][]" value="address"<?php checked( ! $have ); ?>> <?php esc_html_e( 'To an address', 'nashenski-commerce' ); ?></label>
 							<p class="description"><?php esc_html_e( 'One shipping method per courier and type. BOX NOW delivers to parcel lockers only.', 'nashenski-commerce' ); ?></p>
 						</fieldset>
 					</td>
@@ -707,6 +721,24 @@ class Setup_Wizard {
 			<?php submit_button( __( 'Save and finish', 'nashenski-commerce' ) ); ?>
 		</form>
 		<?php
+	}
+
+	/**
+	 * Slug of the tax class for the 9% rate, or '' when the store has none.
+	 *
+	 * @return string
+	 */
+	private static function reduced_class() {
+		// A store installed in Bulgarian may have WooCommerce's "Reduced rate" class under a translated name and slug.
+		foreach ( array( array( 'slug', self::REDUCED ), array( 'name', 'Reduced rate' ), array( 'name', __( 'Reduced rate', 'nashenski-commerce' ) ) ) as $by ) {
+			$class = \WC_Tax::get_tax_class_by( $by[0], $by[1] );
+
+			if ( $class ) {
+				return (string) $class['slug'];
+			}
+		}
+
+		return '';
 	}
 
 	/**

@@ -1005,10 +1005,10 @@
 		return ( c.format || '%1$s%2$s' ).replace( '%1$s', c.symbol || '' ).replace( '%2$s', parts.join( c.decimal || '.' ) );
 	}
 
-	/* The offer with the lowest free shipping total, or null. */
+	/* The offer closest to free shipping (least left, then the lowest total), or null. */
 	function lowestOffer( offers ) {
 		return offers.reduce( function ( best, offer ) {
-			return offer.over > 0 && ( ! best || offer.over < best.over ) ? offer : best;
+			return offer.over > 0 && ( ! best || offer.left < best.left || ( offer.left === best.left && offer.over < best.over ) ) ? offer : best;
 		}, null );
 	}
 

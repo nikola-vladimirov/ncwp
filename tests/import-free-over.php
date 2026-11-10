@@ -84,6 +84,13 @@ $check(
 				'order_amount'           => '0',
 				'receiver_amount'        => '0',
 				'receiver_amount_office' => '0',
+				'country_id'             => 'GRC',
+			),
+			array(
+				'order_amount'           => '20',
+				'receiver_amount'        => '0',
+				'receiver_amount_office' => '0',
+				'type'                   => 'incod',
 			),
 		),
 		$keys
@@ -92,6 +99,28 @@ $check(
 		'office'  => array( 'free_shipping_over' => '60' ),
 		'automat' => array( 'free_shipping_over' => '100' ),
 		'address' => array( 'free_shipping_over' => '100' ),
+	)
+);
+$check(
+	'a free row from 0 is free for every order; a missing locker price is the office price',
+	$free_over->invoke(
+		null,
+		$none,
+		'',
+		'',
+		array(
+			array(
+				'order_amount'           => '',
+				'receiver_amount'        => '4',
+				'receiver_amount_office' => '0',
+			),
+		),
+		$keys
+	),
+	array(
+		'office'  => array( 'free_shipping_over' => '0.01' ),
+		'automat' => array( 'free_shipping_over' => '0.01' ),
+		'address' => array(),
 	)
 );
 $check(

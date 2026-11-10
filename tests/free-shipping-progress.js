@@ -26,6 +26,8 @@ check(P.money(1500), '$1,500', 'symbol first, no decimals');
 const lowest = P.lowestOffer([{ over: 0, left: 0 }, { over: 150, left: 50 }, { over: 100, left: 0 }, { over: 120, left: 20 }]);
 check(lowest.over, 100, 'the lowest free shipping total wins');
 check(lowest.left, 0, 'its amount left goes with it');
+const closest = P.lowestOffer([{ over: 100, left: 0 }, { over: 50, left: 20 }]);
+check(closest.over, 100, 'an option already free wins over a lower total still to reach');
 check(P.lowestOffer([{ over: 0, left: 0 }]), null, 'no total, no progress bar');
 check(P.lowestOffer([]), null, 'no options, no progress bar');
 
