@@ -268,6 +268,11 @@ class Method extends \WC_Shipping_Method {
 			}
 		}
 
+		// Read by the checkout's free shipping hint and progress bar.
+		if ( (float) $this->free_shipping_over > 0 ) {
+			$rate['meta_data']['nashenski_free_over'] = $this->free_shipping_over;
+		}
+
 		$rate = \Nashenski\Hooks::filter( 'nashenski_pigeon_rate', 'nashenski/pigeon/rate', $rate, $this );
 
 		// Register the rate.

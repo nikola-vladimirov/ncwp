@@ -290,6 +290,12 @@ class Method extends \WC_Shipping_Method {
 			}
 		}
 
+		// Read by the checkout's free shipping hint and progress bar.
+		$free_over = Price_Lists::free_over( $this->label_country(), $this->free_shipping_over, $this->free_shipping_by_country );
+		if ( (float) $free_over > 0 ) {
+			$rate['meta_data']['nashenski_free_over'] = $free_over;
+		}
+
 		$rate['meta_data']['cookie_data'] = $this->cookie_data;
 		$rate                             = \Nashenski\Hooks::filter( 'nashenski_speedy_rate', 'nashenski/speedy/rate', $rate, $this );
 

@@ -196,7 +196,7 @@ class Import_Sources {
 	/**
 	 * Plugins still to import: slug => name (Bulgarisation included).
 	 */
-	private static function open_names() {
+	public static function open_names() {
 		$names = array();
 
 		if ( Migration::has_old_data() && ! get_option( Migration::DONE_OPTION ) ) {
@@ -1066,20 +1066,9 @@ class Import_Sources {
 		$table = $wpdb->prefix . 'woocommerce_shipping_zone_methods';
 
 		if ( null === $old_method ) {
-			$zone = \WC_Shipping_Zones::get_zone_matching_package(
-				array(
-					'destination' => array(
-						'country'  => 'BG',
-						'state'    => '',
-						'postcode' => '',
-						'city'     => '',
-						'address'  => '',
-					),
-				)
-			);
 			$rows = array(
 				array(
-					'zone_id'     => $zone->get_id(),
+					'zone_id'     => self::bulgaria_zone()->get_id(),
 					'instance_id' => 0,
 				),
 			);
@@ -1088,38 +1077,8 @@ class Import_Sources {
 			$rows = (array) $wpdb->get_results( $wpdb->prepare( 'SELECT zone_id, instance_id FROM %i WHERE method_id = %s AND is_enabled = 1', $table, $old_method ), ARRAY_A );
 		}
 
-		$titles = array(
-			'office'  => __( 'To an office', 'nashenski-commerce' ),
-			'automat' => __( 'To a parcel locker', 'nashenski-commerce' ),
-			'locker'  => __( 'To a parcel locker', 'nashenski-commerce' ),
-			'address' => __( 'To an address', 'nashenski-commerce' ),
-			''        => 'BOX NOW',
-		);
-
 		foreach ( $rows as $row ) {
-			$zone = new \WC_Shipping_Zone( (int) $row['zone_id'] );
-			$have = array();
-
-			foreach ( $zone->get_shipping_methods() as $method ) {
-				if ( 'nashenski_' . $courier === $method->id ) {
-					$have[] = (string) $method->get_option( 'delivery_type' );
-				}
-			}
-
-			foreach ( array_diff( $types, $have ) as $type ) {
-				$instance = $zone->add_shipping_method( 'nashenski_' . $courier );
-				update_option(
-					"woocommerce_nashenski_{$courier}_{$instance}_settings",
-					array_filter(
-						array(
-							'title'         => $titles[ $type ],
-							'delivery_type' => $type,
-						) + ( $settings[ $type ] ?? array() ),
-						'strlen'
-					)
-				);
-				++$count['zones'];
-			}
+			$count['zones'] += count( self::add_methods( new \WC_Shipping_Zone( (int) $row['zone_id'] ), $courier, $types, $settings ) );
 
 			if ( $row['instance_id'] ) {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- the old method is turned off, not deleted.
@@ -1128,5 +1087,86 @@ class Import_Sources {
 		}
 
 		\WC_Cache_Helper::get_transient_version( 'shipping', true );
+	}
+
+	/**
+	 * The shipping zone a customer in Bulgaria falls in (id 0 is "rest of the world").
+	 *
+	 * @return \WC_Shipping_Zone
+	 */
+	public static function bulgaria_zone() {
+		return \WC_Shipping_Zones::get_zone_matching_package(
+			array(
+				'destination' => array(
+					'country'  => 'BG',
+					'state'    => '',
+					'postcode' => '',
+					'city'     => '',
+					'address'  => '',
+				),
+			)
+		);
+	}
+
+	/**
+	 * Add one Nashenski method per delivery type the zone does not have yet. Returns the types added.
+	 *
+	 * @param \WC_Shipping_Zone $zone     Zone.
+	 * @param string            $courier  Courier slug.
+	 * @param array             $types    Delivery types ('' for BOX NOW).
+	 * @param array             $settings Type => more settings for its new method; a title here replaces the default one.
+	 * @return array
+	 */
+	public static function add_methods( $zone, $courier, $types, $settings = array() ) {
+		$titles = array(
+			'office'  => __( 'To an office', 'nashenski-commerce' ),
+			'automat' => __( 'To a parcel locker', 'nashenski-commerce' ),
+			'locker'  => __( 'To a parcel locker', 'nashenski-commerce' ),
+			'address' => __( 'To an address', 'nashenski-commerce' ),
+			''        => 'BOX NOW',
+		);
+		$have   = array();
+		$added  = array();
+		$class  = 'Nashenski\\Shipping\\' . \Nashenski\Shipping\Register::COURIERS[ $courier ][0] . '\\Method';
+
+		// WooCommerce adds only registered methods, and a courier turned on just now is registered from the next request.
+		nashenski_set_option( 'apis', 'enable_' . $courier, 'yes' );
+		add_filter(
+			'woocommerce_shipping_methods',
+			function ( $methods ) use ( $courier, $class ) {
+				return $methods + array( 'nashenski_' . $courier => $class );
+			}
+		);
+
+		foreach ( $zone->get_shipping_methods() as $method ) {
+			if ( 'nashenski_' . $courier === $method->id ) {
+				$have[] = (string) $method->get_option( 'delivery_type' );
+			}
+		}
+
+		foreach ( array_diff( $types, $have ) as $type ) {
+			$instance = $zone->add_shipping_method( 'nashenski_' . $courier );
+
+			if ( ! $instance ) {
+				continue;
+			}
+
+			update_option(
+				"woocommerce_nashenski_{$courier}_{$instance}_settings",
+				array_filter(
+					array_merge(
+						array(
+							'title'         => $titles[ $type ],
+							'delivery_type' => $type,
+						),
+						$settings[ $type ] ?? array()
+					),
+					'strlen'
+				)
+			);
+			$added[] = $type;
+		}
+
+		return $added;
 	}
 }

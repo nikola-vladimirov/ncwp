@@ -6,8 +6,9 @@
  * component below; a choice is written to the courier cookie the shipping method reads, then the
  * checkout file asks WooCommerce to price the cart again.
  *
- * Also here: courier logos, the delivery type under each option, and "Complete the fields to
- * calculate" instead of "Free" for options that still wait for a choice.
+ * Also here: courier logos, the delivery type and the "Free shipping over" hint under each option,
+ * the free shipping progress bar, and "Complete the fields to calculate" instead of "Free" for
+ * options that still wait for a choice.
  *
  * No build step: plain JavaScript with WordPress's React (wp.element).
  */
@@ -994,14 +995,76 @@
 		return label.querySelector( '.brx-shipping-options__secondary-label' );
 	}
 
+	/* An amount in the store's money format, like wc_price() without the markup. */
+	function money( amount ) {
+		var c = cfg.currency || {};
+		var parts = Number( amount ).toFixed( c.decimals || 0 ).split( '.' );
+
+		parts[ 0 ] = parts[ 0 ].replace( /\B(?=(\d{3})+(?!\d))/g, c.thousand || '' );
+
+		return ( c.format || '%1$s%2$s' ).replace( '%1$s', c.symbol || '' ).replace( '%2$s', parts.join( c.decimal || '.' ) );
+	}
+
+	/* The offer with the lowest free shipping total, or null. */
+	function lowestOffer( offers ) {
+		return offers.reduce( function ( best, offer ) {
+			return offer.over > 0 && ( ! best || offer.over < best.over ) ? offer : best;
+		}, null );
+	}
+
+	/* Text of an element, set only when it changed: the checkouts watch the page for changes. */
+	function setText( node, text ) {
+		if ( node.textContent !== text ) {
+			node.textContent = text;
+		}
+	}
+
+	var progress = null;
+
+	/* "Add 23,40 € more for free shipping." with a bar, above the shipping options. */
+	function showProgress( list, offer ) {
+		if ( ! cfg.freeBar || ! list || ! offer ) {
+			if ( progress && progress.parentNode ) {
+				progress.remove();
+			}
+
+			return;
+		}
+
+		if ( ! progress ) {
+			progress = document.createElement( 'div' );
+			progress.className = 'nashenski-free-progress';
+			progress.appendChild( document.createElement( 'p' ) ).id = 'nashenski-free-progress-text';
+			progress.appendChild( document.createElement( 'progress' ) ).setAttribute( 'aria-labelledby', 'nashenski-free-progress-text' );
+		}
+
+		var bar = progress.lastChild;
+
+		setText( progress.firstChild, offer.left > 0 ? t.freeLeft.replace( '%s', money( offer.left ) ) : t.freeDone );
+		bar.max = offer.over;
+		bar.value = Math.max( 0, offer.over - offer.left );
+
+		if ( list.previousElementSibling !== progress ) {
+			list.before( progress );
+		}
+	}
+
+	/* Free shipping total and what is left for it, from the classic holder's data. */
+	function offerOf( holder ) {
+		return holder ? { over: parseFloat( holder.getAttribute( 'data-free-over' ) ) || 0, left: parseFloat( holder.getAttribute( 'data-free-left' ) ) || 0 } : null;
+	}
+
 	/**
 	 * Decorate every Nashenski Commerce shipping option on the page. pending: rate IDs still waiting
-	 * for a choice (the block checkout passes them; elsewhere they come from data-pending).
+	 * for a choice (the block checkout passes them; elsewhere they come from data-pending). offers:
+	 * rate ID => { over, left } of the free shipping totals (block checkout; elsewhere from the holders).
 	 */
-	function decorateRates( pending ) {
+	function decorateRates( pending, offers ) {
 		var inputs = document.querySelectorAll( 'input[name^="shipping_method"], input.wc-block-components-radio-control__input' );
 		var logos = cfg.logos || {};
 		var rates = cfg.rates || {};
+		var shown = [];
+		var list = null;
 
 		Array.prototype.forEach.call( inputs, function ( input ) {
 			var match = RATE.exec( input.value || '' );
@@ -1034,7 +1097,27 @@
 				var sub = document.createElement( 'span' );
 				sub.className = 'nashenski-rate-type';
 				sub.textContent = cfg.types[ type ];
-				name.appendChild( sub );
+				// The delivery type goes before the free shipping hint.
+				name.insertBefore( sub, name.querySelector( '.nashenski-rate-free-over' ) );
+			}
+
+			var offer = offers ? offers[ input.value ] : offerOf( holder );
+			var hint = name.querySelector( '.nashenski-rate-free-over' );
+
+			if ( cfg.freeOver && offer && offer.over > 0 && offer.left > 0 ) {
+				if ( ! hint ) {
+					hint = name.appendChild( document.createElement( 'span' ) );
+					hint.className = 'nashenski-rate-free-over';
+				}
+
+				setText( hint, t.freeOver.replace( '%s', money( offer.over ) ) );
+			} else if ( hint ) {
+				hint.remove();
+			}
+
+			if ( offer ) {
+				shown.push( offer );
+				list = list || input.closest( '#shipping_method, .brx-shipping-options__control, .wc-block-components-shipping-rates-control' );
 			}
 
 			label.classList.add( 'nashenski-rate' );
@@ -1049,12 +1132,16 @@
 				}
 			}
 		} );
+
+		showProgress( list, lowestOffer( shown ) );
 	}
 
 	window.nashenskiPickers = Object.assign( cfg, {
 		Picker: Picker,
 		COURIERS: COURIERS,
 		decorateRates: decorateRates,
+		money: money,
+		lowestOffer: lowestOffer,
 		courierOf: function ( rateId ) {
 			var match = RATE.exec( rateId || '' );
 

@@ -47,6 +47,50 @@
 	white-space: normal;
 }
 
+.nashenski-rate-free-over {
+	display: block;
+	margin-top: 0.15em;
+	color: var(--nashenski-accent);
+	font-size: 0.85em;
+	font-weight: 400;
+	line-height: 1.3;
+}
+
+/* Free shipping progress above the shipping options. */
+.nashenski-free-progress {
+	margin: 0 0 var(--nashenski-gap);
+	text-align: start;
+}
+
+.nashenski-free-progress p {
+	margin: 0 0 0.35em;
+	font-size: 0.9em;
+	line-height: 1.4;
+}
+
+.nashenski-free-progress progress {
+	display: block;
+	width: 100%;
+	height: 0.5em;
+	overflow: hidden;
+	border: 0;
+	border-radius: 999px;
+	background: var(--nashenski-border);
+	appearance: none;
+}
+
+.nashenski-free-progress progress::-webkit-progress-bar {
+	background: var(--nashenski-border);
+}
+
+.nashenski-free-progress progress::-webkit-progress-value {
+	background: var(--nashenski-accent);
+}
+
+.nashenski-free-progress progress::-moz-progress-bar {
+	background: var(--nashenski-accent);
+}
+
 /* Fields the plugin keeps in the form but hides (for example the country when only Bulgaria is allowed). */
 .nashenski-hidden-field {
 	display: none !important;
@@ -434,6 +478,128 @@
 
 .nashenski-shipping--cards .wc-block-components-radio-control__option.wc-block-components-radio-control__option-checked:has(+ .nashenski-block-pickers:not(:empty)) {
 	box-shadow: inset 2px 0 0 var(--nashenski-accent), inset -2px 0 0 var(--nashenski-accent), inset 0 2px 0 var(--nashenski-accent);
+}
+
+/* ---------- side by side layout (Checkout > Shipping options look > Side by side) ---------- */
+
+/*
+ * The options form a wrapping grid of equal buttons. The holder of the chosen option's fields
+ * comes last (order: 1) and spans the whole row, so the fields sit under the buttons at full width.
+ * Classic list items become display: contents, so their input, label and holder are grid items.
+ */
+.nashenski-shipping--buttons ul#shipping_method,
+.nashenski-shipping--buttons .brx-shipping-options__control,
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control {
+	position: relative;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 9em), 1fr));
+	gap: 0.6em;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.nashenski-shipping--buttons ul#shipping_method li {
+	display: contents;
+}
+
+/* The radios stay in the page for the keyboard; the button shows their state. */
+.nashenski-shipping--buttons ul#shipping_method li > input.shipping_method,
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control__input {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.nashenski-shipping--buttons ul#shipping_method li > label,
+.nashenski-shipping--buttons .brx-shipping-options__option,
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control__option {
+	display: block;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0.8em;
+	border: 1px solid var(--nashenski-border);
+	border-radius: var(--nashenski-radius);
+	background: transparent;
+	text-align: center;
+	text-indent: 0;
+	cursor: pointer;
+	transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.nashenski-shipping--buttons ul#shipping_method li > label:hover,
+.nashenski-shipping--buttons .brx-shipping-options__option:hover,
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control__option:hover {
+	border-color: var(--nashenski-accent);
+}
+
+.nashenski-shipping--buttons ul#shipping_method li > input:checked + label,
+.nashenski-shipping--buttons ul#shipping_method li > input[type="hidden"] + label,
+.nashenski-shipping--buttons .brx-shipping-options__option:has(input:checked),
+.nashenski-shipping--buttons .brx-shipping-options__option.brx-shipping-options__option--checked,
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control__option-checked {
+	border-color: var(--nashenski-accent);
+	background: var(--nashenski-selected-bg);
+	box-shadow: inset 0 0 0 1px var(--nashenski-accent);
+}
+
+.nashenski-shipping--buttons ul#shipping_method li > input:focus-visible + label,
+.nashenski-shipping--buttons .brx-shipping-options__option:has(input:focus-visible),
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control__option:has(input:focus-visible) {
+	outline: 2px solid var(--nashenski-accent);
+	outline-offset: 2px;
+}
+
+/* The logo on its own line, centred above the name. */
+.nashenski-shipping--buttons .nashenski-courier-logo {
+	display: block;
+	margin: 0 auto 0.4em;
+}
+
+/* Builder and block options: name and price stacked in the middle. */
+.nashenski-shipping--buttons .brx-shipping-options__option .brx-input-indicator {
+	display: none;
+}
+
+.nashenski-shipping--buttons .brx-shipping-options__label-group,
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control__label-group,
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control__description-group {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.2em;
+}
+
+.nashenski-shipping--buttons .brx-shipping-options__secondary-label,
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control__secondary-label,
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control__secondary-description {
+	flex: none;
+	text-align: center;
+}
+
+/* The block checkout's borders between options: each button has its own. */
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control::after,
+.nashenski-shipping--buttons .wc-block-components-shipping-rates-control .wc-block-components-radio-control__option::after {
+	display: none;
+}
+
+/* The chosen option's fields: a full-width panel under the buttons. */
+.nashenski-shipping--buttons ul#shipping_method li > .nashenski-additional-fields,
+.nashenski-shipping--buttons .brx-shipping-options__control > .nashenski-additional-fields,
+.nashenski-shipping--buttons .wc-block-components-radio-control > .nashenski-block-pickers {
+	grid-column: 1 / -1;
+	order: 1;
+	margin: 0;
+	padding: 0 1em 0.25em;
+	border: 1px solid var(--nashenski-accent);
+	border-radius: var(--nashenski-radius);
+	background: var(--nashenski-selected-bg);
+	box-shadow: none;
 }
 
 .nashenski-map__note {

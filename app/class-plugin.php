@@ -164,6 +164,7 @@ class Plugin {
 			new Admin\Changelog();
 			new Admin\Abandoned_Carts_Page();
 			new Admin\Recommended_Settings();
+			new Admin\Setup_Wizard();
 			new Admin\Export_Builder();
 		}
 

@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-10 09:18+0000\n"
-"PO-Revision-Date: 2026-11-10 09:18+0000\n"
+"POT-Creation-Date: 2026-11-10 09:52+0000\n"
+"PO-Revision-Date: 2026-11-10 09:52+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -6408,27 +6408,333 @@ msgstr "Тази доставка не може да бъде изчислена
 msgid "Subtotal:"
 msgstr "Междинна сума:"
 
-#: app/Admin/class-help-page.php:129
+#: app/Admin/class-help-page.php:30 app/Admin/class-setup-wizard.php:511
+msgid "Run the setup again"
+msgstr "Пусни настройката отново"
+
+#: app/Admin/class-help-page.php:130
 msgid "Review or test before payment is set on the courier method in the shipping zone and goes on every label. For Pigeon Express choose review or test; the order screen can change it for one label."
 msgstr "Преглед или тест преди плащане се задава в метода на куриера в зоната за доставка и се добавя към всяка товарителница. За Pigeon Express изберете преглед или тест; в поръчката може да се промени за една товарителница."
 
-#: app/Admin/class-help-page.php:225
+#: app/Admin/class-help-page.php:226
 msgid "It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then the old plugin is switched off. Its own data stays in the database."
 msgstr "Взема данните за вход към куриерите, данните на подателя, номерата на товарителниците на поръчките, методите в зоните за доставка с праговете за безплатна доставка от mreja.net, а от плъгина за Н-18 и данните на фирмата и номерата на документите. След това старият плъгин се изключва. Неговите данни остават в базата данни."
 
-#: app/Admin/class-pigeon.php:303 app/Shipping/Pigeon/class-method.php:329
+#: app/Admin/class-pigeon.php:303 app/Shipping/Pigeon/class-method.php:334
 msgid "Review or test before payment"
 msgstr "Преглед или тест преди плащане"
 
-#: app/Admin/class-pigeon.php:304 app/Shipping/Pigeon/class-method.php:337
+#: app/Admin/class-pigeon.php:304 app/Shipping/Pigeon/class-method.php:342
 msgid "Review before payment"
 msgstr "Преглед преди плащане"
 
-#: app/Admin/class-pigeon.php:305 app/Shipping/Pigeon/class-method.php:338
+#: app/Admin/class-pigeon.php:305 app/Shipping/Pigeon/class-method.php:343
 msgid "Review and test before payment"
 msgstr "Преглед и тест преди плащане"
 
-#: app/Shipping/Pigeon/class-method.php:333
+#: app/Admin/class-setting-help.php:87
+msgid "Cards with a border, buttons side by side, or the plain list of your theme."
+msgstr "Карти с рамка, бутони един до друг или обикновеният списък на темата Ви."
+
+#: app/Admin/class-setting-help.php:87
+msgid "Cards make the chosen courier stand out. Side by side saves space when there are few options."
+msgstr "Картите открояват избрания куриер. Една до друга пести място, когато опциите са малко."
+
+#: app/Admin/class-setting-help.php:89
+msgid "Uses the \"Free shipping over\" total of each shipping method. Customers see what they need to spend to ship for free."
+msgstr "Използва сумата „Безплатна доставка над“ на всеки метод за доставка. Клиентите виждат колко трябва да похарчат, за да получат безплатна доставка."
+
+#: app/Admin/class-setting-help.php:90
+msgid "On the cart and checkout. Uses the lowest \"Free shipping over\" total among the options offered."
+msgstr "В количката и при поръчката. Използва най-ниската сума „Безплатна доставка над“ сред предложените опции."
+
+#: app/Admin/class-setup-wizard.php:72 app/Admin/class-setup-wizard.php:72 app/Admin/class-setup-wizard.php:451
+msgid "Set up Nashenski Commerce"
+msgstr "Настройка на Нашенски Комерс"
+
+#. translators: %s: courier name
+#: app/Admin/class-setup-wizard.php:125
+#, php-format
+msgid "%s to an office"
+msgstr "%s до офис"
+
+#. translators: %s: courier name
+#: app/Admin/class-setup-wizard.php:128
+#, php-format
+msgid "%s to an address"
+msgstr "%s до адрес"
+
+#. translators: %s: courier name
+#: app/Admin/class-setup-wizard.php:131
+#, php-format
+msgid "%s to a parcel locker"
+msgstr "%s до автомат за пратки"
+
+#: app/Admin/class-setup-wizard.php:155
+msgid "Set up Nashenski Commerce in a few steps."
+msgstr "Настройте Нашенски Комерс с няколко стъпки."
+
+#: app/Admin/class-setup-wizard.php:156
+msgid "Start the setup"
+msgstr "Започни настройката"
+
+#. translators: %s: field name
+#: app/Admin/class-setup-wizard.php:210
+#, php-format
+msgid "Not saved, please check it: %s"
+msgstr "Не е запазено, проверете: %s"
+
+#. translators: %d: number of settings
+#: app/Admin/class-setup-wizard.php:230
+#, php-format
+msgid "%d recommended setting applied"
+msgid_plural "%d recommended settings applied"
+msgstr[0] "%d препоръчителна настройка е приложена"
+msgstr[1] "%d препоръчителни настройки са приложени"
+
+#: app/Admin/class-setup-wizard.php:280
+msgid "Reduced rate"
+msgstr "Намалена ставка"
+
+#. translators: %s: tax class name
+#: app/Admin/class-setup-wizard.php:282
+#, php-format
+msgid "Tax class added: %s"
+msgstr "Добавен данъчен клас: %s"
+
+#: app/Admin/class-setup-wizard.php:303
+msgid "Invoices and N-18 documents turned on."
+msgstr "Фактурите и документите по Н-18 са включени."
+
+#: app/Admin/class-setup-wizard.php:320
+msgid "Choose at least one delivery type to add shipping methods."
+msgstr "Изберете поне един вид доставка, за да се добавят методи за доставка."
+
+#. translators: %d: number of settings
+#: app/Admin/class-setup-wizard.php:335
+#, php-format
+msgid "%d setting saved"
+msgid_plural "%d settings saved"
+msgstr[0] "%d настройка е запазена"
+msgstr[1] "%d настройки са запазени"
+
+#. translators: %s: VAT percent
+#: app/Admin/class-setup-wizard.php:357
+#, php-format
+msgid "A tax rate for Bulgaria was there already, so no %s%% rate was added."
+msgstr "Вече има данъчна ставка за България, затова ставка %s%% не е добавена."
+
+#. translators: %s: VAT percent
+#: app/Admin/class-setup-wizard.php:375
+#, php-format
+msgid "Tax rate added: %s%% VAT for Bulgaria"
+msgstr "Добавена данъчна ставка: %s%% ДДС за България"
+
+#. translators: %s: courier name
+#: app/Admin/class-setup-wizard.php:394
+#, php-format
+msgid "%s turned on."
+msgstr "%s е включен."
+
+#: app/Admin/class-setup-wizard.php:402
+msgid "Bulgaria"
+msgstr "България"
+
+#. translators: %s: zone name
+#: app/Admin/class-setup-wizard.php:407
+#, php-format
+msgid "Shipping zone added: %s"
+msgstr "Добавена зона за доставка: %s"
+
+#. translators: %s: shipping method title
+#: app/Admin/class-setup-wizard.php:424
+#, php-format
+msgid "Shipping method added: %s"
+msgstr "Добавен метод за доставка: %s"
+
+#. translators: %s: order total
+#: app/Admin/class-setup-wizard.php:431
+#, php-format
+msgid "BOX NOW free shipping over %s"
+msgstr "BOX NOW: безплатна доставка над %s"
+
+#: app/Admin/class-setup-wizard.php:474
+msgid "What changed"
+msgstr "Какво се промени"
+
+#: app/Admin/class-setup-wizard.php:482
+msgid "Nothing needed to change."
+msgstr "Нямаше нужда от промени."
+
+#: app/Admin/class-setup-wizard.php:485
+msgid "Next steps"
+msgstr "Следващи стъпки"
+
+#. translators: %s: courier name
+#: app/Admin/class-setup-wizard.php:493
+#, php-format
+msgid "Enter your %s login."
+msgstr "Въведете данните си за вход в %s."
+
+#: app/Admin/class-setup-wizard.php:496
+msgid "The shipping methods cannot calculate prices without it."
+msgstr "Без него методите за доставка не могат да изчислят цена."
+
+#: app/Admin/class-setup-wizard.php:502
+msgid "Set the tax class \"Reduced rate\" on the products you sell at 9% VAT."
+msgstr "Задайте данъчния клас „Намалена ставка“ на продуктите, които продавате с 9% ДДС."
+
+#: app/Admin/class-setup-wizard.php:503
+msgid "Products"
+msgstr "Продукти"
+
+#: app/Admin/class-setup-wizard.php:507
+msgid "Check the other settings and the Help page."
+msgstr "Прегледайте останалите настройки и страницата Помощ."
+
+#: app/Admin/class-setup-wizard.php:552
+msgid "Fill in what you know; you can change everything later in the settings. Running the setup again never adds a tax rate or shipping method twice."
+msgstr "Попълнете каквото знаете; всичко може да се промени по-късно в настройките. Повторното пускане на настройката никога не добавя данъчна ставка или метод за доставка два пъти."
+
+#. translators: %s: plugin names
+#: app/Admin/class-setup-wizard.php:561
+#, php-format
+msgid "Moving from %s? Import its data first. It brings your courier logins, shipping methods and company details."
+msgstr "Минавате от %s? Първо импортирайте данните му. Така идват входовете за куриерите, методите за доставка и данните на фирмата."
+
+#: app/Admin/class-setup-wizard.php:594 app/Admin/class-setup-wizard.php:597
+msgid "VAT registration"
+msgstr "Регистрация по ДДС"
+
+#: app/Admin/class-setup-wizard.php:598
+msgid "Registered for VAT, 20%"
+msgstr "Регистрирани по ДДС, 20%"
+
+#: app/Admin/class-setup-wizard.php:599
+msgid "Registered for VAT, some goods at 9%"
+msgstr "Регистрирани по ДДС, някои стоки с 9%"
+
+#: app/Admin/class-setup-wizard.php:600
+msgid "Not registered for VAT"
+msgstr "Без регистрация по ДДС"
+
+#: app/Admin/class-setup-wizard.php:601
+msgid "Registered: WooCommerce taxes are turned on, prices are shown with VAT and a 20% rate for Bulgaria is added. With 9%, the tax class \"Reduced rate\" also gets a 9% rate. Not registered: taxes are turned off and your tax rates are kept."
+msgstr "Регистрирани: данъците в WooCommerce се включват, цените се показват с ДДС и се добавя ставка 20% за България. При 9% данъчният клас „Намалена ставка“ получава и ставка 9%. Без регистрация: данъците се изключват, а данъчните ви ставки се запазват."
+
+#: app/Admin/class-setup-wizard.php:606
+msgid "Prices"
+msgstr "Цени"
+
+#: app/Admin/class-setup-wizard.php:607
+msgid "Prices are entered with VAT"
+msgstr "Цените се въвеждат с ДДС"
+
+#: app/Admin/class-setup-wizard.php:613
+msgid "Only when registered for VAT, for example BG123456789."
+msgstr "Само при регистрация по ДДС, например BG123456789."
+
+#: app/Admin/class-setup-wizard.php:617 app/Admin/class-setup-wizard.php:620
+msgid "Invoices"
+msgstr "Фактури"
+
+#: app/Admin/class-setup-wizard.php:623
+msgid "No invoices"
+msgstr "Без фактури"
+
+#: app/Admin/class-setup-wizard.php:633
+msgid "No shipping zone covers Bulgaria yet. A zone \"Bulgaria\" will be added."
+msgstr "Още няма зона за доставка, която да покрива България. Ще бъде добавена зона „България“."
+
+#. translators: 1: zone name, 2: shipping method titles
+#: app/Admin/class-setup-wizard.php:636
+#, php-format
+msgid "Already in the zone %1$s: %2$s. These are not added again."
+msgstr "Вече са в зоната %1$s: %2$s. Те не се добавят отново."
+
+#. translators: %s: zone name
+#: app/Admin/class-setup-wizard.php:639
+#, php-format
+msgid "The methods are added to the zone %s."
+msgstr "Методите се добавят в зоната %s."
+
+#: app/Admin/class-setup-wizard.php:656 app/Admin/class-setup-wizard.php:659
+msgid "Delivery types"
+msgstr "Видове доставка"
+
+#: app/Admin/class-setup-wizard.php:663
+msgid "One shipping method per courier and type. BOX NOW delivers to parcel lockers only."
+msgstr "По един метод за доставка за всеки куриер и вид. BOX NOW доставя само до автомати."
+
+#: app/Admin/class-setup-wizard.php:671
+msgid "Optional. Orders at or above this total ship for free with the new methods. Leave empty for no free shipping."
+msgstr "По избор. Поръчките на тази стойност или повече се доставят безплатно с новите методи. Оставете празно за без безплатна доставка."
+
+#: app/Admin/class-setup-wizard.php:676
+msgid "Checkout look"
+msgstr "Изглед на поръчката"
+
+#: app/Admin/class-setup-wizard.php:679
+msgid "Shipping options"
+msgstr "Опции за доставка"
+
+#: app/Admin/class-setup-wizard.php:684 app/Front_End/Checkout/class-appearance.php:204
+msgid "Side by side: the options as buttons in a row, the fields of the chosen one below them"
+msgstr "Една до друга: опциите като бутони в ред, полетата на избраната под тях"
+
+#: app/Admin/class-setup-wizard.php:693
+msgid "Show \"Free shipping over\" under each option"
+msgstr "Показвай „Безплатна доставка над“ под всяка опция"
+
+#: app/Admin/class-setup-wizard.php:694
+msgid "Show a free shipping progress bar"
+msgstr "Показвай лента до безплатна доставка"
+
+#: app/Admin/class-setup-wizard.php:702
+msgid "Apply the recommended WooCommerce settings"
+msgstr "Приложи препоръчителните настройки на WooCommerce"
+
+#: app/Admin/class-setup-wizard.php:703
+msgid "See the list"
+msgstr "Виж списъка"
+
+#: app/Admin/class-setup-wizard.php:706
+msgid "Save and finish"
+msgstr "Запази и завърши"
+
+#: app/Front_End/Checkout/class-appearance.php:218
+msgid "Free shipping hint"
+msgstr "Подсказка за безплатна доставка"
+
+#: app/Front_End/Checkout/class-appearance.php:219
+msgid "Show \"Free shipping over\" and the amount under each option that is not free yet"
+msgstr "Показвай „Безплатна доставка над“ и сумата под всяка опция, която още не е безплатна"
+
+#: app/Front_End/Checkout/class-appearance.php:225
+msgid "Free shipping progress bar"
+msgstr "Лента до безплатна доставка"
+
+#: app/Front_End/Checkout/class-appearance.php:226
+msgid "Show above the shipping options how much more the customer needs to buy for free shipping"
+msgstr "Показвай над опциите за доставка колко още трябва да купи клиентът за безплатна доставка"
+
+#. translators: %s: order total for free shipping, for example 50,00 €
+#: app/Front_End/Checkout/class-pickers.php:524
+#, php-format
+msgid "Free shipping over %s"
+msgstr "Безплатна доставка над %s"
+
+#. translators: %s: amount still missing, for example 23,40 €
+#: app/Front_End/Checkout/class-pickers.php:526
+#, php-format
+msgid "Add %s more for free shipping."
+msgstr "Добавете още %s за безплатна доставка."
+
+#: app/Front_End/Checkout/class-pickers.php:527
+msgid "Your order ships for free."
+msgstr "Поръчката ви е с безплатна доставка."
+
+#: app/Shipping/Pigeon/class-method.php:338
 msgid "Added to every label of this method. Pigeon Express takes one of the two, and neither for a locker."
 msgstr "Добавя се към всяка товарителница на този метод. Pigeon Express приема само едно от двете и нито едно за автомат."
 

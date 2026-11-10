@@ -304,5 +304,24 @@ $method->calculate_shipping(
 	)
 );
 expect( empty( $method->rates[0]['meta_data']['address_missing'] ), 'a Bulgarian order without a widget address keeps the old message' );
+expect( ! isset( $method->rates[0]['meta_data']['nashenski_free_over'] ), 'no free shipping total, no total on the rate' );
+
+// The rate carries the free shipping total of its country, for the checkout hint and progress bar.
+$method->free_shipping_over       = '200';
+$method->free_shipping_by_country = 'RO=150';
+foreach ( array(
+	'BG' => '200',
+	'RO' => '150',
+	'GR' => null,
+) as $country => $over ) {
+	$method->rates = array();
+	$method->calculate_shipping(
+		array(
+			'contents'    => array(),
+			'destination' => array( 'country' => $country ),
+		)
+	);
+	expect( ( $method->rates[0]['meta_data']['nashenski_free_over'] ?? null ) === $over, "the $country rate carries the free shipping total of $country" );
+}
 
 echo 'PASS: ' . (int) $checks . " free shipping by country, foreign address and Pigeon weight assertions\n";

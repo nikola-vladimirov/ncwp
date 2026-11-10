@@ -27,6 +27,7 @@ class Help_Page {
 			?>
 
 			<h2><?php esc_html_e( 'Getting started', 'nashenski-commerce' ); ?></h2>
+			<p><a class="button" href="<?php echo esc_url( Setup_Wizard::url() ); ?>"><?php esc_html_e( 'Run the setup again', 'nashenski-commerce' ); ?></a></p>
 			<ol class="nashenski-help__steps">
 				<?php foreach ( self::steps() as $step ) : ?>
 					<li><?php echo wp_kses_post( $step ); ?></li>

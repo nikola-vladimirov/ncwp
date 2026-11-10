@@ -20,9 +20,15 @@ defined( 'ABSPATH' ) || exit;
  * - Office and locker options of a courier that has no login and no public office list are
  *   hidden, because the customer could not choose anything.
  * - The chosen office or address is written into the order address when that is empty.
+ * - Each option carries its free shipping total and what the cart still lacks for it, for the
+ *   "Free shipping over" hint and the progress bar (Checkout > Shipping options look).
  */
 class Pickers {
 	const PENDING_META = 'nashenski_pending';
+
+	// Free shipping total of a rate (set by the shipping methods) and what the cart still lacks for it.
+	const FREE_OVER_META = 'nashenski_free_over';
+	const FREE_LEFT_META = 'nashenski_free_left';
 
 	// Login settings of each courier (group = courier slug).
 	const LOGIN = array(
@@ -43,6 +49,7 @@ class Pickers {
 		add_filter( 'woocommerce_cart_shipping_method_full_label', array( __CLASS__, 'full_label' ), 20, 2 );
 		add_filter( 'bricks/dynamic_data/format_value', array( __CLASS__, 'builder_shipping_total' ), 10, 4 );
 		add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'fill_order_address' ), 5, 3 );
+		add_action( 'woocommerce_checkout_create_order_shipping_item', array( __CLASS__, 'drop_free_meta' ) );
 		add_filter( 'body_class', array( __CLASS__, 'body_class' ) );
 		add_action( 'wp_ajax_nashenski_search_towns', array( __CLASS__, 'search_towns' ) );
 		add_action( 'wp_ajax_nopriv_nashenski_search_towns', array( __CLASS__, 'search_towns' ) );
@@ -234,12 +241,41 @@ class Pickers {
 			$cookie = isset( $meta['cookie_data'] ) && is_array( $meta['cookie_data'] ) ? $meta['cookie_data'] : array();
 			$chosen = 'boxnow' === $courier ? ! empty( $cookie['selectedApm'] ) : ! empty( $meta['validated'] );
 
-			if ( (float) $rate->get_cost() <= 0 && ! $free && ! $chosen ) {
+			$pending = (float) $rate->get_cost() <= 0 && ! $free && ! $chosen;
+
+			if ( $pending ) {
 				$rate->add_meta_data( self::PENDING_META, 'yes' );
+			}
+
+			if ( (float) ( $meta[ self::FREE_OVER_META ] ?? 0 ) > 0 ) {
+				$free = $free || ( ! $pending && (float) $rate->get_cost() <= 0 ) || nashenski_has_free_shipping_coupon_in_cart();
+				$rate->add_meta_data( self::FREE_LEFT_META, self::free_left( $meta[ self::FREE_OVER_META ], nashenski_get_package_total(), $free ) );
 			}
 		}
 
 		return $rates;
+	}
+
+	/**
+	 * What the cart still lacks for free shipping: 0 once the option is free.
+	 *
+	 * @param mixed $over  Free shipping total.
+	 * @param mixed $total Cart total that counts (nashenski_get_package_total()).
+	 * @param bool  $free  Whether the option is already free.
+	 * @return string
+	 */
+	public static function free_left( $over, $total, $free ) {
+		return wc_format_decimal( $free ? 0 : max( 0, (float) $over - (float) $total ), wc_get_price_decimals() );
+	}
+
+	/**
+	 * The free shipping figures are for the checkout only, not for the order.
+	 *
+	 * @param \WC_Order_Item_Shipping $item Order shipping item.
+	 */
+	public static function drop_free_meta( $item ) {
+		$item->delete_meta_data( self::FREE_OVER_META );
+		$item->delete_meta_data( self::FREE_LEFT_META );
 	}
 
 	/**
@@ -321,12 +357,16 @@ class Pickers {
 			return;
 		}
 
+		$meta = $rate->get_meta_data();
+
 		printf(
-			'<div class="nashenski-additional-fields" data-rate="%1$s" data-courier="%2$s" data-type="%3$s" data-pending="%4$s"></div>',
+			'<div class="nashenski-additional-fields" data-rate="%1$s" data-courier="%2$s" data-type="%3$s" data-pending="%4$s" data-free-over="%5$s" data-free-left="%6$s"></div>',
 			esc_attr( $rate->get_id() ),
 			esc_attr( $courier ),
 			esc_attr( self::type_of( $rate ) ),
-			self::is_pending( $rate ) ? '1' : '0'
+			self::is_pending( $rate ) ? '1' : '0',
+			esc_attr( $meta[ self::FREE_OVER_META ] ?? '' ),
+			esc_attr( $meta[ self::FREE_LEFT_META ] ?? '' )
 		);
 	}
 
@@ -432,6 +472,16 @@ class Pickers {
 			'logos'      => 'no' === nashenski_get_option( 'checkout', 'courier_logos' ) ? array() : Courier_Logos::get_logos(),
 			'showType'   => 'no' !== nashenski_get_option( Appearance::GROUP, 'show_type' ),
 			'pending'    => self::pending_text(),
+			'freeOver'   => 'yes' === nashenski_get_option( Appearance::GROUP, 'free_over_label' ),
+			'freeBar'    => 'yes' === nashenski_get_option( Appearance::GROUP, 'free_progress' ),
+			// The store's money format, for amounts the script writes ("Free shipping over 50,00 €").
+			'currency'   => array(
+				'symbol'   => html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES, 'UTF-8' ),
+				'format'   => html_entity_decode( get_woocommerce_price_format(), ENT_QUOTES, 'UTF-8' ),
+				'decimals' => wc_get_price_decimals(),
+				'decimal'  => wc_get_price_decimal_separator(),
+				'thousand' => wc_get_price_thousand_separator(),
+			),
 			'types'      => array(
 				'office'  => __( 'To an office', 'nashenski-commerce' ),
 				'automat' => __( 'To a parcel locker', 'nashenski-commerce' ),
@@ -470,6 +520,11 @@ class Pickers {
 				'choose'       => __( 'Choose', 'nashenski-commerce' ),
 				'town'         => __( 'Town or village', 'nashenski-commerce' ),
 				'townSearch'   => __( 'Start typing your town or village', 'nashenski-commerce' ),
+				/* translators: %s: order total for free shipping, for example 50,00 € */
+				'freeOver'     => __( 'Free shipping over %s', 'nashenski-commerce' ),
+				/* translators: %s: amount still missing, for example 23,40 € */
+				'freeLeft'     => __( 'Add %s more for free shipping.', 'nashenski-commerce' ),
+				'freeDone'     => __( 'Your order ships for free.', 'nashenski-commerce' ),
 				/* translators: %s: region name */
 				'region'       => __( '%s region', 'nashenski-commerce' ),
 			),

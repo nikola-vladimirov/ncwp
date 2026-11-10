@@ -45,14 +45,14 @@ class Appearance {
 	}
 
 	/**
-	 * Chosen layout, cards or plain.
+	 * Chosen layout: cards, buttons (side by side) or plain.
 	 *
 	 * @return string
 	 */
 	public static function layout() {
 		$layout = nashenski_get_option( self::GROUP, 'layout' );
 
-		if ( in_array( $layout, array( 'cards', 'plain' ), true ) ) {
+		if ( in_array( $layout, array( 'cards', 'buttons', 'plain' ), true ) ) {
 			return $layout;
 		}
 
@@ -200,8 +200,9 @@ class Appearance {
 				'css'     => 'width: 100%;',
 				'default' => self::layout(),
 				'options' => array(
-					'cards' => __( 'Cards: each option in its own box, the chosen one opens its office or address fields', 'nashenski-commerce' ),
-					'plain' => __( 'Plain: keep the look of the theme or builder', 'nashenski-commerce' ),
+					'cards'   => __( 'Cards: each option in its own box, the chosen one opens its office or address fields', 'nashenski-commerce' ),
+					'buttons' => __( 'Side by side: the options as buttons in a row, the fields of the chosen one below them', 'nashenski-commerce' ),
+					'plain'   => __( 'Plain: keep the look of the theme or builder', 'nashenski-commerce' ),
 				),
 			),
 			array(
@@ -210,6 +211,20 @@ class Appearance {
 				'title'   => __( 'Delivery type', 'nashenski-commerce' ),
 				'desc'    => __( 'Show "To an office", "To a parcel locker" or "To your address" under each option', 'nashenski-commerce' ),
 				'default' => 'yes',
+			),
+			array(
+				'type'    => 'checkbox',
+				'id'      => $id( 'free_over_label' ),
+				'title'   => __( 'Free shipping hint', 'nashenski-commerce' ),
+				'desc'    => __( 'Show "Free shipping over" and the amount under each option that is not free yet', 'nashenski-commerce' ),
+				'default' => 'no',
+			),
+			array(
+				'type'    => 'checkbox',
+				'id'      => $id( 'free_progress' ),
+				'title'   => __( 'Free shipping progress bar', 'nashenski-commerce' ),
+				'desc'    => __( 'Show above the shipping options how much more the customer needs to buy for free shipping', 'nashenski-commerce' ),
+				'default' => 'no',
 			),
 			$style( 'accent', __( 'Accent colour', 'nashenski-commerce' ), __( 'Border of the chosen option, focus ring and buttons.', 'nashenski-commerce' ) ),
 			$style( 'selected_bg', __( 'Chosen option background', 'nashenski-commerce' ), '' ),
