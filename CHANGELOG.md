@@ -2,6 +2,13 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.21.5 (2026-11-10)
+
+### Changes
+- Import from the mreja.net plugins: the free shipping totals come along. Econt, Speedy and Pigeon Express give each new shipping method its "Free shipping over" (per delivery type, or the one old sum; a price row where the customer pays nothing counts too). BOX NOW fills "Free shipping over" in Couriers > BOX NOW when it is empty.
+- Econt Express 1.9 with shipping zones on: the Nashenski Econt methods go into the zones that had the Econt method, and that method is turned off. Before, they went into the zone of Bulgaria only.
+- The import finds "MrejaNet Checkout", the new name of Change Speedy and Econt Shipping Methods v2 from 0.1.7, and switches it off.
+
 ## 0.21.4 (2026-11-09)
 
 ### Fixes

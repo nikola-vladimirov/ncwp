@@ -16,7 +16,8 @@ defined( 'ABSPATH' ) || exit;
  * Taken over: courier logins that work with Nashenski Commerce, sender name and phone, the
  * waybill numbers of old orders (so tracking, status checks and courier requests work),
  * shipping zone methods (one Nashenski method per delivery type, the old one is turned off),
- * and from the N-18 plugin the company details and the document numbers.
+ * the mreja.net free shipping totals, and from the N-18 plugin the company details and the
+ * document numbers.
  */
 class Import_Sources {
 	const ACTION         = 'nashenski_import_source';
@@ -47,6 +48,7 @@ class Import_Sources {
 		'BOX NOW Delivery'                               => 'mreja_boxnow',
 		'WooCommerce Наредба Н-18 облекчен режим плъгин' => 'mreja_n18',
 		'Change Speedy and Econt Shipping Methods v2'    => 'mreja_buttons',
+		'MrejaNet Checkout'                              => 'mreja_buttons', // The same plugin from 0.1.7 on.
 		'Drusoft Shipping for Econt'                     => 'drusoft_econt',
 		'Drusoft Shipping for Speedy'                    => 'drusoft_speedy',
 		'Econt Delivery'                                 => 'econt_delivery',
@@ -289,8 +291,27 @@ class Import_Sources {
 					self::waybill( $row['order_id'], 'econt', array( $row['loading_num'] ), $row['pdf_url'], array( 'econt_shipping_method' ), $count );
 				}
 
-				if ( 'yes' === ( $s['enabled'] ?? '' ) ) {
-					// A shipping method for every zone at once: Nashenski adds its methods to the zone of Bulgaria.
+				// From 1.9 the plugin can sit in shipping zones; before, it is one method for every zone.
+				$zoned = ! empty( $s['shipping_zones_support'] );
+
+				if ( $zoned || 'yes' === ( $s['enabled'] ?? '' ) ) {
+					// Free shipping per delivery type from 1.9 (econt_free_shipping_v2); before, one sum for all types.
+					$v2    = get_option( 'econt_free_shipping_v2' );
+					$free  = self::free_over(
+						array(
+							'office'  => $v2 ? get_option( 'econt_free_shipping_sum_office' ) : '',
+							'automat' => $v2 ? get_option( 'econt_free_shipping_sum_aps' ) : '',
+							'address' => $v2 ? get_option( 'econt_free_shipping_sum_address' ) : '',
+						),
+						$v2 ? '' : ( get_option( 'econt_free_shipping_sum' ) ? get_option( 'econt_free_shipping_sum' ) : ( $s['free_shipping_sum'] ?? '' ) ),
+						get_option( 'econt_free_shipping_sum_to_office' ),
+						get_option( 'econt_shipping_payments' ),
+						array(
+							'office'  => 'receiver_amount_office',
+							'automat' => 'receiver_amount_aps',
+							'address' => 'receiver_amount',
+						)
+					);
 					$types = array_keys(
 						array_filter(
 							array(
@@ -303,7 +324,8 @@ class Import_Sources {
 							}
 						)
 					);
-					self::zones( null, 'econt', $types, $count );
+					// Without zones Nashenski adds its methods to the zone of Bulgaria.
+					self::zones( $zoned ? 'econt_shipping_method' : null, 'econt', $types, $count, $free );
 				}
 				break;
 
@@ -327,6 +349,17 @@ class Import_Sources {
 					self::waybill( $order, 'boxnow', (array) $order->get_meta( '_boxnow_parcel_ids' ), '', array( 'boxnow_delivery' ), $count );
 				}
 
+				// A price row where the customer pays nothing from an order total up is free shipping over that total.
+				$free = array_filter(
+					array_map(
+						function ( $row ) {
+							return isset( $row['receiver_amount'] ) && '' !== $row['receiver_amount'] && ! (float) $row['receiver_amount'] ? max( 0.0, (float) ( $row['order_min_price'] ?? 0 ) ) : 0;
+						},
+						is_array( $o['shipping_payments'] ?? null ) ? $o['shipping_payments'] : array()
+					)
+				);
+				self::fill( 'boxnow_price', 'free_shipping_over', $free ? (string) min( $free ) : '', $count );
+
 				self::zones( 'boxnow_delivery', 'boxnow', array( '' ), $count );
 				break;
 
@@ -348,7 +381,28 @@ class Import_Sources {
 				self::fill( 'speedy', 'phone', $s['phone1'] ?? '', $count );
 				self::fill( 'speedy_send_from', 'office', ! empty( $s['dropoff_office_id'] ) ? 'officeID-' . $s['dropoff_office_id'] : '', $count );
 				self::fill( 'speedy', 'send_from', strtolower( $s['send_from'] ?? '' ), $count );
-				self::zones( 'speedy_shipping_method', 'speedy', array( 'office', 'automat', 'address' ), $count );
+				$o = (array) get_option( 'speedy_shipping_method_options', array() );
+				self::zones(
+					'speedy_shipping_method',
+					'speedy',
+					array( 'office', 'automat', 'address' ),
+					$count,
+					self::free_over(
+						array(
+							'office'  => get_option( 'speedy_free_shipping_sum_office' ),
+							'automat' => get_option( 'speedy_free_shipping_sum_apt' ),
+							'address' => get_option( 'speedy_free_shipping_sum_address' ),
+						),
+						get_option( 'speedy_free_shipping_sum' ),
+						get_option( 'speedy_free_shipping_sum_to_office' ),
+						$o['speedy_shipping_payments'] ?? ( $o['shipping_payments'] ?? array() ),
+						array(
+							'office'  => 'receiver_amount_office',
+							'automat' => 'receiver_amount_apt',
+							'address' => 'receiver_amount',
+						)
+					)
+				);
 				break;
 
 			case 'mreja_pigeon':
@@ -366,7 +420,27 @@ class Import_Sources {
 				);
 				self::fill( 'pigeon_send_from', 'office', ! empty( $o['pickup_office_id'] ) ? 'officeID-' . $o['pickup_office_id'] : '', $count );
 				self::fill( 'pigeon', 'send_from', strtolower( $s['send_from'] ?? '' ), $count );
-				self::zones( 'pigeon_express_shipping', 'pigeon', array( 'office', 'locker', 'address' ), $count );
+				self::zones(
+					'pigeon_express_shipping',
+					'pigeon',
+					array( 'office', 'locker', 'address' ),
+					$count,
+					self::free_over(
+						array(
+							'office'  => $o['pigeon_free_shipping_sum_office'] ?? '',
+							'locker'  => $o['pigeon_free_shipping_sum_locker'] ?? '',
+							'address' => $o['pigeon_free_shipping_sum_address'] ?? '',
+						),
+						$o['pigeon_free_shipping_sum'] ?? '',
+						$o['pigeon_free_shipping_sum_to_office'] ?? '',
+						$o['pigeon_shipping_payments'] ?? array(),
+						array(
+							'office'  => 'receiver_amount_office',
+							'locker'  => 'receiver_amount_locker',
+							'address' => 'receiver_amount',
+						)
+					)
+				);
 				break;
 
 			case 'drusoft_econt':
@@ -933,6 +1007,50 @@ class Import_Sources {
 	}
 
 	/**
+	 * Free shipping totals of a mreja.net courier as settings of the new methods, per delivery type.
+	 * Its sum per type wins; with none, its one old sum counts for every type (not addresses when it
+	 * was "to office only"). A price row where the customer pays nothing lowers the total of its type.
+	 *
+	 * @param array $sums Nashenski delivery type => the old plugin's sum for it.
+	 * @param mixed $legacy The old single sum.
+	 * @param mixed $office_only The old "to office only" flag.
+	 * @param mixed $rows The old price rows: order_amount and the customer's price per type.
+	 * @param array $row_keys Nashenski delivery type => the row key of the customer's price.
+	 * @return array Type => array( 'free_shipping_over' => total ), or array() for no free shipping.
+	 */
+	private static function free_over( $sums, $legacy, $office_only, $rows, $row_keys ) {
+		$positive = function ( $value ) {
+			return max( 0.0, (float) $value );
+		};
+		$over     = array_map( $positive, $sums );
+
+		if ( ! array_filter( $over ) && $positive( $legacy ) ) {
+			$over = array_fill_keys( array_keys( $sums ), $positive( $legacy ) );
+
+			if ( ! empty( $office_only ) ) {
+				$over['address'] = 0.0;
+			}
+		}
+
+		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
+			$amount = $positive( $row['order_amount'] ?? 0 );
+
+			foreach ( $row_keys as $type => $key ) {
+				if ( $amount && isset( $row[ $key ] ) && '' !== $row[ $key ] && ! (float) $row[ $key ] && ( ! $over[ $type ] || $amount < $over[ $type ] ) ) {
+					$over[ $type ] = $amount;
+				}
+			}
+		}
+
+		return array_map(
+			function ( $total ) {
+				return $total ? array( 'free_shipping_over' => (string) $total ) : array();
+			},
+			$over
+		);
+	}
+
+	/**
 	 * Add the Nashenski methods (one per delivery type) to every zone that has the old method,
 	 * and turn the old one off. $old_method null: a method for all zones; the zone of Bulgaria gets them.
 	 *
@@ -940,8 +1058,9 @@ class Import_Sources {
 	 * @param mixed $courier Courier.
 	 * @param mixed $types Types.
 	 * @param mixed $count Count.
+	 * @param array $settings Type => more settings for its new method (free_over()).
 	 */
-	private static function zones( $old_method, $courier, $types, &$count ) {
+	private static function zones( $old_method, $courier, $types, &$count, $settings = array() ) {
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'woocommerce_shipping_zone_methods';
@@ -995,7 +1114,7 @@ class Import_Sources {
 						array(
 							'title'         => $titles[ $type ],
 							'delivery_type' => $type,
-						),
+						) + ( $settings[ $type ] ?? array() ),
 						'strlen'
 					)
 				);

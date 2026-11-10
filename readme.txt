@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.2
 Requires Plugins: woocommerce
-Stable tag: 0.21.4
+Stable tag: 0.21.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -70,7 +70,7 @@ Nashenski Commerce добавя към WooCommerce всичко, от което
 
 Nashenski Commerce е базиран на Bulgarisation for WooCommerce 4.0.13 от Autopolis.bg (GPLv3). Ако сте го ползвали, активирайте Nashenski Commerce и натиснете "Импорт": настройките, зоните за доставка и данните за поръчките се прехвърлят, а Bulgarisation се изключва.
 
-Плъгинът внася и от плъгините на mreja.net Econt Express и BOX NOW Delivery, от плъгина на mreja.net за Наредба Н-18 (лек режим), от Drusoft Shipping за Еконт и за Спиди, Econt Delivery и Speedy Shipping: входните данни за куриерите, данните на подателя, номерата на товарителниците на поръчките, методите в зоните за доставка и, от плъгина за Н-18, данните на фирмата и номерата на документите. Всеки импорт изключва стария плъгин. Импортът се изпълнява на вашия сайт, нищо не се изпраща никъде.
+Плъгинът внася и от плъгините на mreja.net Econt Express и BOX NOW Delivery, от плъгина на mreja.net за Наредба Н-18 (лек режим), от Drusoft Shipping за Еконт и за Спиди, Econt Delivery и Speedy Shipping: входните данни за куриерите, данните на подателя, номерата на товарителниците на поръчките, методите в зоните за доставка с праговете за безплатна доставка от mreja.net и, от плъгина за Н-18, данните на фирмата и номерата на документите. Всеки импорт изключва стария плъгин. Импортът се изпълнява на вашия сайт, нищо не се изпраща никъде.
 
 **Помощ в плъгина**
 
@@ -133,7 +133,7 @@ Nashenski Commerce adds what a Bulgarian online store needs to WooCommerce. Ever
 
 Nashenski Commerce is based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3). If you used it, activate Nashenski Commerce and press "Import now": your settings, shipping zones and order data come along, and Bulgarisation is switched off.
 
-It also imports from the mreja.net plugins Econt Express and BOX NOW Delivery, from the mreja.net Ordinance N-18 plugin (light regime), from Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping: courier logins, sender details, the waybill numbers of your orders, shipping zone methods and, from the N-18 plugin, your company details and document numbers. Each import switches the old plugin off. The import runs on your site; nothing is sent anywhere.
+It also imports from the mreja.net plugins Econt Express and BOX NOW Delivery, from the mreja.net Ordinance N-18 plugin (light regime), from Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping: courier logins, sender details, the waybill numbers of your orders, shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, your company details and document numbers. Each import switches the old plugin off. The import runs on your site; nothing is sent anywhere.
 
 **Help inside the plugin**
 
@@ -200,6 +200,9 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 == Changelog ==
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+
+= 0.21.5 =
+* Changed: The mreja.net import brings the free shipping totals of Econt, Speedy, Pigeon Express and BOX NOW, follows Econt Express 1.9 when it sits in shipping zones, and finds MrejaNet Checkout (the renamed Change Speedy and Econt Shipping Methods).
 
 = 0.21.4 =
 * Fixed: Pigeon Express labels can ask for review before payment, not only test before payment.

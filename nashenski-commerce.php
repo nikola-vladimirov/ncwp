@@ -12,7 +12,7 @@ Description:  WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shippi
 Requires Plugins: woocommerce
 Author:       PristaDigital
 Author URI:   https://pristadigital.com/
-Version:      0.21.4
+Version:      0.21.5
 Requires at least: 6.5
 Requires PHP: 8.2
 WC requires at least: 9.4.0
