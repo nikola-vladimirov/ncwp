@@ -72,7 +72,8 @@ add_action(
 /**
  * Load the plugin's texts for the current (or a given) locale: a WordPress.org language pack
  * when there is one, else the translation shipped in /languages. Documents use it to print in
- * Bulgarian and English whatever the site language.
+ * Bulgarian and English whatever the site language. With neither (the WordPress.org zip before its
+ * Bulgarian language pack exists), Bulgarian still gets the texts printed on documents.
  *
  * @param string|null $locale Locale, for example from the change_locale action.
  */
@@ -82,7 +83,17 @@ function nashenski_load_bundled_translations( $locale = null ) {
 	$file   = file_exists( $pack . '.mo' ) || file_exists( $pack . '.l10n.php' ) ? $pack . '.mo' : __DIR__ . '/languages/nashenski-commerce-' . $locale . '.mo';
 
 	unload_textdomain( 'nashenski-commerce' );
-	load_textdomain( 'nashenski-commerce', $file, $locale );
+
+	if ( load_textdomain( 'nashenski-commerce', $file, $locale ) || 'bg_BG' !== $locale ) {
+		return;
+	}
+
+	// Ordinance N-18 documents must be in Bulgarian whatever the site language.
+	$texts = new MO();
+	foreach ( include __DIR__ . '/app/Invoice/document-texts-bg.php' as $entry ) {
+		$texts->add_entry( new Translation_Entry( $entry ) );
+	}
+	$GLOBALS['l10n']['nashenski-commerce'] = $texts; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- WordPress has no API to load translations from an array.
 }
 
 /**
