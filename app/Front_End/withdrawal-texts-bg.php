@@ -1,9 +1,7 @@
 <?php
 /**
- * Bulgarian for WooCommerce's order withdrawal texts (WooCommerce 11.1), used while WooCommerce's
- * own language pack has none (see Front_End\Withdrawal::translate()). The two labels the directive
- * prescribes use the wording of the Bulgarian text of Directive (EU) 2023/2673, Article 11a:
- * "откажете се от договора тук" and "потвърждавам отказа".
+ * Bulgarian for WooCommerce's withdrawal texts (WooCommerce 11.1): Directive (EU) 2023/2673, Article 11a
+ * prescribes the wording of the withdrawal labels. Used only for a text the loaded translation lacks.
  *
  * @package Nashenski
  */
