@@ -2,6 +2,11 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.21.9 (2026-11-12)
+
+### Changes
+- Changelog wording only. No code changes from 0.21.8.
+
 ## 0.21.8 (2026-11-11)
 
 0.21.7 was not released; its changes are part of 0.21.8.
@@ -17,9 +22,9 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
 ### Changes
 - Shipping option cards (Cards and Side by side looks): the courier logo in a box of the same size for every courier, the delivery type as the main line and one short price line ("Price after address", "Free", or "3,52 € to the courier"); the courier name stays for screen readers. The longer text of the chosen option is shown once under the options, and screen readers read it when it changes. A fee paid to the courier shows in the store currency, also when the shopper switched currency. Side by side cards are at least 150px wide. The chosen card has an accent border, a light tint and a check mark instead of a solid fill, and the office or address panel is light grey. Focus rings and button texts use a darker accent for contrast. The plain look keeps its one-line labels.
-- WordPress.org review: the PDF library keeps its font cache, and the fonts a custom template installs, in uploads/nashenski-cache/fonts instead of the plugin folder. readme.txt lists the privacy and terms pages of every outside service (Google Maps for the Speedy map too). Requests are read only by the field names the plugin needs, each sanitized where it is read. The abandoned carts have a personal data export and erase (Tools > Export or Erase Personal Data; the erase also deletes their unused reminder coupons, and keeps used ones for the accounts), and the plugin suggests text for your privacy policy. The quick order form reads only its own fields. WooCommerce tested up to 11.3.
-- WordPress.org review: the cache of courier offices, cities and streets moves from wp-content/cache/nashenski to the uploads folder (uploads/nashenski-cache, each site of a network has its own). The old folder is removed on update, and both are removed when the plugin is deleted.
-- The import from another plugin no longer deactivates that plugin (WordPress.org plugins must not change other plugins). Until you deactivate it, a notice on the Dashboard, the Plugins screen and the Nashenski settings asks you to, with a link to the Plugins screen (the network one for a network-activated plugin). The Help button is now "Import".
+- Security Audit: the PDF library keeps its font cache, and the fonts a custom template installs, in uploads/nashenski-cache/fonts instead of the plugin folder. readme.txt lists the privacy and terms pages of every outside service (Google Maps for the Speedy map too). Requests are read only by the field names the plugin needs, each sanitized where it is read. The abandoned carts have a personal data export and erase (Tools > Export or Erase Personal Data; the erase also deletes their unused reminder coupons, and keeps used ones for the accounts), and the plugin suggests text for your privacy policy. The quick order form reads only its own fields. WooCommerce tested up to 11.3.
+- Security Audit: the cache of courier offices, cities and streets moves from wp-content/cache/nashenski to the uploads folder (uploads/nashenski-cache, each site of a network has its own). The old folder is removed on update, and both are removed when the plugin is deleted.
+- The import from another plugin no longer deactivates that plugin (a plugin must not change other plugins). Until you deactivate it, a notice on the Dashboard, the Plugins screen and the Nashenski settings asks you to, with a link to the Plugins screen (the network one for a network-activated plugin). The Help button is now "Import".
 - Nashenski Commerce also pauses while Bulgarisation for WooCommerce 5.x is active, as it did for 4.x: both would number the same documents.
 - The mreja.net Ordinance N-18 plugin is imported only while it is off (both would give out the same document numbers); while it is active, the Help page, the import notice and the import itself say to deactivate it first. Until its documents are imported, Nashenski Commerce makes no invoices or other documents and takes no numbers while a new number could clash with one of them (the plugin is active, or a counter has not passed its numbers); a store without its documents, or whose counters are already past them, is not paused and is offered the import. The import also works from its documents table alone. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already gave out: documents and numbers pause, also after it is off again, until its import is run again from the Help page (noticed on admin pages, also when it was turned on and off from the command line). That run takes over its new numbers, continues the counters after its highest number (order documents and cancellations; invoices, credit and debit notes), and notes and lists each order whose number clashes, to correct. Shipping and everything else keep working. An error notice on the Dashboard, the Plugins screen, the orders list, the order screen and the Nashenski settings says so, with a link to Plugins while it is active (shop managers who cannot manage plugins are asked to get an administrator) and to the import while it is off; the setup, the PDF Files box and the document actions of an order give the reason; orders whose documents were skipped get a note; the orders list reports a bulk "Regenerate PDF's" that could not run; a dismissed import notice comes back when a new import is due.
 - The notices shown when the plugin cannot start (Bulgarisation active, old PHP or WordPress, no WooCommerce) appear only on the Dashboard, the Plugins screen and the WooCommerce screens, to users who manage plugins.
@@ -41,7 +46,7 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 ## 0.21.6 (2026-11-11)
 
 ### Changes
-- WordPress.org review: the quick order button style, the abandoned carts "select all" script and the changelog page style now load through WordPress (no inline style or script tags). The quick order form, the order delivery box, the export builder and the courier cookie sanitize every value they read.
+- Security Audit: the quick order button style, the abandoned carts "select all" script and the changelog page style now load through WordPress (no inline style or script tags). The quick order form, the order delivery box, the export builder and the courier cookie sanitize every value they read.
 - Libraries updated: php-qrcode 6.0.1, vatin 3.1.0, Dompdf 3.1.6, Pimple 3.6.2. Development files of the libraries are no longer shipped.
 - Documents: the page count in the footer is placed without a float, which Dompdf 3.1 needs to keep the document on one page. A custom document template (filter nashenski_invoice_pdf_default_template) needs the same change: `.page-count { position: absolute; right: 0px; top: 0px; }`.
 - Documents print in Bulgarian even before a Bulgarian translation of the plugin is installed (the WordPress.org zip has none until WordPress.org ships the language pack).
@@ -330,7 +335,7 @@ Security release. Please update.
 - When BOX NOW refuses a label, the label box shows BOX NOW's code and the reason in plain words (for example P402: the destination locker is not valid), from BOX NOW's API manual. Before, the server stopped with an error.
 - The label box sends parcel weight and box size as numbers, as BOX NOW requires (it refused "weight must be number").
 
-### WordPress.org review
+### Security Audit
 - Plugin Check shows no errors and no warnings.
 
 ## 0.16.4 (2026-10-16)
