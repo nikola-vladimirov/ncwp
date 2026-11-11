@@ -198,6 +198,7 @@ class Help_Page {
 				esc_html__( 'Copies can go to your accountant by email, and the monthly NRA audit file too.', 'nashenski-commerce' ),
 				esc_html__( 'A delivery with no VAT, on an order with no VAT at all, is printed at 0% with its full price.', 'nashenski-commerce' ),
 				esc_html__( 'A delivery the customer paid to the courier is not on the documents or in the NRA audit file, because you did not collect it. Credit notes follow their order. Each order keeps what was decided at checkout; orders from before version 0.21.8 keep the old "Remove delivery from documents" rule.', 'nashenski-commerce' ),
+				esc_html__( 'Quick orders and orders made on the order screen are decided the same way once they have a shipping method and a payment method, and again when either changes, until the order has documents. A waybill made there for an order whose customer pays the courier shows its price for information only.', 'nashenski-commerce' ),
 			),
 			__( 'NRA audit file and exports', 'nashenski-commerce' ) => array(
 				/* translators: %s: link to the Exports section */

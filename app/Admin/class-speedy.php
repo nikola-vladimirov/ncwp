@@ -115,6 +115,11 @@ class Speedy {
 						$label_data = self::fix_cod_data( $label_data, $theorder );
 					}
 
+					// No checkout label and the shop collects the delivery: the box starts with the sender as payer.
+					if ( ! $label && 'shop' === Courier_Fee::payer( $theorder ) ) {
+						$label_data['payment']['courierServicePayer'] = 'SENDER';
+					}
+
 					wp_localize_script(
 						'nashenski-js-admin',
 						'nashenski_speedy',
@@ -557,7 +562,7 @@ class Speedy {
 			}
 
 			// The delivery in the cash on delivery amount: a checkout order's collected delivery, else the fixed price.
-			$delivery = '' === Courier_Fee::payer( $order ) ? Price_Lists::positive( $cookie_data['fixed_price'] ?? '' ) : (float) $order->get_shipping_total() + (float) $order->get_shipping_tax();
+			$delivery = Courier_Fee::from_checkout( $order ) ? (float) $order->get_shipping_total() + (float) $order->get_shipping_tax() : Price_Lists::positive( $cookie_data['fixed_price'] ?? '' );
 
 			if ( (float) $delivery > 0 ) {
 				$rate = ( wc_tax_enabled() ) ? 20 : 0;
@@ -587,7 +592,7 @@ class Speedy {
 		$cookie_data = $order->get_meta( 'nashenski_speedy_cookie_data' );
 
 		// A checkout order's amount is already the order total (nashenski_save_checkout_label()).
-		if ( isset( $label['service']['additionalServices']['cod']['amount'] ) && '' === Courier_Fee::payer( $order ) ) {
+		if ( isset( $label['service']['additionalServices']['cod']['amount'] ) && ! Courier_Fee::from_checkout( $order ) ) {
 			if ( isset( $label['service']['additionalServices']['cod']['amount'] ) &&
 				'' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' )
 			) {
@@ -938,7 +943,7 @@ class Speedy {
 			unset( $label['service']['additionalServices']['obpd'] );
 		}
 
-		if ( isset( $label['service']['additionalServices']['cod']['amount'] ) && '' === Courier_Fee::payer( $order ) ) {
+		if ( isset( $label['service']['additionalServices']['cod']['amount'] ) && ! Courier_Fee::from_checkout( $order ) ) {
 			if ( isset( $label['service']['additionalServices']['cod']['amount'] ) &&
 				'' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' ) &&
 				'fixed' === $payment_by['id']
@@ -1032,9 +1037,9 @@ class Speedy {
 
 		$order = wc_get_order( $order_id );
 		$price = 0;
+		$fee   = 0;
 
-		// A checkout order keeps the delivery decided at checkout; the label payer changes only the label.
-		if ( $order->get_payment_method() !== 'cod' || '' !== Courier_Fee::payer( $order ) ) {
+		if ( $order->get_payment_method() !== 'cod' ) {
 			return;
 		}
 
@@ -1044,11 +1049,18 @@ class Speedy {
 			$cookie_data = nashenski_label_request( 'cookie_data', array() );
 
 			if ( 'RECIPIENT' === $payment_by['id'] ) {
-				$price = ( wc_tax_enabled() ) ? $response['price']['amount'] : $response['price']['total'];
+				$fee   = $response['price']['total'];
+				$price = ( wc_tax_enabled() ) ? $response['price']['amount'] : $fee;
 			} elseif ( 'fixed' === $payment_by['id'] && '' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' ) ) {
 				$tax_rate = \Nashenski\Hooks::filter( 'nashenski_speedy_fixed_price_tax_rate', 'nashenski/speedy/fixed_price_tax_rate', 20, $order->get_shipping_country() );
-				$price    = nashenski_tax_based_price( $cookie_data['fixed_price'], $tax_rate );
+				$fee      = $cookie_data['fixed_price'];
+				$price    = nashenski_tax_based_price( $fee, $tax_rate );
 			}
+		}
+
+		// The customer pays the courier: the price is information only. A checkout order keeps its total.
+		if ( Courier_Fee::keep_total( $order, $fee ) ) {
+			return;
 		}
 
 		foreach ( $order->get_items( 'shipping' ) as $item_id => $item ) {

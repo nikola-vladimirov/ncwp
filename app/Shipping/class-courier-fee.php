@@ -16,11 +16,18 @@ defined( 'ABSPATH' ) || exit;
  * - then the rate costs nothing and keeps the fee for information only, so the fee is not in the
  *   order total, on the documents or in the NRA file;
  * - the checkout stores the decision on the order's shipping line, so later setting changes do not
- *   change old documents.
+ *   change old documents. Quick and admin orders get it on the order screen once they have a
+ *   shipping line and a payment method, and again when either changes, until they have documents.
  */
 class Courier_Fee {
-	/** Shipping line meta: "customer" or "shop", stored at checkout. */
+	/** Shipping line meta: "customer" or "shop", stored at checkout or on the order screen. */
 	const PAYER_META = '_nashenski_fee_payer';
+
+	/** Shipping line meta: the payment method the order-screen decision was made for. */
+	const BASIS_META = '_nashenski_fee_basis';
+
+	/** Couriers that can charge the customer. BOX NOW cannot. */
+	const METHODS = array( 'nashenski_econt', 'nashenski_speedy', 'nashenski_pigeon' );
 
 	/** Rate and shipping line meta: the fee the customer pays the courier, with VAT. */
 	const FEE_META = 'nashenski_courier_fee';
@@ -44,6 +51,9 @@ class Courier_Fee {
 		add_filter( 'woocommerce_order_item_display_meta_key', array( __CLASS__, 'meta_key' ), 10, 2 );
 		add_filter( 'woocommerce_order_item_display_meta_value', array( __CLASS__, 'meta_value' ), 10, 3 );
 		add_action( 'wc_payment_gateways_initialized', array( __CLASS__, 'gateways_loaded' ) );
+		// After WooCommerce (40) and the quick order delivery box (60) saved the order.
+		add_action( 'woocommerce_process_shop_order_meta', array( __CLASS__, 'decide_order' ), 70 );
+		add_action( 'woocommerce_saved_order_items', array( __CLASS__, 'decide_order' ), 20 );
 
 		// The zone screen and its requests show the setting: load the payment methods before the shipping methods are built.
 		foreach ( array( 'woocommerce_settings_shipping', 'wp_ajax_woocommerce_shipping_zone_add_method', 'wp_ajax_woocommerce_shipping_zone_remove_method', 'wp_ajax_woocommerce_shipping_zone_methods_save_changes', 'wp_ajax_woocommerce_shipping_zone_methods_save_settings' ) as $hook ) {
@@ -142,6 +152,110 @@ class Courier_Fee {
 		if ( ! $item->get_meta( self::PAYER_META ) ) {
 			$item->add_meta_data( self::PAYER_META, 'shop', true );
 		}
+	}
+
+	/**
+	 * Who collects the delivery of a shipping line, for an order made outside the checkout. Bulgaria
+	 * only; Speedy and Pigeon Express with a fixed price carry it in the cash on delivery amount, so
+	 * the shop collects it (as at checkout).
+	 *
+	 * @param string $method_id   Method ID.
+	 * @param int    $instance_id Instance ID.
+	 * @param string $payment     Payment method ID.
+	 * @param string $country     Delivery country.
+	 * @return string "customer" or "shop".
+	 */
+	public static function decision( $method_id, $instance_id, $payment, $country ) {
+		if ( 'BG' !== $country || ! in_array( $method_id, self::METHODS, true ) ) {
+			return 'shop';
+		}
+
+		$settings = get_option( 'woocommerce_' . $method_id . '_' . $instance_id . '_settings', array() );
+
+		if ( 'nashenski_econt' !== $method_id && is_array( $settings ) && (float) ( $settings['fixed_price'] ?? 0 ) > 0 ) {
+			return 'shop';
+		}
+
+		return self::customer_pays( self::listed( $method_id, $instance_id ), $payment ) ? 'customer' : 'shop';
+	}
+
+	/**
+	 * Order screen (and the quick order delivery box): store who collects the delivery once the order
+	 * has a shipping line and a payment method, and again when either changed. An order with
+	 * documents keeps its decision. Amounts are not changed.
+	 *
+	 * @param \WC_Order|false $order Order.
+	 */
+	public static function decide( $order ) {
+		if ( ! $order instanceof \WC_Order || $order->get_meta( 'nashenski_order_number' ) ) {
+			return;
+		}
+
+		$payment = (string) $order->get_payment_method();
+		$country = $order->get_shipping_country() ? $order->get_shipping_country() : $order->get_billing_country();
+
+		if ( '' === $payment ) {
+			return;
+		}
+
+		foreach ( $order->get_items( 'shipping' ) as $item ) {
+			$cookie = $item->get_meta( 'cookie_data' );
+			$basis  = (string) $item->get_meta( self::BASIS_META );
+			// A checkout line was decided for the payment method in its courier cookie.
+			$basis = '' !== $basis ? $basis : (string) ( is_array( $cookie ) ? ( $cookie['payment'] ?? '' ) : '' );
+
+			if ( $item->get_meta( self::PAYER_META ) && $basis === $payment ) {
+				continue;
+			}
+
+			$item->update_meta_data( self::PAYER_META, self::decision( $item->get_method_id(), $item->get_instance_id(), $payment, $country ) );
+			$item->update_meta_data( self::BASIS_META, $payment );
+			$item->save();
+		}
+	}
+
+	/**
+	 * Hook wrapper of decide().
+	 *
+	 * @param int $order_id Order ID.
+	 */
+	public static function decide_order( $order_id ) {
+		self::decide( wc_get_order( $order_id ) );
+	}
+
+	/**
+	 * A waybill made on the order screen brings the delivery price. A customer-pays order keeps it as
+	 * information; a checkout order the shop collected keeps its total. True when the order total
+	 * must stay as it is.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @param mixed     $fee   Price the courier charges, with VAT.
+	 * @return bool
+	 */
+	public static function keep_total( $order, $fee ) {
+		$payer = self::payer( $order );
+
+		if ( 'customer' === $payer ) {
+			foreach ( $order->get_items( 'shipping' ) as $item ) {
+				$item->update_meta_data( self::FEE_META, wc_format_decimal( $fee, wc_get_price_decimals() ) );
+				$item->save();
+				break;
+			}
+
+			return true;
+		}
+
+		return 'shop' === $payer && self::from_checkout( $order );
+	}
+
+	/**
+	 * Whether the checkout decided who pays the courier (its amounts and waybill were set then).
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return bool
+	 */
+	public static function from_checkout( $order ) {
+		return '' !== self::payer( $order ) && in_array( $order->get_created_via(), array( 'checkout', 'store-api' ), true );
 	}
 
 	/**

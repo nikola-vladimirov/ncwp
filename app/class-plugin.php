@@ -103,17 +103,14 @@ class Plugin {
 	}
 
 	/**
-	 * 0.21.8: "Remove delivery from documents" on puts cash on delivery into "Customer pays the
-	 * courier" of every Econt, Speedy and Pigeon Express method marked as a courier. BOX NOW cannot
-	 * charge the customer. With the setting off the lists stay empty: the shop collects everywhere.
-	 * The old values stay saved: orders made before keep their documents (Courier_Fee::shop_collects()).
+	 * 0.21.8 (owner decision D6): cash on delivery goes into "Customer pays the courier" of every
+	 * Econt, Speedy and Pigeon Express method marked as a courier ("Is ... courier?", on by default
+	 * for Econt and Speedy), whatever "Remove delivery from documents" was, so cash on delivery
+	 * orders keep working as before. BOX NOW cannot charge the customer. The old values stay saved:
+	 * orders made before keep their documents (Courier_Fee::shop_collects()).
 	 */
 	public static function upgrade_fee_payer() {
 		global $wpdb;
-
-		if ( 'yes' !== nashenski_get_option( 'invoice', 'remove_shipping' ) ) {
-			return;
-		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time read on upgrade; the shipping methods are not registered yet.
 		$methods = $wpdb->get_results( $wpdb->prepare( "SELECT method_id, instance_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE method_id IN (%s, %s, %s)", 'nashenski_econt', 'nashenski_speedy', 'nashenski_pigeon' ) );

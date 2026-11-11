@@ -442,4 +442,87 @@ $priced = array(
 $label  = \Nashenski\Shipping\Econt\Method::label_payer( $priced, new EcontPayerLine( 'shop' ), new EcontPayerLine( 'shop' ) );
 expect( 'cash' === $label['paymentSenderMethod'] && ! isset( $label['paymentReceiverMethod'] ) && '112.00' === $label['services']['cdAmount'], 'Econt label, shop collects: the sender pays and cash on delivery collects the whole order total' );
 expect( \Nashenski\Shipping\Econt\Method::label_payer( $priced, new EcontPayerLine( 'customer' ), new EcontPayerLine( 'customer' ) ) === $priced, 'Econt label, customer pays: the receiver pays as calculated' );
+/**
+ * Quick or admin COD order of 100 with an Econt shipping line and its order-screen decision.
+ */
+class EcontDraftOrder {
+	/**
+	 * Decision.
+	 *
+	 * @var string
+	 */
+	public $payer;
+	/**
+	 * Constructor.
+	 *
+	 * @param string $payer Decision.
+	 */
+	public function __construct( $payer ) {
+		$this->payer = $payer; }
+	/**
+	 * Lines: the Econt line when asked for shipping, no products.
+	 *
+	 * @param string $type Type.
+	 * @return array
+	 */
+	public function get_items( $type = 'line_item' ) {
+		return 'shipping' === $type ? array( new EcontPayerLine( $this->payer ) ) : array(); }
+	/**
+	 * Name.
+	 *
+	 * @return string
+	 */
+	public function get_formatted_shipping_full_name() {
+		return 'Test'; }
+	/**
+	 * Phone.
+	 *
+	 * @return string
+	 */
+	public function get_billing_phone() {
+		return '0888000000'; }
+	/**
+	 * Payment method.
+	 *
+	 * @return string
+	 */
+	public function get_payment_method() {
+		return 'cod'; }
+	/**
+	 * Total.
+	 *
+	 * @return float
+	 */
+	public function get_total() {
+		return 100.0; }
+	/**
+	 * Shipping total.
+	 *
+	 * @return float
+	 */
+	public function get_shipping_total() {
+		return 0.0; }
+	/**
+	 * Shipping tax.
+	 *
+	 * @return float
+	 */
+	public function get_shipping_tax() {
+		return 0.0; }
+	/**
+	 * Currency.
+	 *
+	 * @return string
+	 */
+	public function get_currency() {
+		return 'EUR'; }
+}
+$draft = new ReflectionMethod( '\Nashenski\Admin\Econt', 'draft_label' );
+if ( PHP_VERSION_ID < 80100 ) {
+	$draft->setAccessible( true );
+}
+$label = $draft->invoke( null, new EcontDraftOrder( 'shop' ), array() );
+expect( 'cash' === $label['paymentSenderMethod'] && ! isset( $label['paymentReceiverMethod'] ), 'Econt box, quick or admin order the shop collects: the sender pays by default' );
+$label = $draft->invoke( null, new EcontDraftOrder( 'customer' ), array() );
+expect( 'cash' === $label['paymentReceiverMethod'] && ! isset( $label['paymentSenderMethod'] ) && '100.00' === $label['services']['cdAmount'], 'Econt box, customer pays: the receiver pays by default' );
 echo 'PASS: ' . (int) ( $checks - $policy_start ) . " Econt service-policy assertions\n";

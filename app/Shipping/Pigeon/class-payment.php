@@ -115,7 +115,8 @@ class Payment {
 	 * @throws \InvalidArgumentException When the payer is not valid.
 	 */
 	public static function label( $label, $order, $override = null, $staff = false ) {
-		$payer = $staff || $order->get_payment_method() === 'cod' || 'customer' === \Nashenski\Shipping\Courier_Fee::payer( $order ) ? ( $label['who_pays'] ?? 'receiver' ) : 'sender';
+		$decided = \Nashenski\Shipping\Courier_Fee::payer( $order );
+		$payer   = $staff || $order->get_payment_method() === 'cod' || 'customer' === $decided ? ( $label['who_pays'] ?? ( 'shop' === $decided ? 'sender' : 'receiver' ) ) : 'sender';
 		if ( ! in_array( $payer, array( 'sender', 'receiver' ), true ) ) {
 			throw new \InvalidArgumentException( esc_html__( 'Choose a valid shipping payer.', 'nashenski-commerce' ) );
 		}

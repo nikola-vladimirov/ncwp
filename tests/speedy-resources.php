@@ -984,7 +984,21 @@ namespace {
 		 * @return string
 		 */
 		public function get_meta( $key ) {
-			return '_nashenski_fee_payer' === $key ? $this->payer : ''; }
+			return '_nashenski_fee_payer' === $key ? $this->payer : ( $this->fee[ $key ] ?? '' ); }
+		/**
+		 * Meta written by the label (the fee paid to the courier).
+		 *
+		 * @var array
+		 */
+		public $fee = array();
+		/**
+		 * Update meta.
+		 *
+		 * @param string $key   Key.
+		 * @param mixed  $value Value.
+		 */
+		public function update_meta_data( $key, $value ) {
+			$this->fee[ $key ] = $value; }
 		/**
 		 * Set total.
 		 *
@@ -1026,6 +1040,19 @@ namespace {
 		public function get_items( $type = 'line_item' ) {
 			return array( 1 => $this->item ); }
 		/**
+		 * Where the order was made.
+		 *
+		 * @var string
+		 */
+		public $via = 'checkout';
+		/**
+		 * Created via.
+		 *
+		 * @return string
+		 */
+		public function get_created_via() {
+			return $this->via; }
+		/**
 		 * Calculate totals.
 		 */
 		public function calculate_totals() {}
@@ -1059,22 +1086,6 @@ namespace {
 	}
 	$GLOBALS['label_request'] = array();
 
-	// Who pays the courier: a checkout order (stamped) keeps its amounts when staff change the payer.
-	$GLOBALS['label_request'] = array(
-		'paymentBy'   => array( 'id' => 'fixed' ),
-		'cookie_data' => array( 'fixed_price' => '4.50' ),
-	);
-	$order                    = new SpeedyRequestOrder();
-	$order->item->payer       = 'shop';
-	$label                    = array( 'service' => array( 'additionalServices' => array( 'cod' => array( 'amount' => '14.50' ) ) ) );
-	$out                      = $services->invoke( null, $label, $order );
-	expect( '14.50' === (string) $out['service']['additionalServices']['cod']['amount'], 'Speedy: a checkout order\'s cash on delivery amount (already the order total) gets no fixed price added again' );
-	$GLOBALS['label_order'] = $order;
-	$shipping->invoke( null, array(), 5 );
-	expect( 'untouched' === $order->item->total, 'Speedy: a checkout order\'s shipping total is not rewritten by the label payer' );
-	$GLOBALS['label_request'] = array();
-
-	// Who pays the courier at checkout: the method's list and the payment method in the cookie.
 	if ( ! function_exists( 'wc_format_decimal' ) ) {
 		/**
 		 * Stub of the WooCommerce function.
@@ -1093,6 +1104,37 @@ namespace {
 		function wc_get_price_decimals() {
 			return 2; }
 	}
+	// Who pays the courier: a checkout order (stamped) keeps its amounts when staff change the payer.
+	$GLOBALS['label_request'] = array(
+		'paymentBy'   => array( 'id' => 'fixed' ),
+		'cookie_data' => array( 'fixed_price' => '4.50' ),
+	);
+	$order                    = new SpeedyRequestOrder();
+	$order->item->payer       = 'shop';
+	$label                    = array( 'service' => array( 'additionalServices' => array( 'cod' => array( 'amount' => '14.50' ) ) ) );
+	$out                      = $services->invoke( null, $label, $order );
+	expect( '14.50' === (string) $out['service']['additionalServices']['cod']['amount'], 'Speedy: a checkout order\'s cash on delivery amount (already the order total) gets no fixed price added again' );
+	$GLOBALS['label_order'] = $order;
+	$shipping->invoke( null, array(), 5 );
+	expect( 'untouched' === $order->item->total, 'Speedy: a checkout order\'s shipping total is not rewritten by the label payer' );
+
+	// Quick and admin orders: the label price goes into the total when the shop collects, into the info text when the customer pays.
+	$order              = new SpeedyRequestOrder();
+	$order->via         = 'admin';
+	$order->item->payer = 'shop';
+	$out                = $services->invoke( null, $label, $order );
+	expect( '19.00' === (string) $out['service']['additionalServices']['cod']['amount'], 'Speedy: a quick order with a staff fixed price gets it added to the cash on delivery amount, as before' );
+	$GLOBALS['label_order'] = $order;
+	$shipping->invoke( null, array(), 5 );
+	expect( '4.50' === $order->item->total, 'Speedy: a quick order the shop collects gets the fixed price as its delivery price, as before' );
+	$order->item->total     = 'untouched';
+	$order->item->payer     = 'customer';
+	$GLOBALS['label_order'] = $order;
+	$shipping->invoke( null, array(), 5 );
+	expect( 'untouched' === $order->item->total && '4.50' === $order->item->get_meta( 'nashenski_courier_fee' ), 'Speedy: a quick order whose customer pays the courier keeps the price as information, not in the total' );
+	$GLOBALS['label_request'] = array();
+
+	// Who pays the courier at checkout: the method's list and the payment method in the cookie.
 	foreach ( array(
 		'cod'  => array( 'RECIPIENT', 0, '12.00' ),
 		'card' => array( 'SENDER', '12.00', null ),

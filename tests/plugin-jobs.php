@@ -257,6 +257,19 @@ namespace {
 		 * Query.
 		 */
 		public function query() {}
+		/**
+		 * Table prefix.
+		 *
+		 * @var string
+		 */
+		public $prefix = 'wp_';
+		/**
+		 * Rows: no courier methods in the zones (the 0.21.8 "Customer pays the courier" upgrade finds none).
+		 *
+		 * @return array
+		 */
+		public function get_results() {
+			return array(); }
 	};
 	$GLOBALS['wpdb'] = $wpdb;
 	/**

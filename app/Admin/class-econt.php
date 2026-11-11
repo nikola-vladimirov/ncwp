@@ -225,6 +225,12 @@ class Econt {
 			$label['receiverOfficeCode'] = $cookie_data['selectedOffice'];
 		}
 
+		// The shop collects the delivery of this order: the sender pays Econt.
+		if ( 'shop' === Courier_Fee::payer( $order ) ) {
+			unset( $label['paymentReceiverMethod'] );
+			$label['paymentSenderMethod'] = nashenski()->container()[ Client::ECONT_PROFILE ]->get_sender_payment_method();
+		}
+
 		if ( 'cod' === $order->get_payment_method() ) {
 			$label['services'] = array(
 				'cdType'     => 'get',
@@ -1088,10 +1094,10 @@ class Econt {
 
 		$order       = wc_get_order( $order_id );
 		$price       = 0;
+		$fee         = 0;
 		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
 
-		// A checkout order keeps the delivery decided at checkout; the label payer changes only the label.
-		if ( 'cod' !== $order->get_payment_method() || '' !== Courier_Fee::payer( $order ) ) {
+		if ( 'cod' !== $order->get_payment_method() ) {
 			return;
 		}
 
@@ -1101,10 +1107,17 @@ class Econt {
 			$tax_rate = \Nashenski\Hooks::filter( 'nashenski_econt_fixed_price_tax_rate', 'nashenski/econt/fixed_price_tax_rate', 20, $order->get_shipping_country() );
 
 			if ( 'buyer' === $payment_by['id'] ) {
-				$price = nashenski_tax_based_price( $response['label']['receiverDueAmount'], $tax_rate );
+				$fee   = $response['label']['receiverDueAmount'];
+				$price = nashenski_tax_based_price( $fee, $tax_rate );
 			} elseif ( 'fixed' === $payment_by['id'] && ! empty( $request_body['paymentReceiverAmount'] ) ) {
-				$price = nashenski_tax_based_price( $request_body['paymentReceiverAmount'], $tax_rate );
+				$fee   = $request_body['paymentReceiverAmount'];
+				$price = nashenski_tax_based_price( $fee, $tax_rate );
 			}
+		}
+
+		// The customer pays the courier: the price is information only. A checkout order keeps its total.
+		if ( Courier_Fee::keep_total( $order, $fee ) ) {
+			return;
 		}
 
 		$price = \Nashenski\Hooks::filter( 'nashenski_admin_econt_price_for_update', 'nashenski/admin/econt/price_for_update', $price, $order, nashenski_label_request(), $response, $request_body );

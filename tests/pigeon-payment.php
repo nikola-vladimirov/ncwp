@@ -105,19 +105,34 @@ class PigeonPayerOrder {
 	 */
 	public $payer;
 	/**
+	 * Payment method.
+	 *
+	 * @var string
+	 */
+	public $method;
+	/**
 	 * Constructor.
 	 *
-	 * @param string $payer Decision.
+	 * @param string $payer  Decision.
+	 * @param string $method Payment method.
 	 */
-	public function __construct( $payer ) {
-		$this->payer = $payer; }
+	public function __construct( $payer, $method = 'bacs' ) {
+		$this->payer  = $payer;
+		$this->method = $method; }
 	/**
 	 * Payment method.
 	 *
 	 * @return string
 	 */
 	public function get_payment_method() {
-		return 'bacs'; }
+		return $this->method; }
+	/**
+	 * No staff cash on delivery amount.
+	 *
+	 * @return bool
+	 */
+	public function meta_exists() {
+		return false; }
 	/**
 	 * Lines.
 	 *
@@ -149,6 +164,27 @@ class PigeonPayerOrder {
 				 */
 				public function get_meta( $key ) {
 					return '_nashenski_fee_payer' === $key ? $this->payer : ''; }
+				/**
+				 * Method.
+				 *
+				 * @return string
+				 */
+				public function get_method_id() {
+					return 'nashenski_pigeon'; }
+				/**
+				 * Delivery price.
+				 *
+				 * @return string
+				 */
+				public function get_total() {
+					return '5'; }
+				/**
+				 * Delivery tax.
+				 *
+				 * @return string
+				 */
+				public function get_total_tax() {
+					return '0'; }
 			},
 		) : array();
 	}
@@ -157,4 +193,10 @@ $label = \Nashenski\Shipping\Pigeon\Payment::label( array( 'who_pays' => 'receiv
 expect( 'receiver' === $label['who_pays'] && ! isset( $label['service_codes']['cod_amount'] ), 'Pigeon: a prepaid order whose customer pays the courier keeps the receiver as payer' );
 $label = \Nashenski\Shipping\Pigeon\Payment::label( array( 'who_pays' => 'receiver' ), new PigeonPayerOrder( 'shop' ) );
 expect( 'sender' === $label['who_pays'], 'Pigeon: a prepaid order the shop collected is paid by the sender' );
+$label = \Nashenski\Shipping\Pigeon\Payment::label( array(), new PigeonPayerOrder( 'shop', 'cod' ) );
+expect( 'sender' === $label['who_pays'] && '5.00' === $label['service_codes']['cod_amount'], 'Pigeon: a quick or admin COD order the shop collects starts with the sender as payer, the delivery in the cash on delivery amount' );
+$label = \Nashenski\Shipping\Pigeon\Payment::label( array(), new PigeonPayerOrder( 'customer', 'cod' ) );
+expect( 'receiver' === $label['who_pays'] && '0.00' === $label['service_codes']['cod_amount'], 'Pigeon: a quick or admin COD order whose customer pays the courier starts with the receiver' );
+$label = \Nashenski\Shipping\Pigeon\Payment::label( array(), new PigeonPayerOrder( '', 'cod' ) );
+expect( 'receiver' === $label['who_pays'], 'Pigeon: an old COD order without a decision keeps the receiver' );
 echo 'PASS: ' . ( $checks - $payment_start ) . " Pigeon payment assertions\n";

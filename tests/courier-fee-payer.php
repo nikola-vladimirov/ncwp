@@ -129,6 +129,25 @@ class FakeShipping {
 	 */
 	public function add_meta_data( $key, $value ) {
 		$this->meta[ $key ] = $value; }
+	/**
+	 * Update meta.
+	 *
+	 * @param string $key   Key.
+	 * @param mixed  $value Value.
+	 */
+	public function update_meta_data( $key, $value ) {
+		$this->meta[ $key ] = $value; }
+	/**
+	 * Instance ID.
+	 *
+	 * @return int
+	 */
+	public function get_instance_id() {
+		return 3; }
+	/**
+	 * Save.
+	 */
+	public function save() {}
 }
 /**
  * Order stub with a payment method and shipping lines.
@@ -155,6 +174,53 @@ class FakeOrder extends WC_Order {
 	public function __construct( $payment, $lines ) {
 		$this->payment = $payment;
 		$this->lines   = $lines; }
+	/**
+	 * Order meta: the document number once documents exist.
+	 *
+	 * @var array
+	 */
+	public $meta = array();
+	/**
+	 * Where the order was made.
+	 *
+	 * @var string
+	 */
+	public $via = 'admin';
+	/**
+	 * Delivery country.
+	 *
+	 * @var string
+	 */
+	public $country = 'BG';
+	/**
+	 * Meta.
+	 *
+	 * @param string $key Key.
+	 * @return mixed
+	 */
+	public function get_meta( $key ) {
+		return $this->meta[ $key ] ?? ''; }
+	/**
+	 * Shipping country.
+	 *
+	 * @return string
+	 */
+	public function get_shipping_country() {
+		return $this->country; }
+	/**
+	 * Billing country.
+	 *
+	 * @return string
+	 */
+	public function get_billing_country() {
+		return 'BG'; }
+	/**
+	 * Created via.
+	 *
+	 * @return string
+	 */
+	public function get_created_via() {
+		return $this->via; }
 	/**
 	 * Payment method.
 	 *
@@ -327,21 +393,64 @@ $options         = array(
 		'customer_pays' => array( 'bacs' ),
 	),
 );
-$before          = $options;
-Nashenski\Plugin::upgrade_fee_payer();
-expect( $before === $options, 'Setting off: the lists stay as they were (the shop collects everywhere)' );
-$options['nashenski_settings_invoice_remove_shipping'] = 'yes';
 Nashenski\Plugin::upgrade_fee_payer();
 expect(
 	array(
 		'title'         => 'Econt',
 		'customer_pays' => array( 'bacs', 'cod' ),
 	) === $options['woocommerce_nashenski_econt_3_settings'],
-	'Setting on: an Econt courier method gets COD added to its list'
+	'"Remove delivery from documents" off: an Econt courier method still gets COD added to its list'
 );
-expect( array( 'customer_pays' => array( 'cod' ) ) === $options['woocommerce_nashenski_speedy_4_settings'], 'Setting on: a Speedy courier method without settings gets COD' );
+expect( array( 'customer_pays' => array( 'cod' ) ) === $options['woocommerce_nashenski_speedy_4_settings'], 'A Speedy courier method without settings gets COD' );
 expect( ! isset( $options['woocommerce_nashenski_pigeon_5_settings'] ), 'A method not marked as a courier is left alone' );
 Nashenski\Plugin::upgrade_fee_payer();
 expect( array( 'bacs', 'cod' ) === $options['woocommerce_nashenski_econt_3_settings']['customer_pays'], 'Running the upgrade again adds nothing twice' );
+$options['nashenski_settings_invoice_remove_shipping'] = 'yes';
+unset( $options['woocommerce_nashenski_speedy_4_settings'] );
+Nashenski\Plugin::upgrade_fee_payer();
+expect( array( 'customer_pays' => array( 'cod' ) ) === $options['woocommerce_nashenski_speedy_4_settings'], '"Remove delivery from documents" on: the same' );
+
+// Quick and admin orders (D10): decided on the order screen from the method's list and the payment method.
+$options = array(
+	'woocommerce_nashenski_econt_3_settings'  => array( 'customer_pays' => array( 'cod' ) ),
+	'woocommerce_nashenski_speedy_3_settings' => array(
+		'customer_pays' => array( 'cod' ),
+		'fixed_price'   => '5',
+	),
+);
+expect( 'customer' === Courier_Fee::decision( 'nashenski_econt', 3, 'cod', 'BG' ) && 'shop' === Courier_Fee::decision( 'nashenski_econt', 3, 'bacs', 'BG' ), 'decision(): the list and the payment method decide' );
+expect( 'shop' === Courier_Fee::decision( 'nashenski_econt', 3, 'cod', 'RO' ), 'decision(): abroad the shop collects' );
+expect( 'shop' === Courier_Fee::decision( 'nashenski_speedy', 3, 'cod', 'BG' ), 'decision(): Speedy with a fixed price, the shop collects' );
+expect( 'shop' === Courier_Fee::decision( 'nashenski_boxnow', 3, 'cod', 'BG' ) && 'shop' === Courier_Fee::decision( 'flat_rate', 3, 'cod', 'BG' ), 'decision(): BOX NOW and other methods, the shop collects' );
+
+$fee_order = new FakeOrder( '', $econt() );
+Courier_Fee::decide( $fee_order );
+expect( '' === $fee_order->lines[0]->get_meta( Courier_Fee::PAYER_META ), 'No payment method yet: nothing is decided (the old rule applies meanwhile)' );
+$fee_order->payment = 'cod';
+Courier_Fee::decide( $fee_order );
+expect( 'customer' === Courier_Fee::payer( $fee_order ) && false === Courier_Fee::shop_collects( $fee_order ), 'Shipping line and payment method: a COD admin order is decided "customer"' );
+$fee_order->payment = 'bacs';
+Courier_Fee::decide( $fee_order );
+expect( 'shop' === Courier_Fee::payer( $fee_order ), 'The payment method changed on the order screen: decided again' );
+$options['woocommerce_nashenski_econt_3_settings'] = array( 'customer_pays' => array( 'cod', 'bacs' ) );
+Courier_Fee::decide( $fee_order );
+expect( 'shop' === Courier_Fee::payer( $fee_order ), 'Nothing changed on the order: a later setting change does not rewrite it' );
+$fee_order->payment = 'cod';
+$fee_order->meta    = array( 'nashenski_order_number' => '0000000007' );
+Courier_Fee::decide( $fee_order );
+expect( 'shop' === Courier_Fee::payer( $fee_order ), 'The order has documents: its decision stays' );
+$fee_order      = new FakeOrder( 'cod', $econt( $customer + array( 'cookie_data' => array( 'payment' => 'cod' ) ) ) );
+$fee_order->via = 'checkout';
+$options['woocommerce_nashenski_econt_3_settings'] = array( 'customer_pays' => array() );
+Courier_Fee::decide( $fee_order );
+expect( 'customer' === Courier_Fee::payer( $fee_order ), 'A checkout order saved on the order screen with the same payment method keeps its checkout decision' );
+
+// A waybill made on the order screen brings the delivery price.
+expect( true === Courier_Fee::keep_total( $fee_order, '7.20' ) && '7.20' === $fee_order->lines[0]->get_meta( Courier_Fee::FEE_META ), 'Customer pays: the waybill price is kept as information, the total stays' );
+$fee_order = new FakeOrder( 'cod', $econt( $shop ) );
+expect( false === Courier_Fee::keep_total( $fee_order, '7.20' ), 'Quick or admin order the shop collects: the waybill price goes into the total, as before' );
+$fee_order->via = 'store-api';
+expect( true === Courier_Fee::keep_total( $fee_order, '7.20' ) && Courier_Fee::from_checkout( $fee_order ), 'Block checkout order the shop collected: its total stays' );
+expect( false === Courier_Fee::keep_total( new FakeOrder( 'cod', $econt() ), '7.20' ), 'Order without a decision: the old behaviour' );
 
 echo 'PASS: ' . $checks . " who pays the courier assertions\n";
