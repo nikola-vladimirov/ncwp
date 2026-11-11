@@ -259,4 +259,70 @@ class Payment {
 			'override' => $override,
 		);
 	}
+
+	/**
+	 * Runs a staff label request. A fixed price is written on the order before sending (the cash on
+	 * delivery amount is read from it), so when Pigeon refuses the label or anything throws, every
+	 * line's total and taxes and the order totals go back to what they were.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @param string    $mode  Payer of the request: "fixed" writes the price first.
+	 * @param callable  $send  Builds and sends the label; returns the label data (shipmentStatus on success).
+	 * @return array
+	 * @throws \Throwable What $send throws, once the order is back as it was.
+	 */
+	public static function send( $order, $mode, $send ) {
+		if ( 'fixed' !== $mode ) {
+			return $send();
+		}
+
+		$lines  = array();
+		$totals = array();
+
+		foreach ( $order->get_items( array( 'line_item', 'fee', 'shipping' ) ) as $id => $item ) {
+			$lines[ $id ] = array( $item->get_total( 'edit' ), $item->get_taxes( 'edit' ) );
+		}
+
+		foreach ( array( 'shipping_total', 'shipping_tax', 'cart_tax', 'discount_total', 'discount_tax', 'total' ) as $key ) {
+			$totals[ $key ] = $order->{'get_' . $key}( 'edit' );
+		}
+
+		try {
+			$data = $send();
+		} catch ( \Throwable $error ) {
+			self::restore( $order, $lines, $totals );
+			throw $error;
+		}
+
+		if ( ! isset( $data['shipmentStatus'] ) ) {
+			self::restore( $order, $lines, $totals );
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Puts back the lines and totals send() kept. The tax lines are built again from the lines.
+	 *
+	 * @param \WC_Order $order  Order.
+	 * @param array     $lines  Line ID => total and taxes.
+	 * @param array     $totals Order total name => value.
+	 */
+	private static function restore( $order, $lines, $totals ) {
+		foreach ( $order->get_items( array( 'line_item', 'fee', 'shipping' ) ) as $id => $item ) {
+			if ( isset( $lines[ $id ] ) ) {
+				$item->set_total( $lines[ $id ][0] );
+				$item->set_taxes( $lines[ $id ][1] );
+				$item->save();
+			}
+		}
+
+		$order->update_taxes();
+
+		foreach ( $totals as $key => $value ) {
+			$order->{'set_' . $key}( $value );
+		}
+
+		$order->save();
+	}
 }
