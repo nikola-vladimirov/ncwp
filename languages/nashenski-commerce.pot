@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 21:12+0000\n"
-"PO-Revision-Date: 2026-11-11 21:12+0000\n"
+"POT-Creation-Date: 2026-11-11 21:42+0000\n"
+"PO-Revision-Date: 2026-11-11 21:42+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -32,7 +32,7 @@ msgstr ""
 msgid "Hello {name},\n\nYou left these items in your cart:\n\n{items}\n\nTotal: {cart_total}\n\n{coupon_line}\n\n<a href=\"{resume_link}\">Go back to your cart</a>\n\nDo not want these emails? <a href=\"{unsubscribe_link}\">Unsubscribe here</a>"
 msgstr ""
 
-#: app/Abandoned_Carts/class-email.php:99 app/Front_End/class-quick-order.php:247 app/Front_End/class-quick-order.php:779
+#: app/Abandoned_Carts/class-email.php:99 app/Front_End/class-quick-order.php:247 app/Front_End/class-quick-order.php:784
 msgid "Message"
 msgstr ""
 
@@ -154,21 +154,29 @@ msgstr ""
 msgid "Last activity"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:891
+#: app/Abandoned_Carts/class-tracker.php:895
+msgid "Cart reminder coupons already used on an order are kept for the store's accounts."
+msgstr ""
+
+#: app/Abandoned_Carts/class-tracker.php:909
 msgid "When abandoned carts are on, the store keeps the email, first name, phone and cart of shoppers who start the checkout and do not order. They are used only to send cart reminder emails."
 msgstr ""
 
+#: app/Abandoned_Carts/class-tracker.php:910
+msgid "A reminder coupon is made for the email of its cart and is deleted with the cart's personal data, unless it was already used on an order."
+msgstr ""
+
 #. translators: %d: number of days
-#: app/Abandoned_Carts/class-tracker.php:893
+#: app/Abandoned_Carts/class-tracker.php:912
 #, php-format
 msgid "A cart is deleted %d days after its last change."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:894
+#: app/Abandoned_Carts/class-tracker.php:913
 msgid "When the store turns on customer checks (nekorekten.com, Connectix, NepoStop), the phone number of the order is sent to them."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:895
+#: app/Abandoned_Carts/class-tracker.php:914
 msgid "The courier of an order gets the delivery details: name, phone, address or office."
 msgstr ""
 
@@ -230,7 +238,7 @@ msgstr ""
 msgid "Items"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:314 app/Export/Builder/class-fields.php:120 app/Invoice/Order/class-order.php:320 app/Invoice/Order/class-order.php:325
+#: app/Admin/class-abandoned-carts-page.php:314 app/Export/Builder/class-fields.php:120 app/Invoice/Order/class-order.php:323 app/Invoice/Order/class-order.php:328
 msgid "Total"
 msgstr ""
 
@@ -314,7 +322,7 @@ msgstr[1] ""
 msgid "Cart updated."
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:505 app/Front_End/class-quick-order.php:595
+#: app/Admin/class-abandoned-carts-page.php:505 app/Front_End/class-quick-order.php:600
 msgid "Enter a valid email address."
 msgstr ""
 
@@ -388,7 +396,7 @@ msgstr ""
 msgid "Selected"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:201 app/Admin/Order/class-delivery-box.php:207 app/Front_End/Checkout/class-pickers.php:586
+#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:201 app/Admin/Order/class-delivery-box.php:207 app/Front_End/Checkout/class-pickers.php:590
 msgid "Choose"
 msgstr ""
 
@@ -458,11 +466,11 @@ msgstr ""
 msgid "BOX NOW did not answer. Check the connection settings and try again."
 msgstr ""
 
-#: app/Admin/class-boxnow.php:716 app/Admin/class-pigeon.php:780 app/Admin/class-speedy.php:1143
+#: app/Admin/class-boxnow.php:716 app/Admin/class-pigeon.php:783 app/Admin/class-speedy.php:1164
 msgid "This link has expired. Reload the order page and try again."
 msgstr ""
 
-#: app/Admin/class-boxnow.php:723 app/Admin/class-speedy.php:414 app/Admin/class-speedy.php:1165
+#: app/Admin/class-boxnow.php:723 app/Admin/class-speedy.php:414 app/Admin/class-speedy.php:1186
 msgid "Invalid parcel number."
 msgstr ""
 
@@ -558,19 +566,19 @@ msgstr ""
 msgid "Street number"
 msgstr ""
 
-#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:579 app/Shipping/Econt/class-address.php:47
+#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:583 app/Shipping/Econt/class-address.php:47
 msgid "Block"
 msgstr ""
 
-#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:210 app/Front_End/Checkout/class-pickers.php:580 app/Shipping/Econt/class-address.php:48
+#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:210 app/Front_End/Checkout/class-pickers.php:584 app/Shipping/Econt/class-address.php:48
 msgid "Entrance"
 msgstr ""
 
-#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:211 app/Front_End/Checkout/class-pickers.php:581 app/Shipping/Econt/class-address.php:49
+#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:211 app/Front_End/Checkout/class-pickers.php:585 app/Shipping/Econt/class-address.php:49
 msgid "Floor"
 msgstr ""
 
-#: app/Admin/class-econt.php:145 app/Admin/class-speedy.php:212 app/Front_End/Checkout/class-pickers.php:582 app/Shipping/Econt/class-address.php:50
+#: app/Admin/class-econt.php:145 app/Admin/class-speedy.php:212 app/Front_End/Checkout/class-pickers.php:586 app/Shipping/Econt/class-address.php:50
 msgid "Apartment"
 msgstr ""
 
@@ -804,7 +812,7 @@ msgstr ""
 msgid "Nothing matches these filters."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:217 app/class-plugin.php:362 app/Front_End/class-quick-order.php:375
+#: app/Admin/class-export-builder.php:217 app/class-plugin.php:376 app/Front_End/class-quick-order.php:375
 msgid "Something went wrong. Please try again."
 msgstr ""
 
@@ -1183,7 +1191,7 @@ msgid "New Econt, Speedy and Pigeon Express methods start with cash on delivery 
 msgstr ""
 
 #: app/Admin/class-help-page.php:134
-msgid "In the courier box of an order, a waybill where you collect the delivery makes the order one you collected, while it has no documents; once it has documents, such a waybill is refused. Choosing the receiver as payer on an order you collected shows a warning."
+msgid "In the courier box of an order whose customer pays the courier, a waybill paid by the sender changes nothing: you pay the courier. A fixed price you collect in the cash on delivery amount makes it an order you collected once the courier accepts the waybill, while it has no documents; a later waybill paid by the receiver puts it back. Once the order has documents, a fixed price waybill is refused. Choosing the receiver as payer on an order you collected shows a warning."
 msgstr ""
 
 #: app/Admin/class-help-page.php:135
@@ -1644,7 +1652,7 @@ msgstr ""
 msgid "Setting"
 msgstr ""
 
-#: app/Admin/class-help-page.php:352 app/class-plugin.php:367
+#: app/Admin/class-help-page.php:352 app/class-plugin.php:381
 msgid "Now"
 msgstr ""
 
@@ -1865,7 +1873,7 @@ msgstr ""
 msgid "Cancelled order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1506 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:552
+#: app/Admin/class-import-sources.php:1506 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:556
 msgid "To an office"
 msgstr ""
 
@@ -2141,7 +2149,7 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:234 app/Front_End/Checkout/class-pickers.php:575
+#: app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:234 app/Front_End/Checkout/class-pickers.php:579
 msgid "Street or quarter"
 msgstr ""
 
@@ -2967,7 +2975,7 @@ msgstr ""
 msgid "Up to (kg)"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:363
+#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:377
 msgid "Remove row"
 msgstr ""
 
@@ -3543,7 +3551,7 @@ msgstr ""
 msgid "Delivery price %1$s and the new total %2$s emailed to the customer."
 msgstr ""
 
-#: app/Admin/Order/class-delivery-box.php:159 app/Export/Builder/class-fields.php:90 app/Shipping/class-courier-fee.php:535
+#: app/Admin/Order/class-delivery-box.php:159 app/Export/Builder/class-fields.php:90 app/Shipping/class-courier-fee.php:574
 msgid "Delivery"
 msgstr ""
 
@@ -4673,7 +4681,7 @@ msgstr ""
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr ""
 
-#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:152 app/class-plugin.php:305
+#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:166 app/class-plugin.php:319
 msgid "Settings"
 msgstr ""
 
@@ -4842,40 +4850,40 @@ msgid "The document was not found or you do not have access to it."
 msgstr ""
 
 #. translators: %s: link to the settings
-#: app/class-plugin.php:152
+#: app/class-plugin.php:166
 #, php-format
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr ""
 
-#: app/class-plugin.php:361
+#: app/class-plugin.php:375
 msgid "The file was downloaded."
 msgstr ""
 
-#: app/class-plugin.php:364
+#: app/class-plugin.php:378
 msgid "Built-in prices restored. Save to keep them."
 msgstr ""
 
-#: app/class-plugin.php:365
+#: app/class-plugin.php:379
 msgid "Your prices match the courier website."
 msgstr ""
 
-#: app/class-plugin.php:366
+#: app/class-plugin.php:380
 msgid "The courier website has different prices:"
 msgstr ""
 
-#: app/class-plugin.php:368 app/Front_End/class-quick-order.php:500
+#: app/class-plugin.php:382 app/Front_End/class-quick-order.php:500
 msgid "Website"
 msgstr ""
 
-#: app/class-plugin.php:369
+#: app/class-plugin.php:383
 msgid "Use these prices"
 msgstr ""
 
-#: app/class-plugin.php:370
+#: app/class-plugin.php:384
 msgid "New prices filled in. Check them and save."
 msgstr ""
 
-#: app/class-plugin.php:404
+#: app/class-plugin.php:418
 msgid "The request failed. Reload the page and try again."
 msgstr ""
 
@@ -5129,7 +5137,7 @@ msgstr ""
 msgid "Products subtotal"
 msgstr ""
 
-#: app/Export/Builder/class-fields.php:124 app/Invoice/Order/class-order.php:316
+#: app/Export/Builder/class-fields.php:124 app/Invoice/Order/class-order.php:319
 msgid "Discount"
 msgstr ""
 
@@ -5209,7 +5217,7 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-#: app/Export/Builder/class-fields.php:428 app/Export/Builder/class-fields.php:429 app/Front_End/Checkout/class-pickers.php:560 app/Front_End/Checkout/class-pickers.php:561 app/Front_End/Checkout/class-pickers.php:562
+#: app/Export/Builder/class-fields.php:428 app/Export/Builder/class-fields.php:429 app/Front_End/Checkout/class-pickers.php:564 app/Front_End/Checkout/class-pickers.php:565 app/Front_End/Checkout/class-pickers.php:566
 msgid "Parcel locker"
 msgstr ""
 
@@ -5236,7 +5244,7 @@ msgid "The audit file (Ordinance N-18) of %2$s for %1$s is attached. It was made
 msgstr ""
 
 #. translators: %s: shipping method name
-#: app/Export/Nra/class-order.php:226 app/Invoice/Order/class-order.php:223
+#: app/Export/Nra/class-order.php:227 app/Invoice/Order/class-order.php:226
 #, php-format
 msgid "Shipping: %s"
 msgstr ""
@@ -5429,7 +5437,7 @@ msgstr ""
 msgid "Checkbox"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:870 app/Front_End/Checkout/class-pickers.php:578
+#: app/Front_End/Checkout/class-field-editor.php:870 app/Front_End/Checkout/class-pickers.php:582
 msgid "Number"
 msgstr ""
 
@@ -5529,7 +5537,7 @@ msgstr ""
 msgid "Add alternative (or)"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1003 app/Front_End/Checkout/class-pickers.php:567 app/Front_End/class-quick-order.php:376
+#: app/Front_End/Checkout/class-field-editor.php:1003 app/Front_End/Checkout/class-pickers.php:571 app/Front_End/class-quick-order.php:376
 msgid "Close"
 msgstr ""
 
@@ -5593,135 +5601,135 @@ msgstr ""
 msgid "Choose your office, locker or address to see the delivery price."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:340 app/Front_End/Checkout/class-pickers.php:536
+#: app/Front_End/Checkout/class-pickers.php:340 app/Front_End/Checkout/class-pickers.php:538
 msgid "Price after address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:342 app/Front_End/Checkout/class-pickers.php:537
+#: app/Front_End/Checkout/class-pickers.php:343 app/Front_End/Checkout/class-pickers.php:539
 msgid "to the courier"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:344
+#: app/Front_End/Checkout/class-pickers.php:345
 msgid "Free"
 msgstr ""
 
 #. translators: %s: delivery price, for example 6,50 €
-#: app/Front_End/Checkout/class-pickers.php:540 app/Shipping/class-courier-fee.php:476
+#: app/Front_End/Checkout/class-pickers.php:542 app/Shipping/class-courier-fee.php:515
 #, php-format
 msgid "%s, paid to the courier on delivery, not included in the total"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:556
+#: app/Front_End/Checkout/class-pickers.php:560
 msgid "To your address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:563
+#: app/Front_End/Checkout/class-pickers.php:567
 msgid "Search by town, name or address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:564
+#: app/Front_End/Checkout/class-pickers.php:568
 msgid "Change"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:565
+#: app/Front_End/Checkout/class-pickers.php:569
 msgid "Choose on the map"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:566
+#: app/Front_End/Checkout/class-pickers.php:570
 msgid "Choose an office on the map"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:568
+#: app/Front_End/Checkout/class-pickers.php:572
 msgid "Loading..."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:569
+#: app/Front_End/Checkout/class-pickers.php:573
 msgid "Nothing found. Check the town in the address above."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:570
+#: app/Front_End/Checkout/class-pickers.php:574
 msgid "No match. Try another word."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:571
+#: app/Front_End/Checkout/class-pickers.php:575
 msgid "Enter your town in the address above to see the list."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:572
+#: app/Front_End/Checkout/class-pickers.php:576
 msgid "Choose it on the map. The price comes from the courier's public price list."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:573
+#: app/Front_End/Checkout/class-pickers.php:577
 msgid "This is an office. Choose a parcel locker, or pick the office delivery option."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:574
+#: app/Front_End/Checkout/class-pickers.php:578
 msgid "This is a parcel locker. Choose an office, or pick the parcel locker delivery option."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:576
+#: app/Front_End/Checkout/class-pickers.php:580
 msgid "Start typing the street or quarter"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:577
+#: app/Front_End/Checkout/class-pickers.php:581
 msgid "Street and number"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:583
+#: app/Front_End/Checkout/class-pickers.php:587
 msgid "Note for the courier (optional)"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:584
+#: app/Front_End/Checkout/class-pickers.php:588
 msgid "The list could not be loaded. Please try again."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:585
+#: app/Front_End/Checkout/class-pickers.php:589
 msgid "Try again"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:587
+#: app/Front_End/Checkout/class-pickers.php:591
 msgid "Town or village"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:588
+#: app/Front_End/Checkout/class-pickers.php:592
 msgid "Start typing your town or village"
 msgstr ""
 
 #. translators: %s: order total for free shipping, for example 50,00 €
-#: app/Front_End/Checkout/class-pickers.php:590
+#: app/Front_End/Checkout/class-pickers.php:594
 #, php-format
 msgid "Free shipping over %s"
 msgstr ""
 
 #. translators: %s: amount still missing, for example 23,40 €
-#: app/Front_End/Checkout/class-pickers.php:592
+#: app/Front_End/Checkout/class-pickers.php:596
 #, php-format
 msgid "Add %s more for free shipping."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:593
+#: app/Front_End/Checkout/class-pickers.php:597
 msgid "Your order ships for free."
 msgstr ""
 
 #. translators: %s: region name
-#: app/Front_End/Checkout/class-pickers.php:595
+#: app/Front_End/Checkout/class-pickers.php:599
 #, php-format
 msgid "%s region"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:625
+#: app/Front_End/Checkout/class-pickers.php:629
 msgid "bl."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:626
+#: app/Front_End/Checkout/class-pickers.php:630
 msgid "entr."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:627
+#: app/Front_End/Checkout/class-pickers.php:631
 msgid "fl."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:628
+#: app/Front_End/Checkout/class-pickers.php:632
 msgid "ap."
 msgstr ""
 
@@ -5785,11 +5793,11 @@ msgstr ""
 msgid "Town"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:245 app/Front_End/class-quick-order.php:777
+#: app/Front_End/class-quick-order.php:245 app/Front_End/class-quick-order.php:782
 msgid "Product notes"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:246 app/Front_End/class-quick-order.php:778
+#: app/Front_End/class-quick-order.php:246 app/Front_End/class-quick-order.php:783
 msgid "Preferred delivery time"
 msgstr ""
 
@@ -5838,64 +5846,64 @@ msgstr ""
 msgid "The form has expired. Reload the page and try again."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:577
+#: app/Front_End/class-quick-order.php:582
 msgid "Too many requests. Try again in a few minutes."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:587
+#: app/Front_End/class-quick-order.php:592
 msgid "Enter your name."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:599
+#: app/Front_End/class-quick-order.php:604
 msgid "Tick the box to agree to be contacted."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:610
+#: app/Front_End/class-quick-order.php:615
 msgid "Your cart is empty."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:620
+#: app/Front_End/class-quick-order.php:625
 msgid "This product cannot be ordered now."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:629
+#: app/Front_End/class-quick-order.php:634
 msgid "The order could not be saved. Please try again."
 msgstr ""
 
 #. translators: %s: example phone number
-#: app/Front_End/class-quick-order.php:718
+#: app/Front_End/class-quick-order.php:723
 #, php-format
 msgid "Enter a valid phone number, for example %s."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:729
+#: app/Front_End/class-quick-order.php:734
 msgid "Thank you. We have your details and will contact you to confirm the order."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:791
+#: app/Front_End/class-quick-order.php:796
 msgid "Quick order from the shop. No stock is reserved and no payment link is sent until the status is changed to Pending payment."
 msgstr ""
 
 #. translators: %s: order number
-#: app/Front_End/class-quick-order.php:818
+#: app/Front_End/class-quick-order.php:823
 #, php-format
 msgid "New quick order #%s"
 msgstr ""
 
 #. translators: 1: shopper name, 2: phone, 3: email, 4: link to the order
-#: app/Front_End/class-quick-order.php:821
+#: app/Front_End/class-quick-order.php:826
 #, php-format
 msgid "A shopper asked for a quick order.\n\nName: %1$s\nPhone: %2$s\nEmail: %3$s\n\nOpen the order: %4$s"
 msgstr ""
 
 #. translators: 1: site name, 2: order number
-#: app/Front_End/class-quick-order.php:839
+#: app/Front_End/class-quick-order.php:844
 #, php-format
 msgid "%1$s: we received your quick order #%2$s"
 msgstr ""
 
 #. translators: %s: shopper name
-#: app/Front_End/class-quick-order.php:842
+#: app/Front_End/class-quick-order.php:847
 #, php-format
 msgid "Hello %s,\n\nThank you. We have your quick order and will contact you to confirm it.\n\nNo payment is needed now."
 msgstr ""
@@ -6032,7 +6040,7 @@ msgstr ""
 msgid "Review only"
 msgstr ""
 
-#: app/functions.php:576 app/functions.php:615 app/Shipping/Pigeon/class-payment.php:209
+#: app/functions.php:576 app/functions.php:615 app/Shipping/Pigeon/class-payment.php:231
 msgid "This page has expired. Reload it and try again."
 msgstr ""
 
@@ -6174,11 +6182,11 @@ msgstr ""
 msgid "Refunded Order - Original"
 msgstr ""
 
-#: app/Invoice/Order/class-order.php:273
+#: app/Invoice/Order/class-order.php:276
 msgid "Subtotal:"
 msgstr ""
 
-#: app/Invoice/Order/class-order.php:340
+#: app/Invoice/Order/class-order.php:343
 msgid "Total due"
 msgstr ""
 
@@ -6628,19 +6636,19 @@ msgstr ""
 msgid "Speedy did not accept the request."
 msgstr ""
 
-#: app/Shipping/class-courier-fee.php:96
+#: app/Shipping/class-courier-fee.php:99
 msgid "Customer pays the courier"
 msgstr ""
 
-#: app/Shipping/class-courier-fee.php:261
+#: app/Shipping/class-courier-fee.php:267
 msgid "The payment method changed after checkout. Who pays the courier stays as decided at checkout: check the delivery line and the waybill by hand."
 msgstr ""
 
-#: app/Shipping/class-courier-fee.php:333
+#: app/Shipping/class-courier-fee.php:339
 msgid "You collected the delivery on this order. If the receiver pays the courier too, the customer pays the delivery twice."
 msgstr ""
 
-#: app/Shipping/class-courier-fee.php:352
+#: app/Shipping/class-courier-fee.php:354
 msgid "This order already has documents without the delivery, because the customer pays the courier. A waybill where you collect the delivery would not match them."
 msgstr ""
 
@@ -6805,19 +6813,19 @@ msgstr ""
 msgid "Enter a finite, nonnegative shipping or COD amount."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:121 app/Shipping/Pigeon/class-payment.php:217
+#: app/Shipping/Pigeon/class-payment.php:121 app/Shipping/Pigeon/class-payment.php:239
 msgid "Choose a valid shipping payer."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:212
+#: app/Shipping/Pigeon/class-payment.php:234
 msgid "Reload this order before generating a Pigeon label."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:224
+#: app/Shipping/Pigeon/class-payment.php:245
 msgid "This order has no Pigeon shipping charge."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:230
+#: app/Shipping/Pigeon/class-payment.php:251
 msgid "COD is available only for cash-on-delivery orders."
 msgstr ""
 

@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 21:12+0000\n"
-"PO-Revision-Date: 2026-11-11 21:12+0000\n"
+"POT-Creation-Date: 2026-11-11 21:42+0000\n"
+"PO-Revision-Date: 2026-11-11 21:42+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -37,7 +37,7 @@ msgstr "Оставихте нещо в количката си"
 msgid "Hello {name},\n\nYou left these items in your cart:\n\n{items}\n\nTotal: {cart_total}\n\n{coupon_line}\n\n<a href=\"{resume_link}\">Go back to your cart</a>\n\nDo not want these emails? <a href=\"{unsubscribe_link}\">Unsubscribe here</a>"
 msgstr "Здравейте {name},\n\nОставихте тези артикули в количката си:\n\n{items}\n\nОбщо: {cart_total}\n\n{coupon_line}\n\n<a href=\"{resume_link}\">Върнете се към количката</a>\n\nНе искате тези имейли? <a href=\"{unsubscribe_link}\">Отпишете се тук</a>"
 
-#: app/Abandoned_Carts/class-email.php:99 app/Front_End/class-quick-order.php:247 app/Front_End/class-quick-order.php:779
+#: app/Abandoned_Carts/class-email.php:99 app/Front_End/class-quick-order.php:247 app/Front_End/class-quick-order.php:784
 msgid "Message"
 msgstr "Съобщение"
 
@@ -159,21 +159,29 @@ msgstr "Създадена"
 msgid "Last activity"
 msgstr "Последна активност"
 
-#: app/Abandoned_Carts/class-tracker.php:891
+#: app/Abandoned_Carts/class-tracker.php:895
+msgid "Cart reminder coupons already used on an order are kept for the store's accounts."
+msgstr "Купоните от напомняния за колички, вече използвани в поръчка, се пазят за счетоводството на магазина."
+
+#: app/Abandoned_Carts/class-tracker.php:909
 msgid "When abandoned carts are on, the store keeps the email, first name, phone and cart of shoppers who start the checkout and do not order. They are used only to send cart reminder emails."
 msgstr "Когато изоставените колички са включени, магазинът пази имейла, името, телефона и количката на клиентите, които започнат поръчка, но не я завършат. Те се използват само за имейли с напомняне за количката."
 
+#: app/Abandoned_Carts/class-tracker.php:910
+msgid "A reminder coupon is made for the email of its cart and is deleted with the cart's personal data, unless it was already used on an order."
+msgstr "Купонът от напомняне се създава за имейла на количката и се изтрива заедно с личните ѝ данни, освен ако вече е използван в поръчка."
+
 #. translators: %d: number of days
-#: app/Abandoned_Carts/class-tracker.php:893
+#: app/Abandoned_Carts/class-tracker.php:912
 #, php-format
 msgid "A cart is deleted %d days after its last change."
 msgstr "Количката се изтрива %d дни след последната ѝ промяна."
 
-#: app/Abandoned_Carts/class-tracker.php:894
+#: app/Abandoned_Carts/class-tracker.php:913
 msgid "When the store turns on customer checks (nekorekten.com, Connectix, NepoStop), the phone number of the order is sent to them."
 msgstr "Когато магазинът включи проверките на клиенти (nekorekten.com, Connectix, NepoStop), телефонът от поръчката се изпраща към тях."
 
-#: app/Abandoned_Carts/class-tracker.php:895
+#: app/Abandoned_Carts/class-tracker.php:914
 msgid "The courier of an order gets the delivery details: name, phone, address or office."
 msgstr "Куриерът на поръчката получава данните за доставка: име, телефон, адрес или офис."
 
@@ -235,7 +243,7 @@ msgstr "Купувач"
 msgid "Items"
 msgstr "Артикули"
 
-#: app/Admin/class-abandoned-carts-page.php:314 app/Export/Builder/class-fields.php:120 app/Invoice/Order/class-order.php:320 app/Invoice/Order/class-order.php:325
+#: app/Admin/class-abandoned-carts-page.php:314 app/Export/Builder/class-fields.php:120 app/Invoice/Order/class-order.php:323 app/Invoice/Order/class-order.php:328
 msgid "Total"
 msgstr "Общо"
 
@@ -319,7 +327,7 @@ msgstr[1] "%d изтрити колички."
 msgid "Cart updated."
 msgstr "Количката е обновена."
 
-#: app/Admin/class-abandoned-carts-page.php:505 app/Front_End/class-quick-order.php:595
+#: app/Admin/class-abandoned-carts-page.php:505 app/Front_End/class-quick-order.php:600
 msgid "Enter a valid email address."
 msgstr "Въведете валиден имейл адрес."
 
@@ -393,7 +401,7 @@ msgstr "Товарителница"
 msgid "Selected"
 msgstr "Избрано"
 
-#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:201 app/Admin/Order/class-delivery-box.php:207 app/Front_End/Checkout/class-pickers.php:586
+#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:201 app/Admin/Order/class-delivery-box.php:207 app/Front_End/Checkout/class-pickers.php:590
 msgid "Choose"
 msgstr "Избери"
 
@@ -463,11 +471,11 @@ msgstr "Поръчки с наложен платеж не могат да се 
 msgid "BOX NOW did not answer. Check the connection settings and try again."
 msgstr "BOX NOW не отговори. Проверете настройките за връзка и опитайте отново."
 
-#: app/Admin/class-boxnow.php:716 app/Admin/class-pigeon.php:780 app/Admin/class-speedy.php:1143
+#: app/Admin/class-boxnow.php:716 app/Admin/class-pigeon.php:783 app/Admin/class-speedy.php:1164
 msgid "This link has expired. Reload the order page and try again."
 msgstr "Връзката е изтекла. Презаредете страницата на поръчката и опитайте отново."
 
-#: app/Admin/class-boxnow.php:723 app/Admin/class-speedy.php:414 app/Admin/class-speedy.php:1165
+#: app/Admin/class-boxnow.php:723 app/Admin/class-speedy.php:414 app/Admin/class-speedy.php:1186
 msgid "Invalid parcel number."
 msgstr "Невалиден номер на пратка."
 
@@ -563,19 +571,19 @@ msgstr "бл. вх. ет."
 msgid "Street number"
 msgstr "Номер на улица"
 
-#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:579 app/Shipping/Econt/class-address.php:47
+#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:583 app/Shipping/Econt/class-address.php:47
 msgid "Block"
 msgstr "Блок"
 
-#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:210 app/Front_End/Checkout/class-pickers.php:580 app/Shipping/Econt/class-address.php:48
+#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:210 app/Front_End/Checkout/class-pickers.php:584 app/Shipping/Econt/class-address.php:48
 msgid "Entrance"
 msgstr "Вход"
 
-#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:211 app/Front_End/Checkout/class-pickers.php:581 app/Shipping/Econt/class-address.php:49
+#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:211 app/Front_End/Checkout/class-pickers.php:585 app/Shipping/Econt/class-address.php:49
 msgid "Floor"
 msgstr "Етаж"
 
-#: app/Admin/class-econt.php:145 app/Admin/class-speedy.php:212 app/Front_End/Checkout/class-pickers.php:582 app/Shipping/Econt/class-address.php:50
+#: app/Admin/class-econt.php:145 app/Admin/class-speedy.php:212 app/Front_End/Checkout/class-pickers.php:586 app/Shipping/Econt/class-address.php:50
 msgid "Apartment"
 msgstr "Апартамент"
 
@@ -809,7 +817,7 @@ msgstr "Първите %1$d от %2$d реда. Файл: %3$s"
 msgid "Nothing matches these filters."
 msgstr "Няма записи по тези филтри."
 
-#: app/Admin/class-export-builder.php:217 app/class-plugin.php:362 app/Front_End/class-quick-order.php:375
+#: app/Admin/class-export-builder.php:217 app/class-plugin.php:376 app/Front_End/class-quick-order.php:375
 msgid "Something went wrong. Please try again."
 msgstr "Нещо се обърка. Опитайте отново."
 
@@ -1188,8 +1196,8 @@ msgid "New Econt, Speedy and Pigeon Express methods start with cash on delivery 
 msgstr "Новите методи на Еконт, Спиди и Pigeon Express започват с наложен платеж в „Клиентът плаща на куриера“. Количка, в която стоките не струват нищо, винаги се събира от вас."
 
 #: app/Admin/class-help-page.php:134
-msgid "In the courier box of an order, a waybill where you collect the delivery makes the order one you collected, while it has no documents; once it has documents, such a waybill is refused. Choosing the receiver as payer on an order you collected shows a warning."
-msgstr "В полето на куриера в поръчката товарителница, по която вие събирате доставката, прави поръчката такава със събрана от вас доставка, докато няма документи; щом има документи, такава товарителница се отказва. Изборът на получателя за платец при поръчка, в която вие сте събрали доставката, показва предупреждение."
+msgid "In the courier box of an order whose customer pays the courier, a waybill paid by the sender changes nothing: you pay the courier. A fixed price you collect in the cash on delivery amount makes it an order you collected once the courier accepts the waybill, while it has no documents; a later waybill paid by the receiver puts it back. Once the order has documents, a fixed price waybill is refused. Choosing the receiver as payer on an order you collected shows a warning."
+msgstr "В полето на куриера в поръчка, в която клиентът плаща на куриера, товарителница, платена от подателя, не променя нищо: вие плащате на куриера. Фиксирана цена, която събирате в сумата на наложения платеж, прави поръчката такава със събрана от вас доставка, щом куриерът приеме товарителницата, докато няма документи; следваща товарителница, платена от получателя, я връща както е била. Щом поръчката има документи, товарителница с фиксирана цена се отказва. Изборът на получателя за платец при поръчка, в която вие сте събрали доставката, показва предупреждение."
 
 #: app/Admin/class-help-page.php:135
 msgid "Review or test before payment is set on the courier method in the shipping zone and goes on every label. For Pigeon Express choose review or test; the order screen can change it for one label."
@@ -1649,7 +1657,7 @@ msgstr "Настройки, подходящи за повечето бълга�
 msgid "Setting"
 msgstr "Настройка"
 
-#: app/Admin/class-help-page.php:352 app/class-plugin.php:367
+#: app/Admin/class-help-page.php:352 app/class-plugin.php:381
 msgid "Now"
 msgstr "Сега"
 
@@ -1870,7 +1878,7 @@ msgstr "Кредитно известие"
 msgid "Cancelled order document"
 msgstr "Документ за отказана поръчка"
 
-#: app/Admin/class-import-sources.php:1506 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:552
+#: app/Admin/class-import-sources.php:1506 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:556
 msgid "To an office"
 msgstr "До офис"
 
@@ -2146,7 +2154,7 @@ msgstr "Преглед и тест преди плащане"
 msgid "No"
 msgstr "Не"
 
-#: app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:234 app/Front_End/Checkout/class-pickers.php:575
+#: app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:234 app/Front_End/Checkout/class-pickers.php:579
 msgid "Street or quarter"
 msgstr "Улица или квартал"
 
@@ -2972,7 +2980,7 @@ msgstr "До автомат"
 msgid "Up to (kg)"
 msgstr "До (кг)"
 
-#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:363
+#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:377
 msgid "Remove row"
 msgstr "Премахване на реда"
 
@@ -3548,7 +3556,7 @@ msgstr "Няма куриер"
 msgid "Delivery price %1$s and the new total %2$s emailed to the customer."
 msgstr "Цената за доставка %1$s и новата обща сума %2$s са изпратени на клиента по имейл."
 
-#: app/Admin/Order/class-delivery-box.php:159 app/Export/Builder/class-fields.php:90 app/Shipping/class-courier-fee.php:535
+#: app/Admin/Order/class-delivery-box.php:159 app/Export/Builder/class-fields.php:90 app/Shipping/class-courier-fee.php:574
 msgid "Delivery"
 msgstr "Доставка"
 
@@ -4678,7 +4686,7 @@ msgstr "Показване във формата (собствен шаблон)
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr "Кратка форма за купувачи, които не искат да минават през количката. Купувачът изпраща име, телефон и имейл, а поръчката чака вашето потвърждение. Наличността не се резервира, докато не потвърдите. Сменете статуса на поръчката на „Очаква плащане“, за да изпратите линк за плащане."
 
-#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:152 app/class-plugin.php:305
+#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:166 app/class-plugin.php:319
 msgid "Settings"
 msgstr "Настройки"
 
@@ -4847,40 +4855,40 @@ msgid "The document was not found or you do not have access to it."
 msgstr "Документът не е намерен или нямате достъп до него."
 
 #. translators: %s: link to the settings
-#: app/class-plugin.php:152
+#: app/class-plugin.php:166
 #, php-format
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr "Нашенски Комерс: прегледайте настройките и ги запазете отново от „%s“."
 
-#: app/class-plugin.php:361
+#: app/class-plugin.php:375
 msgid "The file was downloaded."
 msgstr "Файлът е изтеглен."
 
-#: app/class-plugin.php:364
+#: app/class-plugin.php:378
 msgid "Built-in prices restored. Save to keep them."
 msgstr "Вградените цени са възстановени. Запазете, за да ги задържите."
 
-#: app/class-plugin.php:365
+#: app/class-plugin.php:379
 msgid "Your prices match the courier website."
 msgstr "Цените ви съвпадат със сайта на куриера."
 
-#: app/class-plugin.php:366
+#: app/class-plugin.php:380
 msgid "The courier website has different prices:"
 msgstr "Сайтът на куриера има различни цени:"
 
-#: app/class-plugin.php:368 app/Front_End/class-quick-order.php:500
+#: app/class-plugin.php:382 app/Front_End/class-quick-order.php:500
 msgid "Website"
 msgstr "Сайт"
 
-#: app/class-plugin.php:369
+#: app/class-plugin.php:383
 msgid "Use these prices"
 msgstr "Използване на тези цени"
 
-#: app/class-plugin.php:370
+#: app/class-plugin.php:384
 msgid "New prices filled in. Check them and save."
 msgstr "Новите цени са попълнени. Проверете ги и запазете."
 
-#: app/class-plugin.php:404
+#: app/class-plugin.php:418
 msgid "The request failed. Reload the page and try again."
 msgstr "Заявката не успя. Презаредете страницата и опитайте отново."
 
@@ -5134,7 +5142,7 @@ msgstr "Общо без ДДС"
 msgid "Products subtotal"
 msgstr "Междинна сума на продуктите"
 
-#: app/Export/Builder/class-fields.php:124 app/Invoice/Order/class-order.php:316
+#: app/Export/Builder/class-fields.php:124 app/Invoice/Order/class-order.php:319
 msgid "Discount"
 msgstr "Отстъпка"
 
@@ -5214,7 +5222,7 @@ msgstr "да"
 msgid "no"
 msgstr "не"
 
-#: app/Export/Builder/class-fields.php:428 app/Export/Builder/class-fields.php:429 app/Front_End/Checkout/class-pickers.php:560 app/Front_End/Checkout/class-pickers.php:561 app/Front_End/Checkout/class-pickers.php:562
+#: app/Export/Builder/class-fields.php:428 app/Export/Builder/class-fields.php:429 app/Front_End/Checkout/class-pickers.php:564 app/Front_End/Checkout/class-pickers.php:565 app/Front_End/Checkout/class-pickers.php:566
 msgid "Parcel locker"
 msgstr "Автомат за пратки"
 
@@ -5241,7 +5249,7 @@ msgid "The audit file (Ordinance N-18) of %2$s for %1$s is attached. It was made
 msgstr "Приложен е одиторският файл (Наредба Н-18) на %2$s за %1$s. Създаден е от Нашенски Комерс."
 
 #. translators: %s: shipping method name
-#: app/Export/Nra/class-order.php:226 app/Invoice/Order/class-order.php:223
+#: app/Export/Nra/class-order.php:227 app/Invoice/Order/class-order.php:226
 #, php-format
 msgid "Shipping: %s"
 msgstr "Доставка: %s"
@@ -5434,7 +5442,7 @@ msgstr "Списък"
 msgid "Checkbox"
 msgstr "Отметка"
 
-#: app/Front_End/Checkout/class-field-editor.php:870 app/Front_End/Checkout/class-pickers.php:578
+#: app/Front_End/Checkout/class-field-editor.php:870 app/Front_End/Checkout/class-pickers.php:582
 msgid "Number"
 msgstr "Номер"
 
@@ -5534,7 +5542,7 @@ msgstr "Скривай полето, когато:"
 msgid "Add alternative (or)"
 msgstr "Добави алтернатива (или)"
 
-#: app/Front_End/Checkout/class-field-editor.php:1003 app/Front_End/Checkout/class-pickers.php:567 app/Front_End/class-quick-order.php:376
+#: app/Front_End/Checkout/class-field-editor.php:1003 app/Front_End/Checkout/class-pickers.php:571 app/Front_End/class-quick-order.php:376
 msgid "Close"
 msgstr "Затваряне"
 
@@ -5598,135 +5606,135 @@ msgstr "Попълнете данните за изчисляване"
 msgid "Choose your office, locker or address to see the delivery price."
 msgstr "Изберете офис, автомат или адрес, за да видите цената за доставка."
 
-#: app/Front_End/Checkout/class-pickers.php:340 app/Front_End/Checkout/class-pickers.php:536
+#: app/Front_End/Checkout/class-pickers.php:340 app/Front_End/Checkout/class-pickers.php:538
 msgid "Price after address"
 msgstr "Цена след адреса"
 
-#: app/Front_End/Checkout/class-pickers.php:342 app/Front_End/Checkout/class-pickers.php:537
+#: app/Front_End/Checkout/class-pickers.php:343 app/Front_End/Checkout/class-pickers.php:539
 msgid "to the courier"
 msgstr "на куриера"
 
-#: app/Front_End/Checkout/class-pickers.php:344
+#: app/Front_End/Checkout/class-pickers.php:345
 msgid "Free"
 msgstr "Безплатно"
 
 #. translators: %s: delivery price, for example 6,50 €
-#: app/Front_End/Checkout/class-pickers.php:540 app/Shipping/class-courier-fee.php:476
+#: app/Front_End/Checkout/class-pickers.php:542 app/Shipping/class-courier-fee.php:515
 #, php-format
 msgid "%s, paid to the courier on delivery, not included in the total"
 msgstr "%s, плаща се на куриера при доставка, не е включена в общата сума"
 
-#: app/Front_End/Checkout/class-pickers.php:556
+#: app/Front_End/Checkout/class-pickers.php:560
 msgid "To your address"
 msgstr "До вашия адрес"
 
-#: app/Front_End/Checkout/class-pickers.php:563
+#: app/Front_End/Checkout/class-pickers.php:567
 msgid "Search by town, name or address"
 msgstr "Търсене по населено място, име или адрес"
 
-#: app/Front_End/Checkout/class-pickers.php:564
+#: app/Front_End/Checkout/class-pickers.php:568
 msgid "Change"
 msgstr "Промяна"
 
-#: app/Front_End/Checkout/class-pickers.php:565
+#: app/Front_End/Checkout/class-pickers.php:569
 msgid "Choose on the map"
 msgstr "Избор на картата"
 
-#: app/Front_End/Checkout/class-pickers.php:566
+#: app/Front_End/Checkout/class-pickers.php:570
 msgid "Choose an office on the map"
 msgstr "Изберете офис на картата"
 
-#: app/Front_End/Checkout/class-pickers.php:568
+#: app/Front_End/Checkout/class-pickers.php:572
 msgid "Loading..."
 msgstr "Зареждане..."
 
-#: app/Front_End/Checkout/class-pickers.php:569
+#: app/Front_End/Checkout/class-pickers.php:573
 msgid "Nothing found. Check the town in the address above."
 msgstr "Нищо не е намерено. Проверете населеното място в адреса по-горе."
 
-#: app/Front_End/Checkout/class-pickers.php:570
+#: app/Front_End/Checkout/class-pickers.php:574
 msgid "No match. Try another word."
 msgstr "Няма съвпадение. Опитайте с друга дума."
 
-#: app/Front_End/Checkout/class-pickers.php:571
+#: app/Front_End/Checkout/class-pickers.php:575
 msgid "Enter your town in the address above to see the list."
 msgstr "Въведете населеното си място в адреса по-горе, за да видите списъка."
 
-#: app/Front_End/Checkout/class-pickers.php:572
+#: app/Front_End/Checkout/class-pickers.php:576
 msgid "Choose it on the map. The price comes from the courier's public price list."
 msgstr "Изберете на картата. Цената се изчислява по публичния ценоразпис на куриера."
 
-#: app/Front_End/Checkout/class-pickers.php:573
+#: app/Front_End/Checkout/class-pickers.php:577
 msgid "This is an office. Choose a parcel locker, or pick the office delivery option."
 msgstr "Това е офис. Изберете автомат за пратки или опцията за доставка до офис."
 
-#: app/Front_End/Checkout/class-pickers.php:574
+#: app/Front_End/Checkout/class-pickers.php:578
 msgid "This is a parcel locker. Choose an office, or pick the parcel locker delivery option."
 msgstr "Това е автомат за пратки. Изберете офис или опцията за доставка до автомат."
 
-#: app/Front_End/Checkout/class-pickers.php:576
+#: app/Front_End/Checkout/class-pickers.php:580
 msgid "Start typing the street or quarter"
 msgstr "Започнете да пишете улицата или квартала"
 
-#: app/Front_End/Checkout/class-pickers.php:577
+#: app/Front_End/Checkout/class-pickers.php:581
 msgid "Street and number"
 msgstr "Улица и номер"
 
-#: app/Front_End/Checkout/class-pickers.php:583
+#: app/Front_End/Checkout/class-pickers.php:587
 msgid "Note for the courier (optional)"
 msgstr "Бележка за куриера (незадължително)"
 
-#: app/Front_End/Checkout/class-pickers.php:584
+#: app/Front_End/Checkout/class-pickers.php:588
 msgid "The list could not be loaded. Please try again."
 msgstr "Списъкът не можа да се зареди. Опитайте отново."
 
-#: app/Front_End/Checkout/class-pickers.php:585
+#: app/Front_End/Checkout/class-pickers.php:589
 msgid "Try again"
 msgstr "Опитайте отново"
 
-#: app/Front_End/Checkout/class-pickers.php:587
+#: app/Front_End/Checkout/class-pickers.php:591
 msgid "Town or village"
 msgstr "Населено място"
 
-#: app/Front_End/Checkout/class-pickers.php:588
+#: app/Front_End/Checkout/class-pickers.php:592
 msgid "Start typing your town or village"
 msgstr "Започнете да пишете населеното място"
 
 #. translators: %s: order total for free shipping, for example 50,00 €
-#: app/Front_End/Checkout/class-pickers.php:590
+#: app/Front_End/Checkout/class-pickers.php:594
 #, php-format
 msgid "Free shipping over %s"
 msgstr "Безплатна доставка над %s"
 
 #. translators: %s: amount still missing, for example 23,40 €
-#: app/Front_End/Checkout/class-pickers.php:592
+#: app/Front_End/Checkout/class-pickers.php:596
 #, php-format
 msgid "Add %s more for free shipping."
 msgstr "Добавете още %s за безплатна доставка."
 
-#: app/Front_End/Checkout/class-pickers.php:593
+#: app/Front_End/Checkout/class-pickers.php:597
 msgid "Your order ships for free."
 msgstr "Поръчката ви е с безплатна доставка."
 
 #. translators: %s: region name
-#: app/Front_End/Checkout/class-pickers.php:595
+#: app/Front_End/Checkout/class-pickers.php:599
 #, php-format
 msgid "%s region"
 msgstr "обл. %s"
 
-#: app/Front_End/Checkout/class-pickers.php:625
+#: app/Front_End/Checkout/class-pickers.php:629
 msgid "bl."
 msgstr "бл."
 
-#: app/Front_End/Checkout/class-pickers.php:626
+#: app/Front_End/Checkout/class-pickers.php:630
 msgid "entr."
 msgstr "вх."
 
-#: app/Front_End/Checkout/class-pickers.php:627
+#: app/Front_End/Checkout/class-pickers.php:631
 msgid "fl."
 msgstr "ет."
 
-#: app/Front_End/Checkout/class-pickers.php:628
+#: app/Front_End/Checkout/class-pickers.php:632
 msgid "ap."
 msgstr "ап."
 
@@ -5790,11 +5798,11 @@ msgstr "Международен (+359 88 123 4567)"
 msgid "Town"
 msgstr "Населено място"
 
-#: app/Front_End/class-quick-order.php:245 app/Front_End/class-quick-order.php:777
+#: app/Front_End/class-quick-order.php:245 app/Front_End/class-quick-order.php:782
 msgid "Product notes"
 msgstr "Бележки към продукта"
 
-#: app/Front_End/class-quick-order.php:246 app/Front_End/class-quick-order.php:778
+#: app/Front_End/class-quick-order.php:246 app/Front_End/class-quick-order.php:783
 msgid "Preferred delivery time"
 msgstr "Предпочитано време за доставка"
 
@@ -5843,64 +5851,64 @@ msgstr "Бързите поръчки са изключени."
 msgid "The form has expired. Reload the page and try again."
 msgstr "Формата е изтекла. Презаредете страницата и опитайте отново."
 
-#: app/Front_End/class-quick-order.php:577
+#: app/Front_End/class-quick-order.php:582
 msgid "Too many requests. Try again in a few minutes."
 msgstr "Твърде много заявки. Опитайте отново след няколко минути."
 
-#: app/Front_End/class-quick-order.php:587
+#: app/Front_End/class-quick-order.php:592
 msgid "Enter your name."
 msgstr "Въведете името си."
 
-#: app/Front_End/class-quick-order.php:599
+#: app/Front_End/class-quick-order.php:604
 msgid "Tick the box to agree to be contacted."
 msgstr "Отбележете квадратчето, за да се съгласите да се свържем с вас."
 
-#: app/Front_End/class-quick-order.php:610
+#: app/Front_End/class-quick-order.php:615
 msgid "Your cart is empty."
 msgstr "Количката ви е празна."
 
-#: app/Front_End/class-quick-order.php:620
+#: app/Front_End/class-quick-order.php:625
 msgid "This product cannot be ordered now."
 msgstr "Този продукт не може да се поръча в момента."
 
-#: app/Front_End/class-quick-order.php:629
+#: app/Front_End/class-quick-order.php:634
 msgid "The order could not be saved. Please try again."
 msgstr "Поръчката не можа да се запази. Опитайте отново."
 
 #. translators: %s: example phone number
-#: app/Front_End/class-quick-order.php:718
+#: app/Front_End/class-quick-order.php:723
 #, php-format
 msgid "Enter a valid phone number, for example %s."
 msgstr "Въведете валиден телефонен номер, например %s."
 
-#: app/Front_End/class-quick-order.php:729
+#: app/Front_End/class-quick-order.php:734
 msgid "Thank you. We have your details and will contact you to confirm the order."
 msgstr "Благодарим! Получихме данните ви и ще се свържем с вас, за да потвърдим поръчката."
 
-#: app/Front_End/class-quick-order.php:791
+#: app/Front_End/class-quick-order.php:796
 msgid "Quick order from the shop. No stock is reserved and no payment link is sent until the status is changed to Pending payment."
 msgstr "Бърза поръчка от магазина. Наличността не се резервира и не се изпраща линк за плащане, докато статусът не се смени на „Очаква плащане“."
 
 #. translators: %s: order number
-#: app/Front_End/class-quick-order.php:818
+#: app/Front_End/class-quick-order.php:823
 #, php-format
 msgid "New quick order #%s"
 msgstr "Нова бърза поръчка #%s"
 
 #. translators: 1: shopper name, 2: phone, 3: email, 4: link to the order
-#: app/Front_End/class-quick-order.php:821
+#: app/Front_End/class-quick-order.php:826
 #, php-format
 msgid "A shopper asked for a quick order.\n\nName: %1$s\nPhone: %2$s\nEmail: %3$s\n\nOpen the order: %4$s"
 msgstr "Купувач поиска бърза поръчка.\n\nИме: %1$s\nТелефон: %2$s\nИмейл: %3$s\n\nОтворете поръчката: %4$s"
 
 #. translators: 1: site name, 2: order number
-#: app/Front_End/class-quick-order.php:839
+#: app/Front_End/class-quick-order.php:844
 #, php-format
 msgid "%1$s: we received your quick order #%2$s"
 msgstr "%1$s: получихме вашата бърза поръчка #%2$s"
 
 #. translators: %s: shopper name
-#: app/Front_End/class-quick-order.php:842
+#: app/Front_End/class-quick-order.php:847
 #, php-format
 msgid "Hello %s,\n\nThank you. We have your quick order and will contact you to confirm it.\n\nNo payment is needed now."
 msgstr "Здравейте, %s,\n\nБлагодарим! Получихме вашата бърза поръчка и ще се свържем с вас, за да я потвърдим.\n\nЗа момента не е нужно плащане."
@@ -6037,7 +6045,7 @@ msgstr "Отразено с касова бележка"
 msgid "Review only"
 msgstr "Само преглед"
 
-#: app/functions.php:576 app/functions.php:615 app/Shipping/Pigeon/class-payment.php:209
+#: app/functions.php:576 app/functions.php:615 app/Shipping/Pigeon/class-payment.php:231
 msgid "This page has expired. Reload it and try again."
 msgstr "Страницата е изтекла. Презаредете я и опитайте отново."
 
@@ -6179,11 +6187,11 @@ msgstr "Документ за продажба - Оригинал"
 msgid "Refunded Order - Original"
 msgstr "Документ за възстановяване - Оригинал"
 
-#: app/Invoice/Order/class-order.php:273
+#: app/Invoice/Order/class-order.php:276
 msgid "Subtotal:"
 msgstr "Междинна сума:"
 
-#: app/Invoice/Order/class-order.php:340
+#: app/Invoice/Order/class-order.php:343
 msgid "Total due"
 msgstr "Сума за плащане"
 
@@ -6633,19 +6641,19 @@ msgstr "Еконт не прие заявката."
 msgid "Speedy did not accept the request."
 msgstr "Спиди не прие заявката."
 
-#: app/Shipping/class-courier-fee.php:96
+#: app/Shipping/class-courier-fee.php:99
 msgid "Customer pays the courier"
 msgstr "Клиентът плаща на куриера"
 
-#: app/Shipping/class-courier-fee.php:261
+#: app/Shipping/class-courier-fee.php:267
 msgid "The payment method changed after checkout. Who pays the courier stays as decided at checkout: check the delivery line and the waybill by hand."
 msgstr "Методът на плащане се смени след поръчката. Кой плаща на куриера остава както е решено при плащане: проверете на ръка реда за доставка и товарителницата."
 
-#: app/Shipping/class-courier-fee.php:333
+#: app/Shipping/class-courier-fee.php:339
 msgid "You collected the delivery on this order. If the receiver pays the courier too, the customer pays the delivery twice."
 msgstr "Вие сте събрали доставката по тази поръчка. Ако и получателят плати на куриера, клиентът ще плати доставката два пъти."
 
-#: app/Shipping/class-courier-fee.php:352
+#: app/Shipping/class-courier-fee.php:354
 msgid "This order already has documents without the delivery, because the customer pays the courier. A waybill where you collect the delivery would not match them."
 msgstr "Тази поръчка вече има документи без доставката, защото клиентът плаща на куриера. Товарителница, по която вие събирате доставката, няма да съвпада с тях."
 
@@ -6810,19 +6818,19 @@ msgstr "Изберете адрес."
 msgid "Enter a finite, nonnegative shipping or COD amount."
 msgstr "Въведете крайна, неотрицателна сума за доставка или наложен платеж."
 
-#: app/Shipping/Pigeon/class-payment.php:121 app/Shipping/Pigeon/class-payment.php:217
+#: app/Shipping/Pigeon/class-payment.php:121 app/Shipping/Pigeon/class-payment.php:239
 msgid "Choose a valid shipping payer."
 msgstr "Изберете валиден платец на доставката."
 
-#: app/Shipping/Pigeon/class-payment.php:212
+#: app/Shipping/Pigeon/class-payment.php:234
 msgid "Reload this order before generating a Pigeon label."
 msgstr "Презаредете поръчката, преди да създадете етикет за Pigeon."
 
-#: app/Shipping/Pigeon/class-payment.php:224
+#: app/Shipping/Pigeon/class-payment.php:245
 msgid "This order has no Pigeon shipping charge."
 msgstr "Тази поръчка няма такса за доставка с Pigeon."
 
-#: app/Shipping/Pigeon/class-payment.php:230
+#: app/Shipping/Pigeon/class-payment.php:251
 msgid "COD is available only for cash-on-delivery orders."
 msgstr "Наложен платеж е възможен само за поръчки с плащане при доставка."
 
