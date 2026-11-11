@@ -108,7 +108,7 @@ class Actions {
 
 		printf(
 			/* translators: %s: number of orders */
-			'<div class="notice notice-success is-dismissible">' . wp_kses_post( wpautop( _n( '%s order documents were regenerated.', '%s orders documents were regenerated.', $count, 'nashenski-commerce' ) ) ) . '</div>',
+			'<div class="notice notice-success is-dismissible">' . wp_kses_post( wpautop( _n( 'Documents of %s order were regenerated.', 'Documents of %s orders were regenerated.', $count, 'nashenski-commerce' ) ) ) . '</div>',
 			esc_html( $count )
 		);
 	}

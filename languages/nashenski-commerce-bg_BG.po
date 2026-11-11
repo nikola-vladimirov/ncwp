@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 13:28+0000\n"
-"PO-Revision-Date: 2026-11-11 13:28+0000\n"
+"POT-Creation-Date: 2026-11-11 13:59+0000\n"
+"PO-Revision-Date: 2026-11-11 13:59+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -135,7 +135,7 @@ msgstr "Поръчана"
 msgid "Emptied"
 msgstr "Изпразнена"
 
-#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:290 app/Admin/class-import-sources.php:249 app/Admin/class-migration.php:127
+#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:290 app/Admin/class-import-sources.php:250 app/Admin/class-migration.php:126
 msgid "You do not have permission to perform this action."
 msgstr "Нямате права за това действие."
 
@@ -181,7 +181,7 @@ msgstr "Купувач"
 msgid "Items"
 msgstr "Артикули"
 
-#: app/Admin/class-abandoned-carts-page.php:314 app/Export/Builder/class-fields.php:120 app/Invoice/Order/class-order.php:318 app/Invoice/Order/class-order.php:323
+#: app/Admin/class-abandoned-carts-page.php:314 app/Export/Builder/class-fields.php:120 app/Invoice/Order/class-order.php:320 app/Invoice/Order/class-order.php:325
 msgid "Total"
 msgstr "Общо"
 
@@ -407,7 +407,7 @@ msgstr "Премахване на пакет"
 msgid "Weight"
 msgstr "Тегло"
 
-#: app/Admin/class-boxnow.php:147 app/Admin/Tabs/class-boxnow-tab.php:134 app/Admin/Tabs/class-boxnow-tab.php:152 app/Admin/Tabs/class-boxnow-tab.php:168 app/Invoice/Document/class-basedocument.php:303
+#: app/Admin/class-boxnow.php:147 app/Admin/Tabs/class-boxnow-tab.php:134 app/Admin/Tabs/class-boxnow-tab.php:152 app/Admin/Tabs/class-boxnow-tab.php:168 app/Invoice/Document/class-basedocument.php:302
 msgid "Price"
 msgstr "Цена"
 
@@ -775,7 +775,7 @@ msgstr "Първите %1$d от %2$d реда. Файл: %3$s"
 msgid "Nothing matches these filters."
 msgstr "Няма записи по тези филтри."
 
-#: app/Admin/class-export-builder.php:217 app/class-plugin.php:339 app/Front_End/class-quick-order.php:375
+#: app/Admin/class-export-builder.php:217 app/class-plugin.php:336 app/Front_End/class-quick-order.php:375
 msgid "Something went wrong. Please try again."
 msgstr "Нещо се обърка. Опитайте отново."
 
@@ -883,7 +883,7 @@ msgstr "Миналата година"
 msgid "Order status"
 msgstr "Статус на поръчката"
 
-#: app/Admin/class-export-builder.php:302 app/Export/Builder/class-fields.php:110 app/Invoice/Document/class-basedocument.php:439
+#: app/Admin/class-export-builder.php:302 app/Export/Builder/class-fields.php:110 app/Invoice/Document/class-basedocument.php:438
 msgid "Payment method"
 msgstr "Начин на плащане"
 
@@ -1533,7 +1533,7 @@ msgstr "Няма документи: включете „Фактури и Н-18
 msgid "The order note \"Some documents were not generated\" means a document failed (the note gives the reason). The refund, renewal or checkout still went through. Fix the cause and make the document again from the order."
 msgstr "Бележката към поръчката „Някои документи не бяха създадени“ означава, че документ е неуспешен (бележката дава причината). Възстановяването, подновяването или поръчката са преминали. Отстранете причината и създайте документа отново от поръчката."
 
-#: app/Admin/class-help-page.php:263 app/Admin/class-import-sources.php:211
+#: app/Admin/class-help-page.php:263 app/Admin/class-import-sources.php:212
 msgid "Bulgarisation for WooCommerce"
 msgstr "Bulgarisation for WooCommerce"
 
@@ -1571,7 +1571,7 @@ msgstr "Настройки, подходящи за повечето бълга�
 msgid "Setting"
 msgstr "Настройка"
 
-#: app/Admin/class-help-page.php:336 app/class-plugin.php:344
+#: app/Admin/class-help-page.php:336 app/class-plugin.php:341
 msgid "Now"
 msgstr "Сега"
 
@@ -1646,25 +1646,25 @@ msgid "Imported from %s:"
 msgstr "Внесено от %s:"
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:191
+#: app/Admin/class-import-sources.php:192
 #, php-format
 msgid "Nashenski Commerce can take over the data of %s."
 msgstr "Нашенски Комерс може да поеме данните на %s."
 
-#: app/Admin/class-import-sources.php:196 app/Admin/class-setup-wizard.php:588
+#: app/Admin/class-import-sources.php:197 app/Admin/class-setup-wizard.php:588
 msgid "Review and import"
 msgstr "Преглед и внасяне"
 
-#: app/Admin/class-import-sources.php:198 app/Admin/class-settings-page.php:809 app/Admin/class-setup-wizard.php:166
+#: app/Admin/class-import-sources.php:199 app/Admin/class-settings-page.php:809 app/Admin/class-setup-wizard.php:166
 msgid "Dismiss"
 msgstr "Скриване"
 
-#: app/Admin/class-import-sources.php:461 app/Admin/class-import-sources.php:490
+#: app/Admin/class-import-sources.php:462 app/Admin/class-import-sources.php:491
 msgid "The Econt key of that plugin works only with Econt's \"Deliver with Econt\" service. Enter your Econt username and password in Couriers > Econt."
 msgstr "Ключът на Еконт от този плъгин работи само с услугата „Достави с Еконт“. Въведете потребителското си име и паролата за Еконт в Куриери > Еконт."
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:516
+#: app/Admin/class-import-sources.php:517
 #, php-format
 msgid "%d setting"
 msgid_plural "%d settings"
@@ -1672,7 +1672,7 @@ msgstr[0] "%d настройка"
 msgstr[1] "%d настройки"
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:518
+#: app/Admin/class-import-sources.php:519
 #, php-format
 msgid "%d order waybill"
 msgid_plural "%d order waybills"
@@ -1680,7 +1680,7 @@ msgstr[0] "%d товарителница на поръчка"
 msgstr[1] "%d товарителници на поръчки"
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:520
+#: app/Admin/class-import-sources.php:521
 #, php-format
 msgid "%d shipping zone method"
 msgid_plural "%d shipping zone methods"
@@ -1688,7 +1688,7 @@ msgstr[0] "%d метод в зона за доставка"
 msgstr[1] "%d метода в зони за доставка"
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:525
+#: app/Admin/class-import-sources.php:526
 #, php-format
 msgid "%d document number"
 msgid_plural "%d document numbers"
@@ -1697,7 +1697,7 @@ msgstr[1] "%d номера на документи"
 
 #. translators: %d: number
 #. translators: %d: number of document numbers
-#: app/Admin/class-import-sources.php:530 app/Admin/class-migration.php:106
+#: app/Admin/class-import-sources.php:531 app/Admin/class-migration.php:106
 #, php-format
 msgid "%d document number skipped (conflict)"
 msgid_plural "%d document numbers skipped (conflict)"
@@ -1705,13 +1705,13 @@ msgstr[0] "%d номер на документ е пропуснат (конфл
 msgstr[1] "%d номера на документи са пропуснати (конфликт)"
 
 #. translators: %d: number of settings
-#: app/Admin/class-import-sources.php:535
+#: app/Admin/class-import-sources.php:536
 #, php-format
 msgid "Already set, kept as it is: %d"
 msgstr "Вече е зададено, оставено както е: %d"
 
 #. translators: %d: number of orders
-#: app/Admin/class-import-sources.php:542
+#: app/Admin/class-import-sources.php:543
 #, php-format
 msgid "%d order keeps everything the old plugin saved on it (see \"From earlier plugins\" on the order)"
 msgid_plural "%d orders keep everything the old plugin saved on them (see \"From earlier plugins\" on the order)"
@@ -1719,48 +1719,48 @@ msgstr[0] "%d поръчка запазва всичко, което стари�
 msgstr[1] "%d поръчки запазват всичко, което старият плъгин е записал в тях (вижте „От предишни плъгини“ в поръчката)"
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:587
+#: app/Admin/class-import-sources.php:590
 #, php-format
 msgid "The import is done. Please deactivate %s: Nashenski Commerce does its work now."
 msgstr "Внасянето приключи. Моля, деактивирайте %s: Нашенски Комерс вече върши тази работа."
 
-#: app/Admin/class-import-sources.php:592
+#: app/Admin/class-import-sources.php:595
 msgid "Go to Plugins"
 msgstr "Към Разширения"
 
-#: app/Admin/class-import-sources.php:781
+#: app/Admin/class-import-sources.php:784
 msgid "From earlier plugins"
 msgstr "От предишни плъгини"
 
-#: app/Admin/class-import-sources.php:794
+#: app/Admin/class-import-sources.php:797
 msgid "What the earlier plugins saved on this order, kept when their data was imported."
 msgstr "Това, което предишните плъгини са записали в тази поръчка, запазено при внасянето на данните им."
 
-#: app/Admin/class-import-sources.php:837 app/Export/Builder/class-fields.php:338
+#: app/Admin/class-import-sources.php:840 app/Export/Builder/class-fields.php:338
 msgid "Order document"
 msgstr "Документ за продажба"
 
-#: app/Admin/class-import-sources.php:838 app/Admin/Order/class-documents.php:276 app/Export/Builder/class-fields.php:339
+#: app/Admin/class-import-sources.php:841 app/Admin/Order/class-documents.php:276 app/Export/Builder/class-fields.php:339
 msgid "Invoice"
 msgstr "Фактура"
 
-#: app/Admin/class-import-sources.php:839 app/Export/Builder/class-fields.php:340
+#: app/Admin/class-import-sources.php:842 app/Export/Builder/class-fields.php:340
 msgid "Credit note"
 msgstr "Кредитно известие"
 
-#: app/Admin/class-import-sources.php:840
+#: app/Admin/class-import-sources.php:843
 msgid "Cancelled order document"
 msgstr "Документ за отказана поръчка"
 
-#: app/Admin/class-import-sources.php:1166 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:682 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
+#: app/Admin/class-import-sources.php:1169 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:682 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
 msgid "To an office"
 msgstr "До офис"
 
-#: app/Admin/class-import-sources.php:1167 app/Admin/class-import-sources.php:1168 app/Admin/class-setup-wizard.php:683 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
+#: app/Admin/class-import-sources.php:1170 app/Admin/class-import-sources.php:1171 app/Admin/class-setup-wizard.php:683 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
 msgid "To a parcel locker"
 msgstr "До автомат за пратки"
 
-#: app/Admin/class-import-sources.php:1169 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:684 app/Admin/Order/class-courier-info.php:46
+#: app/Admin/class-import-sources.php:1172 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:684 app/Admin/Order/class-courier-info.php:46
 msgid "To an address"
 msgstr "До адрес"
 
@@ -1908,7 +1908,7 @@ msgstr "Тази проверка има смисъл главно когато 
 msgid "ID"
 msgstr "ID"
 
-#: app/Admin/class-impossiblevatprice.php:165 app/Export/Builder/class-fields.php:155 app/Invoice/Document/class-basedocument.php:291
+#: app/Admin/class-impossiblevatprice.php:165 app/Export/Builder/class-fields.php:155 app/Invoice/Document/class-basedocument.php:290
 msgid "Product"
 msgstr "Продукт"
 
@@ -1992,7 +1992,7 @@ msgstr "Промоционалната цена е променена на %s, �
 msgid "Import finished: %1$d settings, %2$d shipping method settings, %3$d shipping zone methods, %4$d order shipping lines and %5$d order data rows."
 msgstr "Импортирането приключи: %1$d настройки, %2$d настройки на методи за доставка, %3$d метода в зони за доставка, %4$d реда за доставка в поръчки и %5$d реда с данни на поръчки."
 
-#: app/Admin/class-pigeon.php:51 app/Admin/class-setup-wizard.php:100 app/Admin/Tabs/class-pigeon-tab.php:39 app/Admin/Tabs/class-settings-tab.php:39 app/functions.php:817 app/Shipping/Pigeon/class-method.php:319
+#: app/Admin/class-pigeon.php:51 app/Admin/class-setup-wizard.php:100 app/Admin/Tabs/class-pigeon-tab.php:39 app/Admin/Tabs/class-settings-tab.php:39 app/functions.php:835 app/Shipping/Pigeon/class-method.php:319
 msgid "Pigeon Express"
 msgstr "Pigeon Express"
 
@@ -2846,7 +2846,7 @@ msgstr "До автомат"
 msgid "Up to (kg)"
 msgstr "До (кг)"
 
-#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:340
+#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:337
 msgid "Remove row"
 msgstr "Премахване на реда"
 
@@ -2970,15 +2970,15 @@ msgstr "Създаване на липсващите документи за п�
 msgid "Set up Nashenski Commerce"
 msgstr "Настройка на Нашенски Комерс"
 
-#: app/Admin/class-setup-wizard.php:97 app/Admin/Tabs/class-econt-tab.php:39 app/functions.php:814 app/Shipping/Econt/class-method.php:349
+#: app/Admin/class-setup-wizard.php:97 app/Admin/Tabs/class-econt-tab.php:39 app/functions.php:832 app/Shipping/Econt/class-method.php:349
 msgid "Econt"
 msgstr "Еконт"
 
-#: app/Admin/class-setup-wizard.php:98 app/Admin/Tabs/class-settings-tab.php:37 app/Admin/Tabs/class-speedy-tab.php:39 app/functions.php:815 app/Shipping/Speedy/class-method.php:342
+#: app/Admin/class-setup-wizard.php:98 app/Admin/Tabs/class-settings-tab.php:37 app/Admin/Tabs/class-speedy-tab.php:39 app/functions.php:833 app/Shipping/Speedy/class-method.php:342
 msgid "Speedy"
 msgstr "Спиди"
 
-#: app/Admin/class-setup-wizard.php:99 app/Admin/Tabs/class-boxnow-tab.php:39 app/Admin/Tabs/class-settings-tab.php:38 app/functions.php:816 app/Shipping/BoxNow/class-method.php:231
+#: app/Admin/class-setup-wizard.php:99 app/Admin/Tabs/class-boxnow-tab.php:39 app/Admin/Tabs/class-settings-tab.php:38 app/functions.php:834 app/Shipping/BoxNow/class-method.php:231
 msgid "BOX NOW"
 msgstr "BOX NOW"
 
@@ -3365,8 +3365,8 @@ msgstr "Повторно създаване на PDF файловете"
 #. translators: %s: number of orders
 #: app/Admin/Order/class-actions.php:111
 #, php-format
-msgid "%s order documents were regenerated."
-msgid_plural "%s orders documents were regenerated."
+msgid "Documents of %s order were regenerated."
+msgid_plural "Documents of %s orders were regenerated."
 msgstr[0] "Документите на %s поръчка са създадени отново."
 msgstr[1] "Документите на %s поръчки са създадени отново."
 
@@ -4558,7 +4558,7 @@ msgstr "Показване във формата (собствен шаблон)
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr "Кратка форма за купувачи, които не искат да минават през количката. Купувачът изпраща име, телефон и имейл, а поръчката чака вашето потвърждение. Наличността не се резервира, докато не потвърдите. Сменете статуса на поръчката на „Очаква плащане“, за да изпратите линк за плащане."
 
-#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:124 app/class-plugin.php:282
+#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:121 app/class-plugin.php:279
 msgid "Settings"
 msgstr "Настройки"
 
@@ -4727,40 +4727,40 @@ msgid "The document was not found or you do not have access to it."
 msgstr "Документът не е намерен или нямате достъп до него."
 
 #. translators: %s: link to the settings
-#: app/class-plugin.php:124
+#: app/class-plugin.php:121
 #, php-format
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr "Нашенски Комерс: прегледайте настройките и ги запазете отново от „%s“."
 
-#: app/class-plugin.php:338
+#: app/class-plugin.php:335
 msgid "The file was downloaded."
 msgstr "Файлът е изтеглен."
 
-#: app/class-plugin.php:341
+#: app/class-plugin.php:338
 msgid "Built-in prices restored. Save to keep them."
 msgstr "Вградените цени са възстановени. Запазете, за да ги задържите."
 
-#: app/class-plugin.php:342
+#: app/class-plugin.php:339
 msgid "Your prices match the courier website."
 msgstr "Цените ви съвпадат със сайта на куриера."
 
-#: app/class-plugin.php:343
+#: app/class-plugin.php:340
 msgid "The courier website has different prices:"
 msgstr "Сайтът на куриера има различни цени:"
 
-#: app/class-plugin.php:345 app/Front_End/class-quick-order.php:500
+#: app/class-plugin.php:342 app/Front_End/class-quick-order.php:500
 msgid "Website"
 msgstr "Сайт"
 
-#: app/class-plugin.php:346
+#: app/class-plugin.php:343
 msgid "Use these prices"
 msgstr "Използване на тези цени"
 
-#: app/class-plugin.php:347
+#: app/class-plugin.php:344
 msgid "New prices filled in. Check them and save."
 msgstr "Новите цени са попълнени. Проверете ги и запазете."
 
-#: app/class-plugin.php:381
+#: app/class-plugin.php:378
 msgid "The request failed. Reload the page and try again."
 msgstr "Заявката не успя. Презаредете страницата и опитайте отново."
 
@@ -4866,7 +4866,7 @@ msgstr "ID на поръчката"
 msgid "Order number"
 msgstr "Номер на поръчката"
 
-#: app/Export/Builder/class-fields.php:48 app/Invoice/Document/class-basedocument.php:255 app/Invoice/Document/class-creditnotice.php:83 app/Invoice/Document/class-nrarefunded.php:82
+#: app/Export/Builder/class-fields.php:48 app/Invoice/Document/class-basedocument.php:254 app/Invoice/Document/class-creditnotice.php:83 app/Invoice/Document/class-nrarefunded.php:82
 msgid "Order date"
 msgstr "Дата на поръчката"
 
@@ -4998,7 +4998,7 @@ msgstr "Плащане"
 msgid "Payment method ID"
 msgstr "ID на начина на плащане"
 
-#: app/Export/Builder/class-fields.php:112 app/Invoice/Document/class-basedocument.php:447
+#: app/Export/Builder/class-fields.php:112 app/Invoice/Document/class-basedocument.php:446
 msgid "Transaction ID"
 msgstr "ID на транзакцията"
 
@@ -5018,7 +5018,7 @@ msgstr "Общо без ДДС"
 msgid "Products subtotal"
 msgstr "Междинна сума на продуктите"
 
-#: app/Export/Builder/class-fields.php:124 app/Invoice/Order/class-order.php:314
+#: app/Export/Builder/class-fields.php:124 app/Invoice/Order/class-order.php:316
 msgid "Discount"
 msgstr "Отстъпка"
 
@@ -5125,7 +5125,7 @@ msgid "The audit file (Ordinance N-18) of %2$s for %1$s is attached. It was made
 msgstr "Приложен е одиторският файл (Наредба Н-18) на %2$s за %1$s. Създаден е от Нашенски Комерс."
 
 #. translators: %s: shipping method name
-#: app/Export/Nra/class-order.php:224 app/Invoice/Order/class-order.php:221
+#: app/Export/Nra/class-order.php:226 app/Invoice/Order/class-order.php:223
 #, php-format
 msgid "Shipping: %s"
 msgstr "Доставка: %s"
@@ -5899,28 +5899,28 @@ msgstr "Отразено с касова бележка"
 msgid "Review only"
 msgstr "Само преглед"
 
-#: app/functions.php:588 app/functions.php:627 app/Shipping/Pigeon/class-payment.php:208
+#: app/functions.php:606 app/functions.php:645 app/Shipping/Pigeon/class-payment.php:208
 msgid "This page has expired. Reload it and try again."
 msgstr "Страницата е изтекла. Презаредете я и опитайте отново."
 
-#: app/functions.php:592
+#: app/functions.php:610
 msgid "You cannot create labels."
 msgstr "Не можете да създавате товарителници."
 
-#: app/functions.php:913
+#: app/functions.php:931
 msgid "Label created."
 msgstr "Товарителницата е създадена."
 
-#: app/functions.php:914
+#: app/functions.php:932
 msgid "Label updated."
 msgstr "Товарителницата е обновена."
 
-#: app/functions.php:915
+#: app/functions.php:933
 msgid "Label deleted."
 msgstr "Товарителницата е изтрита."
 
 #. translators: %s: waybill number
-#: app/functions.php:932
+#: app/functions.php:950
 #, php-format
 msgid "Label number: %s."
 msgstr "Номер на товарителница: %s."
@@ -5931,7 +5931,7 @@ msgstr "Номер на товарителница: %s."
 msgid "Number %s is already used by another order. Choose another invoice number."
 msgstr "Номер %s вече е използван от друга поръчка. Изберете друг номер на фактурата."
 
-#: app/Invoice/class-vat1139.php:76 app/Invoice/Document/class-basedocument.php:307
+#: app/Invoice/class-vat1139.php:76 app/Invoice/Document/class-basedocument.php:306
 msgid "Total amount"
 msgstr "Обща сума"
 
@@ -5943,73 +5943,73 @@ msgstr "Сума за плащане"
 msgid "The invoice has been issued on the basis of Article 113, paragraph 9 of the Bulgarian VAT Act."
 msgstr "Фактурата е издадена на основание чл. 113, ал. 9 от ЗДДС."
 
-#: app/Invoice/Document/class-basedocument.php:259 app/Invoice/Document/class-creditnotice.php:87 app/Invoice/Document/class-nrarefunded.php:86
+#: app/Invoice/Document/class-basedocument.php:258 app/Invoice/Document/class-creditnotice.php:87 app/Invoice/Document/class-nrarefunded.php:86
 msgid "Date of tax. event"
 msgstr "Дата на дан. събитие"
 
-#: app/Invoice/Document/class-basedocument.php:263 app/Invoice/Document/class-creditnotice.php:91 app/Invoice/Document/class-nrarefunded.php:90
+#: app/Invoice/Document/class-basedocument.php:262 app/Invoice/Document/class-creditnotice.php:91 app/Invoice/Document/class-nrarefunded.php:90
 msgid "Due date"
 msgstr "Срок за плащане"
 
-#: app/Invoice/Document/class-basedocument.php:267 app/Invoice/Document/class-creditnotice.php:95 app/Invoice/Document/class-nrarefunded.php:94
+#: app/Invoice/Document/class-basedocument.php:266 app/Invoice/Document/class-creditnotice.php:95 app/Invoice/Document/class-nrarefunded.php:94
 msgid "Place of transaction"
 msgstr "Място на сделката"
 
-#: app/Invoice/Document/class-basedocument.php:271 app/Invoice/Document/class-creditnotice.php:99 app/Invoice/Document/class-nrarefunded.php:98
+#: app/Invoice/Document/class-basedocument.php:270 app/Invoice/Document/class-creditnotice.php:99 app/Invoice/Document/class-nrarefunded.php:98
 msgid "Order Number"
 msgstr "Номер на поръчката"
 
-#: app/Invoice/Document/class-basedocument.php:295
+#: app/Invoice/Document/class-basedocument.php:294
 msgid "Qty"
 msgstr "Кол."
 
-#: app/Invoice/Document/class-basedocument.php:299
+#: app/Invoice/Document/class-basedocument.php:298
 msgid "Vat"
 msgstr "ДДС"
 
 #. translators: %s: company EIK
-#: app/Invoice/Document/class-basedocument.php:355 app/Invoice/Document/class-basedocument.php:395
+#: app/Invoice/Document/class-basedocument.php:354 app/Invoice/Document/class-basedocument.php:394
 #, php-format
 msgid "EIK: %s"
 msgstr "ЕИК: %s"
 
 #. translators: %s: VAT number
-#: app/Invoice/Document/class-basedocument.php:357 app/Invoice/Document/class-basedocument.php:397
+#: app/Invoice/Document/class-basedocument.php:356 app/Invoice/Document/class-basedocument.php:396
 #, php-format
 msgid "VAT Number: %s"
 msgstr "ДДС номер: %s"
 
 #. translators: %s: name of the responsible person (MOL)
-#: app/Invoice/Document/class-basedocument.php:359 app/Invoice/Document/class-basedocument.php:399
+#: app/Invoice/Document/class-basedocument.php:358 app/Invoice/Document/class-basedocument.php:398
 #, php-format
 msgid "MOL: %s"
 msgstr "МОЛ: %s"
 
 #. translators: %s: phone number
-#: app/Invoice/Document/class-basedocument.php:362 app/Invoice/Document/class-basedocument.php:380
+#: app/Invoice/Document/class-basedocument.php:361 app/Invoice/Document/class-basedocument.php:379
 #, php-format
 msgid "Phone: %s"
 msgstr "Телефон: %s"
 
 #. translators: %s: email address
-#: app/Invoice/Document/class-basedocument.php:364 app/Invoice/Document/class-basedocument.php:382
+#: app/Invoice/Document/class-basedocument.php:363 app/Invoice/Document/class-basedocument.php:381
 #, php-format
 msgid "E-mail: %s"
 msgstr "Имейл: %s"
 
-#: app/Invoice/Document/class-basedocument.php:443
+#: app/Invoice/Document/class-basedocument.php:442
 msgid "Bank account"
 msgstr "Банкова сметка"
 
-#: app/Invoice/Document/class-basedocument.php:451
+#: app/Invoice/Document/class-basedocument.php:450
 msgid "Compiled by"
 msgstr "Съставил"
 
-#: app/Invoice/Document/class-basedocument.php:455
+#: app/Invoice/Document/class-basedocument.php:454
 msgid "Received"
 msgstr "Получил"
 
-#: app/Invoice/Document/class-basedocument.php:490
+#: app/Invoice/Document/class-basedocument.php:489
 msgid "Bank name"
 msgstr "Банка"
 
@@ -6041,11 +6041,11 @@ msgstr "Документ за продажба - Оригинал"
 msgid "Refunded Order - Original"
 msgstr "Документ за възстановяване - Оригинал"
 
-#: app/Invoice/Order/class-order.php:271
+#: app/Invoice/Order/class-order.php:273
 msgid "Subtotal:"
 msgstr "Междинна сума:"
 
-#: app/Invoice/Order/class-order.php:338
+#: app/Invoice/Order/class-order.php:340
 msgid "Total due"
 msgstr "Сума за плащане"
 
@@ -6704,15 +6704,15 @@ msgstr "Спиди - %s"
 msgid "Nashenski Commerce requires PHP version %1$s+ and WP version %2$s+, plugin is currently NOT RUNNING."
 msgstr "Нашенски Комерс изисква PHP версия %1$s+ и WP версия %2$s+; разширението в момента НЕ РАБОТИ."
 
-#: nashenski-commerce.php:143
+#: nashenski-commerce.php:144
 msgid "Nashenski Commerce is paused: please deactivate Bulgarisation for WooCommerce first. Your settings and orders can be imported afterwards."
 msgstr "Нашенски Комерс е на пауза: първо деактивирайте Bulgarisation for WooCommerce. След това можете да импортирате настройките и поръчките си."
 
-#: nashenski-commerce.php:155
+#: nashenski-commerce.php:156
 msgid "Nashenski Commerce - Please enable WooCommerce first."
 msgstr "Нашенски Комерс: първо включете WooCommerce."
 
-#: nashenski-commerce.php:170
+#: nashenski-commerce.php:171
 msgid "Please run `composer install` in the plugin folder `nashenski-commerce`"
 msgstr "Изпълнете `composer install` в папката на разширението `nashenski-commerce`"
 
