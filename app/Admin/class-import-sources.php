@@ -25,6 +25,13 @@ class Import_Sources {
 	const DISMISS        = 'nashenski_import_dismiss';
 	const DISMISS_OPTION = 'nashenski_import_notice_dismissed';
 
+	/**
+	 * Autoloaded, so document paths read it for free. "first": the N-18 plugin left documents or settings
+	 * and its import is not done; "again": it was active again after its import, which must run again;
+	 * "done": imported; empty: no N-18 data. Set by n18_refresh() (admin_init) and by the import.
+	 */
+	const N18_STATE = 'nashenski_n18_state';
+
 	/** The N-18 plugin's document types by the sequence of ours that continues them (its document_number()). */
 	const N18_SEQUENCES = array(
 		'purchase_order'        => 'next_invoice_number',
@@ -85,6 +92,7 @@ class Import_Sources {
 		add_action( 'admin_post_' . self::ACTION, array( __CLASS__, 'handle' ) );
 		add_action( 'admin_post_' . self::DISMISS, array( __CLASS__, 'dismiss' ) );
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_legacy_box' ), 10, 2 );
+		add_action( 'admin_init', array( __CLASS__, 'n18_refresh' ) );
 	}
 
 	/**
@@ -166,13 +174,15 @@ class Import_Sources {
 			return;
 		}
 
-		printf(
-			'<div class="notice notice-error"><p>%s %s</p></div>',
-			esc_html( self::paused_reason() ),
-			current_user_can( 'activate_plugins' )
-				? '<a href="' . esc_url( self::n18_plugins_url() ) . '">' . esc_html__( 'Go to Plugins', 'nashenski-commerce' ) . '</a>'
-				: esc_html__( 'Ask an administrator to deactivate it.', 'nashenski-commerce' )
-		);
+		if ( ! self::n18_active() ) {
+			$action = '<a href="' . esc_url( Settings::url( 'help' ) . '#import' ) . '">' . esc_html__( 'Go to the import', 'nashenski-commerce' ) . '</a>';
+		} elseif ( current_user_can( 'activate_plugins' ) ) {
+			$action = '<a href="' . esc_url( self::n18_plugins_url() ) . '">' . esc_html__( 'Go to Plugins', 'nashenski-commerce' ) . '</a>';
+		} else {
+			$action = esc_html__( 'Ask an administrator to deactivate it.', 'nashenski-commerce' );
+		}
+
+		printf( '<div class="notice notice-error"><p>%s %s</p></div>', esc_html( self::paused_reason() ), $action ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $action is built from escaped parts above.
 	}
 
 	/**
@@ -247,8 +257,8 @@ class Import_Sources {
 		}
 
 		foreach ( self::sources() as $slug => $source ) {
-			// "again": the N-18 plugin was active again after its import; a new run takes over its new numbers.
-			if ( ! $source['done'] || ! empty( $source['done']['again'] ) ) {
+			// The N-18 plugin was active again after its import: a new run takes over its new numbers.
+			if ( ! $source['done'] || ( 'mreja_n18' === $slug && 'again' === self::n18_state() ) ) {
 				$names[ $slug ] = $source['name'];
 			}
 		}
@@ -424,7 +434,8 @@ class Import_Sources {
 				break;
 
 			case 'mreja_n18':
-				self::n18( (array) get_option( 'notasuptooptions', array() ), $count );
+				$rerun = ! empty( ( (array) get_option( self::DONE_OPTION, array() ) )['mreja_n18'] );
+				self::n18( (array) get_option( 'notasuptooptions', array() ), $count, $notes, $rerun );
 				break;
 
 			case 'mreja_speedy':
@@ -601,7 +612,13 @@ class Import_Sources {
 			'time'   => time(),
 			'report' => $report,
 		);
+		if ( 'mreja_n18' === $slug ) {
+			$done[ $slug ]['last_id'] = self::n18_last_id(); // n18_refresh() compares it: a larger table means the plugin ran again.
+		}
 		update_option( self::DONE_OPTION, $done, false );
+		if ( 'mreja_n18' === $slug ) {
+			self::n18_set_state( 'done' );
+		}
 		wp_cache_flush();
 
 		return $report;
@@ -650,10 +667,12 @@ class Import_Sources {
 	/**
 	 * Company details and document numbers of the N-18 plugin.
 	 *
-	 * @param mixed $o O.
+	 * @param mixed $o     O.
 	 * @param mixed $count Count.
+	 * @param array $notes Lines added to the report.
+	 * @param bool  $rerun Whether it was imported before (the plugin was active again since).
 	 */
-	private static function n18( $o, &$count ) {
+	private static function n18( $o, &$count, &$notes = array(), $rerun = false ) {
 		$map = array(
 			'nap'     => array(
 				'company_name' => 'seller_company_name',
@@ -681,7 +700,7 @@ class Import_Sources {
 		}
 
 		// Order documents keep their numbers; the next numbers continue after the highest one.
-		self::n18_numbers( self::table_rows( 'notasupto_documents' ), $count );
+		self::n18_numbers( self::table_rows( 'notasupto_documents' ), $count, $notes, $rerun );
 
 		$count['settings'] += (int) \Nashenski\Invoice\Number_Allocator::continue_after(
 			function () {
@@ -694,27 +713,57 @@ class Import_Sources {
 	 * Order documents and invoices of the N-18 plugin keep their numbers on their orders. An order
 	 * that already has a number keeps it (import_number()), so running it twice is harmless.
 	 *
+	 * On a rerun, the plugin was active again and may have reused numbers Nashenski Commerce gave out
+	 * meanwhile: each order whose number clashes gets a note, and the report lists them to correct.
+	 *
 	 * @param array $rows  Rows of its documents table.
 	 * @param array $count Counters of the report.
+	 * @param array $notes Lines added to the report.
+	 * @param bool  $rerun Whether it was imported before.
 	 */
-	private static function n18_numbers( $rows, &$count ) {
-		$keys = array(
+	private static function n18_numbers( $rows, &$count, &$notes = array(), $rerun = false ) {
+		$keys    = array(
 			'purchase_order' => 'nashenski_order_number',
 			'invoice'        => 'nashenski_order_invoice_number',
 		);
+		$clashes = array();
 
 		foreach ( $rows as $row ) {
 			$order = isset( $keys[ $row['type'] ] ) ? wc_get_order( $row['order_id'] ) : null;
 
 			$option = 'purchase_order' === $row['type'] ? 'next_invoice_number' : 'next_invoice_separate_number';
+			if ( ! $order ) {
+				continue;
+			}
+
 			try {
-				if ( $order && \Nashenski\Invoice\Number_Allocator::import_number( $order, $keys[ $row['type'] ], $row['num'], $option ) ) {
+				if ( \Nashenski\Invoice\Number_Allocator::import_number( $order, $keys[ $row['type'] ], $row['num'], $option ) ) {
 					++$count['documents'];
+					continue;
 				}
+				// The order already has a number: a clash only when it is another one.
+				$clash = (int) $order->get_meta( $keys[ $row['type'] ] ) !== (int) $row['num'];
 			} catch ( \RuntimeException $e ) {
 				// A duplicate, empty or locked number: that order stays as it is and is reported.
 				++$count['skipped'];
+				$clash = true;
 			}
+
+			if ( $rerun && $clash ) {
+				$order->add_order_note(
+					sprintf(
+						/* translators: %s: document number */
+						__( 'The old N-18 plugin gave this order document number %s, which clashes with a number Nashenski Commerce already gave out. Correct the documents of this order.', 'nashenski-commerce' ),
+						$row['num']
+					)
+				);
+				$clashes[] = '#' . $order->get_order_number();
+			}
+		}
+
+		if ( $clashes ) {
+			/* translators: %s: order numbers */
+			$notes[] = sprintf( __( 'Orders whose N-18 number clashes; correct their documents: %s', 'nashenski-commerce' ), implode( ', ', array_unique( $clashes ) ) );
 		}
 	}
 
@@ -775,38 +824,129 @@ class Import_Sources {
 	}
 
 	/**
-	 * After the import of the mreja.net N-18 plugin, while it is active again, both would give out the
-	 * same document numbers: Nashenski Commerce then makes no documents and takes no numbers. The import
-	 * is marked to run again once the plugin is off; that run takes over the numbers it gave out meanwhile.
+	 * Whether Nashenski Commerce makes no documents and takes no numbers because of the mreja.net N-18
+	 * plugin: before its import ("first"), or after it was active again until its import runs again
+	 * ("again"). Both would give out the same document numbers. Reads the autoloaded state only; while
+	 * the plugin is active it also notices that by itself.
 	 *
-	 * @return bool Whether documents and numbering are paused.
+	 * @return bool
 	 */
 	public static function n18_paused() {
-		if ( ! self::n18_active() ) {
-			return false;
+		$state = self::n18_state();
+
+		if ( self::n18_active() && 'first' !== $state && 'again' !== $state ) {
+			$done  = (array) get_option( self::DONE_OPTION, array() );
+			$state = empty( $done['mreja_n18'] ) ? 'first' : 'again';
+			self::n18_set_state( $state );
 		}
 
-		$done = (array) get_option( self::DONE_OPTION, array() );
-
-		if ( empty( $done['mreja_n18'] ) ) {
-			return false;
-		}
-
-		if ( empty( $done['mreja_n18']['again'] ) ) {
-			$done['mreja_n18']['again'] = true;
-			update_option( self::DONE_OPTION, $done, false );
-		}
-
-		return true;
+		return 'first' === $state || 'again' === $state;
 	}
 
 	/**
-	 * Why documents are paused, for notices and the order screen.
+	 * The N-18 state (N18_STATE).
+	 *
+	 * @return string
+	 */
+	public static function n18_state() {
+		return (string) get_option( self::N18_STATE, '' );
+	}
+
+	/**
+	 * Saves the N-18 state. With "again", the import notice comes back even when it was dismissed.
+	 *
+	 * @param string $state State.
+	 */
+	private static function n18_set_state( $state ) {
+		if ( self::n18_state() !== $state ) {
+			update_option( self::N18_STATE, $state, true );
+		}
+
+		$dismissed = (array) get_option( self::DISMISS_OPTION, array() );
+		if ( 'again' === $state && in_array( 'mreja_n18', $dismissed, true ) ) {
+			update_option( self::DISMISS_OPTION, array_values( array_diff( $dismissed, array( 'mreja_n18' ) ) ), false );
+		}
+	}
+
+	/**
+	 * On admin pages: works out the N-18 state, so document paths only read the flag. A few cheap reads:
+	 * its options, whether its table has rows, and its last row id against the one the import saw.
+	 */
+	public static function n18_refresh() {
+		$all    = (array) get_option( self::DONE_OPTION, array() );
+		$done   = $all['mreja_n18'] ?? array();
+		$active = self::n18_active();
+		$data   = $active || self::n18_has_data(); // An active plugin makes its data.
+
+		// An import before 0.21.7 kept no last row: from now on, documents it makes are noticed.
+		if ( $done && ! isset( $done['last_id'] ) ) {
+			$done['last_id']  = self::n18_last_id();
+			$all['mreja_n18'] = $done;
+			update_option( self::DONE_OPTION, $all, false );
+		}
+
+		if ( ! $done ) {
+			$state = $data ? 'first' : '';
+		} elseif ( ! $data ) {
+			$state = 'done'; // Its data is gone, so a new import is impossible: no pause for ever.
+		} elseif ( $active || 'again' === self::n18_state() ) {
+			$state = 'again';
+		} elseif ( self::n18_last_id() > (int) $done['last_id'] ) {
+			$state = 'again'; // It made documents after the import, also when it was on and off without an admin page.
+		} else {
+			$state = 'done';
+		}
+
+		self::n18_set_state( $state );
+	}
+
+	/**
+	 * Whether the N-18 plugin left anything to import: its settings, or rows in its documents table.
+	 *
+	 * @return bool
+	 */
+	private static function n18_has_data() {
+		global $wpdb;
+
+		if ( get_option( 'notasuptooptions' ) ) {
+			return true;
+		}
+
+		$table = self::n18_table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- another plugin's own table, read on admin pages only.
+		return $table && (bool) $wpdb->get_var( $wpdb->prepare( 'SELECT 1 FROM %i LIMIT 1', $table ) );
+	}
+
+	/**
+	 * The last row id of the N-18 plugin's documents table, 0 without it.
+	 *
+	 * @return int
+	 */
+	private static function n18_last_id() {
+		global $wpdb;
+
+		$table = self::n18_table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one primary key lookup on another plugin's table.
+		return $table ? (int) $wpdb->get_var( $wpdb->prepare( 'SELECT MAX(id) FROM %i', $table ) ) : 0;
+	}
+
+	/**
+	 * Why documents are paused, for notices, notes and the order screen.
 	 *
 	 * @return string
 	 */
 	public static function paused_reason() {
-		return __( 'The old N-18 plugin is active again, so Nashenski Commerce has paused invoices and other documents: both would give out the same document numbers. Deactivate it, then run its import again from the Help page, which takes over the numbers it gave out meanwhile. Then use "Regenerate PDF\'s" for orders it did not document.', 'nashenski-commerce' );
+		if ( 'first' === self::n18_state() ) {
+			return self::n18_active()
+				? __( 'Nashenski Commerce makes no invoices or other documents yet: the old N-18 plugin has its own document numbers. Deactivate it and run its import from the Help page first; numbering then continues after its numbers. Then use "Regenerate PDF\'s" for orders without documents.', 'nashenski-commerce' )
+				: __( 'Nashenski Commerce makes no invoices or other documents yet: the old N-18 plugin left its document numbers on this site. Run its import from the Help page first; numbering then continues after its numbers. Then use "Regenerate PDF\'s" for orders without documents.', 'nashenski-commerce' );
+		}
+
+		return self::n18_active()
+			? __( 'The old N-18 plugin is active again and can reuse numbers Nashenski Commerce already gave out, so invoices and other documents are paused. Deactivate it at once, run its import again from the Help page and correct the orders it lists. Then use "Regenerate PDF\'s" for orders without documents.', 'nashenski-commerce' )
+			: __( 'Invoices and other documents are paused until the import of the old N-18 plugin is run again from the Help page, because it was active again after its import. Then correct the orders the import lists and use "Regenerate PDF\'s" for orders without documents.', 'nashenski-commerce' );
 	}
 
 	/**

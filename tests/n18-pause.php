@@ -412,6 +412,14 @@ namespace {
 			return $this->id;
 		}
 		/**
+		 * Order number.
+		 *
+		 * @return int
+		 */
+		public function get_order_number() {
+			return $this->id;
+		}
+		/**
 		 * Meta read.
 		 *
 		 * @param string $key Key.
@@ -518,6 +526,12 @@ namespace {
 			}
 			if ( 0 === strpos( $q, 'SHOW TABLES' ) ) {
 				return $a[0];
+			}
+			if ( 0 === strpos( $q, 'SELECT 1 FROM' ) ) {
+				return $GLOBALS['rows'] ? '1' : null;
+			}
+			if ( 0 === strpos( $q, 'SELECT MAX(id)' ) ) {
+				return $GLOBALS['rows'] ? (string) max( array_column( $GLOBALS['rows'], 'id' ) ) : null;
 			}
 			if ( 0 === strpos( $q, 'SELECT option_value' ) ) {
 				return $GLOBALS['options'][ $a[1] ] ?? null;
@@ -669,25 +683,56 @@ namespace Nashenski {
 	$five = array( row( 1, 'purchase_order', 150, 1 ), row( 2, 'credit_note', 155, 1 ), row( 3, 'purchase_order_cancel', 160, 1 ), row( 4, 'debit_note', 158, 2 ), row( 5, 'invoice', 120, 2 ) );
 
 	if ( ! $GLOBALS['active'] ) {
-		// The plugin is off: the import runs, each sequence continues after its own types.
+		// A store without any N-18 data is untouched.
+		fresh( array(), array() );
+		Import_Sources::n18_refresh();
+		check( '' === Import_Sources::n18_state() && false === Import_Sources::n18_paused(), 'a store without N-18 data is untouched' );
+
+		// N-18 data that is not imported yet: no documents and no numbers until the import, which the notice links to.
 		fresh( array( 'nashenski_settings_invoice_next_invoice_separate_number' => '0000000050' ), $five );
+		Import_Sources::n18_refresh();
+		check( 'first' === Import_Sources::n18_state() && Import_Sources::n18_paused() && false !== strpos( Import_Sources::paused_reason(), 'Run its import' ), 'its data, not imported yet: paused until the import' );
+		ob_start();
+		Import_Sources::n18_notice();
+		check( false !== strpos( ob_get_clean(), '/settings/help#import' ), 'the notice links to the import while the plugin is off' );
+		try {
+			Number_Allocator::allocate( wc_get_order( 9 ), 'nashenski_order_number', 'next_invoice_number' );
+			check( false, 'no number before the import' );
+		} catch ( \RuntimeException $e ) {
+			check( 0 === $GLOBALS['locks'], 'no number before the import' );
+		}
 		check( false !== strpos( help_import(), 'Import</a>' ), 'the Help page offers the import while the plugin is off' );
+
+		// The import: numbers taken over, each sequence after its own types, documents go on.
 		Import_Sources::import( 'mreja_n18' );
 		check( '0000000150' === wc_get_order( 1 )->get_meta( 'nashenski_order_number' ) && '0000000120' === wc_get_order( 2 )->get_meta( 'nashenski_order_invoice_number' ), 'the import takes over the numbers' );
 		check( '0000000161' === counter( 'next_invoice_number' ) && '0000000159' === counter( 'next_invoice_separate_number' ), 'separate counters continue after their own types: ' . counter( 'next_invoice_number' ) . ', ' . counter( 'next_invoice_separate_number' ) );
-		check( false === Import_Sources::n18_paused(), 'not paused while the plugin is off' );
+		check( 'done' === Import_Sources::n18_state() && false === Import_Sources::n18_paused() && 5 === n18_done()['last_id'], 'imported: documents go on, and the last row is kept' );
 
-		// It was active again for a while (the pause marked it): its import runs again and takes over its new numbers.
-		$done                       = $GLOBALS['options'][ Import_Sources::DONE_OPTION ];
-		$done['mreja_n18']['again'] = true;
-		$GLOBALS['options'][ Import_Sources::DONE_OPTION ] = $done;
-		$GLOBALS['rows']                                   = array_merge( $five, array( row( 6, 'purchase_order', 170, 3 ), row( 7, 'invoice', 165, 3 ), row( 8, 'purchase_order_cancel', 175, 1 ) ) );
-		check( false !== strpos( help_import(), 'Import</a>' ) && isset( Import_Sources::open_names()['mreja_n18'] ), 'after a reactivation the Help page and the notice offer the import again' );
+		// Nashenski gives out 161 to order 5. The plugin runs again (on and off without an admin page) and its
+		// own counter reuses 161 for order 4; it also documents order 3.
+		$GLOBALS['meta'][5]                                   = array( 'nashenski_order_number' => '0000000161' );
+		$GLOBALS['rows']                                      = array_merge( $five, array( row( 6, 'purchase_order', 170, 3 ), row( 7, 'invoice', 165, 3 ), row( 8, 'purchase_order_cancel', 175, 1 ), row( 9, 'purchase_order', 161, 4 ) ) );
+		$GLOBALS['options'][ Import_Sources::DISMISS_OPTION ] = array( 'mreja_n18' );
+		Import_Sources::n18_refresh();
+		check( 'again' === Import_Sources::n18_state() && Import_Sources::n18_paused() && false !== strpos( Import_Sources::paused_reason(), 'run again' ), 'its table grew after the import: paused, also with the plugin off' );
+		check( ! in_array( 'mreja_n18', $GLOBALS['options'][ Import_Sources::DISMISS_OPTION ], true ) && isset( Import_Sources::open_names()['mreja_n18'] ), 'the dismissed import notice comes back' );
+		check( false !== strpos( help_import(), 'Import</a>' ), 'the Help page offers the import again' );
+
+		// The rerun takes over its new numbers and lists the order whose number clashes, with a note on it.
 		$report = Import_Sources::import( 'mreja_n18' );
-		check( '0000000170' === wc_get_order( 3 )->get_meta( 'nashenski_order_number' ) && '0000000165' === wc_get_order( 3 )->get_meta( 'nashenski_order_invoice_number' ), 'the rerun takes over the numbers it gave out meanwhile' );
-		check( '0000000150' === wc_get_order( 1 )->get_meta( 'nashenski_order_number' ) && in_array( '2 document numbers', $report, true ), 'orders that already had a number keep it: ' . implode( ' / ', $report ) );
+		check( '0000000170' === wc_get_order( 3 )->get_meta( 'nashenski_order_number' ) && '0000000165' === wc_get_order( 3 )->get_meta( 'nashenski_order_invoice_number' ) && '0000000150' === wc_get_order( 1 )->get_meta( 'nashenski_order_number' ), 'the rerun takes over the new numbers, numbered orders keep theirs' );
+		check( ! wc_get_order( 4 )->get_meta( 'nashenski_order_number' ) && 1 === count( wc_get_order( 4 )->notes ) && false !== strpos( wc_get_order( 4 )->notes[0], '0000000161' ) && in_array( 'Orders whose N-18 number clashes; correct their documents: #4', $report, true ), 'a reused number is noted on its order and listed: ' . implode( ' / ', $report ) );
+		check( ! wc_get_order( 1 )->notes && ! wc_get_order( 3 )->notes, 'orders without a clash get no note' );
 		check( '0000000176' === counter( 'next_invoice_number' ) && '0000000166' === counter( 'next_invoice_separate_number' ), 'the counters continue after its new highest numbers: ' . counter( 'next_invoice_number' ) . ', ' . counter( 'next_invoice_separate_number' ) );
-		check( n18_done() && empty( n18_done()['again'] ) && false !== strpos( help_import(), 'Imported on' ), 'the rerun is recorded as done' );
+		check( 'done' === Import_Sources::n18_state() && false === Import_Sources::n18_paused() && false !== strpos( help_import(), 'Imported on' ), 'after the rerun documents go on' );
+
+		// Its data is gone while a rerun is due: a rerun is impossible, so no pause for ever.
+		Import_Sources::n18_refresh();
+		$GLOBALS['options'][ Import_Sources::N18_STATE ] = 'again';
+		$GLOBALS['rows']                                 = array();
+		Import_Sources::n18_refresh();
+		check( 'done' === Import_Sources::n18_state() && false === Import_Sources::n18_paused(), 'with its data gone the pause ends' );
 
 		// Shared numbering (empty separate counter): all five types continue the one counter.
 		fresh( array(), $five );
@@ -698,9 +743,9 @@ namespace Nashenski {
 		exec( escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( __FILE__ ) . ' active 2>&1', $output, $code ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec -- the plugin-active cases.
 		check( 0 === $code, 'plugin active: ' . implode( ' / ', $output ) );
 	} else {
-		// Active and not imported yet: the import is refused in the Help page, the notice and the handler.
+		// Active and not imported yet: paused, and the import is refused in the Help page, the notice and the handler.
 		fresh( array(), $five );
-		check( false === Import_Sources::n18_paused(), 'an active plugin that was never imported pauses nothing' );
+		check( true === Import_Sources::n18_paused() && 'first' === Import_Sources::n18_state() && false !== strpos( Import_Sources::paused_reason(), 'Deactivate it and run its import' ), 'active, not imported: paused until it is off and imported' );
 		$html = help_import();
 		check( false !== strpos( $html, 'Deactivate the N-18 plugin first, then import.' ) && false !== strpos( $html, '/admin/plugins.php' ) && false === strpos( $html, 'Import</a>' ), 'the Help page asks to deactivate it first, with the Plugins link' );
 		$GLOBALS['caps'] = array( 'manage_woocommerce' );
@@ -718,19 +763,21 @@ namespace Nashenski {
 		}
 		check( array( 'Deactivate the N-18 plugin first, then import.' ) === Import_Sources::import( 'mreja_n18' ) && ! n18_done() && ! wc_get_order( 1 )->get_meta( 'nashenski_order_number' ), 'the import itself refuses and changes nothing' );
 
-		// Active again after its import: no documents and no numbers, and it is marked for a new import.
+		// Active again after its import: no documents and no numbers until it is off and imported again.
 		fresh(
 			array(
 				Import_Sources::DONE_OPTION => array(
 					'mreja_n18' => array(
-						'time'   => 1,
-						'report' => array(),
+						'time'    => 1,
+						'report'  => array(),
+						'last_id' => 5,
 					),
 				),
+				Import_Sources::N18_STATE   => 'done',
 			),
 			$five
 		);
-		check( true === Import_Sources::n18_paused() && ! empty( n18_done()['again'] ), 'active again after its import: paused, and marked for a new import' );
+		check( true === Import_Sources::n18_paused() && 'again' === Import_Sources::n18_state() && false !== strpos( Import_Sources::paused_reason(), 'Deactivate it at once' ), 'active again after its import: paused, with the reason' );
 		try {
 			Number_Allocator::allocate( wc_get_order( 7 ), 'nashenski_order_number', 'next_invoice_number' );
 			check( false, 'an automatic number is refused while paused' );
@@ -746,7 +793,7 @@ namespace Nashenski {
 		Documents::generate_documents( 7 ); // Would need the document classes if it went on.
 		Documents::generate_refunded_documents( 8, 7 );
 		$notes = wc_get_order( 7 )->notes;
-		check( 1 === count( $notes ) && false !== strpos( $notes[0], 'run its import again' ), 'skipped documents leave one note that says what to do' );
+		check( 1 === count( $notes ) && 0 === strpos( $notes[0], 'No documents were made. The old N-18 plugin is active again' ), 'skipped documents leave one note that says what to do' );
 
 		// The error notice: for shop managers, with the link only for those who can deactivate plugins.
 		$GLOBALS['caps'] = array();

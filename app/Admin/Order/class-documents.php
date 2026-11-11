@@ -32,7 +32,8 @@ class Documents {
 
 		// shortcut: one note per order; a later pause on an order that got documents in between adds none, add a reset when that matters.
 		if ( $order && ! $order->get_meta( self::PAUSED_META ) ) {
-			$order->add_order_note( __( 'No documents were made: the old N-18 plugin is active again. Deactivate it, then run its import again from the Help page, which takes over the numbers it gave out meanwhile. Then use "Regenerate PDF\'s" for orders it did not document.', 'nashenski-commerce' ) );
+			/* translators: %s: why documents are paused, with what to do */
+			$order->add_order_note( sprintf( __( 'No documents were made. %s', 'nashenski-commerce' ), \Nashenski\Admin\Import_Sources::paused_reason() ) );
 			$order->update_meta_data( self::PAUSED_META, 'yes' );
 			$order->save();
 		}

@@ -590,6 +590,10 @@ class Setup_Wizard {
 			</div>
 		<?php endif; ?>
 
+		<?php if ( Import_Sources::n18_paused() ) : ?>
+			<div class="notice notice-error inline"><p><?php echo esc_html( Import_Sources::paused_reason() ); ?></p></div>
+		<?php endif; ?>
+
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 			<input type="hidden" name="action" value="<?php echo esc_attr( self::ACTION ); ?>">
 			<?php wp_nonce_field( self::ACTION, self::NONCE ); ?>

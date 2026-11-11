@@ -233,7 +233,7 @@ class Help_Page {
 				esc_html__( 'The order documents and invoices of Bulgarisation for WooCommerce move into the private documents folder and open from the order as before.', 'nashenski-commerce' ),
 				esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database.', 'nashenski-commerce' ),
 				esc_html__( 'While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused. Deactivate it before the import.', 'nashenski-commerce' ),
-				esc_html__( 'Deactivate the mreja.net Ordinance N-18 plugin before you import it: both would give out the same document numbers. If it is turned on again after the import, invoices and other documents pause until it is off and its import is run again; that run takes over the numbers it gave out meanwhile. Then use "Regenerate PDF\'s" for orders it did not document.', 'nashenski-commerce' ),
+				esc_html__( 'Import the mreja.net Ordinance N-18 plugin while it is off. Until its data is imported, Nashenski Commerce makes no invoices or other documents, because both would give out the same document numbers. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already gave out: documents pause until it is off and its import is run again. Correct the orders that import lists, then use "Regenerate PDF\'s" for orders without documents.', 'nashenski-commerce' ),
 				esc_html__( 'Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import.', 'nashenski-commerce' ),
 				esc_html__( 'Only users who can manage plugins see the import button. If an old document number clashes with a number already in use, that number is skipped and the summary says "N document numbers skipped (conflict)".', 'nashenski-commerce' ),
 			),
@@ -269,7 +269,7 @@ class Help_Page {
 		foreach ( Import_Sources::sources() as $slug => $source ) {
 			// The N-18 plugin is imported only while it is off; active again after its import, it is imported again.
 			$wait   = 'mreja_n18' === $slug && Import_Sources::n18_active();
-			$done   = empty( $source['done']['again'] ) ? $source['done'] : null;
+			$done   = ( 'mreja_n18' === $slug && 'again' === Import_Sources::n18_state() ) ? null : $source['done'];
 			$rows[] = array( $source['name'], $done, $can_import ? Import_Sources::url( $slug ) : '', $wait );
 		}
 
