@@ -6,12 +6,18 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
 ### Changes
 - WordPress.org review: the cache of courier offices, cities and streets moves from wp-content/cache/nashenski to the uploads folder (uploads/nashenski-cache, each site of a network has its own). The old folder is removed on update, and both are removed when the plugin is deleted.
-- The import from another plugin no longer deactivates that plugin (WordPress.org plugins must not change other plugins). After the import a notice asks you to deactivate it, with a link to the Plugins screen. The Help button is now "Import".
-- The notice after "Regenerate PDF's" on the orders list shows only on that screen and can be dismissed.
+- The import from another plugin no longer deactivates that plugin (WordPress.org plugins must not change other plugins). Until you deactivate it, a notice on the Dashboard, the Plugins screen and the Nashenski settings asks you to, with a link to the Plugins screen (the network one for a network-activated plugin). The Help button is now "Import".
+- Nashenski Commerce also pauses while Bulgarisation for WooCommerce 5.x is active, as it did for 4.x: both would number the same documents.
+- The notice after "Regenerate PDF's" on the orders list shows only on that screen, can be dismissed and reads "Documents of N orders were regenerated."
+- Cache and temporary files are written with WordPress's direct file access, so hosts set to FTP updates no longer break the update step or the courier cache.
+- Deleting the plugin removes the abandoned carts table and transients on every site of a network, before the cache folders.
 - The demos, docs and development files of the bundled libraries (FPDF tutorial, doc and makefont, the html5 entities script, PHPUnit and PHPStan files) are no longer shipped.
 - The original and the copy of a document are joined with FPDI directly. The PDF merger library (clegginabox/pdf-merger, which had no stable release) is no longer bundled.
 - The "Mathematically impossible prices" page explains the problem itself instead of linking to an outside article.
 - readme.txt: the description is in English only and shorter, and the changelog keeps the current version (all versions stay in this file).
+
+### Fixes
+- Documents and the NRA audit file: a courier delivery with no tax, on an order with no tax at all (for example goods at 0%), prints at 0% with its full price. Before, 20% was taken out of it (5.25 printed as 4.38 at 20%) and the lines added up to less than the order. Orders with other tax keep the old rule. Credit notes follow the order they refund.
 
 ## 0.21.6 (2026-11-11)
 

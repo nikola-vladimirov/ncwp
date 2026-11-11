@@ -107,14 +107,14 @@ Yes. Deactivate Bulgarisation, activate Nashenski Commerce, then press "Import" 
 
 == External services ==
 
-The plugin only contacts a service after you turn it on and enter your own account details for it.
+The plugin contacts a service only for a feature you turn on (a courier, a customer check, the VAT number check). Most need your account; the public price lists and BOX NOW and Pigeon Express location lists do not.
 
 * Courier websites (public price lists, only when you press "Check the courier website" and once a week): admin-ee.econt.com (Econt tariff PDF), services.speedy.bg/pricelist, pigeonexpress.com/prices-and-taxes. Nothing is sent except a normal page request.
 * Econt (shipping): prices, labels, offices, cities, shipment status and courier requests. Sends the receiver's name, phone, address or office, the parcel details and the cash on delivery amount when prices or labels are made. Hosts: ee.econt.com, demo.econt.com. Terms: https://www.econt.com/econt-express/terms-of-use
 * Econt office map: shown at checkout only when the customer presses "Choose on the map". The map page loads from officelocator.econt.com with the customer's town and the store address. Terms: https://www.econt.com/econt-express/terms-of-use
 * Speedy office map: shown at checkout only when the customer presses "Choose on the map". The map page loads from services.speedy.bg (it uses Google Maps). Only the Speedy town number is sent. Website: https://www.speedy.bg/
 * Speedy (shipping): same purpose and data. Hosts: api.speedy.bg, services.speedy.bg. Terms: https://api.speedy.bg/api/docs/#href-terms
-* BOX NOW (locker shipping): lockers, labels and status. Hosts: api-production.boxnow.bg, api-stage.boxnow.bg, locationapi-production.boxnow.bg, locationapi-stage.boxnow.bg (public locker list), map.boxnow.bg. Website: https://boxnow.bg/ Terms: https://boxnow.bg/terms-of-use-for-shipping-services Privacy policy: https://boxnow.bg/personal-data-processing-notice
+* BOX NOW (locker shipping): lockers, labels and status. Hosts: api-production.boxnow.bg, api-stage.boxnow.bg, locationapi-production.boxnow.bg, locationapi-stage.boxnow.bg (public locker list). Website: https://boxnow.bg/ Terms: https://boxnow.bg/terms-of-use-for-shipping-services Privacy policy: https://boxnow.bg/personal-data-processing-notice
 * Pigeon Express (shipping): offices, lockers, prices, labels and status. Hosts: api.pigeonexpress.com, api-demo.pigeonexpress.com. Without a Pigeon login, the checkout loads the public list of offices and lockers from pigeonexpress.com/api/locations (a normal page request, nothing about the customer is sent). Website: https://pigeonexpress.com/ Terms: https://pigeonexpress.com/terms Privacy policy: https://pigeonexpress.com/privacy
 * nekorekten.com (customer check): sends the customer phone number to look up reports about it, and, only when the store owner clicks "Send report" on an order, the report text with the name, phone number and email of that order (and edits or deletes a report sent from an order when the owner asks). Host: api.nekorekten.com. Terms: https://nekorekten.com/terms
 * Connectix (customer check): sends the customer's phone number to check their delivery record, and shipment data when tracking is on. Hosts: api.connectix.bg, api-sandbox.connectix.bg. Website: https://connectix.bg/ Terms: https://connectix.bg/bg/terms Privacy policy: https://connectix.bg/bg/privacy
@@ -123,11 +123,12 @@ The plugin only contacts a service after you turn it on and enter your own accou
 
 == Third-party libraries ==
 
-The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf php-font-lib (LGPL-2.1 or later) and php-svg-lib (LGPL-3.0 or later), which make the PDF documents; and Pimple, Masterminds HTML5, sabberworm PHP-CSS-Parser, setasign FPDI and FPDF, chillerlan php-qrcode and php-settings-container, ddeboer VATIN and PSR container (all MIT). Their licences are in each library's folder.
+The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf php-font-lib (LGPL-2.1 or later) and php-svg-lib (LGPL-3.0 or later), which make the PDF documents; and Pimple, Masterminds HTML5, sabberworm PHP-CSS-Parser, setasign FPDI and FPDF, chillerlan php-settings-container, ddeboer VATIN and PSR container (all MIT); and chillerlan php-qrcode (MIT or Apache-2.0). Their licences are in each library's folder.
 
 == Changelog ==
 
-All versions: CHANGELOG.md in the plugin folder, or the "Changelog" link of the plugin on the Plugins screen.
+All versions: CHANGELOG.md in the plugin folder (Plugins screen > Changelog).
 
 = 0.21.7 =
-* Changes: The courier cache moves to the uploads folder, the import asks you to deactivate the old plugin instead of doing it, and library demo files are no longer shipped.
+* Changes: The courier cache is in the uploads folder, the import asks you to deactivate the old plugin, and library demo files are gone.
+* Fixed: A delivery with no VAT, on an order with no VAT, prints at 0% on documents and in the NRA file.
