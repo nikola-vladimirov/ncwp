@@ -38,8 +38,8 @@ class Import_Sources {
 	);
 
 	/**
-	 * Whether the last n18_paused() was true only because numbering could not continue yet (the lock was
-	 * busy, or a storefront request waits for an admin request to catch up): paused_reason() says so.
+	 * Whether the last n18_paused() was true only because numbering could not continue yet (the lock
+	 * timed out, or an order could not be saved): paused_reason() says so, Documents::paused() retries.
 	 *
 	 * @var bool
 	 */
@@ -709,8 +709,9 @@ class Import_Sources {
 	 *
 	 * @param array $rows  Rows of its documents table.
 	 * @param array $count Counters of the report.
+	 * @param bool  $note  Note each number that is not taken over on its order (the catch-up has no report).
 	 */
-	private static function n18_numbers( $rows, &$count ) {
+	private static function n18_numbers( $rows, &$count, $note = false ) {
 		$keys = array(
 			'purchase_order' => 'nashenski_order_number',
 			'invoice'        => 'nashenski_order_invoice_number',
@@ -720,13 +721,30 @@ class Import_Sources {
 			$order = isset( $keys[ $row['type'] ] ) ? wc_get_order( $row['order_id'] ) : null;
 
 			$option = 'purchase_order' === $row['type'] ? 'next_invoice_number' : 'next_invoice_separate_number';
+			if ( ! $order ) {
+				continue;
+			}
+
 			try {
-				if ( $order && \Nashenski\Invoice\Number_Allocator::import_number( $order, $keys[ $row['type'] ], $row['num'], $option ) ) {
+				if ( \Nashenski\Invoice\Number_Allocator::import_number( $order, $keys[ $row['type'] ], $row['num'], $option ) ) {
 					++$count['documents'];
+					continue;
 				}
+				$taken = (int) $order->get_meta( $keys[ $row['type'] ] ) === (int) $row['num']; // Already there from an earlier run.
 			} catch ( \RuntimeException $e ) {
 				// A duplicate, empty or locked number: that order stays as it is and is reported.
 				++$count['skipped'];
+				$taken = false;
+			}
+
+			if ( $note && ! $taken ) {
+				$order->add_order_note(
+					sprintf(
+						/* translators: %s: document number */
+						__( 'The old N-18 plugin gave this order document number %s, but Nashenski Commerce could not take it over, because the order or another order already has that number. Check the documents of this order.', 'nashenski-commerce' ),
+						$row['num']
+					)
+				);
 			}
 		}
 	}
@@ -825,12 +843,14 @@ class Import_Sources {
 	/**
 	 * After the import of the mreja.net N-18 plugin, while that plugin is still active, both would give
 	 * out the same document numbers: Nashenski Commerce then makes no documents and takes no numbers.
-	 * Once it is off, the orders it documented meanwhile get its numbers and the counters continue after
-	 * its highest numbers (once, see N18_CONTINUED); then numbering goes on.
+	 * Once it is off, the first request that asks (any request) catches up the orders it documented
+	 * meanwhile and continues the counters after its highest numbers, once (N18_CONTINUED).
 	 *
 	 * @return bool Whether documents and numbering are paused.
 	 */
 	public static function n18_paused() {
+		static $running = false;
+
 		self::$busy = false;
 		$done       = (array) get_option( self::DONE_OPTION, array() );
 
@@ -843,6 +863,11 @@ class Import_Sources {
 			if ( get_option( self::N18_CONTINUED ) ) {
 				delete_option( self::N18_CONTINUED );
 			}
+			// An import before 0.21.7 kept no row id: the documents it makes from now on are caught up.
+			if ( ! isset( $done['mreja_n18']['n18_last_id'] ) ) {
+				$done['mreja_n18']['n18_last_id'] = self::n18_last_id();
+				update_option( self::DONE_OPTION, $done, false );
+			}
 			return true;
 		}
 
@@ -850,57 +875,63 @@ class Import_Sources {
 			return false;
 		}
 
-		// The catch-up loads and saves orders, so it runs in an admin, cron or WP-CLI request (deactivating
-		// the plugin is one). A storefront request waits for it, without a number.
-		if ( ! ( is_admin() && ! wp_doing_ajax() ) && ! wp_doing_cron() && ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+		// A number asked for while the catch-up saves orders waits; it never uses a counter that has not continued.
+		if ( $running ) {
 			self::$busy = true;
 			return true;
 		}
 
+		// On any request, under the numbering lock: the catch-up only has the documents made during the pause.
+		$running = true;
 		try {
-			self::n18_catch_up( $done );
 			\Nashenski\Invoice\Number_Allocator::continue_after(
 				function () {
 					return self::n18_highest();
 				},
-				self::N18_CONTINUED
+				self::N18_CONTINUED,
+				function () {
+					self::n18_catch_up();
+				}
 			);
-		} catch ( \RuntimeException $e ) {
-			self::$busy = true; // The numbering lock was busy: no numbers until the counters have continued.
+		} catch ( \Throwable $e ) {
+			// A busy lock, or an order that could not be saved: no numbers yet, Documents::paused() retries later.
+			wc_get_logger()->error( 'Document numbering could not continue after the N-18 plugin: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
+			self::$busy = true;
 			return true;
+		} finally {
+			$running = false;
 		}
 
 		return false;
 	}
 
 	/**
-	 * The orders the N-18 plugin documented after its import (or the last catch-up) get its numbers and
-	 * keep its documents, as in the import, so "Regenerate PDF's" never gives them a second number.
-	 * Running it twice is harmless: an order with a number keeps it, and kept rows are matched by id.
-	 *
-	 * @param array $done Imports done.
+	 * Under the numbering lock: the orders the N-18 plugin documented after its import (or the last
+	 * catch-up) get its numbers and keep its documents, as in the import, so "Regenerate PDF's" never
+	 * gives them a second number. Running it twice is harmless: an order with a number keeps it, and
+	 * kept rows are matched by id. With nothing new it is one primary key lookup.
 	 */
-	private static function n18_catch_up( $done ) {
+	private static function n18_catch_up() {
+		$done  = (array) get_option( self::DONE_OPTION, array() );
 		$after = $done['mreja_n18']['n18_last_id'] ?? null;
 
-		// shortcut: imports before 0.21.7 kept no row id and deactivated the plugin, so they start from the current last row; documents it made after a reactivation are not caught up.
+		// shortcut: an import before 0.21.7 that never saw the plugin active again under 0.21.7 kept no row id; documents the plugin made between that import and the update are not caught up.
 		if ( null === $after ) {
 			$done['mreja_n18']['n18_last_id'] = self::n18_last_id();
 			update_option( self::DONE_OPTION, $done, false );
 			return;
 		}
 
-		$rows = self::table_rows( 'notasupto_documents', (int) $after );
-
-		if ( ! $rows ) {
+		if ( self::n18_last_id() <= (int) $after ) {
 			return;
 		}
 
+		$rows  = self::table_rows( 'notasupto_documents', (int) $after );
 		$count = array(
 			'documents' => 0,
 			'skipped'   => 0,
 		);
-		self::n18_numbers( $rows, $count );
+		self::n18_numbers( $rows, $count, true );
 		self::keep( 'mreja_n18', (int) $after );
 
 		$done['mreja_n18']['n18_last_id'] = max( array_map( 'intval', array_column( $rows, 'id' ) ) );
@@ -910,10 +941,11 @@ class Import_Sources {
 	/**
 	 * Why documents are paused, for notices, notes and the order screen.
 	 *
+	 * @param bool|null $busy The busy text, the pause text, or (null) the state of the last n18_paused().
 	 * @return string
 	 */
-	public static function paused_reason() {
-		if ( self::$busy ) {
+	public static function paused_reason( $busy = null ) {
+		if ( null === $busy ? self::$busy : $busy ) {
 			return __( 'Document numbering is busy. Please try again in a moment.', 'nashenski-commerce' );
 		}
 

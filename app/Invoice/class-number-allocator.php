@@ -22,6 +22,20 @@ class Number_Allocator {
 	 */
 	private static $issuing = false;
 
+	/**
+	 * Whether a call inside continue_after()'s $before may run under the lock this request holds.
+	 *
+	 * @var bool
+	 */
+	private static $reentrant = false;
+
+	/**
+	 * The N-18 plugin's table by table prefix, for the current locked section (n18_used()).
+	 *
+	 * @var array
+	 */
+	private static $n18_tables = array();
+
 	/** Cache group for reads inside one locked section; see forget(). */
 	const CACHE_GROUP = 'nashenski_numbers';
 
@@ -61,12 +75,16 @@ class Number_Allocator {
 	 */
 	private static function locked( $callback ) {
 		global $wpdb;
+		if ( self::$issuing && self::$reentrant ) {
+			return $callback(); // Already under this request's lock (continue_after()'s $before).
+		}
 		$lock = 'nashenski_numbers_' . md5( DB_NAME . ':' . $wpdb->options );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching -- the result of taking a named lock must never be cached.
 		if ( self::$issuing || '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', $lock ) ) ) {
 			throw new \RuntimeException( 'Could not lock document numbering. Please retry.' );
 		}
-		self::$issuing = true;
+		self::$issuing    = true;
+		self::$n18_tables = array();
 		wp_cache_add_non_persistent_groups( self::CACHE_GROUP );
 		self::forget();
 		try {
@@ -219,15 +237,16 @@ class Number_Allocator {
 	 * @param int    $number Number.
 	 * @param string $option Sequence setting.
 	 * @param int    $except Order id to leave out.
+	 * @param bool   $n18    Also look in the N-18 plugin's documents (n18_used()).
 	 * @return string|null
 	 * @throws \RuntimeException When the read fails.
 	 */
-	private static function used( $number, $option, $except = 0 ) {
+	private static function used( $number, $option, $except = 0, $n18 = false ) {
 		global $wpdb;
 		list( $table, $column ) = self::storage();
 		$keys                   = self::keys( $option );
 		$args                   = array_merge( array( $column, $table ), $keys, array( $number, $column, $except ) );
-		$key                    = self::key( 'used', $args );
+		$key                    = self::key( 'used', array_merge( $args, array( $n18 ) ) );
 		$hit                    = wp_cache_get( $key, self::CACHE_GROUP );
 		if ( is_array( $hit ) ) {
 			return $hit[0];
@@ -236,11 +255,23 @@ class Number_Allocator {
 		if ( $wpdb->last_error ) {
 			throw new \RuntimeException( 'Could not read document numbering.' );
 		}
-		if ( null === $value ) {
+		if ( null === $value && $n18 ) {
 			$value = self::n18_used( $number, $option, $except );
 		}
 		wp_cache_set( $key, array( $value ), self::CACHE_GROUP, MINUTE_IN_SECONDS );
 		return $value;
+	}
+
+	/**
+	 * Within a day of the counters continuing after the N-18 plugin (Import_Sources::N18_CONTINUED): a
+	 * request that still had it loaded can give out a number until then. Later, automatic numbers skip
+	 * its table, which has no index on the number.
+	 *
+	 * @return bool
+	 */
+	private static function n18_recent() {
+		$since = class_exists( \Nashenski\Admin\Import_Sources::class ) ? (int) get_option( \Nashenski\Admin\Import_Sources::N18_CONTINUED ) : 0;
+		return $since && time() - $since < DAY_IN_SECONDS;
 	}
 
 	/**
@@ -255,15 +286,15 @@ class Number_Allocator {
 	 */
 	private static function n18_used( $number, $option, $except ) {
 		global $wpdb;
-		static $table = null;
-		$types        = class_exists( \Nashenski\Admin\Import_Sources::class ) ? \Nashenski\Admin\Import_Sources::n18_types( $option ) : array();
+		$types = class_exists( \Nashenski\Admin\Import_Sources::class ) ? \Nashenski\Admin\Import_Sources::n18_types( $option ) : array();
 		if ( ! $types ) {
 			return null;
 		}
-		if ( null === $table ) {
-			$table = $wpdb->prefix . 'notasupto_documents';
-			$table = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) === $table ? $table : ''; // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching -- once per request.
+		if ( ! isset( self::$n18_tables[ $wpdb->prefix ] ) ) {
+			$name                              = $wpdb->prefix . 'notasupto_documents';
+			self::$n18_tables[ $wpdb->prefix ] = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $name ) ) === $name ? $name : ''; // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching -- once per locked section and site.
 		}
+		$table = self::$n18_tables[ $wpdb->prefix ];
 		if ( ! $table ) {
 			return null;
 		}
@@ -346,15 +377,24 @@ class Number_Allocator {
 	 *
 	 * @param callable $highest Returns sequence setting => highest number used elsewhere; called under the lock, after the flag check.
 	 * @param string   $flag    Option that records it was done, or ''.
+	 * @param callable $before  Runs first, under the same lock; it may take numbers (import_number()).
 	 * @return int|false Counters moved, or false when $flag was already set.
 	 */
-	public static function continue_after( $highest, $flag = '' ) {
+	public static function continue_after( $highest, $flag = '', $before = null ) {
 		return self::locked(
-			function () use ( $highest, $flag ) {
+			function () use ( $highest, $flag, $before ) {
 				global $wpdb;
 				// Read past every cache: the other request may have set it a moment ago.
 				if ( $flag && null !== $wpdb->get_var( $wpdb->prepare( 'SELECT option_value FROM %i WHERE option_name = %s', $wpdb->options, $flag ) ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching -- see above.
 					return false;
+				}
+				if ( $before ) {
+					self::$reentrant = true;
+					try {
+						$before();
+					} finally {
+						self::$reentrant = false;
+					}
 				}
 				$moved = 0;
 				foreach ( $highest() as $option => $number ) {
@@ -402,9 +442,10 @@ class Number_Allocator {
 					return $row->meta_value;
 				}
 				$number = max( 1, (int) self::option( $option ) );
-				if ( self::used( $number, $option ) ) {
-					$n18    = class_exists( \Nashenski\Admin\Import_Sources::class ) ? \Nashenski\Admin\Import_Sources::n18_max( $option ) : 0;
-					$number = max( $number, (int) self::highest( self::keys( $option ) ) + 1, $n18 + 1 );
+				$n18    = self::n18_recent();
+				if ( self::used( $number, $option, 0, $n18 ) ) {
+					$n18_max = $n18 ? \Nashenski\Admin\Import_Sources::n18_max( $option ) : 0;
+					$number  = max( $number, (int) self::highest( self::keys( $option ) ) + 1, $n18_max + 1 );
 				}
 				if ( ! is_int( $number ) || $number >= PHP_INT_MAX ) {
 					throw new \RuntimeException( 'Document numbering sequence exhausted.' );
@@ -429,7 +470,7 @@ class Number_Allocator {
 		return self::locked(
 			function () use ( $order, $number, $own_program ) {
 				$option = self::option( 'next_invoice_separate_number' ) ? 'next_invoice_separate_number' : 'next_invoice_number';
-				if ( self::used( (int) $number, $option, $order->get_id() ) ) {
+				if ( self::used( (int) $number, $option, $order->get_id(), true ) ) {
 						/* translators: %s: invoice number */
 						return sprintf( __( 'Number %s is already used by another order. Choose another invoice number.', 'nashenski-commerce' ), str_pad( (int) $number, 10, '0', STR_PAD_LEFT ) );
 				}
