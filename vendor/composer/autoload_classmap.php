@@ -6,7 +6,6 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Clegginabox\\PDFMerger\\PDFMerger' => $vendorDir . '/clegginabox/pdf-merger/src/PDFMerger/PDFMerger.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'Ddeboer\\Vatin\\Exception\\InvalidInputException' => $vendorDir . '/ddeboer/vatin/src/Exception/InvalidInputException.php',
     'Ddeboer\\Vatin\\Exception\\MaxConcurrentRequestsException' => $vendorDir . '/ddeboer/vatin/src/Exception/MaxConcurrentRequestsException.php',

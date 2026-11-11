@@ -17,7 +17,6 @@ vendor/setasign/fpdf/*.htm export-ignore
 vendor/setasign/fpdf/fpdf.css export-ignore
 vendor/setasign/fpdf/install.txt export-ignore
 vendor/masterminds/html5/bin export-ignore
-vendor/clegginabox/pdf-merger/src/PDFMerger/sample.php export-ignore
 vendor/**/phpunit.xml* export-ignore
 vendor/**/phpstan* export-ignore
 vendor/**/*.neon export-ignore

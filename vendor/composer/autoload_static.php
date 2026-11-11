@@ -99,7 +99,6 @@ class ComposerStaticInitc99bf7064231b3cd39cfe28b0614d582
     );
 
     public static $classMap = array (
-        'Clegginabox\\PDFMerger\\PDFMerger' => __DIR__ . '/..' . '/clegginabox/pdf-merger/src/PDFMerger/PDFMerger.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Ddeboer\\Vatin\\Exception\\InvalidInputException' => __DIR__ . '/..' . '/ddeboer/vatin/src/Exception/InvalidInputException.php',
         'Ddeboer\\Vatin\\Exception\\MaxConcurrentRequestsException' => __DIR__ . '/..' . '/ddeboer/vatin/src/Exception/MaxConcurrentRequestsException.php',

@@ -113,6 +113,30 @@ class PDF {
 	}
 
 	/**
+	 * Joins PDF files into one, in the order given. Each page keeps its size and orientation.
+	 *
+	 * @param string[] $files PDF file paths.
+	 * @return string PDF data.
+	 */
+	public static function merge( $files ) {
+		$pdf = new \setasign\Fpdi\Fpdi();
+
+		foreach ( $files as $file ) {
+			$pages = $pdf->setSourceFile( $file );
+
+			for ( $page = 1; $page <= $pages; $page++ ) {
+				$template = $pdf->importPage( $page );
+				$size     = $pdf->getTemplateSize( $template );
+
+				$pdf->AddPage( $size['orientation'], array( $size['width'], $size['height'] ) );
+				$pdf->useTemplate( $template );
+			}
+		}
+
+		return $pdf->Output( 'S' );
+	}
+
+	/**
 	 * Replaces the %PC% placeholder with the page count.
 	 *
 	 * @param Dompdf $dompdf Rendered dompdf.

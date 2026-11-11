@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'a91be89b6f37c4361645a090064345e9be2f368a',
+        'reference' => '5d863238e2e3dcb1c2700d00a7e4b7cfc2fa0979',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'a91be89b6f37c4361645a090064345e9be2f368a',
+            'reference' => '5d863238e2e3dcb1c2700d00a7e4b7cfc2fa0979',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -35,17 +35,6 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../chillerlan/php-settings-container',
             'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'clegginabox/pdf-merger' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => '998997f71bc0bc82c987707899f12d3d40421b24',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../clegginabox/pdf-merger',
-            'aliases' => array(
-                0 => '9999999-dev',
-            ),
             'dev_requirement' => false,
         ),
         'ddeboer/vatin' => array(

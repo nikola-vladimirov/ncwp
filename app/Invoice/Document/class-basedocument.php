@@ -10,7 +10,6 @@ namespace Nashenski\Invoice\Document;
 use Nashenski\Invoice\Order\Order;
 use Nashenski\Invoice\PDF\PDF;
 use Nashenski\File;
-use Clegginabox\PDFMerger\PDFMerger;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -628,10 +627,7 @@ class BaseDocument {
 			$this->set_title( $copy_title );
 			File::put_to_file( $copy, $this->pdf->generate() );
 
-			$merger = new PDFMerger();
-			$merger->addPDF( $original );
-			$merger->addPDF( $copy );
-			$merged = $merger->merge( 'string' );
+			$merged = PDF::merge( array( $original, $copy ) );
 		} finally {
 			wp_delete_file( $original );
 			wp_delete_file( $copy );

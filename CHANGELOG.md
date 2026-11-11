@@ -8,7 +8,8 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 - WordPress.org review: the cache of courier offices, cities and streets moves from wp-content/cache/nashenski to the uploads folder (uploads/nashenski-cache, each site of a network has its own). The old folder is removed on update, and both are removed when the plugin is deleted.
 - The import from another plugin no longer deactivates that plugin (WordPress.org plugins must not change other plugins). After the import a notice asks you to deactivate it, with a link to the Plugins screen. The Help button is now "Import".
 - The notice after "Regenerate PDF's" on the orders list shows only on that screen and can be dismissed.
-- The demos, docs and development files of the bundled libraries (FPDF tutorial, doc and makefont, the html5 entities script, the PDF merger sample, PHPUnit and PHPStan files) are no longer shipped.
+- The demos, docs and development files of the bundled libraries (FPDF tutorial, doc and makefont, the html5 entities script, PHPUnit and PHPStan files) are no longer shipped.
+- The original and the copy of a document are joined with FPDI directly. The PDF merger library (clegginabox/pdf-merger, which had no stable release) is no longer bundled.
 - The "Mathematically impossible prices" page explains the problem itself instead of linking to an outside article.
 - readme.txt: the description is in English only and shorter, and the changelog keeps the current version (all versions stay in this file).
 
