@@ -24,7 +24,7 @@ Nashenski Commerce adds what a Bulgarian online store needs to WooCommerce. Ever
 * Order statuses that follow the shipment (delivered or returned) for Econt, Speedy and BOX NOW.
 * Live shipping prices with your courier account, or from the courier's built-in public price list when you have no account yet.
 * Labels, label printing and shipment status updates from the order screen.
-* Works with the classic checkout, the block checkout and page builder checkouts, multi-step ones included.
+* Works with classic, block and page builder checkouts, multi-step ones included.
 * Office, locker and address pickers with search, and the courier's map for Econt and Speedy.
 * Shipping options as cards with courier logos, styled by your theme or a token-based CSS framework such as TokenForge.
 
@@ -90,7 +90,7 @@ Yes. It works with the classic checkout, the block checkout and checkout pages b
 
 = Can I move from Bulgarisation? =
 
-Yes. Deactivate Bulgarisation, activate Nashenski Commerce and press "Import" on its Help tab. Your settings, shipping zones and order data come along. After an import from the mreja.net N-18 plugin, documents pause until you deactivate that plugin.
+Yes. Deactivate Bulgarisation, activate Nashenski Commerce and press "Import" on its Help tab. Your settings, shipping zones and order data come along. After an import from the mreja.net N-18 plugin, documents pause until you deactivate it; orders it documented keep its numbers.
 
 == Screenshots ==
 
@@ -126,5 +126,5 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 All versions: CHANGELOG.md in the plugin folder (Plugins screen > Changelog).
 
 = 0.21.7 =
-* Changes: The courier cache is in the uploads folder, the import asks you to deactivate the old plugin, and library demo files are gone.
+* Changes: The courier cache is in the uploads folder, the import asks you to deactivate the old plugin, and library demos are gone.
 * Fixed: A delivery with no VAT, on an order with no VAT, prints at 0% on documents and in the NRA file.

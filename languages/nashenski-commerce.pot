@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 14:15+0000\n"
-"PO-Revision-Date: 2026-11-11 14:15+0000\n"
+"POT-Creation-Date: 2026-11-11 16:24+0000\n"
+"PO-Revision-Date: 2026-11-11 16:24+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -130,7 +130,7 @@ msgstr ""
 msgid "Emptied"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:293 app/Admin/class-import-sources.php:284 app/Admin/class-migration.php:126
+#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:293 app/Admin/class-import-sources.php:311 app/Admin/class-migration.php:126
 msgid "You do not have permission to perform this action."
 msgstr ""
 
@@ -1481,7 +1481,7 @@ msgid "While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Com
 msgstr ""
 
 #: app/Admin/class-help-page.php:236
-msgid "After the import of the mreja.net Ordinance N-18 plugin, invoices and other documents are paused while that plugin is still active, because both would give out the same document numbers. Orders made meanwhile get a note. Deactivate it: numbering carries on after its last number, and \"Regenerate PDF's\" makes the missing documents."
+msgid "After the import of the mreja.net Ordinance N-18 plugin, invoices and other documents are paused while that plugin is still active, because both would give out the same document numbers. Orders made meanwhile get a note. Deactivate it: numbering carries on after its last number, and orders that plugin documented keep its numbers. Use \"Regenerate PDF's\" only on orders it did not document."
 msgstr ""
 
 #: app/Admin/class-help-page.php:237
@@ -1540,7 +1540,7 @@ msgstr ""
 msgid "The order note \"Some documents were not generated\" means a document failed (the note gives the reason). The refund, renewal or checkout still went through. Fix the cause and make the document again from the order."
 msgstr ""
 
-#: app/Admin/class-help-page.php:266 app/Admin/class-import-sources.php:246
+#: app/Admin/class-help-page.php:266 app/Admin/class-import-sources.php:273
 msgid "Bulgarisation for WooCommerce"
 msgstr ""
 
@@ -1602,80 +1602,84 @@ msgstr ""
 msgid "All recommended settings are in place."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:89
+#: app/Admin/class-import-sources.php:106
 msgid "Econt Express shipping method (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:90
+#: app/Admin/class-import-sources.php:107
 msgid "BOX NOW Delivery (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:91
+#: app/Admin/class-import-sources.php:108
 msgid "Ordinance N-18 light regime (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:92
+#: app/Admin/class-import-sources.php:109
 msgid "Speedy shipping method (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:93
+#: app/Admin/class-import-sources.php:110
 msgid "Pigeon Express shipping (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:94
+#: app/Admin/class-import-sources.php:111
 msgid "Change Speedy and Econt Shipping Methods (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:95
+#: app/Admin/class-import-sources.php:112
 msgid "Drusoft Shipping for Econt"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:96
+#: app/Admin/class-import-sources.php:113
 msgid "Drusoft Shipping for Speedy"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:97
+#: app/Admin/class-import-sources.php:114
 msgid "Econt Delivery (Econt)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:98
+#: app/Admin/class-import-sources.php:115
 msgid "Speedy Shipping (Speedy)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:99
+#: app/Admin/class-import-sources.php:116
 msgid "WooCommerce Speedy Offices"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:177 app/Admin/class-import-sources.php:629
+#: app/Admin/class-import-sources.php:185
+msgid "Ask an administrator to deactivate it."
+msgstr ""
+
+#: app/Admin/class-import-sources.php:204 app/Admin/class-import-sources.php:659
 msgid "Go to Plugins"
 msgstr ""
 
 #. translators: %s: plugin name
-#: app/Admin/class-import-sources.php:196
+#: app/Admin/class-import-sources.php:223
 #, php-format
 msgid "Imported from %s:"
 msgstr ""
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:226
+#: app/Admin/class-import-sources.php:253
 #, php-format
 msgid "Nashenski Commerce can take over the data of %s."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:231 app/Admin/class-setup-wizard.php:588
+#: app/Admin/class-import-sources.php:258 app/Admin/class-setup-wizard.php:588
 msgid "Review and import"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:233 app/Admin/class-settings-page.php:809 app/Admin/class-setup-wizard.php:166
+#: app/Admin/class-import-sources.php:260 app/Admin/class-settings-page.php:809 app/Admin/class-setup-wizard.php:166
 msgid "Dismiss"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:496 app/Admin/class-import-sources.php:525
+#: app/Admin/class-import-sources.php:523 app/Admin/class-import-sources.php:552
 msgid "The Econt key of that plugin works only with Econt's \"Deliver with Econt\" service. Enter your Econt username and password in Couriers > Econt."
 msgstr ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:551
+#: app/Admin/class-import-sources.php:578
 #, php-format
 msgid "%d setting"
 msgid_plural "%d settings"
@@ -1683,7 +1687,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:553
+#: app/Admin/class-import-sources.php:580
 #, php-format
 msgid "%d order waybill"
 msgid_plural "%d order waybills"
@@ -1691,7 +1695,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:555
+#: app/Admin/class-import-sources.php:582
 #, php-format
 msgid "%d shipping zone method"
 msgid_plural "%d shipping zone methods"
@@ -1699,7 +1703,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:560
+#: app/Admin/class-import-sources.php:587
 #, php-format
 msgid "%d document number"
 msgid_plural "%d document numbers"
@@ -1708,7 +1712,7 @@ msgstr[1] ""
 
 #. translators: %d: number
 #. translators: %d: number of document numbers
-#: app/Admin/class-import-sources.php:565 app/Admin/class-migration.php:106
+#: app/Admin/class-import-sources.php:592 app/Admin/class-migration.php:106
 #, php-format
 msgid "%d document number skipped (conflict)"
 msgid_plural "%d document numbers skipped (conflict)"
@@ -1716,13 +1720,13 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of settings
-#: app/Admin/class-import-sources.php:570
+#: app/Admin/class-import-sources.php:597
 #, php-format
 msgid "Already set, kept as it is: %d"
 msgstr ""
 
 #. translators: %d: number of orders
-#: app/Admin/class-import-sources.php:577
+#: app/Admin/class-import-sources.php:604
 #, php-format
 msgid "%d order keeps everything the old plugin saved on it (see \"From earlier plugins\" on the order)"
 msgid_plural "%d orders keep everything the old plugin saved on them (see \"From earlier plugins\" on the order)"
@@ -1730,48 +1734,52 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:624
+#: app/Admin/class-import-sources.php:654
 #, php-format
 msgid "The import is done. Please deactivate %s: Nashenski Commerce does its work now."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:754
+#: app/Admin/class-import-sources.php:917
+msgid "Document numbering is busy. Please try again in a moment."
+msgstr ""
+
+#: app/Admin/class-import-sources.php:920
 msgid "Nashenski Commerce has paused invoices and other documents because the old N-18 plugin is still active. Both would give out the same document numbers. Deactivate it to continue; numbering then carries on after its last number."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:858
+#: app/Admin/class-import-sources.php:1035
 msgid "From earlier plugins"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:871
+#: app/Admin/class-import-sources.php:1048
 msgid "What the earlier plugins saved on this order, kept when their data was imported."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:914 app/Export/Builder/class-fields.php:338
+#: app/Admin/class-import-sources.php:1091 app/Export/Builder/class-fields.php:338
 msgid "Order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:915 app/Admin/Order/class-documents.php:313 app/Export/Builder/class-fields.php:339
+#: app/Admin/class-import-sources.php:1092 app/Admin/Order/class-documents.php:318 app/Export/Builder/class-fields.php:339
 msgid "Invoice"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:916 app/Export/Builder/class-fields.php:340
+#: app/Admin/class-import-sources.php:1093 app/Export/Builder/class-fields.php:340
 msgid "Credit note"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:917
+#: app/Admin/class-import-sources.php:1094
 msgid "Cancelled order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1243 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:682 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
+#: app/Admin/class-import-sources.php:1427 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:682 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
 msgid "To an office"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1244 app/Admin/class-import-sources.php:1245 app/Admin/class-setup-wizard.php:683 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
+#: app/Admin/class-import-sources.php:1428 app/Admin/class-import-sources.php:1429 app/Admin/class-setup-wizard.php:683 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
 msgid "To a parcel locker"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1246 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:684 app/Admin/Order/class-courier-info.php:46
+#: app/Admin/class-import-sources.php:1430 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:684 app/Admin/Order/class-courier-info.php:46
 msgid "To an address"
 msgstr ""
 
@@ -2003,7 +2011,7 @@ msgstr ""
 msgid "Import finished: %1$d settings, %2$d shipping method settings, %3$d shipping zone methods, %4$d order shipping lines and %5$d order data rows."
 msgstr ""
 
-#: app/Admin/class-pigeon.php:51 app/Admin/class-setup-wizard.php:100 app/Admin/Tabs/class-pigeon-tab.php:39 app/Admin/Tabs/class-settings-tab.php:39 app/functions.php:835 app/Shipping/Pigeon/class-method.php:319
+#: app/Admin/class-pigeon.php:51 app/Admin/class-setup-wizard.php:100 app/Admin/Tabs/class-pigeon-tab.php:39 app/Admin/Tabs/class-settings-tab.php:39 app/functions.php:847 app/Shipping/Pigeon/class-method.php:319
 msgid "Pigeon Express"
 msgstr ""
 
@@ -2981,15 +2989,15 @@ msgstr ""
 msgid "Set up Nashenski Commerce"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:97 app/Admin/Tabs/class-econt-tab.php:39 app/functions.php:832 app/Shipping/Econt/class-method.php:349
+#: app/Admin/class-setup-wizard.php:97 app/Admin/Tabs/class-econt-tab.php:39 app/functions.php:844 app/Shipping/Econt/class-method.php:349
 msgid "Econt"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:98 app/Admin/Tabs/class-settings-tab.php:37 app/Admin/Tabs/class-speedy-tab.php:39 app/functions.php:833 app/Shipping/Speedy/class-method.php:342
+#: app/Admin/class-setup-wizard.php:98 app/Admin/Tabs/class-settings-tab.php:37 app/Admin/Tabs/class-speedy-tab.php:39 app/functions.php:845 app/Shipping/Speedy/class-method.php:342
 msgid "Speedy"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:99 app/Admin/Tabs/class-boxnow-tab.php:39 app/Admin/Tabs/class-settings-tab.php:38 app/functions.php:834 app/Shipping/BoxNow/class-method.php:231
+#: app/Admin/class-setup-wizard.php:99 app/Admin/Tabs/class-boxnow-tab.php:39 app/Admin/Tabs/class-settings-tab.php:38 app/functions.php:846 app/Shipping/BoxNow/class-method.php:231
 msgid "BOX NOW"
 msgstr ""
 
@@ -3410,7 +3418,7 @@ msgid "The invoice number must be 1 to 10 digits."
 msgstr ""
 
 #. translators: %s: the error message
-#: app/Admin/Order/class-actions.php:273 app/Admin/Order/class-documents.php:121 app/Admin/Order/class-documents.php:157 app/Admin/Order/class-documents.php:181 app/Admin/Order/class-subscriptions.php:62
+#: app/Admin/Order/class-actions.php:273 app/Admin/Order/class-documents.php:126 app/Admin/Order/class-documents.php:162 app/Admin/Order/class-documents.php:186 app/Admin/Order/class-subscriptions.php:62
 #, php-format
 msgid "Some documents were not generated: %s"
 msgstr ""
@@ -3463,31 +3471,31 @@ msgstr ""
 msgid "Delivery set on the order screen: %1$s, %2$s. The price comes with the label."
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:35
-msgid "No documents were made: Nashenski Commerce paused them while the old N-18 plugin was active. Once it is deactivated, make them here with \"Regenerate PDF's\"."
+#: app/Admin/Order/class-documents.php:40
+msgid "No documents were made: Nashenski Commerce paused them while the old N-18 plugin was active. If that plugin made documents for this order, the order keeps its numbers. If not, make them here with \"Regenerate PDF's\" once it is deactivated."
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:312 app/Export/Builder/class-fields.php:43 app/Reports/class-reports.php:159
+#: app/Admin/Order/class-documents.php:317 app/Export/Builder/class-fields.php:43 app/Reports/class-reports.php:159
 msgid "Order"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:314
+#: app/Admin/Order/class-documents.php:319
 msgid "Invoice Copy"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:315
+#: app/Admin/Order/class-documents.php:320
 msgid "Refunded Order"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:316
+#: app/Admin/Order/class-documents.php:321
 msgid "Refunded Invoice"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:317
+#: app/Admin/Order/class-documents.php:322
 msgid "Refunded Invoice Copy"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:318 app/Invoice/Document/class-proforma.php:24
+#: app/Admin/Order/class-documents.php:323 app/Invoice/Document/class-proforma.php:24
 msgid "Pro forma"
 msgstr ""
 
@@ -5914,34 +5922,34 @@ msgstr ""
 msgid "Review only"
 msgstr ""
 
-#: app/functions.php:606 app/functions.php:645 app/Shipping/Pigeon/class-payment.php:208
+#: app/functions.php:618 app/functions.php:657 app/Shipping/Pigeon/class-payment.php:208
 msgid "This page has expired. Reload it and try again."
 msgstr ""
 
-#: app/functions.php:610
+#: app/functions.php:622
 msgid "You cannot create labels."
 msgstr ""
 
-#: app/functions.php:931
+#: app/functions.php:943
 msgid "Label created."
 msgstr ""
 
-#: app/functions.php:932
+#: app/functions.php:944
 msgid "Label updated."
 msgstr ""
 
-#: app/functions.php:933
+#: app/functions.php:945
 msgid "Label deleted."
 msgstr ""
 
 #. translators: %s: waybill number
-#: app/functions.php:950
+#: app/functions.php:962
 #, php-format
 msgid "Label number: %s."
 msgstr ""
 
 #. translators: %s: invoice number
-#: app/Invoice/class-number-allocator.php:402
+#: app/Invoice/class-number-allocator.php:434
 #, php-format
 msgid "Number %s is already used by another order. Choose another invoice number."
 msgstr ""
@@ -6714,20 +6722,20 @@ msgid "Speedy - %s"
 msgstr ""
 
 #. translators: %1$s is minimum php version and %2$s is minimum WP version
-#: nashenski-commerce.php:130
+#: nashenski-commerce.php:145
 #, php-format
 msgid "Nashenski Commerce requires PHP version %1$s+ and WP version %2$s+, plugin is currently NOT RUNNING."
 msgstr ""
 
-#: nashenski-commerce.php:144
+#: nashenski-commerce.php:162
 msgid "Nashenski Commerce is paused: please deactivate Bulgarisation for WooCommerce first. Your settings and orders can be imported afterwards."
 msgstr ""
 
-#: nashenski-commerce.php:156
+#: nashenski-commerce.php:177
 msgid "Nashenski Commerce - Please enable WooCommerce first."
 msgstr ""
 
-#: nashenski-commerce.php:171
+#: nashenski-commerce.php:195
 msgid "Please run `composer install` in the plugin folder `nashenski-commerce`"
 msgstr ""
 

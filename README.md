@@ -161,8 +161,10 @@ it before the import. After the import of the mreja.net Ordinance N-18 plugin, i
 documents are paused while that plugin stays active, because both would give out the same document
 numbers: an error notice says so on the Dashboard, the Plugins screen, the orders and the Nashenski
 settings, the PDF Files box of an order explains it, and orders made meanwhile get a note. Once it is
-deactivated, numbering carries on after its last number (read once) and "Regenerate PDF's" makes the
-missing documents.
+deactivated (in the next admin request), the orders it documented meanwhile get its numbers and keep its
+documents, and numbering carries on after its last number in both sequences (read once). Use
+"Regenerate PDF's" only on orders it did not document. Until then, and while the numbering lock is busy,
+documents wait with "Document numbering is busy".
 
 If a document cannot be made, the refund, subscription renewal or checkout still goes through and the
 order gets the note "Some documents were not generated" with the reason. Fix the cause and make the
