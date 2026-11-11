@@ -342,9 +342,10 @@ function nashenski_get_order_shipping_vat( $order, $show_group = false ) {
 }
 
 /**
- * Whether a shipping line prints at 0% VAT with its price as it is: the line has no tax and its
- * order has no tax at all (for example goods at 0%). With other tax on the order, documents keep
- * taking the VAT out of an untaxed delivery price. A refund follows the order it refunds.
+ * Whether a shipping line prints at 0% VAT with its price as it is: the line has no tax, its order
+ * has no tax at all and no product or fee line had tax before discounts (for example goods at 0%).
+ * Otherwise documents keep taking the VAT out of an untaxed delivery price. A refund follows the
+ * order it refunds.
  *
  * @param WC_Order_Item_Shipping   $item  Shipping line.
  * @param WC_Order|WC_Order_Refund $order Order or refund.
@@ -356,7 +357,18 @@ function nashenski_shipping_has_no_vat( $item, $order ) {
 		$order  = $parent ? $parent : $order;
 	}
 
-	return 0.0 === (float) $item->get_total_tax() && 0.0 === (float) $order->get_total_tax();
+	if ( 0.0 !== (float) $item->get_total_tax() || 0.0 !== (float) $order->get_total_tax() ) {
+		return false;
+	}
+
+	// A 100% coupon leaves no tax on the order, but the goods still print with their VAT: so must the delivery.
+	foreach ( $order->get_items( array( 'line_item', 'fee' ) ) as $line ) {
+		if ( 0.0 !== (float) ( method_exists( $line, 'get_subtotal_tax' ) ? $line->get_subtotal_tax() : $line->get_total_tax() ) ) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /**

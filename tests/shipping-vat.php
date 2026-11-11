@@ -170,6 +170,60 @@ class FakeShipping {
 		return 'Econt'; }
 }
 /**
+ * Product line fixture: 20% VAT before the discount, none after a 100% coupon.
+ */
+class FakeProduct {
+	/**
+	 * Tax before the discount.
+	 *
+	 * @return float
+	 */
+	public function get_subtotal_tax() {
+		return 4.00; }
+	/**
+	 * Tax after the discount.
+	 *
+	 * @return float
+	 */
+	public function get_total_tax() {
+		return 0; }
+	/**
+	 * Price before the discount.
+	 *
+	 * @return float
+	 */
+	public function get_subtotal() {
+		return 20.00; }
+	/**
+	 * Price after the discount.
+	 *
+	 * @return float
+	 */
+	public function get_total() {
+		return 0; }
+	/**
+	 * Taxes.
+	 *
+	 * @return array
+	 */
+	public function get_taxes() {
+		return array(); }
+	/**
+	 * Name.
+	 *
+	 * @return string
+	 */
+	public function get_name() {
+		return 'Book'; }
+	/**
+	 * Quantity.
+	 *
+	 * @return int
+	 */
+	public function get_quantity() {
+		return 1; }
+}
+/**
  * Order fixture: a bank transfer order whose only line is the delivery.
  */
 class FakeOrder {
@@ -186,6 +240,12 @@ class FakeOrder {
 	 */
 	public $shipping;
 	/**
+	 * Product lines.
+	 *
+	 * @var array
+	 */
+	public $products = array();
+	/**
 	 * Constructor.
 	 *
 	 * @param float $tax Tax of the whole order.
@@ -195,13 +255,16 @@ class FakeOrder {
 		$this->shipping = new FakeShipping();
 	}
 	/**
-	 * Lines of a type.
+	 * Lines of a type (or of several).
 	 *
-	 * @param string $type Type.
+	 * @param string|array $type Type.
 	 * @return array
 	 */
 	public function get_items( $type = 'line_item' ) {
-		return 'shipping' === $type ? array( $this->shipping ) : array();
+		if ( 'shipping' === $type ) {
+			return array( $this->shipping );
+		}
+		return is_array( $type ) || 'line_item' === $type ? $this->products : array();
 	}
 	/**
 	 * Tax of the whole order.
@@ -250,8 +313,24 @@ class FakeOrder {
 require __DIR__ . '/../app/class-hooks.php';
 require __DIR__ . '/../app/functions.php';
 require __DIR__ . '/../app/Invoice/Order/class-order.php';
+require __DIR__ . '/../app/Export/Nra/class-order.php';
 
 $fail = array();
+
+/**
+ * The delivery line of the NRA audit file for an order.
+ *
+ * @param object $order Order.
+ * @return array
+ */
+function nra_shipping_line( $order ) {
+	$nra             = ( new ReflectionClass( Nashenski\Export\Nra\Order::class ) )->newInstanceWithoutConstructor();
+	$nra->woo_order  = $order;
+	$nra->vat_group  = 'b';
+	$nra->vat_groups = nashenski_get_vat_groups();
+	$items           = ( new ReflectionMethod( $nra, 'get_items_from_order' ) )->invoke( $nra );
+	return end( $items );
+}
 
 /**
  * The delivery line a document prints for an order.
@@ -289,6 +368,19 @@ if ( ! nashenski_shipping_has_no_vat( $refund->shipping, $refund ) ) {
 	$fail[] = 'a refund of an order with no tax prints the delivery at 0%';
 }
 unset( $GLOBALS['parent'] );
+$coupon             = new FakeOrder( 0 );
+$coupon->products[] = new FakeProduct();
+if ( nashenski_shipping_has_no_vat( $coupon->shipping, $coupon ) ) {
+	$fail[] = 'goods at 20% with a 100% coupon: the delivery is not 0%';
+}
+
+// The line the NRA audit file lists.
+if ( 0 !== nra_shipping_line( new FakeOrder( 0 ) )['vat_rate'] ) {
+	$fail[] = 'NRA file, order with no tax: delivery at 0%';
+}
+if ( '20' !== (string) nra_shipping_line( $coupon )['vat_rate'] ) {
+	$fail[] = 'NRA file, goods at 20% with a 100% coupon: delivery at the shop rate, got ' . nra_shipping_line( $coupon )['vat_rate'];
+}
 
 // The line a document prints.
 $line = shipping_line( new FakeOrder( 0 ) );
@@ -304,4 +396,4 @@ if ( $fail ) {
 	fwrite( STDERR, 'FAIL: ' . implode( "\nFAIL: ", $fail ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- CLI output.
 	exit( 1 );
 }
-echo "PASS: 7 delivery VAT checks\n";
+echo "PASS: 10 delivery VAT checks\n";
