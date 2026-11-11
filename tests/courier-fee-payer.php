@@ -402,13 +402,17 @@ expect(
 	'"Remove delivery from documents" off: an Econt courier method still gets COD added to its list'
 );
 expect( array( 'customer_pays' => array( 'cod' ) ) === $options['woocommerce_nashenski_speedy_4_settings'], 'A Speedy courier method without settings gets COD' );
-expect( ! isset( $options['woocommerce_nashenski_pigeon_5_settings'] ), 'A method not marked as a courier is left alone' );
+expect( array( 'customer_pays' => array( 'cod' ) ) === $options['woocommerce_nashenski_pigeon_5_settings'], 'Every Pigeon Express method gets COD, marked as a courier or not (its COD waybills were always paid by the receiver)' );
 Nashenski\Plugin::upgrade_fee_payer();
 expect( array( 'bacs', 'cod' ) === $options['woocommerce_nashenski_econt_3_settings']['customer_pays'], 'Running the upgrade again adds nothing twice' );
 $options['nashenski_settings_invoice_remove_shipping'] = 'yes';
 unset( $options['woocommerce_nashenski_speedy_4_settings'] );
 Nashenski\Plugin::upgrade_fee_payer();
 expect( array( 'customer_pays' => array( 'cod' ) ) === $options['woocommerce_nashenski_speedy_4_settings'], '"Remove delivery from documents" on: the same' );
+$options['nashenski_settings_shippings_nashenski_speedy_is_courier'] = 'no';
+unset( $options['woocommerce_nashenski_speedy_4_settings'] );
+Nashenski\Plugin::upgrade_fee_payer();
+expect( ! isset( $options['woocommerce_nashenski_speedy_4_settings'] ), 'An Econt or Speedy method not marked as a courier is left alone' );
 
 // Quick and admin orders (D10): decided on the order screen from the method's list and the payment method.
 $options = array(

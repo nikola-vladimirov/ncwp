@@ -89,7 +89,8 @@ plugin's own scheduled jobs (documents, abandoned cart reminders, shipment statu
   deliveries abroad, a Speedy or Pigeon Express fixed price and BOX NOW are always yours. Quick and
   admin orders are decided on the order screen once they have a shipping method and a payment
   method, and again when either changes, until they have documents. On update to 0.21.8 every
-  method marked as a courier gets cash on delivery in its list, so cash on delivery works as before.
+  Econt and Speedy method marked as a courier and every Pigeon Express method get cash on delivery
+  in their list, so the cash on delivery money flow stays as it was.
 - Each order screen shows the courier, the delivery type and the chosen office, locker or address.
 - Ship abroad (off by default): Econt to Romania and Greece, Speedy to nine countries on its price
   list. Prices abroad come only from the courier. Free shipping over a total can be set per country,

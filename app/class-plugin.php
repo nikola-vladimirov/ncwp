@@ -103,11 +103,12 @@ class Plugin {
 	}
 
 	/**
-	 * 0.21.8 (owner decision D6): cash on delivery goes into "Customer pays the courier" of every
-	 * Econt, Speedy and Pigeon Express method marked as a courier ("Is ... courier?", on by default
-	 * for Econt and Speedy), whatever "Remove delivery from documents" was, so cash on delivery
-	 * orders keep working as before. BOX NOW cannot charge the customer. The old values stay saved:
-	 * orders made before keep their documents (Courier_Fee::shop_collects()).
+	 * 0.21.8 (owner decision D6, keep today's money flow): cash on delivery goes into "Customer pays
+	 * the courier" of every Econt and Speedy method marked as a courier ("Is ... courier?", on by
+	 * default) and of every Pigeon Express method (its cash on delivery waybills were always paid by
+	 * the receiver), whatever "Remove delivery from documents" was. BOX NOW cannot charge the
+	 * customer. The old values stay saved: orders made before keep their documents
+	 * (Courier_Fee::shop_collects()).
 	 */
 	public static function upgrade_fee_payer() {
 		global $wpdb;
@@ -116,7 +117,7 @@ class Plugin {
 		$methods = $wpdb->get_results( $wpdb->prepare( "SELECT method_id, instance_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE method_id IN (%s, %s, %s)", 'nashenski_econt', 'nashenski_speedy', 'nashenski_pigeon' ) );
 
 		foreach ( (array) $methods as $method ) {
-			if ( 'yes' !== nashenski_get_option( 'shippings', $method->method_id . '_is_courier' ) ) {
+			if ( 'nashenski_pigeon' !== $method->method_id && 'yes' !== nashenski_get_option( 'shippings', $method->method_id . '_is_courier' ) ) {
 				continue;
 			}
 
