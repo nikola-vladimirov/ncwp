@@ -2,7 +2,14 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
-## 0.21.7 (2026-11-11)
+## 0.21.8 (2026-11-11)
+
+0.21.7 was not released; its changes are part of 0.21.8.
+
+### New
+- Who pays the courier: Econt, Speedy and Pigeon Express methods in a shipping zone have "Customer pays the courier", the payment methods for which the customer pays the delivery to the courier on delivery. Then the price is shown for information only ("6,50 €, paid to the courier on delivery, not included in the total") in the checkout, the cart, the emails, My Account and the order screen; the delivery is not in the order total, on the documents or in the NRA audit file; and the waybill is paid by the receiver. With any other payment method the shop collects the delivery: it is in the total and on the documents, the sender pays the courier, and cash on delivery collects the whole order total. The total follows the payment method the customer picks, in the classic, block and page builder checkouts. Free shipping, deliveries abroad, and Speedy or Pigeon Express with a fixed price are always collected or paid by the shop. BOX NOW cannot charge the customer, so it has no list. The courier box on the order screen can still change the payer of one waybill.
+- Each order keeps who paid the courier as decided at checkout, so later setting changes do not change its documents. Credit notes follow their order.
+- Update: stores with "Remove delivery from documents" on get cash on delivery in the list of their Econt, Speedy and Pigeon Express methods marked as couriers. Stores with it off start with empty lists: the shop collects everywhere. "Remove delivery from documents" and the "Is ... courier?" fields (Documents > Shipping on documents) are gone. Orders made before the update keep their documents and NRA lines as they were.
 
 ### Changes
 - WordPress.org review: the cache of courier offices, cities and streets moves from wp-content/cache/nashenski to the uploads folder (uploads/nashenski-cache, each site of a network has its own). The old folder is removed on update, and both are removed when the plugin is deleted.
@@ -19,6 +26,7 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 - readme.txt: the description is in English only and shorter, and the changelog keeps the current version (all versions stay in this file).
 
 ### Fixes
+- Documents and the NRA audit file: a cash on delivery courier order left the delivery out while the order total still had it, also with BOX NOW, whose cash on delivery collects the whole total. Now the total, the documents and the waybill agree: the delivery is left out only when the customer paid it to the courier.
 - Documents and the NRA audit file: a courier delivery with no tax, on an order with no tax at all (for example goods at 0%), prints at 0% with its full price. Before, 20% was taken out of it (5.25 printed as 4.38 at 20%) and the lines added up to less than the order. Orders with other tax keep the old rule, and so do orders whose taxed goods a 100% coupon made free. Credit notes follow the order they refund.
 
 ## 0.21.6 (2026-11-11)

@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.2
 Requires Plugins: woocommerce
-Stable tag: 0.21.7
+Stable tag: 0.21.8
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -24,6 +24,7 @@ Nashenski Commerce adds what a Bulgarian online store needs to WooCommerce. Ever
 * Order statuses that follow the shipment (delivered or returned) for Econt, Speedy and BOX NOW.
 * Live shipping prices with your courier account, or from the courier's built-in public price list when you have no account yet.
 * Labels, label printing and shipment status updates from the order screen.
+* Who pays the courier, per method and payment method: you collect it, or the customer pays the courier, outside your total and documents.
 * Works with classic, block and page builder checkouts, multi-step ones included.
 * Office, locker and address pickers with search, and the courier's map for Econt and Speedy.
 * Shipping options as cards with courier logos, styled by your theme or a token-based CSS framework such as TokenForge.
@@ -72,10 +73,6 @@ It also imports from the mreja.net plugins (Ordinance N-18 included), Drusoft Sh
 
 == Frequently Asked Questions ==
 
-= Where are the settings? =
-
-In WooCommerce > Settings > Nashenski Commerce.
-
 = Does my data go through a third-party server? =
 
 No. Your site talks directly to the couriers and services you turn on. The NRA XML file is built on your site.
@@ -84,20 +81,20 @@ No. Your site talks directly to the couriers and services you turn on. The NRA X
 
 No. Without an account, shipping prices come from the courier's public price list. With your account, the prices are live.
 
-= Does it work with the block checkout and page builders? =
+= Who pays the courier? =
 
-Yes. It works with the classic checkout, the block checkout and checkout pages built in a page builder, including multi-step checkouts.
+You choose on each courier method, per payment method. What the customer pays the courier is shown for information and stays out of the total, the documents and the NRA file.
 
 = Can I move from Bulgarisation? =
 
-Yes. Deactivate Bulgarisation, activate Nashenski Commerce and press "Import" on its Help tab. Settings, shipping zones and order data come along. Import the mreja.net N-18 plugin while it is off; documents may wait for it. Turned on again, it can reuse numbers, so documents pause until a new import.
+Yes, see "Moving from another plugin". Import the mreja.net N-18 plugin while it is off; documents may wait for it. Turned on again, it can reuse numbers, so documents pause until a new import.
 
 == Screenshots ==
 
-1. Couriers: turn on the couriers you work with. Each one adds its own account and sender settings.
+1. Couriers: turn on the couriers you work with, each with its account and sender.
 2. Checkout: countries, courier logos, address transliteration and the company invoice fields.
 3. Invoice numbering: website invoices go into the NRA audit file. Your own invoicing program keeps its orders out of it.
-4. Customer checks: choose the checks from nekorekten.com, Connectix and NepoStop, and when cash on delivery is held back.
+4. Customer checks: nekorekten.com, Connectix and NepoStop, and when cash on delivery is held back.
 5. Quick order: a short form for shoppers who do not want to check out. The order waits for your confirmation.
 6. Order screen: the courier line on the order, with the customer's history and checks beside it.
 
@@ -125,6 +122,7 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 
 All versions: CHANGELOG.md in the plugin folder (Plugins screen > Changelog).
 
-= 0.21.7 =
+= 0.21.8 =
+* New: Who pays the courier, per shipping method and payment method.
 * Changes: Courier cache in the uploads folder, the import asks you to deactivate the old plugin, no library demos.
 * Fixed: A delivery with no VAT, on an order with no VAT, prints at 0% on documents and in the NRA file.
