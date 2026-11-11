@@ -150,9 +150,7 @@ class Export_Builder {
 			wp_die( esc_html__( 'Excel files need the PHP Zip extension, which this server does not have. Choose CSV instead.', 'nashenski-commerce' ) );
 		}
 
-		if ( function_exists( 'set_time_limit' ) ) {
-			set_time_limit( 300 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- long exports.
-		}
+		wc_set_time_limit( 300 ); // This download request only: an export of many orders can pass the default 30 seconds.
 
 		$result = Builder::rows( $config );
 		$path   = Writer::write( $config, $result['rows'] );

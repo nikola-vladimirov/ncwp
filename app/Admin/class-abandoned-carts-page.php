@@ -418,16 +418,14 @@ class Abandoned_Carts_Page {
 		wp_enqueue_script( 'nashenski-abandoned-carts' );
 		wp_add_inline_script(
 			'nashenski-abandoned-carts',
-			<<<'JS'
-			( function () {
-				var all = document.getElementById( 'nashenski-select-all' );
+			'( function () {
+				var all = document.getElementById( "nashenski-select-all" );
 				if ( all ) {
-					all.addEventListener( 'change', function () {
-						document.querySelectorAll( 'input[name="carts[]"]' ).forEach( function ( box ) { box.checked = all.checked; } );
+					all.addEventListener( "change", function () {
+						document.querySelectorAll( "input[name=\'carts[]\']" ).forEach( function ( box ) { box.checked = all.checked; } );
 					} );
 				}
-			}() );
-			JS
+			}() );'
 		);
 	}
 

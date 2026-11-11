@@ -85,7 +85,7 @@ class Actions {
 			// Adding the right query vars to the returned URL.
 			$redirect_to = add_query_arg(
 				array(
-					'processed_count' => count( $ids ),
+					'nashenski_regenerated' => count( $ids ),
 				),
 				$redirect_to
 			);
@@ -95,18 +95,22 @@ class Actions {
 	}
 
 	/**
-	 * Pdf regeneration bulk action admin notices.
+	 * The notice after the bulk action, on the orders list only.
 	 */
 	public static function pdf_regeneration_bulk_action_admin_notices() {
-		if ( '' !== nashenski_query_arg( 'processed_count' ) ) {
-			$count = absint( nashenski_query_arg( 'processed_count' ) );
+		$screen = get_current_screen();
 
-			printf(
-				/* translators: %s: number of orders */
-				'<div id="message" class="updated fade">' . wp_kses_post( wpautop( _n( '%s order documents were regenerated.', '%s orders documents were regenerated.', $count, 'nashenski-commerce' ) ) ) . '</div>',
-				esc_html( $count )
-			);
+		if ( ! $screen || ! in_array( $screen->id, array( 'woocommerce_page_wc-orders', 'edit-shop_order' ), true ) || '' === nashenski_query_arg( 'nashenski_regenerated' ) ) {
+			return;
 		}
+
+		$count = absint( nashenski_query_arg( 'nashenski_regenerated' ) );
+
+		printf(
+			/* translators: %s: number of orders */
+			'<div class="notice notice-success is-dismissible">' . wp_kses_post( wpautop( _n( '%s order documents were regenerated.', '%s orders documents were regenerated.', $count, 'nashenski-commerce' ) ) ) . '</div>',
+			esc_html( $count )
+		);
 	}
 
 	/**

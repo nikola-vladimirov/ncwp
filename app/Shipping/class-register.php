@@ -255,12 +255,26 @@ class Register {
 	 */
 	private static function get_checkout_post_data() {
 		$posted = array();
+		$keys   = array( 'payment_method', 'ship_to_different_address', 'has_full_address', 'country', 'state', 'postcode', 'city', 'address', 'address_2', 's_country', 's_state', 's_postcode', 's_city', 's_address', 's_address_2' );
 
-		foreach ( $_POST as $key => $value ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			if ( 'post_data' !== $key ) {
-				$posted[ $key ] = wc_clean( wp_unslash( $value ) );
+		foreach ( array( 'billing', 'shipping' ) as $prefix ) {
+			foreach ( array( 'country', 'state', 'postcode', 'city', 'address_1', 'address_2' ) as $field ) {
+				$keys[] = $prefix . '_' . $field;
 			}
 		}
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- WooCommerce checked its nonce.
+		foreach ( $keys as $key ) {
+			if ( isset( $_POST[ $key ] ) && is_scalar( $_POST[ $key ] ) ) {
+				$posted[ $key ] = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+			}
+		}
+
+		// One chosen method per package: shipping_method[0], shipping_method[1] and so on.
+		if ( isset( $_POST['shipping_method'] ) ) {
+			$posted['shipping_method'] = map_deep( wp_unslash( $_POST['shipping_method'] ), 'sanitize_text_field' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- map_deep() sanitizes each value.
+		}
+		// phpcs:enable
 
 		return self::normalize_checkout_post_data( array_replace_recursive( nashenski_order_review_data(), $posted ) );
 	}

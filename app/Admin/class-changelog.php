@@ -79,16 +79,14 @@ class Changelog {
 		wp_register_style( 'nashenski-changelog', false, array(), \Nashenski\Plugin::VERSION );
 		wp_add_inline_style(
 			'nashenski-changelog',
-			<<<'CSS'
-			body { margin: 0; padding: 24px 32px; color: #1d2327; background: #fff; }
+			'body { margin: 0; padding: 24px 32px; color: #1d2327; background: #fff; }
 			body { font: 14px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 			h3 { margin: 28px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #dcdcde; font-size: 18px; }
 			h3:first-child { margin-top: 0; }
 			h4 { margin: 16px 0 4px; font-size: 14px; }
 			ul { margin: 0 0 8px; padding-left: 20px; }
 			li { margin: 0 0 4px; }
-			p { margin: 0 0 8px; }
-			CSS
+			p { margin: 0 0 8px; }'
 		);
 		wp_print_styles( 'nashenski-changelog' );
 		?>

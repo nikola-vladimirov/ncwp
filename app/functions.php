@@ -677,9 +677,7 @@ function nashenski_checkout_posted( $key, $fallback = '' ) {
  * @return array
  */
 function nashenski_order_review_data() {
-	$nonce = isset( $_POST['security'] ) ? sanitize_text_field( wp_unslash( $_POST['security'] ) ) : '';
-
-	if ( ! isset( $_POST['post_data'] ) || ! wp_verify_nonce( $nonce, 'update-order-review' ) ) {
+	if ( ! isset( $_POST['post_data'], $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'update-order-review' ) ) {
 		return array();
 	}
 
