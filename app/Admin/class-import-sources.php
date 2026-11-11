@@ -441,9 +441,11 @@ class Import_Sources {
 				break;
 
 			case 'mreja_n18':
-				// A rerun notes the clashes among the rows added since the last import; -1: a first import notes none.
+				// A rerun notes the clashes among the rows added since the last import. A first import notes them all
+				// when documents were paused for it ("first": the plugin may have reused our numbers), else none (-1).
 				$before = ( (array) get_option( self::DONE_OPTION, array() ) )['mreja_n18'] ?? null;
-				self::n18( (array) get_option( 'notasuptooptions', array() ), $count, $notes, null === $before ? -1 : (int) ( $before['last_id'] ?? 0 ) );
+				$after  = null === $before ? ( 'first' === self::n18_state() ? 0 : -1 ) : (int) ( $before['last_id'] ?? 0 );
+				self::n18( (array) get_option( 'notasuptooptions', array() ), $count, $notes, $after );
 				break;
 
 			case 'mreja_speedy':
@@ -900,8 +902,10 @@ class Import_Sources {
 		}
 
 		if ( ! $done ) {
-			// Not imported: a pause only while a number could clash, so the import offer is enough otherwise.
-			$state = $active || ( $data && self::n18_could_clash() ) ? 'first' : 'none';
+			// Not imported: a pause only while a number could clash, so the import offer is enough otherwise. Once
+			// paused (it was active, and may have reused our numbers) it stays paused until the import, while its
+			// documents are there to import.
+			$state = $active || ( $data && ( 'first' === self::n18_state() || self::n18_could_clash() ) ) ? 'first' : 'none';
 		} elseif ( ! $data ) {
 			$state = 'done'; // Its documents are gone, so a new import is impossible: no pause for ever.
 		} elseif ( $active || 'again' === self::n18_state() ) {

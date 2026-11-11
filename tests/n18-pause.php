@@ -704,6 +704,17 @@ namespace Nashenski {
 		Import_Sources::n18_refresh();
 		check( 'none' === Import_Sources::n18_state() && isset( Import_Sources::open_names()['mreja_n18'] ), 'counters past its numbers: no pause, the import is offered' );
 
+		// It was active meanwhile (n18_paused() set "first" then) and reused 200, which order 7 already had from us:
+		// still paused after it is off, and its first import notes and lists the clash.
+		$GLOBALS['options'][ Import_Sources::N18_STATE ] = 'first';
+		$GLOBALS['meta'][7]                              = array( 'nashenski_order_number' => '0000000200' );
+		$GLOBALS['rows'][]                               = row( 6, 'purchase_order', 200, 6 );
+		Import_Sources::n18_refresh();
+		check( 'first' === Import_Sources::n18_state() && Import_Sources::n18_paused(), 'after it was active, documents stay paused once it is off, until the import' );
+		$report = Import_Sources::import( 'mreja_n18' );
+		check( 1 === count( wc_get_order( 6 )->notes ) && in_array( 'Orders whose N-18 number clashes; correct their documents: #6', $report, true ) && ! wc_get_order( 1 )->notes, 'its first import notes and lists the reused number: ' . implode( ' / ', $report ) );
+		check( 'done' === Import_Sources::n18_state() && false === Import_Sources::n18_paused(), 'after that import documents go on' );
+
 		// Its documents alone (its files and settings deleted): the Help page offers the import, and it works.
 		fresh( array(), $five );
 		$GLOBALS['files_gone'] = true;
@@ -772,6 +783,13 @@ namespace Nashenski {
 		// Active and not imported yet: paused, and the import is refused in the Help page, the notice and the handler.
 		fresh( array(), $five );
 		check( true === Import_Sources::n18_paused() && 'first' === Import_Sources::n18_state() && false !== strpos( Import_Sources::paused_reason(), 'Deactivate it and run its import' ), 'active, not imported: paused until it is off and imported' );
+		$past = array(
+			'nashenski_settings_invoice_next_invoice_number' => '0000000300',
+			Import_Sources::N18_STATE => 'none',
+		);
+		fresh( $past, $five );
+		check( true === Import_Sources::n18_paused() && 'first' === Import_Sources::n18_state(), 'active, not imported, counters past its numbers: paused all the same' );
+		fresh( array(), $five );
 		$html = help_import();
 		check( false !== strpos( $html, 'Deactivate the N-18 plugin first, then import.' ) && false !== strpos( $html, '/admin/plugins.php' ) && false === strpos( $html, 'Import</a>' ), 'the Help page asks to deactivate it first, with the Plugins link' );
 		$GLOBALS['caps'] = array( 'manage_woocommerce' );

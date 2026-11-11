@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 17:19+0000\n"
-"PO-Revision-Date: 2026-11-11 17:19+0000\n"
+"POT-Creation-Date: 2026-11-11 17:26+0000\n"
+"PO-Revision-Date: 2026-11-11 17:26+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1650,11 +1650,11 @@ msgstr ""
 msgid "Go to the import"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:185 app/Admin/class-import-sources.php:671 app/Admin/class-import-sources.php:993
+#: app/Admin/class-import-sources.php:185 app/Admin/class-import-sources.php:673 app/Admin/class-import-sources.php:997
 msgid "Go to Plugins"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:187 app/Admin/class-import-sources.php:990
+#: app/Admin/class-import-sources.php:187 app/Admin/class-import-sources.php:994
 msgid "Ask an administrator to deactivate it."
 msgstr ""
 
@@ -1678,16 +1678,16 @@ msgstr ""
 msgid "Dismiss"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:338 app/Admin/class-import-sources.php:987
+#: app/Admin/class-import-sources.php:338 app/Admin/class-import-sources.php:991
 msgid "Deactivate the N-18 plugin first, then import."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:532 app/Admin/class-import-sources.php:561
+#: app/Admin/class-import-sources.php:534 app/Admin/class-import-sources.php:563
 msgid "The Econt key of that plugin works only with Econt's \"Deliver with Econt\" service. Enter your Econt username and password in Couriers > Econt."
 msgstr ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:587
+#: app/Admin/class-import-sources.php:589
 #, php-format
 msgid "%d setting"
 msgid_plural "%d settings"
@@ -1695,7 +1695,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:589
+#: app/Admin/class-import-sources.php:591
 #, php-format
 msgid "%d order waybill"
 msgid_plural "%d order waybills"
@@ -1703,7 +1703,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:591
+#: app/Admin/class-import-sources.php:593
 #, php-format
 msgid "%d shipping zone method"
 msgid_plural "%d shipping zone methods"
@@ -1711,7 +1711,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:596
+#: app/Admin/class-import-sources.php:598
 #, php-format
 msgid "%d document number"
 msgid_plural "%d document numbers"
@@ -1720,7 +1720,7 @@ msgstr[1] ""
 
 #. translators: %d: number
 #. translators: %d: number of document numbers
-#: app/Admin/class-import-sources.php:601 app/Admin/class-migration.php:106
+#: app/Admin/class-import-sources.php:603 app/Admin/class-migration.php:106
 #, php-format
 msgid "%d document number skipped (conflict)"
 msgid_plural "%d document numbers skipped (conflict)"
@@ -1728,13 +1728,13 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of settings
-#: app/Admin/class-import-sources.php:606
+#: app/Admin/class-import-sources.php:608
 #, php-format
 msgid "Already set, kept as it is: %d"
 msgstr ""
 
 #. translators: %d: number of orders
-#: app/Admin/class-import-sources.php:613
+#: app/Admin/class-import-sources.php:615
 #, php-format
 msgid "%d order keeps everything the old plugin saved on it (see \"From earlier plugins\" on the order)"
 msgid_plural "%d orders keep everything the old plugin saved on them (see \"From earlier plugins\" on the order)"
@@ -1742,72 +1742,72 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:666
+#: app/Admin/class-import-sources.php:668
 #, php-format
 msgid "The import is done. Please deactivate %s: Nashenski Commerce does its work now."
 msgstr ""
 
 #. translators: %s: document number
-#: app/Admin/class-import-sources.php:764
+#: app/Admin/class-import-sources.php:766
 #, php-format
 msgid "The old N-18 plugin gave this order document number %s, which clashes with a number Nashenski Commerce already gave out. Correct the documents of this order."
 msgstr ""
 
 #. translators: %s: order numbers
-#: app/Admin/class-import-sources.php:774
+#: app/Admin/class-import-sources.php:776
 #, php-format
 msgid "Orders whose N-18 number clashes; correct their documents: %s"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:971
+#: app/Admin/class-import-sources.php:975
 msgid "Nashenski Commerce makes no invoices or other documents yet: the old N-18 plugin has its own document numbers. Deactivate it and run its import from the Help page first; numbering then continues after its numbers. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:972
+#: app/Admin/class-import-sources.php:976
 msgid "Nashenski Commerce makes no invoices or other documents yet: the old N-18 plugin left its document numbers on this site. Run its import from the Help page first; numbering then continues after its numbers. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:976
+#: app/Admin/class-import-sources.php:980
 msgid "The old N-18 plugin is active again and can reuse numbers Nashenski Commerce already gave out, so invoices and other documents are paused. Deactivate it at once, run its import again from the Help page and correct the orders it lists. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:977
+#: app/Admin/class-import-sources.php:981
 msgid "Invoices and other documents are paused until the import of the old N-18 plugin is run again from the Help page, because it was active again after its import. Then correct the orders the import lists and use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1117
+#: app/Admin/class-import-sources.php:1121
 msgid "From earlier plugins"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1130
+#: app/Admin/class-import-sources.php:1134
 msgid "What the earlier plugins saved on this order, kept when their data was imported."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1173 app/Export/Builder/class-fields.php:338
+#: app/Admin/class-import-sources.php:1177 app/Export/Builder/class-fields.php:338
 msgid "Order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1174 app/Admin/Order/class-documents.php:314 app/Export/Builder/class-fields.php:339
+#: app/Admin/class-import-sources.php:1178 app/Admin/Order/class-documents.php:314 app/Export/Builder/class-fields.php:339
 msgid "Invoice"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1175 app/Export/Builder/class-fields.php:340
+#: app/Admin/class-import-sources.php:1179 app/Export/Builder/class-fields.php:340
 msgid "Credit note"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1176
+#: app/Admin/class-import-sources.php:1180
 msgid "Cancelled order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1502 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
+#: app/Admin/class-import-sources.php:1506 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
 msgid "To an office"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1503 app/Admin/class-import-sources.php:1504 app/Admin/class-setup-wizard.php:688 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
+#: app/Admin/class-import-sources.php:1507 app/Admin/class-import-sources.php:1508 app/Admin/class-setup-wizard.php:688 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
 msgid "To a parcel locker"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1505 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:689 app/Admin/Order/class-courier-info.php:46
+#: app/Admin/class-import-sources.php:1509 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:689 app/Admin/Order/class-courier-info.php:46
 msgid "To an address"
 msgstr ""
 
