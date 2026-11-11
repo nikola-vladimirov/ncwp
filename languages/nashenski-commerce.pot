@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 21:42+0000\n"
-"PO-Revision-Date: 2026-11-11 21:42+0000\n"
+"POT-Creation-Date: 2026-11-11 22:06+0000\n"
+"PO-Revision-Date: 2026-11-11 22:06+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -466,11 +466,11 @@ msgstr ""
 msgid "BOX NOW did not answer. Check the connection settings and try again."
 msgstr ""
 
-#: app/Admin/class-boxnow.php:716 app/Admin/class-pigeon.php:783 app/Admin/class-speedy.php:1164
+#: app/Admin/class-boxnow.php:716 app/Admin/class-pigeon.php:797 app/Admin/class-speedy.php:1163
 msgid "This link has expired. Reload the order page and try again."
 msgstr ""
 
-#: app/Admin/class-boxnow.php:723 app/Admin/class-speedy.php:414 app/Admin/class-speedy.php:1186
+#: app/Admin/class-boxnow.php:723 app/Admin/class-speedy.php:414 app/Admin/class-speedy.php:1185
 msgid "Invalid parcel number."
 msgstr ""
 
@@ -812,7 +812,7 @@ msgstr ""
 msgid "Nothing matches these filters."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:217 app/class-plugin.php:376 app/Front_End/class-quick-order.php:375
+#: app/Admin/class-export-builder.php:217 app/class-plugin.php:393 app/Front_End/class-quick-order.php:375
 msgid "Something went wrong. Please try again."
 msgstr ""
 
@@ -1652,7 +1652,7 @@ msgstr ""
 msgid "Setting"
 msgstr ""
 
-#: app/Admin/class-help-page.php:352 app/class-plugin.php:381
+#: app/Admin/class-help-page.php:352 app/class-plugin.php:398
 msgid "Now"
 msgstr ""
 
@@ -2159,6 +2159,10 @@ msgstr ""
 
 #: app/Admin/class-pigeon.php:319
 msgid "Note for courier"
+msgstr ""
+
+#: app/Admin/class-pigeon.php:416
+msgid "The Pigeon Express label could not be made, and the order was not changed. Please try again."
 msgstr ""
 
 #: app/Admin/class-recommended-settings.php:34
@@ -2975,7 +2979,7 @@ msgstr ""
 msgid "Up to (kg)"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:377
+#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:394
 msgid "Remove row"
 msgstr ""
 
@@ -3551,7 +3555,7 @@ msgstr ""
 msgid "Delivery price %1$s and the new total %2$s emailed to the customer."
 msgstr ""
 
-#: app/Admin/Order/class-delivery-box.php:159 app/Export/Builder/class-fields.php:90 app/Shipping/class-courier-fee.php:574
+#: app/Admin/Order/class-delivery-box.php:159 app/Export/Builder/class-fields.php:90 app/Shipping/class-courier-fee.php:583
 msgid "Delivery"
 msgstr ""
 
@@ -4681,7 +4685,7 @@ msgstr ""
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr ""
 
-#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:166 app/class-plugin.php:319
+#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:183 app/class-plugin.php:336
 msgid "Settings"
 msgstr ""
 
@@ -4850,40 +4854,40 @@ msgid "The document was not found or you do not have access to it."
 msgstr ""
 
 #. translators: %s: link to the settings
-#: app/class-plugin.php:166
+#: app/class-plugin.php:183
 #, php-format
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr ""
 
-#: app/class-plugin.php:375
+#: app/class-plugin.php:392
 msgid "The file was downloaded."
 msgstr ""
 
-#: app/class-plugin.php:378
+#: app/class-plugin.php:395
 msgid "Built-in prices restored. Save to keep them."
 msgstr ""
 
-#: app/class-plugin.php:379
+#: app/class-plugin.php:396
 msgid "Your prices match the courier website."
 msgstr ""
 
-#: app/class-plugin.php:380
+#: app/class-plugin.php:397
 msgid "The courier website has different prices:"
 msgstr ""
 
-#: app/class-plugin.php:382 app/Front_End/class-quick-order.php:500
+#: app/class-plugin.php:399 app/Front_End/class-quick-order.php:500
 msgid "Website"
 msgstr ""
 
-#: app/class-plugin.php:383
+#: app/class-plugin.php:400
 msgid "Use these prices"
 msgstr ""
 
-#: app/class-plugin.php:384
+#: app/class-plugin.php:401
 msgid "New prices filled in. Check them and save."
 msgstr ""
 
-#: app/class-plugin.php:418
+#: app/class-plugin.php:435
 msgid "The request failed. Reload the page and try again."
 msgstr ""
 
@@ -5244,7 +5248,7 @@ msgid "The audit file (Ordinance N-18) of %2$s for %1$s is attached. It was made
 msgstr ""
 
 #. translators: %s: shipping method name
-#: app/Export/Nra/class-order.php:227 app/Invoice/Order/class-order.php:226
+#: app/Export/Nra/class-order.php:229 app/Invoice/Order/class-order.php:226
 #, php-format
 msgid "Shipping: %s"
 msgstr ""
@@ -5614,7 +5618,7 @@ msgid "Free"
 msgstr ""
 
 #. translators: %s: delivery price, for example 6,50 €
-#: app/Front_End/Checkout/class-pickers.php:542 app/Shipping/class-courier-fee.php:515
+#: app/Front_End/Checkout/class-pickers.php:542 app/Shipping/class-courier-fee.php:524
 #, php-format
 msgid "%s, paid to the courier on delivery, not included in the total"
 msgstr ""
@@ -6640,15 +6644,15 @@ msgstr ""
 msgid "Customer pays the courier"
 msgstr ""
 
-#: app/Shipping/class-courier-fee.php:267
+#: app/Shipping/class-courier-fee.php:275
 msgid "The payment method changed after checkout. Who pays the courier stays as decided at checkout: check the delivery line and the waybill by hand."
 msgstr ""
 
-#: app/Shipping/class-courier-fee.php:339
+#: app/Shipping/class-courier-fee.php:347
 msgid "You collected the delivery on this order. If the receiver pays the courier too, the customer pays the delivery twice."
 msgstr ""
 
-#: app/Shipping/class-courier-fee.php:354
+#: app/Shipping/class-courier-fee.php:362
 msgid "This order already has documents without the delivery, because the customer pays the courier. A waybill where you collect the delivery would not match them."
 msgstr ""
 

@@ -34,6 +34,23 @@ function update_option( $name, $value ) {
 function delete_option( $name ) {
 	unset( $GLOBALS['options'][ $name ] ); }
 /**
+ * Cron stub: the scheduled one-off jobs.
+ *
+ * @param string $hook Hook.
+ * @return int|false
+ */
+function wp_next_scheduled( $hook ) {
+	return $GLOBALS['scheduled'][ $hook ] ?? false; }
+/**
+ * Cron stub.
+ *
+ * @param int    $time Time.
+ * @param string $hook Hook.
+ */
+function wp_schedule_single_event( $time, $hook ) {
+	$GLOBALS['scheduled'][ $hook ] = $time; }
+$scheduled = array();
+/**
  * Translation stub.
  *
  * @param string $text Text.
@@ -462,10 +479,12 @@ expect( false === Courier_Fee::shop_collects( new WC_Order_Refund() ), 'A refund
 $parent = new FakeOrder( 'cod', $econt( $shop ) );
 expect( true === Courier_Fee::shop_collects( new WC_Order_Refund() ), 'A refund of a shop-collects order keeps delivery' );
 
-// Orders without a decision (before 0.21.8, quick and admin orders) keep the "Is ... courier?" rule; the retired option counts no more (R5).
+// Orders without a decision (before 0.21.8, quick and admin orders) keep the "Is ... courier?" rule (R5); the retired option counts only until the update's background job turned it into that.
 $options['nashenski_settings_invoice_remove_shipping'] = 'yes';
+expect( false === Courier_Fee::shop_collects( new FakeOrder( 'cod', array( new FakeShipping( 'local_pickup' ) ) ) ), 'Old order, the update job not run yet: the retired option still leaves the delivery out' );
+unset( $options['nashenski_settings_invoice_remove_shipping'] );
 expect( false === Courier_Fee::shop_collects( new FakeOrder( 'cod', $econt() ) ), 'Old order: a COD order of a method marked as a courier drops delivery' );
-expect( true === Courier_Fee::shop_collects( new FakeOrder( 'cod', array( new FakeShipping( 'local_pickup' ) ) ) ), 'Old order: a COD order of a method not marked keeps delivery, whatever the retired option says' );
+expect( true === Courier_Fee::shop_collects( new FakeOrder( 'cod', array( new FakeShipping( 'local_pickup' ) ) ) ), 'Old order: a COD order of a method not marked keeps delivery' );
 expect( true === Courier_Fee::shop_collects( new FakeOrder( 'bacs', $econt() ) ) && true === Courier_Fee::shop_collects( new FakeOrder( 'stripe', $econt() ) ), 'Old order: other payment methods keep delivery' );
 $options['nashenski_settings_shippings_local_pickup_is_courier'] = 'yes';
 expect( false === Courier_Fee::shop_collects( new FakeOrder( 'cod', array( new FakeShipping( 'local_pickup' ) ) ) ), 'Old order: a COD order of another method marked as a courier drops delivery' );
@@ -592,12 +611,17 @@ $options['nashenski_settings_invoice_remove_shipping'] = 'yes';
 unset( $options['woocommerce_nashenski_speedy_4_settings'] );
 Nashenski\Plugin::upgrade_fee_payer();
 expect( array( 'customer_pays' => array( 'cod' ) ) === $options['woocommerce_nashenski_speedy_4_settings'], '"Remove delivery from documents" on: the same' );
-expect( ! isset( $options['nashenski_settings_invoice_remove_shipping'] ) && 'yes' === $options['nashenski_settings_shippings_flat_rate_is_courier'] && 'yes' === $options['nashenski_settings_shippings_local_pickup_is_courier'], 'R5: "Remove delivery from documents" on becomes "Is ... courier?" of every method in a zone or on an order, and the option goes' );
+expect( 'yes' === $options['nashenski_settings_invoice_remove_shipping'] && ! isset( $options['nashenski_settings_shippings_flat_rate_is_courier'] ) && isset( $scheduled[ Nashenski\Plugin::REMOVE_SHIPPING_JOB ] ), 'Low 2: the update reads no order lines; the retired option is left to a one-off background job' );
+Nashenski\Plugin::upgrade_remove_shipping();
+expect( ! isset( $options['nashenski_settings_invoice_remove_shipping'] ) && 'yes' === $options['nashenski_settings_shippings_flat_rate_is_courier'] && 'yes' === $options['nashenski_settings_shippings_local_pickup_is_courier'], 'R5: the job turns "Remove delivery from documents" on into "Is ... courier?" of every method in a zone or on an order, and the option goes' );
 $options['nashenski_settings_invoice_remove_shipping']               = 'yes';
 $options['nashenski_settings_shippings_nashenski_speedy_is_courier'] = 'no';
 unset( $options['woocommerce_nashenski_speedy_4_settings'] );
 Nashenski\Plugin::upgrade_fee_payer();
-expect( array( 'customer_pays' => array() ) === $options['woocommerce_nashenski_speedy_4_settings'] && 'yes' === $options['nashenski_settings_shippings_nashenski_speedy_is_courier'], 'R5: a Speedy method not marked as a courier still gets an empty list; its switch is turned on after, for its old orders' );
+Nashenski\Plugin::upgrade_remove_shipping();
+expect( array( 'customer_pays' => array() ) === $options['woocommerce_nashenski_speedy_4_settings'] && 'yes' === $options['nashenski_settings_shippings_nashenski_speedy_is_courier'], 'R5: a Speedy method not marked as a courier still gets an empty list; its switch is turned on after, by the job, for its old orders' );
+Nashenski\Plugin::upgrade_remove_shipping();
+expect( ! isset( $options['nashenski_settings_invoice_remove_shipping'] ), 'The job run again changes nothing' );
 $options['nashenski_settings_shippings_nashenski_speedy_is_courier'] = 'no';
 unset( $options['woocommerce_nashenski_speedy_4_settings'] );
 Nashenski\Plugin::upgrade_fee_payer();
@@ -648,6 +672,23 @@ $fee_order->goods   = array( new FakeGoods( 40 ) );
 $fee_order->coupons = array( 'FREE' );
 Courier_Fee::decide( $fee_order );
 expect( 'shop' === Courier_Fee::payer( $fee_order ), 'decide(): the order\'s free shipping coupon counts' );
+
+// Low 1: a checkout or Store API order whose line of ours has no stamp was placed before 0.21.8; its first document keeps the old rule.
+$options['woocommerce_nashenski_econt_3_settings']                  = array( 'customer_pays' => array( 'cod' ) );
+$options['nashenski_settings_shippings_nashenski_econt_is_courier'] = 'yes';
+foreach ( array( 'checkout', 'store-api' ) as $via ) {
+	$fee_order          = new FakeOrder( 'cod', $econt() );
+	$fee_order->via     = $via;
+	$fee_order->country = 'RO';
+	$fee_order->goods   = array( new FakeGoods( 20 ) );
+	Courier_Fee::decide( $fee_order );
+	expect( '' === Courier_Fee::payer( $fee_order ) && false === Courier_Fee::shop_collects( $fee_order ), 'Low 1: an old ' . $via . ' COD order abroad is not decided "shop": its delivery stays off the documents, as its receiver-paid waybill' );
+}
+$fee_order        = new FakeOrder( 'cod', $econt() );
+$fee_order->goods = array( new FakeGoods( 20 ) );
+Courier_Fee::decide( $fee_order );
+expect( 'customer' === Courier_Fee::payer( $fee_order ), 'An admin or quick order without a stamp is still decided' );
+unset( $options['nashenski_settings_shippings_nashenski_econt_is_courier'] );
 
 // Methods of other plugins are left to the "Is ... courier?" rule.
 $fee_order        = new FakeOrder( 'cod', array( new FakeShipping( 'flat_rate' ) ) );

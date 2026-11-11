@@ -15,6 +15,9 @@ defined( 'ABSPATH' ) || exit;
 class Plugin {
 	const VERSION = '0.21.8';
 
+	/** Cron hook: the one-off 0.21.8 job that turns "Remove delivery from documents" into "Is ... courier?". */
+	const REMOVE_SHIPPING_JOB = 'nashenski/upgrade/remove_shipping';
+
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
 	 */
@@ -48,6 +51,7 @@ class Plugin {
 	 */
 	public function init() {
 		require_once __DIR__ . '/functions.php';
+		add_action( self::REMOVE_SHIPPING_JOB, array( __CLASS__, 'upgrade_remove_shipping' ) );
 		$this->maybe_upgrade();
 		$this->load_default_options();
 		$this->load_classes();
@@ -108,7 +112,7 @@ class Plugin {
 	 * default) and of every Pigeon Express method (its cash on delivery waybills were always paid by
 	 * the receiver), whatever "Remove delivery from documents" was. BOX NOW cannot charge the
 	 * customer. Orders made before keep their documents (Courier_Fee::shop_collects()) through
-	 * "Is ... courier?", which takes over the retired option.
+	 * "Is ... courier?", which takes over the retired option (upgrade_remove_shipping()).
 	 */
 	public static function upgrade_fee_payer() {
 		global $wpdb;
@@ -128,9 +132,22 @@ class Plugin {
 			update_option( $key, $settings );
 		}
 
-		// "Remove delivery from documents" on left the delivery of every cash on delivery order out of the documents. It is retired: orders without a decision keep that through "Is ... courier?" of each method they used, set after the lists above.
+		// After the lists above: the retired option becomes "Is ... courier?" in a background job, so the first request after the update does not read every order line.
+		if ( ! wp_next_scheduled( self::REMOVE_SHIPPING_JOB ) ) {
+			wp_schedule_single_event( time(), self::REMOVE_SHIPPING_JOB );
+		}
+	}
+
+	/**
+	 * 0.21.8, once, in the background: "Remove delivery from documents" on left the delivery of
+	 * every cash on delivery order out of the documents. It is retired: orders without a decision
+	 * keep that through "Is ... courier?" of each method they used, then the option goes.
+	 */
+	public static function upgrade_remove_shipping() {
+		global $wpdb;
+
 		if ( 'yes' === nashenski_get_option( 'invoice', 'remove_shipping' ) ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time read on upgrade: every method in a zone or on an order.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time read in a background job: every method in a zone or on an order.
 			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT method_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods UNION SELECT meta_value FROM {$wpdb->prefix}woocommerce_order_itemmeta WHERE meta_key = %s", 'method_id' ) );
 
 			foreach ( (array) $ids as $id ) {

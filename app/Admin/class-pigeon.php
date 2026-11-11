@@ -395,21 +395,27 @@ class Pigeon {
 		}
 
 		// A fixed price is written on the order before sending; a refused or failed label puts the order back.
-		$data = Payment::send(
-			$order,
-			$payment['mode'],
-			function () use ( $order, $payment ) {
-				$label = nashenski_label_request( 'label_data', array() );
-				$label = self::update_sender( $label );
-				$label = self::update_receiver_data( $label );
-				$label = self::update_services( $label );
-				$label = self::update_items( $label, $order );
-				$label = self::update_payment_by( $label, $order, $payment );
-				$label = self::update_customer_note( $label, $order );
+		try {
+			$data = Payment::send(
+				$order,
+				$payment['mode'],
+				function () use ( $order, $payment ) {
+					$label = nashenski_label_request( 'label_data', array() );
+					$label = self::update_sender( $label );
+					$label = self::update_receiver_data( $label );
+					$label = self::update_services( $label );
+					$label = self::update_items( $label, $order );
+					$label = self::update_payment_by( $label, $order, $payment );
+					$label = self::update_customer_note( $label, $order );
 
-				return self::send_label_to_pigeon( $label, $order );
-			}
-		);
+					return self::send_label_to_pigeon( $label, $order );
+				}
+			);
+		} catch ( \Throwable $error ) {
+			wc_get_logger()->error( 'Pigeon label for order #' . $order->get_id() . ' failed: ' . $error->getMessage(), array( 'source' => 'nashenski' ) );
+			wp_send_json_error( array( 'message' => __( 'The Pigeon Express label could not be made, and the order was not changed. Please try again.', 'nashenski-commerce' ) ) );
+			return;
+		}
 
 		if ( isset( $data['shipmentStatus'] ) ) {
 			\Nashenski\Shipping\Courier_Fee::label_made( $order, $payment['mode'] );

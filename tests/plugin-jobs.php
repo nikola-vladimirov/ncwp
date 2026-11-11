@@ -86,6 +86,22 @@ namespace {
 	function wp_clear_scheduled_hook( $h ) {
 		$GLOBALS['cleared'][] = $h; }
 	/**
+	 * Wp next scheduled: nothing pending.
+	 *
+	 * @param string $h Hook.
+	 * @return false
+	 */
+	function wp_next_scheduled( $h ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- the stub keeps WordPress's signature.
+		return false; }
+	/**
+	 * Wp schedule single event: records the one-off job.
+	 *
+	 * @param int    $t Time.
+	 * @param string $h Hook.
+	 */
+	function wp_schedule_single_event( $t, $h ) {
+		$GLOBALS['single_events'][] = $h; }
+	/**
 	 * Get option.
 	 *
 	 * @param mixed $k K.
@@ -288,6 +304,7 @@ namespace {
 	( new ReflectionMethod( $plugin, 'maybe_upgrade' ) )->invoke( $plugin );
 	check( array( array( 'nashenski_documents_migration_version', true ) ) === $GLOBALS['autoload_set'], 'the upgrade step switches the documents migration flag to autoload' );
 	check( Nashenski\Plugin::VERSION === get_option( 'nashenski_version' ), 'the upgrade step saves the new version' );
+	check( array( Nashenski\Plugin::REMOVE_SHIPPING_JOB ) === $GLOBALS['single_events'], 'the 0.21.8 step leaves the order lines to a one-off background job' );
 	check( array( WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski' ) === $GLOBALS['removed_dirs'], 'the upgrade step removes the cache folder used before 0.21.7, and nothing else' );
 
 	// The receipt cleanup is checked again in the admin, so a site that lost the job gets it back.

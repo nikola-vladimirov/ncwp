@@ -404,16 +404,10 @@ pdf_check( ! $saved->meta_exists( Payment::COD_OVERRIDE_META ) && ! empty( $resu
 pdf_check( 5.0 === (float) $saved->get_shipping_total() && 105.0 === (float) $saved->get_total(), 'Refused fixed price label: the shipping line and the order total are back as they were' );
 $test_order    = payment_order();
 $payment_throw = true;
-$thrown        = false;
-try {
-	payment_rpc( $test_order, array( 'fixedPrice' => '6' ) );
-} catch ( LogicException $error ) {
-	$thrown = true;
-	ob_end_clean();
-}
+$result        = payment_rpc( $test_order, array( 'fixedPrice' => '6' ) );
 $payment_throw = false;
 $saved         = wc_get_order( $test_order->get_id() );
-pdf_check( $thrown && 5.0 === (float) $saved->get_shipping_total() && 105.0 === (float) $saved->get_total(), 'A fixed price label that throws: the order is back as it was and the error goes on' );
+pdf_check( false === $result['success'] && false !== strpos( $result['data']['message'], 'could not be made' ) && 5.0 === (float) $saved->get_shipping_total() && 105.0 === (float) $saved->get_total(), 'A fixed price label that throws: the order is back as it was and the box gets a plain error, not a server error' );
 $payment_response = array(
 	'success' => true,
 	'data'    => array( 'reference_number' => '123' ),

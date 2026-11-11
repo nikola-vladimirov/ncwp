@@ -247,13 +247,21 @@ class Courier_Fee {
 			return '';
 		}
 
+		// The checkout stamps every line of ours, so an unstamped line of a checkout order was placed before 0.21.8: it keeps the old rule.
+		$old_checkout = in_array( $order->get_created_via(), array( 'checkout', 'store-api' ), true );
+
 		foreach ( $order->get_items( 'shipping' ) as $item ) {
 			if ( ! self::ours( $item ) ) {
 				continue;
 			}
 
-			$stamped  = (string) $item->get_meta( self::PAYER_META );
-			$basis    = (string) $item->get_meta( self::BASIS_META );
+			$stamped = (string) $item->get_meta( self::PAYER_META );
+			$basis   = (string) $item->get_meta( self::BASIS_META );
+
+			if ( '' === $stamped && $old_checkout ) {
+				continue;
+			}
+
 			$decision = self::decision( $item->get_method_id(), $item->get_instance_id(), $payment, $country, self::goods( $order ), self::free_coupon( $order ) );
 
 			// A checkout stamp has no basis: never decided again here. Staff are told once when the payment method is no longer the checkout's.
@@ -488,7 +496,7 @@ class Courier_Fee {
 			return 'customer' !== $payer;
 		}
 
-		// No decision on the order: the "Is ... courier?" rule (the update turned the retired "Remove delivery from documents" into it), so documents and NRA files of these orders stay as they were.
+		// No decision on the order: the "Is ... courier?" rule, so documents and NRA files of these orders stay as they were. The update turns the retired "Remove delivery from documents" into it in a background job; until that ran, the option still counts.
 		if ( is_a( $order, 'WC_Order_Refund' ) ) {
 			$order = wc_get_order( $order->get_parent_id() );
 		}
@@ -500,7 +508,8 @@ class Courier_Fee {
 		$methods = $order->get_items( 'shipping' );
 		$method  = reset( $methods );
 
-		return ! ( $method && 'yes' === nashenski_get_option( 'shippings', $method->get_method_id() . '_is_courier' ) );
+		return 'yes' !== nashenski_get_option( 'invoice', 'remove_shipping' )
+			&& ! ( $method && 'yes' === nashenski_get_option( 'shippings', $method->get_method_id() . '_is_courier' ) );
 	}
 
 	/**
