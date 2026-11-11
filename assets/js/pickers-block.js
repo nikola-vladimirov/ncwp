@@ -67,10 +67,18 @@
 
 	var lastCss = null;
 
+	/* The font size of an element, or of the first element matching a selector. */
+	function fontSize( sizeFrom ) {
+		var node = 'string' === typeof sizeFrom ? document.querySelector( sizeFrom ) : sizeFrom;
+		var size = node && window.getComputedStyle ? window.getComputedStyle( node ).fontSize : '';
+
+		// Cards hide the method name next to its logo with font-size 0 (checkout.css): use the classic card's price size.
+		return '0px' === size ? '0.95rem' : size || '0.875rem';
+	}
+
 	/* Put the text in place of an element's content, so it takes the room it needs and wraps. */
 	function replaceText( selector, text, sizeFrom ) {
-		var node = document.querySelector( sizeFrom );
-		var size = node && window.getComputedStyle ? window.getComputedStyle( node ).fontSize : '0.875rem';
+		var size = fontSize( sizeFrom );
 
 		return selector + '{font-size:0!important}' + selector + '>*{display:none}' +
 			selector + '::after{content:' + text + ';font-size:' + size + '}';
@@ -83,8 +91,7 @@
 
 	/* Cards: the price, then a short muted "to the courier" (the long text is in the summary). */
 	function replaceFee( selector, fee, sizeFrom ) {
-		var node = document.querySelector( sizeFrom );
-		var size = node && window.getComputedStyle ? window.getComputedStyle( node ).fontSize : '0.875rem';
+		var size = fontSize( sizeFrom );
 
 		return selector + '{font-size:0!important}' + selector + '>*{display:none}' +
 			selector + '::before{content:' + cssString( P.money( fee, P.feeSymbol ) ) + ';font-size:' + size + '}' +
@@ -95,7 +102,9 @@
 		var text = cssString( P.pending );
 		var cardText = P.cardTexts ? cssString( P.cardTexts.pending ) : text;
 		var fees = state.fees || {};
-		var label = '.wc-block-components-radio-control__label';
+		// Size from a courier's own option, whatever comes first in the list (flat rate, pickup). No :has() here: older browsers throw on it.
+		var logo = document.querySelector( '.wc-block-components-radio-control__label > .nashenski-courier-logo' );
+		var label = logo ? logo.parentNode : '.wc-block-components-radio-control__label';
 		var summary = '.wc-block-components-totals-shipping .wc-block-components-totals-item__value';
 		var summaryLabel = '.wc-block-components-totals-shipping .wc-block-components-totals-item__label';
 		var option = function ( id ) {

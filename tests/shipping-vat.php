@@ -162,6 +162,19 @@ class FakeShipping {
 	public function get_method_id() {
 		return 'nashenski_econt'; }
 	/**
+	 * Taxes by rate ID.
+	 *
+	 * @var array
+	 */
+	public $taxes = array();
+	/**
+	 * Taxes by rate ID.
+	 *
+	 * @return array
+	 */
+	public function get_taxes() {
+		return $this->taxes; }
+	/**
 	 * Name.
 	 *
 	 * @return string
@@ -232,6 +245,38 @@ class FakeProduct {
 		return 1; }
 }
 /**
+ * Order tax line fixture.
+ */
+class FakeTaxLine {
+	/**
+	 * Rate ID: 0 for the 20% Nashenski adds when the shop has no shipping rate.
+	 *
+	 * @var int
+	 */
+	public $rate_id = 0;
+	/**
+	 * Rate ID.
+	 *
+	 * @return int
+	 */
+	public function get_rate_id() {
+		return $this->rate_id; }
+	/**
+	 * WooCommerce knows no rate 0, so its percent reads 0.
+	 *
+	 * @return float
+	 */
+	public function get_rate_percent() {
+		return $this->rate_id ? 9.0 : 0.0; }
+	/**
+	 * Tax on the delivery.
+	 *
+	 * @return float
+	 */
+	public function get_shipping_tax_total() {
+		return 0.57; }
+}
+/**
  * Order fixture: a bank transfer order whose only line is the delivery.
  */
 class FakeOrder {
@@ -272,6 +317,9 @@ class FakeOrder {
 		if ( 'shipping' === $type ) {
 			return array( $this->shipping );
 		}
+		if ( 'tax' === $type ) {
+			return $this->taxes;
+		}
 		return is_array( $type ) || 'line_item' === $type ? $this->products : array();
 	}
 	/**
@@ -287,7 +335,13 @@ class FakeOrder {
 	 * @return array
 	 */
 	public function get_taxes() {
-		return array(); }
+		return $this->taxes; }
+	/**
+	 * Tax lines of the order.
+	 *
+	 * @var array
+	 */
+	public $taxes = array();
 	/**
 	 * Payment method.
 	 *
@@ -401,8 +455,29 @@ if ( 'Б - 20%' !== $line['vat_rate'] || '4.38' !== $line['price'] ) {
 	$fail[] = 'order with other tax: delivery still 4.38 at 20%, got ' . $line['price'] . ' at ' . $line['vat_rate'];
 }
 
+// 0.21.8: a shop whose rate leaves out shipping gets Nashenski's own 20% on the delivery (rate ID 0).
+$own                = new FakeOrder( 0.57 );
+$own->shipping->tax = 0.57;
+$own->taxes[]       = new FakeTaxLine();
+if ( '20' !== (string) nra_shipping_line( $own )['vat_rate'] ) {
+	$fail[] = "NRA file, Nashenski's own delivery VAT: 20%, got " . nra_shipping_line( $own )['vat_rate'];
+}
+if ( 'Б - 20%' !== shipping_line( $own )['vat_rate'] ) {
+	$fail[] = "document, Nashenski's own delivery VAT: 20%, got " . shipping_line( $own )['vat_rate'];
+}
+$own->taxes[0]->rate_id = 7;
+if ( '9' !== (string) nra_shipping_line( $own )['vat_rate'] ) {
+	$fail[] = 'NRA file, a shop shipping rate keeps its own percent, got ' . nra_shipping_line( $own )['vat_rate'];
+}
+// Straight from the checkout: no tax line for rate ID 0, only the delivery line's own taxes.
+$own->taxes           = array();
+$own->shipping->taxes = array( 'total' => array( 0 => 0.57 ) );
+if ( '20' !== (string) nra_shipping_line( $own )['vat_rate'] || 'Б - 20%' !== shipping_line( $own )['vat_rate'] ) {
+	$fail[] = "checkout order, Nashenski's own delivery VAT: 20%, got " . nra_shipping_line( $own )['vat_rate'] . ' / ' . shipping_line( $own )['vat_rate'];
+}
+
 if ( $fail ) {
 	fwrite( STDERR, 'FAIL: ' . implode( "\nFAIL: ", $fail ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- CLI output.
 	exit( 1 );
 }
-echo "PASS: 10 delivery VAT checks\n";
+echo "PASS: 14 delivery VAT checks\n";

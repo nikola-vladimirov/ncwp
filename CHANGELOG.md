@@ -35,6 +35,8 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 - Pigeon Express: when a label with a fixed price is refused or fails, the order keeps its delivery price and totals as they were, and the label box shows a plain error.
 - Documents and the NRA audit file: a cash on delivery courier order left the delivery out while the order total still had it, also with BOX NOW, whose cash on delivery collects the whole total. Now the total, the documents and the waybill agree: the delivery is left out only when the customer paid it to the courier.
 - Documents and the NRA audit file: a courier delivery with no tax, on an order with no tax at all (for example goods at 0%), prints at 0% with its full price. Before, 20% was taken out of it (5.25 printed as 4.38 at 20%) and the lines added up to less than the order. Orders with other tax keep the old rule, and so do orders whose taxed goods a 100% coupon made free. Credit notes follow the order they refund.
+- Documents and the NRA audit file: when the shop's tax rate does not apply to shipping, Nashenski adds 20% VAT to courier deliveries, but documents and the NRA audit file printed that delivery at 0%. Now they print it at 20%.
+- Block checkout, Cards and Side by side looks: the price line of each shipping option ("Price after address", "3,59 € to the courier") was invisible. It now shows as in the classic checkout.
 
 ## 0.21.6 (2026-11-11)
 

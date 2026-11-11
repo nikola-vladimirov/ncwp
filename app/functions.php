@@ -328,7 +328,20 @@ function nashenski_get_order_shipping_vat( $order, $show_group = false ) {
 	if ( wc_tax_enabled() && ! empty( $order->get_items( 'tax' ) ) ) {
 		foreach ( $order->get_items( 'tax' ) as $tax_item ) {
 			if ( $tax_item->get_shipping_tax_total() ) {
-				$shipping_vat = $tax_item->get_rate_percent();
+				// Rate ID 0 is the 20% nashenski_get_shipping_rate_taxes() adds when the shop has no shipping rate.
+				$shipping_vat = $tax_item->get_rate_id() ? $tax_item->get_rate_percent() : 20;
+				break;
+			}
+		}
+	}
+
+	// The checkout makes no tax line for rate ID 0 (only a recalculation does): read it from the delivery lines.
+	if ( ! $shipping_vat && wc_tax_enabled() ) {
+		foreach ( $order->get_items( 'shipping' ) as $shipping_item ) {
+			$taxes = $shipping_item->get_taxes();
+
+			if ( ! empty( $taxes['total'][0] ) ) {
+				$shipping_vat = 20;
 				break;
 			}
 		}

@@ -125,4 +125,4 @@ All versions: CHANGELOG.md in the plugin folder (Plugins screen > Changelog).
 = 0.21.8 =
 * New: Who pays the courier, per method and payment method. Personal data export and erase for abandoned carts.
 * Changes: Caches in uploads, clearer shipping option cards, the import asks you to deactivate the old plugin.
-* Fixed: A delivery with no VAT, on an order with no VAT, prints at 0%.
+* Fixed: Delivery VAT on documents and in the NRA file, price lines of block checkout shipping cards.
