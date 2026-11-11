@@ -235,14 +235,14 @@ class Delivery_Box {
 		$order   = wc_get_order( $order_id );
 		$rate_id = sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_rate'] ) );
 		$options = self::options();
-		$choice  = isset( $_POST['nashenski_delivery_choice'] ) ? json_decode( wp_unslash( $_POST['nashenski_delivery_choice'] ), true ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON, sanitized value by value below.
+		$choice  = isset( $_POST['nashenski_delivery_choice'] ) ? map_deep( json_decode( wp_unslash( $_POST['nashenski_delivery_choice'] ), true ), 'sanitize_text_field' ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized by map_deep() after decoding.
 
 		if ( ! self::applies( $order ) || ! isset( $options[ $rate_id ] ) ) {
 			return;
 		}
 
 		$option = $options[ $rate_id ];
-		$choice = is_array( $choice ) ? map_deep( $choice, 'sanitize_text_field' ) : array();
+		$choice = is_array( $choice ) ? $choice : array();
 
 		if ( ! self::complete( $choice, $option ) ) {
 			\WC_Admin_Meta_Boxes::add_error( __( 'Delivery was not saved: choose the town and the office, locker or address first.', 'nashenski-commerce' ) );

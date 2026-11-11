@@ -185,10 +185,11 @@ document again from the order.
 - Options are `nashenski_settings_{group}_{name}`, read and written with `nashenski_get_option()` and
   `nashenski_set_option()`.
 - Texts are in English; the Bulgarian translation is in `languages/` (PO, MO and the PHP translation
-  file). Every new text needs its translation.
+  file). Every new text needs its translation. The WordPress.org zip leaves them out (WordPress.org
+  delivers translations as language packs); import the PO on translate.wordpress.org.
 - **Releases:** bump `Version:` in `nashenski-commerce.php` and `Plugin::VERSION`, add a `CHANGELOG.md`
   entry and a `readme.txt` changelog line, update the Help page, and push to `main`. The
-  [Release workflow](.github/workflows/release.yml) publishes `vX.Y.Z` with both zips. A version with
+  [Release workflow](.github/workflows/release.yml) publishes `vX.Y.Z` with two zips: the plugin, `nashenski-commerce-wporg-X.Y.Z.zip` (for WordPress.org, no bundled translation). A version with
   a dash is published as a pre-release.
 - The release zip is `git archive` of the tag: everything marked `export-ignore` in
   [.gitattributes](.gitattributes) (docs, this README, repository files) stays out.

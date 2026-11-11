@@ -12,7 +12,7 @@ Description:  WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shippi
 Requires Plugins: woocommerce
 Author:       PristaDigital
 Author URI:   https://pristadigital.com/
-Version:      0.21.5
+Version:      0.21.6
 Requires at least: 6.5
 Requires PHP: 8.2
 WC requires at least: 9.4.0
@@ -72,7 +72,8 @@ add_action(
 /**
  * Load the plugin's texts for the current (or a given) locale: a WordPress.org language pack
  * when there is one, else the translation shipped in /languages. Documents use it to print in
- * Bulgarian and English whatever the site language.
+ * Bulgarian and English whatever the site language. Bulgarian also gets the texts printed on
+ * documents when no translation (the WordPress.org zip before its language pack) or an older one lacks them.
  *
  * @param string|null $locale Locale, for example from the change_locale action.
  */
@@ -83,6 +84,32 @@ function nashenski_load_bundled_translations( $locale = null ) {
 
 	unload_textdomain( 'nashenski-commerce' );
 	load_textdomain( 'nashenski-commerce', $file, $locale );
+
+	// Ordinance N-18 documents must be in Bulgarian whatever the site language, also for texts a language pack lacks.
+	remove_filter( 'gettext_nashenski-commerce', 'nashenski_document_text_bg' );
+	if ( 'bg_BG' === $locale ) {
+		add_filter( 'gettext_nashenski-commerce', 'nashenski_document_text_bg', 10, 2 );
+	}
+}
+
+/**
+ * Bulgarian for an untranslated document text (app/Invoice/document-texts-bg.php).
+ *
+ * @param string $translation Translated text.
+ * @param string $text        Original text.
+ * @return string
+ */
+function nashenski_document_text_bg( $translation, $text ) {
+	static $texts = null;
+
+	if ( $translation !== $text ) {
+		return $translation;
+	}
+
+	// shortcut: singular texts only (the file has no plural or context entries); add ngettext/gettext_with_context filters if it gets some.
+	$texts = $texts ?? array_column( include __DIR__ . '/app/Invoice/document-texts-bg.php', 'translations', 'singular' );
+
+	return isset( $texts[ $text ] ) ? $texts[ $text ][0] : $translation;
 }
 
 /**

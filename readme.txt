@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.2
 Requires Plugins: woocommerce
-Stable tag: 0.21.5
+Stable tag: 0.21.6
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -200,6 +200,9 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 == Changelog ==
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+
+= 0.21.6 =
+* Changes: Styles and scripts load through WordPress, every posted value is sanitized, and the PDF, QR code, VAT and container libraries are updated.
 
 = 0.21.5 =
 * New: A first-run setup for company details, VAT (20%, 9% for some goods, or not registered), invoices, couriers and shipping methods, and the checkout look.

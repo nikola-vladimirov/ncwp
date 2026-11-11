@@ -2,6 +2,15 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.21.6 (2026-11-11)
+
+### Changes
+- WordPress.org review: the quick order button style, the abandoned carts "select all" script and the changelog page style now load through WordPress (no inline style or script tags). The quick order form, the order delivery box, the export builder and the courier cookie sanitize every value they read.
+- Libraries updated: php-qrcode 6.0.1, vatin 3.1.0, Dompdf 3.1.6, Pimple 3.6.2. Development files of the libraries are no longer shipped.
+- Documents: the page count in the footer is placed without a float, which Dompdf 3.1 needs to keep the document on one page. A custom document template (filter nashenski_invoice_pdf_default_template) needs the same change: `.page-count { position: absolute; right: 0px; top: 0px; }`.
+- Documents print in Bulgarian even before a Bulgarian translation of the plugin is installed (the WordPress.org zip has none until WordPress.org ships the language pack).
+- Each release has a third zip, nashenski-commerce-wporg-X.Y.Z.zip, for WordPress.org: the same plugin without the bundled Bulgarian translation, which WordPress.org delivers as a language pack. The WooCommerce withdrawal texts in Bulgarian moved from languages/ to app/Front_End/.
+
 ## 0.21.5 (2026-11-10)
 
 ### New

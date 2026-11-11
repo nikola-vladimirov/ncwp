@@ -2,19 +2,17 @@
 /**
  * Class AlphaNum
  *
- * @filesource   AlphaNum.php
  * @created      25.11.2015
- * @package      chillerlan\QRCode\Data
  * @author       Smiley <smiley@chillerlan.net>
  * @copyright    2015 Smiley
  * @license      MIT
  */
+declare(strict_types=1);
 
 namespace chillerlan\QRCode\Data;
 
-use chillerlan\QRCode\QRCode;
-
-use function ord, sprintf;
+use chillerlan\QRCode\Common\{BitBuffer, Mode};
+use function ceil, intdiv, preg_match, strpos;
 
 /**
  * Alphanumeric mode: 0 to 9, A to Z, space, $ % * + - . / :
@@ -22,39 +20,106 @@ use function ord, sprintf;
  * ISO/IEC 18004:2000 Section 8.3.3
  * ISO/IEC 18004:2000 Section 8.4.3
  */
-final class AlphaNum extends QRDataAbstract{
-
-	protected int $datamode = QRCode::DATA_ALPHANUM;
-
-	protected array $lengthBits = [9, 11, 13];
+final class AlphaNum extends QRDataModeAbstract{
 
 	/**
-	 * @inheritdoc
+	 * ISO/IEC 18004:2000 Table 5
+	 *
+	 * @var string
 	 */
-	protected function write(string $data):void{
+	private const CHAR_MAP = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:';
 
-		for($i = 0; $i + 1 < $this->strlen; $i += 2){
-			$this->bitBuffer->put($this->getCharCode($data[$i]) * 45 + $this->getCharCode($data[$i + 1]), 11);
+	public const DATAMODE = Mode::ALPHANUM;
+
+	public function getLengthInBits():int{
+		return (int)ceil($this->getCharCount() * (11 / 2));
+	}
+
+	public static function validateString(string $string):bool{
+		return (bool)preg_match('/^[A-Z\d %$*+\-.:\/]+$/', $string);
+	}
+
+	public function write(BitBuffer $bitBuffer, int $versionNumber):static{
+		$len = $this->getCharCount();
+
+		$bitBuffer
+			->put(self::DATAMODE, 4)
+			->put($len, $this->getLengthBits($versionNumber))
+		;
+
+		// encode 2 characters in 11 bits
+		for($i = 0; ($i + 1) < $len; $i += 2){
+			$bitBuffer->put(
+				($this->ord($this->data[$i]) * 45 + $this->ord($this->data[($i + 1)])),
+				11,
+			);
 		}
 
-		if($i < $this->strlen){
-			$this->bitBuffer->put($this->getCharCode($data[$i]), 6);
+		// encode a remaining character in 6 bits
+		if($i < $len){
+			$bitBuffer->put($this->ord($this->data[$i]), 6);
 		}
 
+		return $this;
 	}
 
 	/**
-	 * get the code for the given character
+	 * @inheritDoc
 	 *
-	 * @throws \chillerlan\QRCode\Data\QRCodeDataException on an illegal character occurence
+	 * @throws \chillerlan\QRCode\Data\QRCodeDataException
 	 */
-	protected function getCharCode(string $chr):int{
+	public function decodeSegment(BitBuffer $bitBuffer, int $versionNumber):string{
+		$length = $bitBuffer->read($this->getLengthBits($versionNumber));
+		$result = '';
+		// Read two characters at a time
+		while($length > 1){
 
-		if(!isset($this::CHAR_MAP_ALPHANUM[$chr])){
-			throw new QRCodeDataException(sprintf('illegal char: "%s" [%d]', $chr, ord($chr)));
+			if($bitBuffer->available() < 11){
+				throw new QRCodeDataException('not enough bits available'); // @codeCoverageIgnore
+			}
+
+			$nextTwoCharsBits  = $bitBuffer->read(11);
+			$result           .= $this->chr(intdiv($nextTwoCharsBits, 45));
+			$result           .= $this->chr($nextTwoCharsBits % 45);
+			$length           -= 2;
 		}
 
-		return $this::CHAR_MAP_ALPHANUM[$chr];
+		if($length === 1){
+			// special case: one character left
+			if($bitBuffer->available() < 6){
+				throw new QRCodeDataException('not enough bits available'); // @codeCoverageIgnore
+			}
+
+			$result .= $this->chr($bitBuffer->read(6));
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @throws \chillerlan\QRCode\Data\QRCodeDataException
+	 */
+	private function ord(string $chr):int{
+		/** @phan-suppress-next-line PhanParamSuspiciousOrder */
+		$ord = strpos(self::CHAR_MAP, $chr);
+
+		if($ord === false){
+			throw new QRCodeDataException('invalid character'); // @codeCoverageIgnore
+		}
+
+		return $ord;
+	}
+
+	/**
+	 * @throws \chillerlan\QRCode\Data\QRCodeDataException
+	 */
+	private function chr(int $ord):string{
+
+		if($ord < 0 || $ord > 44){
+			throw new QRCodeDataException('invalid character code'); // @codeCoverageIgnore
+		}
+
+		return self::CHAR_MAP[$ord];
 	}
 
 }

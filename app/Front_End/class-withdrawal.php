@@ -338,7 +338,7 @@ class Withdrawal {
 		}
 
 		// WooCommerce's note "Order withdrawal requested. Withdrawal type: ..." in English or Bulgarian.
-		$bg     = include nashenski()->plugin_dir_path() . 'languages/woocommerce-withdrawal-bg_BG.php';
+		$bg     = include nashenski()->plugin_dir_path() . 'app/Front_End/withdrawal-texts-bg.php';
 		$format = 'Order withdrawal requested. Withdrawal type: %s.';
 
 		foreach ( wc_get_order_notes( array( 'order_id' => $order->get_id() ) ) as $note ) {
@@ -530,7 +530,7 @@ class Withdrawal {
 		}
 
 		if ( null === $bg ) {
-			$bg = include nashenski()->plugin_dir_path() . 'languages/woocommerce-withdrawal-bg_BG.php';
+			$bg = include nashenski()->plugin_dir_path() . 'app/Front_End/withdrawal-texts-bg.php';
 		}
 
 		return $bg[ $text ] ?? $translation;
