@@ -26,9 +26,9 @@ class Import_Sources {
 	const DISMISS_OPTION = 'nashenski_import_notice_dismissed';
 
 	/**
-	 * Autoloaded, so document paths read it for free. "first": the N-18 plugin left documents or settings
-	 * and its import is not done; "again": it was active again after its import, which must run again;
-	 * "done": imported; empty: no N-18 data. Set by n18_refresh() (admin_init) and by the import.
+	 * Autoloaded, so document paths read it for free. "first": the N-18 plugin left documents a new number
+	 * could clash with, or is active, and its import is not done; "again": it was active again after its import, which must run again;
+	 * "done": imported; "none": nothing to fear from it. Set by n18_refresh() and by the import.
 	 */
 	const N18_STATE = 'nashenski_n18_state';
 
@@ -92,7 +92,6 @@ class Import_Sources {
 		add_action( 'admin_post_' . self::ACTION, array( __CLASS__, 'handle' ) );
 		add_action( 'admin_post_' . self::DISMISS, array( __CLASS__, 'dismiss' ) );
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_legacy_box' ), 10, 2 );
-		add_action( 'admin_init', array( __CLASS__, 'n18_refresh' ) );
 	}
 
 	/**
@@ -136,6 +135,11 @@ class Import_Sources {
 			}
 		}
 
+		// Its documents alone can be imported, also with its files and settings deleted.
+		if ( ! isset( $found['mreja_n18'] ) && self::n18_has_data() ) {
+			$found['mreja_n18'] = array();
+		}
+
 		$done    = (array) get_option( self::DONE_OPTION, array() );
 		$names   = self::names();
 		$sources = array();
@@ -162,6 +166,7 @@ class Import_Sources {
 			self::render();
 		} elseif ( $screen && in_array( $screen->id, array( 'woocommerce_page_wc-orders', 'edit-shop_order', 'shop_order' ), true ) ) {
 			// The orders list and the order screen: where documents would be made.
+			self::n18_refresh();
 			self::n18_notice();
 		}
 	}
@@ -192,6 +197,8 @@ class Import_Sources {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
+
+		self::n18_refresh();
 
 		$sources  = self::sources();
 		$imported = sanitize_key( (string) nashenski_query_arg( 'nashenski_source_imported' ) );
@@ -434,8 +441,9 @@ class Import_Sources {
 				break;
 
 			case 'mreja_n18':
-				$rerun = ! empty( ( (array) get_option( self::DONE_OPTION, array() ) )['mreja_n18'] );
-				self::n18( (array) get_option( 'notasuptooptions', array() ), $count, $notes, $rerun );
+				// A rerun notes the clashes among the rows added since the last import; -1: a first import notes none.
+				$before = ( (array) get_option( self::DONE_OPTION, array() ) )['mreja_n18'] ?? null;
+				self::n18( (array) get_option( 'notasuptooptions', array() ), $count, $notes, null === $before ? -1 : (int) ( $before['last_id'] ?? 0 ) );
 				break;
 
 			case 'mreja_speedy':
@@ -670,9 +678,9 @@ class Import_Sources {
 	 * @param mixed $o     O.
 	 * @param mixed $count Count.
 	 * @param array $notes Lines added to the report.
-	 * @param bool  $rerun Whether it was imported before (the plugin was active again since).
+	 * @param int   $after Rows after this id are new since the last import and get notes on a clash; -1 for none.
 	 */
-	private static function n18( $o, &$count, &$notes = array(), $rerun = false ) {
+	private static function n18( $o, &$count, &$notes = array(), $after = -1 ) {
 		$map = array(
 			'nap'     => array(
 				'company_name' => 'seller_company_name',
@@ -700,7 +708,7 @@ class Import_Sources {
 		}
 
 		// Order documents keep their numbers; the next numbers continue after the highest one.
-		self::n18_numbers( self::table_rows( 'notasupto_documents' ), $count, $notes, $rerun );
+		self::n18_numbers( self::table_rows( 'notasupto_documents' ), $count, $notes, $after );
 
 		$count['settings'] += (int) \Nashenski\Invoice\Number_Allocator::continue_after(
 			function () {
@@ -719,9 +727,9 @@ class Import_Sources {
 	 * @param array $rows  Rows of its documents table.
 	 * @param array $count Counters of the report.
 	 * @param array $notes Lines added to the report.
-	 * @param bool  $rerun Whether it was imported before.
+	 * @param int   $after Rows after this id get a note on a clash (new since the last import); -1 for none.
 	 */
-	private static function n18_numbers( $rows, &$count, &$notes = array(), $rerun = false ) {
+	private static function n18_numbers( $rows, &$count, &$notes = array(), $after = -1 ) {
 		$keys    = array(
 			'purchase_order' => 'nashenski_order_number',
 			'invoice'        => 'nashenski_order_invoice_number',
@@ -749,7 +757,7 @@ class Import_Sources {
 				$clash = true;
 			}
 
-			if ( $rerun && $clash ) {
+			if ( $clash && $after >= 0 && (int) $row['id'] > $after ) {
 				$order->add_order_note(
 					sprintf(
 						/* translators: %s: document number */
@@ -832,6 +840,11 @@ class Import_Sources {
 	 * @return bool
 	 */
 	public static function n18_paused() {
+		// Right after an update the state is not stored yet: work it out once, on any request.
+		if ( false === get_option( self::N18_STATE, false ) ) {
+			self::n18_refresh();
+		}
+
 		$state = self::n18_state();
 
 		if ( self::n18_active() && 'first' !== $state && 'again' !== $state ) {
@@ -869,14 +882,15 @@ class Import_Sources {
 	}
 
 	/**
-	 * On admin pages: works out the N-18 state, so document paths only read the flag. A few cheap reads:
-	 * its options, whether its table has rows, and its last row id against the one the import saw.
+	 * Works out the N-18 state, so document paths only read the flag: on the screens with its notices,
+	 * the settings pages, the setup and the first request after an update. A few cheap
+	 * reads: whether its documents table has rows, and its last row id against the one the import kept.
 	 */
 	public static function n18_refresh() {
 		$all    = (array) get_option( self::DONE_OPTION, array() );
 		$done   = $all['mreja_n18'] ?? array();
 		$active = self::n18_active();
-		$data   = $active || self::n18_has_data(); // An active plugin makes its data.
+		$data   = $active || self::n18_has_data(); // An active plugin makes its documents.
 
 		// An import before 0.21.7 kept no last row: from now on, documents it makes are noticed.
 		if ( $done && ! isset( $done['last_id'] ) ) {
@@ -886,9 +900,10 @@ class Import_Sources {
 		}
 
 		if ( ! $done ) {
-			$state = $data ? 'first' : '';
+			// Not imported: a pause only while a number could clash, so the import offer is enough otherwise.
+			$state = $active || ( $data && self::n18_could_clash() ) ? 'first' : 'none';
 		} elseif ( ! $data ) {
-			$state = 'done'; // Its data is gone, so a new import is impossible: no pause for ever.
+			$state = 'done'; // Its documents are gone, so a new import is impossible: no pause for ever.
 		} elseif ( $active || 'again' === self::n18_state() ) {
 			$state = 'again';
 		} elseif ( self::n18_last_id() > (int) $done['last_id'] ) {
@@ -901,16 +916,29 @@ class Import_Sources {
 	}
 
 	/**
-	 * Whether the N-18 plugin left anything to import: its settings, or rows in its documents table.
+	 * Whether one of our counters has not passed the highest number the N-18 plugin gave out in its
+	 * sequence (shared or separate): only then could a new number clash with one of its documents.
+	 *
+	 * @return bool
+	 */
+	private static function n18_could_clash() {
+		foreach ( self::n18_highest() as $option => $highest ) {
+			if ( $highest && (int) nashenski_get_option( 'invoice', $option ) <= $highest ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Whether the N-18 plugin left documents to import: rows in its documents table. Its settings alone
+	 * hold no numbers. Read on admin pages and once after an update.
 	 *
 	 * @return bool
 	 */
 	private static function n18_has_data() {
 		global $wpdb;
-
-		if ( get_option( 'notasuptooptions' ) ) {
-			return true;
-		}
 
 		$table = self::n18_table();
 

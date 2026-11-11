@@ -590,6 +590,7 @@ class Setup_Wizard {
 			</div>
 		<?php endif; ?>
 
+		<?php Import_Sources::n18_refresh(); ?>
 		<?php if ( Import_Sources::n18_paused() ) : ?>
 			<div class="notice notice-error inline"><p><?php echo esc_html( Import_Sources::paused_reason() ); ?></p></div>
 		<?php endif; ?>

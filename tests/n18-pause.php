@@ -62,12 +62,13 @@ namespace {
 	 * @param array $rows    N-18 documents: id, type, num, order_id.
 	 */
 	function fresh( $options, $rows ) {
-		$GLOBALS['options'] = $options + array( 'nashenski_settings_invoice_next_invoice_number' => '0000000101' );
-		$GLOBALS['rows']    = $rows;
-		$GLOBALS['meta']    = array();
-		$GLOBALS['orders']  = array();
-		$GLOBALS['locks']   = 0;
-		$GLOBALS['caps']    = array( 'manage_woocommerce', 'activate_plugins' );
+		$GLOBALS['options']    = $options + array( 'nashenski_settings_invoice_next_invoice_number' => '0000000101' );
+		$GLOBALS['rows']       = $rows;
+		$GLOBALS['meta']       = array();
+		$GLOBALS['orders']     = array();
+		$GLOBALS['locks']      = 0;
+		$GLOBALS['caps']       = array( 'manage_woocommerce', 'activate_plugins' );
+		$GLOBALS['files_gone'] = false;
 	}
 
 	/**
@@ -289,7 +290,7 @@ namespace {
 	 * @return array
 	 */
 	function get_plugins() {
-		return array( 'woocommerce-notasupto/index.php' => array( 'Name' => 'WooCommerce Наредба Н-18 облекчен режим плъгин' ) );
+		return $GLOBALS['files_gone'] ? array() : array( 'woocommerce-notasupto/index.php' => array( 'Name' => 'WooCommerce Наредба Н-18 облекчен режим плъгин' ) );
 	}
 	/**
 	 * Active plugins: the N-18 plugin while its constant is defined.
@@ -683,12 +684,35 @@ namespace Nashenski {
 	$five = array( row( 1, 'purchase_order', 150, 1 ), row( 2, 'credit_note', 155, 1 ), row( 3, 'purchase_order_cancel', 160, 1 ), row( 4, 'debit_note', 158, 2 ), row( 5, 'invoice', 120, 2 ) );
 
 	if ( ! $GLOBALS['active'] ) {
-		// A store without any N-18 data is untouched.
+		// A store without any N-18 data is untouched; its state is stored the first time a document asks.
 		fresh( array(), array() );
-		Import_Sources::n18_refresh();
-		check( '' === Import_Sources::n18_state() && false === Import_Sources::n18_paused(), 'a store without N-18 data is untouched' );
+		check( false === Import_Sources::n18_paused() && 'none' === $GLOBALS['options'][ Import_Sources::N18_STATE ], 'a store without N-18 data is untouched, and its state is stored' );
 
-		// N-18 data that is not imported yet: no documents and no numbers until the import, which the notice links to.
+		// Its settings alone hold no numbers: no pause, but the import is offered.
+		fresh( array( 'notasuptooptions' => array( 'seller_company_name' => 'Shop' ) ), array() );
+		Import_Sources::n18_refresh();
+		check( 'none' === Import_Sources::n18_state() && false === Import_Sources::n18_paused() && isset( Import_Sources::open_names()['mreja_n18'] ), 'its settings alone: no pause, the import is offered' );
+
+		// Its documents, but our counters are already past its numbers: nothing can clash, no pause.
+		fresh(
+			array(
+				'nashenski_settings_invoice_next_invoice_number' => '0000000300',
+				'nashenski_settings_invoice_next_invoice_separate_number' => '0000000300',
+			),
+			$five
+		);
+		Import_Sources::n18_refresh();
+		check( 'none' === Import_Sources::n18_state() && isset( Import_Sources::open_names()['mreja_n18'] ), 'counters past its numbers: no pause, the import is offered' );
+
+		// Its documents alone (its files and settings deleted): the Help page offers the import, and it works.
+		fresh( array(), $five );
+		$GLOBALS['files_gone'] = true;
+		check( Import_Sources::n18_paused() && 'first' === Import_Sources::n18_state(), 'its documents alone pause new numbers on the first request' );
+		check( isset( Import_Sources::sources()['mreja_n18'] ) && false !== strpos( help_import(), 'Import</a>' ), 'its documents alone are offered for import' );
+		Import_Sources::import( 'mreja_n18' );
+		check( '0000000150' === wc_get_order( 1 )->get_meta( 'nashenski_order_number' ) && 'done' === Import_Sources::n18_state() && false === Import_Sources::n18_paused(), 'the import works from its documents alone' );
+
+		// N-18 documents that are not imported yet: no documents and no numbers until the import, which the notice links to.
 		fresh( array( 'nashenski_settings_invoice_next_invoice_separate_number' => '0000000050' ), $five );
 		Import_Sources::n18_refresh();
 		check( 'first' === Import_Sources::n18_state() && Import_Sources::n18_paused() && false !== strpos( Import_Sources::paused_reason(), 'Run its import' ), 'its data, not imported yet: paused until the import' );
@@ -726,6 +750,8 @@ namespace Nashenski {
 		check( ! wc_get_order( 1 )->notes && ! wc_get_order( 3 )->notes, 'orders without a clash get no note' );
 		check( '0000000176' === counter( 'next_invoice_number' ) && '0000000166' === counter( 'next_invoice_separate_number' ), 'the counters continue after its new highest numbers: ' . counter( 'next_invoice_number' ) . ', ' . counter( 'next_invoice_separate_number' ) );
 		check( 'done' === Import_Sources::n18_state() && false === Import_Sources::n18_paused() && false !== strpos( help_import(), 'Imported on' ), 'after the rerun documents go on' );
+		$report = Import_Sources::import( 'mreja_n18' );
+		check( 1 === count( wc_get_order( 4 )->notes ) && ! preg_grep( '/clashes/', $report ), 'another run notes no clash twice' );
 
 		// Its data is gone while a rerun is due: a rerun is impossible, so no pause for ever.
 		Import_Sources::n18_refresh();

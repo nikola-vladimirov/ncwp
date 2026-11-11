@@ -275,7 +275,7 @@ namespace {
 	 * @return mixed
 	 */
 	function get_option( $name, $fallback = false ) {
-		return $fallback;
+		return 'nashenski_n18_state' === $name ? 'none' : $fallback; // No N-18 documents on this site.
 	}
 	/**
 	 * Nashenski get option.
