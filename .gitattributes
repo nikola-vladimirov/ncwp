@@ -25,3 +25,6 @@ vendor/**/README* export-ignore
 vendor/**/RELEASE.md export-ignore
 vendor/**/SECURITY.md export-ignore
 vendor/**/UPGRADING.md export-ignore
+vendor/dompdf/dompdf/lib/fonts/mustRead.html export-ignore
+vendor/chillerlan/php-qrcode/src/Output/qrcode.schema.json export-ignore
+vendor/chillerlan/php-qrcode/src/Output/qrcode.schema.xsd export-ignore

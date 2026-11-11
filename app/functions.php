@@ -541,10 +541,10 @@ function nashenski_format_phone( $phone, $country = 'BG' ) {
 
 /**
  * A request value once its nonce checks out, sanitized all the way down; $fallback when it is
- * missing or the nonce is wrong. With no key, the whole sanitized request. The nonce check and the
- * read stay in this one function on purpose: that is where Plugin Check looks for them.
+ * missing or the nonce is wrong. Only the named key is read. The nonce check and the read stay in
+ * this one function on purpose: that is where Plugin Check looks for them.
  *
- * @param string|null     $key      Request key.
+ * @param string          $key      Request key.
  * @param mixed           $fallback Value when missing or not verified.
  * @param string          $field    Request key of the nonce.
  * @param string|string[] $actions  Accepted nonce actions.
@@ -562,11 +562,7 @@ function nashenski_verified_request( $key, $fallback, $field, $actions ) {
 		return $fallback;
 	}
 
-	if ( null === $key ) {
-		return map_deep( wp_unslash( $_REQUEST ), 'sanitize_text_field' );
-	}
-
-	return isset( $_REQUEST[ $key ] ) ? map_deep( wp_unslash( $_REQUEST[ $key ] ), 'sanitize_text_field' ) : $fallback;
+	return null !== $key && isset( $_REQUEST[ $key ] ) ? map_deep( wp_unslash( $_REQUEST[ $key ] ), 'sanitize_text_field' ) : $fallback;
 }
 
 /**
@@ -664,11 +660,12 @@ function nashenski_checkout_posted( $key, $fallback = '' ) {
 
 /**
  * The classic checkout form sent with "update order review" (WooCommerce checks its nonce
- * before; it is checked again here), as sanitized fields.
+ * before; it is checked again here): only the named fields, sanitized.
  *
+ * @param string[] $keys Fields to read.
  * @return array
  */
-function nashenski_order_review_data() {
+function nashenski_order_review_data( array $keys ) {
 	if ( ! isset( $_POST['post_data'], $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'update-order-review' ) ) {
 		return array();
 	}
@@ -677,7 +674,7 @@ function nashenski_order_review_data() {
 	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a query string; every value is sanitized below.
 	parse_str( wp_unslash( $_POST['post_data'] ), $data );
 
-	return map_deep( $data, 'sanitize_text_field' );
+	return map_deep( array_intersect_key( $data, array_flip( $keys ) ), 'sanitize_text_field' );
 }
 /**
  * Send a temporary file to the browser as a download, delete it and stop.

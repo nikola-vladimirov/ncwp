@@ -16,7 +16,7 @@ Version:      0.21.8
 Requires at least: 6.5
 Requires PHP: 8.2
 WC requires at least: 9.4.0
-WC tested up to: 11.1
+WC tested up to: 11.3
 Text Domain:  nashenski-commerce
 Domain Path:  /languages
 License:      GPLv3 or later

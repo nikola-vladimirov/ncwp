@@ -83,6 +83,10 @@ class PDF {
 		// Logos and QR codes are embedded as data URIs; page numbers are added after rendering.
 		$options->set( 'isPhpEnabled', false );
 		$options->set( 'isRemoteEnabled', false );
+		// Font metrics cache in uploads, not in the plugin folder. Dompdf skips the cache when the folder is missing.
+		$font_cache = \Nashenski\File::cache_folder( 'fonts' );
+		wp_mkdir_p( $font_cache );
+		$options->set( 'fontCache', $font_cache );
 
 		$dompdf = new Dompdf( $options );
 		$dompdf->setPaper( 'letter' === Style::get()['paper'] ? 'letter' : 'A4' );

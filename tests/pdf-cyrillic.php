@@ -53,6 +53,32 @@ namespace {
 			)
 		);
 	}
+	/**
+	 * Stub: uploads in a temp folder, so the font metrics cache lands there.
+	 *
+	 * @return array
+	 */
+	function wp_upload_dir() {
+		return array( 'basedir' => sys_get_temp_dir() . '/nashenski-pdf-' . getmypid() ); }
+
+	/**
+	 * Stub.
+	 *
+	 * @param string $path Path.
+	 * @return string
+	 */
+	function trailingslashit( $path ) {
+		return rtrim( $path, '/\\' ) . '/'; }
+
+	/**
+	 * Stub.
+	 *
+	 * @param string $path Folder.
+	 * @return bool
+	 */
+	function wp_mkdir_p( $path ) {
+		return is_dir( $path ) || mkdir( $path, 0777, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir -- offline test, WordPress is not loaded.
+	}
 	require_once __DIR__ . '/fixtures/hooks.php';
 	require __DIR__ . '/../vendor/autoload.php';
 	require_once __DIR__ . '/../app/autoload.php';
@@ -73,5 +99,16 @@ namespace {
 		throw new RuntimeException( 'No PDF output.' ); }
 	if ( false === strpos( $text, $word ) ) {
 		throw new RuntimeException( 'Cyrillic text was lost while loading the HTML.' ); }
-	echo "OK pdf-cyrillic: 2 checks\n";
+	$cache = glob( Nashenski\File::cache_folder( 'fonts' ) . '*.json' );
+	if ( ! $cache ) {
+		throw new RuntimeException( 'The font metrics cache is not in uploads.' ); }
+	if ( glob( __DIR__ . '/../vendor/dompdf/dompdf/lib/fonts/*.[au]fm.json' ) ) {
+		throw new RuntimeException( 'The font metrics cache was written into the plugin folder.' ); }
+	array_map( 'unlink', $cache );
+	// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- offline test, WordPress is not loaded.
+	rmdir( Nashenski\File::cache_folder( 'fonts' ) );
+	rmdir( Nashenski\File::cache_folder() );
+	rmdir( wp_upload_dir()['basedir'] );
+	// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
+	echo "OK pdf-cyrillic: 4 checks\n";
 }

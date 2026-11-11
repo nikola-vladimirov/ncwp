@@ -193,8 +193,8 @@ class Setup_Wizard {
 
 		check_admin_referer( self::ACTION, self::NONCE );
 
-		// Every value is sanitized and checked field by field in save().
-		$input = isset( $_POST['nashenski_setup'] ) && is_array( $_POST['nashenski_setup'] ) ? wp_unslash( $_POST['nashenski_setup'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// Every value is plain text; save() also checks each field.
+		$input = isset( $_POST['nashenski_setup'] ) && is_array( $_POST['nashenski_setup'] ) ? map_deep( wp_unslash( $_POST['nashenski_setup'] ), 'sanitize_text_field' ) : array();
 
 		update_option( self::DONE_OPTION, self::save( $input ), false );
 

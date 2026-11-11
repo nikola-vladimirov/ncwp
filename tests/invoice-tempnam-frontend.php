@@ -110,7 +110,7 @@ namespace {
 		 */
 		public function generate() {
 			$this->titles[] = $this->document->title;
-			$dompdf         = new \Dompdf\Dompdf();
+			$dompdf         = new \Dompdf\Dompdf( array( 'fontCache' => sys_get_temp_dir() ) ); // Font metrics cache out of vendor/, as the plugin does.
 			$dompdf->loadHtml( '<p>' . $this->document->title . '</p>' );
 			$dompdf->render();
 			return $dompdf->output();

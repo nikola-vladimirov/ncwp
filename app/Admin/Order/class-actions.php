@@ -226,9 +226,7 @@ class Actions {
 	 * @param mixed $order_id Order id.
 	 */
 	public static function make_invoice( $order_id ) {
-		$request = nashenski_verified_request( null, array(), 'nashenski_make_invoice_nonce', 'nashenski_make_invoice' );
-
-		if ( empty( $request['nashenski_make_invoice'] ) || ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( empty( nashenski_verified_request( 'nashenski_make_invoice', '', 'nashenski_make_invoice_nonce', 'nashenski_make_invoice' ) ) || ! current_user_can( 'edit_shop_orders' ) ) {
 			return;
 		}
 
@@ -236,8 +234,9 @@ class Actions {
 			return;
 		}
 
-		$order = wc_get_order( $order_id );
-		$error = self::use_invoice_number( $order, (string) ( $request['nashenski_invoice_number'] ?? '' ) );
+		$order  = wc_get_order( $order_id );
+		$number = nashenski_verified_request( 'nashenski_invoice_number', '', 'nashenski_make_invoice_nonce', 'nashenski_make_invoice' );
+		$error  = self::use_invoice_number( $order, is_string( $number ) ? $number : '' );
 
 		if ( $error ) {
 			\WC_Admin_Meta_Boxes::add_error( $error );
