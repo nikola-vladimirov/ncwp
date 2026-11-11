@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.2
 Requires Plugins: woocommerce
-Stable tag: 0.21.8
+Stable tag: 0.21.9
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -122,7 +122,5 @@ Vendor libraries: LGPL, MIT or Apache-2.0 (GPL-compatible). Licences are in each
 
 All versions: CHANGELOG.md in the plugin folder (Plugins screen > Changelog).
 
-= 0.21.8 =
-* New: Who pays the courier, per method and payment method. Personal data export and erase for abandoned carts.
-* Changes: Caches in uploads, clearer shipping option cards, the import asks you to deactivate the old plugin.
-* Fixed: Delivery VAT on documents and in the NRA file, price lines of block checkout shipping cards.
+= 0.21.9 =
+* Changes: Changelog wording only. No code changes from 0.21.8.
