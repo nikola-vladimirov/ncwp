@@ -81,8 +81,19 @@
 		return cssString( String( P.courierFee || '%s' ).replace( '%s', P.money( fee ) ) );
 	}
 
+	/* Cards: the price, then a short muted "to the courier" (the long text is in the summary). */
+	function replaceFee( selector, fee, sizeFrom ) {
+		var node = document.querySelector( sizeFrom );
+		var size = node && window.getComputedStyle ? window.getComputedStyle( node ).fontSize : '0.875rem';
+
+		return selector + '{font-size:0!important}' + selector + '>*{display:none}' +
+			selector + '::before{content:' + cssString( P.money( fee ) ) + ';font-size:' + size + '}' +
+			selector + '::after{content:' + cssString( ' ' + P.cardTexts.toCourier ) + ';font-size:calc(' + size + ' * 0.875);color:var(--nashenski-muted);white-space:pre}';
+	}
+
 	function writePendingCss( state ) {
 		var text = cssString( P.pending );
+		var cardText = P.cardTexts ? cssString( P.cardTexts.pending ) : text;
 		var fees = state.fees || {};
 		var label = '.wc-block-components-radio-control__label';
 		var summary = '.wc-block-components-totals-shipping .wc-block-components-totals-item__value';
@@ -91,9 +102,9 @@
 			return '.wc-block-components-radio-control__option:has(input[value="' + id + '"]) .wc-block-components-radio-control__secondary-label';
 		};
 		var css = state.pending.map( function ( id ) {
-			return replaceText( option( id ), text, label );
+			return replaceText( option( id ), cardText, label );
 		} ).join( '' ) + Object.keys( fees ).map( function ( id ) {
-			return replaceText( option( id ), feeText( fees[ id ] ), label );
+			return P.cardTexts ? replaceFee( option( id ), fees[ id ], label ) : replaceText( option( id ), feeText( fees[ id ] ), label );
 		} ).join( '' );
 
 		// In the order summary the text takes the place of the shipping price.

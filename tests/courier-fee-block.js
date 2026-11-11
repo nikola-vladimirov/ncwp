@@ -63,4 +63,11 @@ check(!css.includes('totals-item__value::after'), 'another chosen option leaves 
 css = run([{ shipping_rates: [rate('nashenski_econt:3', true, { nashenski_pending: 'yes' })] }]);
 check(css.includes('Complete the fields to calculate') && !css.includes('paid to the courier'), 'a pending option still says "Complete the fields to calculate"');
 
+// Cards and side by side layouts: short texts in the option, the long ones in the summary.
+P.cardTexts = { pending: 'Price after address', toCourier: 'to the courier' };
+css = run([{ shipping_rates: [rate('nashenski_econt:3', true, { nashenski_courier_fee: '6.50' }), rate('nashenski_speedy:4', false, { nashenski_pending: 'yes' })] }]);
+check(css.includes('secondary-label::before{content:"6,50 €"') && css.includes('::after{content:" to the courier"'), 'the card shows the price and a short "to the courier"');
+check(css.includes('totals-item__value::after{content:' + fee), 'the order summary keeps the full sentence');
+check(css.includes('input[value="nashenski_speedy:4"]) .wc-block-components-radio-control__secondary-label::after{content:"Price after address"'), 'a card still waiting for the address says "Price after address"');
+
 console.log('PASS: ' + checks + ' block checkout courier fee assertions');

@@ -1065,6 +1065,7 @@
 		var rates = cfg.rates || {};
 		var shown = [];
 		var list = null;
+		var chosen = null;
 
 		Array.prototype.forEach.call( inputs, function ( input ) {
 			var match = RATE.exec( input.value || '' );
@@ -1131,9 +1132,50 @@
 					price.classList.add( 'nashenski-rate-pending' );
 				}
 			}
+
+			if ( input.checked || 'hidden' === input.type ) {
+				chosen = { list: input.closest( '#shipping_method, .brx-shipping-options__control' ), label: label };
+			}
 		} );
 
 		showProgress( list, lowestOffer( shown ) );
+		showNote( chosen );
+	}
+
+	var note = null;
+
+	/*
+	 * The long text of the chosen option (what it costs at the courier, or what to choose first),
+	 * once under the options instead of in every card. The block checkout says it in its summary.
+	 */
+	function showNote( chosen ) {
+		var source = chosen && chosen.list ? chosen.label.querySelector( '[data-nashenski-note]' ) : null;
+		var text = source ? source.getAttribute( 'data-nashenski-note' ) : '';
+		var tag = chosen && chosen.list && 'UL' === chosen.list.tagName ? 'LI' : 'P';
+
+		if ( ! text ) {
+			if ( note && note.parentNode ) {
+				note.remove();
+			}
+
+			return;
+		}
+
+		if ( ! note || note.tagName !== tag ) {
+			if ( note && note.parentNode ) {
+				note.remove();
+			}
+
+			note = document.createElement( tag );
+			note.className = 'nashenski-rates-note';
+			note.setAttribute( 'aria-live', 'polite' );
+		}
+
+		setText( note, text );
+
+		if ( note.parentNode !== chosen.list ) {
+			chosen.list.appendChild( note );
+		}
 	}
 
 	window.nashenskiPickers = Object.assign( cfg, {

@@ -302,6 +302,10 @@ class Pickers {
 	 * @return string
 	 */
 	public static function full_label( $label, $rate ) {
+		if ( is_object( $rate ) && self::courier_of( $rate->get_id() ) && 'plain' !== Appearance::layout() ) {
+			return self::card_label( $label, $rate );
+		}
+
 		if ( self::is_pending( $rate ) ) {
 			return $label . ': <span class="nashenski-rate-pending">' . esc_html( self::pending_text() ) . '</span>';
 		}
@@ -317,6 +321,34 @@ class Pickers {
 		}
 
 		return $label;
+	}
+
+	/**
+	 * Cards and side by side: the courier name (for screen readers; the logo shows it), then one
+	 * short price line. The script adds the logo and the delivery type, and puts the long texts
+	 * (data-nashenski-note) once under the options.
+	 *
+	 * @param string            $label Rate label: "Econt" or "Econt: price".
+	 * @param \WC_Shipping_Rate $rate  Shipping rate.
+	 * @return string
+	 */
+	private static function card_label( $label, $rate ) {
+		$meta = $rate->get_meta_data();
+		$name = $rate->get_label();
+
+		if ( self::is_pending( $rate ) ) {
+			$price = '<span class="nashenski-rate-price nashenski-rate-pending" data-nashenski-note="' . esc_attr__( 'Choose your office, locker or address to see the delivery price.', 'nashenski-commerce' ) . '">' . esc_html__( 'Price after address', 'nashenski-commerce' ) . '</span>';
+		} elseif ( ! empty( $meta[ Courier_Fee::FEE_META ] ) ) {
+			$price = '<span class="nashenski-rate-price" data-nashenski-note="' . esc_attr( wp_strip_all_tags( Courier_Fee::text( $meta[ Courier_Fee::FEE_META ] ) ) ) . '">' . wp_kses_post( wc_price( $meta[ Courier_Fee::FEE_META ] ) ) . ' <span class="nashenski-rate-note">' . esc_html__( 'to the courier', 'nashenski-commerce' ) . '</span></span>';
+		} elseif ( (float) $rate->get_cost() <= 0 ) {
+			$price = '<span class="nashenski-rate-price nashenski-rate-free">' . esc_html__( 'Free', 'nashenski-commerce' ) . '</span>';
+		} else {
+			// WooCommerce and the builder pass "Name: price"; the price part keeps their tax display.
+			$price = 0 === strpos( $label, $name . ': ' ) ? substr( $label, strlen( $name ) + 2 ) : wc_price( (float) $rate->get_cost() + array_sum( (array) $rate->get_taxes() ) );
+			$price = '<span class="nashenski-rate-price">' . wp_kses_post( $price ) . '</span>';
+		}
+
+		return '<span class="nashenski-rate-courier">' . esc_html( $name ) . '</span>' . $price;
 	}
 
 	/**
@@ -499,6 +531,11 @@ class Pickers {
 			'logos'      => 'no' === nashenski_get_option( 'checkout', 'courier_logos' ) ? array() : Courier_Logos::get_logos(),
 			'showType'   => 'no' !== nashenski_get_option( Appearance::GROUP, 'show_type' ),
 			'pending'    => self::pending_text(),
+			// Short texts of the block checkout's option cards (the long ones go to its summary).
+			'cardTexts'  => 'plain' === Appearance::layout() ? null : array(
+				'pending'   => __( 'Price after address', 'nashenski-commerce' ),
+				'toCourier' => __( 'to the courier', 'nashenski-commerce' ),
+			),
 			/* translators: %s: delivery price, for example 6,50 € */
 			'courierFee' => __( '%s, paid to the courier on delivery, not included in the total', 'nashenski-commerce' ),
 			'freeOver'   => 'yes' === nashenski_get_option( Appearance::GROUP, 'free_over_label' ),

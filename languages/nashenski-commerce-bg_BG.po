@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 19:11+0000\n"
-"PO-Revision-Date: 2026-11-11 19:11+0000\n"
+"POT-Creation-Date: 2026-11-11 19:52+0000\n"
+"PO-Revision-Date: 2026-11-11 19:52+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -359,7 +359,7 @@ msgstr "Товарителница"
 msgid "Selected"
 msgstr "Избрано"
 
-#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:133 app/Admin/class-pigeon.php:277 app/Admin/class-speedy.php:198 app/Admin/Order/class-delivery-box.php:206 app/Front_End/Checkout/class-pickers.php:549
+#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:133 app/Admin/class-pigeon.php:277 app/Admin/class-speedy.php:198 app/Admin/Order/class-delivery-box.php:206 app/Front_End/Checkout/class-pickers.php:586
 msgid "Choose"
 msgstr "Избери"
 
@@ -529,19 +529,19 @@ msgstr "бл. вх. ет."
 msgid "Street number"
 msgstr "Номер на улица"
 
-#: app/Admin/class-econt.php:141 app/Admin/class-speedy.php:206 app/Front_End/Checkout/class-pickers.php:542 app/Shipping/Econt/class-address.php:47
+#: app/Admin/class-econt.php:141 app/Admin/class-speedy.php:206 app/Front_End/Checkout/class-pickers.php:579 app/Shipping/Econt/class-address.php:47
 msgid "Block"
 msgstr "Блок"
 
-#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:207 app/Front_End/Checkout/class-pickers.php:543 app/Shipping/Econt/class-address.php:48
+#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:207 app/Front_End/Checkout/class-pickers.php:580 app/Shipping/Econt/class-address.php:48
 msgid "Entrance"
 msgstr "Вход"
 
-#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:208 app/Front_End/Checkout/class-pickers.php:544 app/Shipping/Econt/class-address.php:49
+#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:208 app/Front_End/Checkout/class-pickers.php:581 app/Shipping/Econt/class-address.php:49
 msgid "Floor"
 msgstr "Етаж"
 
-#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:545 app/Shipping/Econt/class-address.php:50
+#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:582 app/Shipping/Econt/class-address.php:50
 msgid "Apartment"
 msgstr "Апартамент"
 
@@ -775,7 +775,7 @@ msgstr "Първите %1$d от %2$d реда. Файл: %3$s"
 msgid "Nothing matches these filters."
 msgstr "Няма записи по тези филтри."
 
-#: app/Admin/class-export-builder.php:217 app/class-plugin.php:369 app/Front_End/class-quick-order.php:375
+#: app/Admin/class-export-builder.php:217 app/class-plugin.php:370 app/Front_End/class-quick-order.php:375
 msgid "Something went wrong. Please try again."
 msgstr "Нещо се обърка. Опитайте отново."
 
@@ -1599,7 +1599,7 @@ msgstr "Настройки, подходящи за повечето бълга�
 msgid "Setting"
 msgstr "Настройка"
 
-#: app/Admin/class-help-page.php:348 app/class-plugin.php:374
+#: app/Admin/class-help-page.php:348 app/class-plugin.php:375
 msgid "Now"
 msgstr "Сега"
 
@@ -1820,7 +1820,7 @@ msgstr "Кредитно известие"
 msgid "Cancelled order document"
 msgstr "Документ за отказана поръчка"
 
-#: app/Admin/class-import-sources.php:1506 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:515
+#: app/Admin/class-import-sources.php:1506 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:552
 msgid "To an office"
 msgstr "До офис"
 
@@ -2096,7 +2096,7 @@ msgstr "Преглед и тест преди плащане"
 msgid "No"
 msgstr "Не"
 
-#: app/Admin/class-pigeon.php:308 app/Admin/class-speedy.php:231 app/Front_End/Checkout/class-pickers.php:538
+#: app/Admin/class-pigeon.php:308 app/Admin/class-speedy.php:231 app/Front_End/Checkout/class-pickers.php:575
 msgid "Street or quarter"
 msgstr "Улица или квартал"
 
@@ -2918,7 +2918,7 @@ msgstr "До автомат"
 msgid "Up to (kg)"
 msgstr "До (кг)"
 
-#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:370
+#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:371
 msgid "Remove row"
 msgstr "Премахване на реда"
 
@@ -3352,7 +3352,7 @@ msgstr "Карти: всяка опция в отделна рамка, избр
 msgid "Side by side: the options as buttons in a row, the fields of the chosen one below them"
 msgstr "Една до друга: опциите като бутони в ред, полетата на избраната под тях"
 
-#: app/Admin/class-setup-wizard.php:716 app/Admin/class-setup-wizard.php:719 app/Front_End/Checkout/class-pickers.php:312
+#: app/Admin/class-setup-wizard.php:716 app/Admin/class-setup-wizard.php:719 app/Front_End/Checkout/class-pickers.php:316
 msgid "Free shipping"
 msgstr "Безплатна доставка"
 
@@ -4614,7 +4614,7 @@ msgstr "Показване във формата (собствен шаблон)
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr "Кратка форма за купувачи, които не искат да минават през количката. Купувачът изпраща име, телефон и имейл, а поръчката чака вашето потвърждение. Наличността не се резервира, докато не потвърдите. Сменете статуса на поръчката на „Очаква плащане“, за да изпратите линк за плащане."
 
-#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:153 app/class-plugin.php:312
+#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:154 app/class-plugin.php:313
 msgid "Settings"
 msgstr "Настройки"
 
@@ -4783,40 +4783,40 @@ msgid "The document was not found or you do not have access to it."
 msgstr "Документът не е намерен или нямате достъп до него."
 
 #. translators: %s: link to the settings
-#: app/class-plugin.php:153
+#: app/class-plugin.php:154
 #, php-format
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr "Нашенски Комерс: прегледайте настройките и ги запазете отново от „%s“."
 
-#: app/class-plugin.php:368
+#: app/class-plugin.php:369
 msgid "The file was downloaded."
 msgstr "Файлът е изтеглен."
 
-#: app/class-plugin.php:371
+#: app/class-plugin.php:372
 msgid "Built-in prices restored. Save to keep them."
 msgstr "Вградените цени са възстановени. Запазете, за да ги задържите."
 
-#: app/class-plugin.php:372
+#: app/class-plugin.php:373
 msgid "Your prices match the courier website."
 msgstr "Цените ви съвпадат със сайта на куриера."
 
-#: app/class-plugin.php:373
+#: app/class-plugin.php:374
 msgid "The courier website has different prices:"
 msgstr "Сайтът на куриера има различни цени:"
 
-#: app/class-plugin.php:375 app/Front_End/class-quick-order.php:500
+#: app/class-plugin.php:376 app/Front_End/class-quick-order.php:500
 msgid "Website"
 msgstr "Сайт"
 
-#: app/class-plugin.php:376
+#: app/class-plugin.php:377
 msgid "Use these prices"
 msgstr "Използване на тези цени"
 
-#: app/class-plugin.php:377
+#: app/class-plugin.php:378
 msgid "New prices filled in. Check them and save."
 msgstr "Новите цени са попълнени. Проверете ги и запазете."
 
-#: app/class-plugin.php:411
+#: app/class-plugin.php:412
 msgid "The request failed. Reload the page and try again."
 msgstr "Заявката не успя. Презаредете страницата и опитайте отново."
 
@@ -5154,7 +5154,7 @@ msgstr "да"
 msgid "no"
 msgstr "не"
 
-#: app/Export/Builder/class-fields.php:428 app/Export/Builder/class-fields.php:429 app/Front_End/Checkout/class-pickers.php:523 app/Front_End/Checkout/class-pickers.php:524 app/Front_End/Checkout/class-pickers.php:525
+#: app/Export/Builder/class-fields.php:428 app/Export/Builder/class-fields.php:429 app/Front_End/Checkout/class-pickers.php:560 app/Front_End/Checkout/class-pickers.php:561 app/Front_End/Checkout/class-pickers.php:562
 msgid "Parcel locker"
 msgstr "Автомат за пратки"
 
@@ -5374,7 +5374,7 @@ msgstr "Списък"
 msgid "Checkbox"
 msgstr "Отметка"
 
-#: app/Front_End/Checkout/class-field-editor.php:872 app/Front_End/Checkout/class-pickers.php:541
+#: app/Front_End/Checkout/class-field-editor.php:872 app/Front_End/Checkout/class-pickers.php:578
 msgid "Number"
 msgstr "Номер"
 
@@ -5474,7 +5474,7 @@ msgstr "Скривай полето, когато:"
 msgid "Add alternative (or)"
 msgstr "Добави алтернатива (или)"
 
-#: app/Front_End/Checkout/class-field-editor.php:1005 app/Front_End/Checkout/class-pickers.php:530 app/Front_End/class-quick-order.php:376
+#: app/Front_End/Checkout/class-field-editor.php:1005 app/Front_End/Checkout/class-pickers.php:567 app/Front_End/class-quick-order.php:376
 msgid "Close"
 msgstr "Затваряне"
 
@@ -5534,123 +5534,139 @@ msgstr "Условия: класическото плащане следва в�
 msgid "Complete the fields to calculate"
 msgstr "Попълнете данните за изчисляване"
 
+#: app/Front_End/Checkout/class-pickers.php:340
+msgid "Choose your office, locker or address to see the delivery price."
+msgstr "Изберете офис, автомат или адрес, за да видите цената за доставка."
+
+#: app/Front_End/Checkout/class-pickers.php:340 app/Front_End/Checkout/class-pickers.php:536
+msgid "Price after address"
+msgstr "Цена след адреса"
+
+#: app/Front_End/Checkout/class-pickers.php:342 app/Front_End/Checkout/class-pickers.php:537
+msgid "to the courier"
+msgstr "на куриера"
+
+#: app/Front_End/Checkout/class-pickers.php:344
+msgid "Free"
+msgstr "Безплатно"
+
 #. translators: %s: delivery price, for example 6,50 €
-#: app/Front_End/Checkout/class-pickers.php:503 app/Shipping/class-courier-fee.php:327
+#: app/Front_End/Checkout/class-pickers.php:540 app/Shipping/class-courier-fee.php:327
 #, php-format
 msgid "%s, paid to the courier on delivery, not included in the total"
 msgstr "%s, плаща се на куриера при доставка, не е включена в общата сума"
 
-#: app/Front_End/Checkout/class-pickers.php:519
+#: app/Front_End/Checkout/class-pickers.php:556
 msgid "To your address"
 msgstr "До вашия адрес"
 
-#: app/Front_End/Checkout/class-pickers.php:526
+#: app/Front_End/Checkout/class-pickers.php:563
 msgid "Search by town, name or address"
 msgstr "Търсене по населено място, име или адрес"
 
-#: app/Front_End/Checkout/class-pickers.php:527
+#: app/Front_End/Checkout/class-pickers.php:564
 msgid "Change"
 msgstr "Промяна"
 
-#: app/Front_End/Checkout/class-pickers.php:528
+#: app/Front_End/Checkout/class-pickers.php:565
 msgid "Choose on the map"
 msgstr "Избор на картата"
 
-#: app/Front_End/Checkout/class-pickers.php:529
+#: app/Front_End/Checkout/class-pickers.php:566
 msgid "Choose an office on the map"
 msgstr "Изберете офис на картата"
 
-#: app/Front_End/Checkout/class-pickers.php:531
+#: app/Front_End/Checkout/class-pickers.php:568
 msgid "Loading..."
 msgstr "Зареждане..."
 
-#: app/Front_End/Checkout/class-pickers.php:532
+#: app/Front_End/Checkout/class-pickers.php:569
 msgid "Nothing found. Check the town in the address above."
 msgstr "Нищо не е намерено. Проверете населеното място в адреса по-горе."
 
-#: app/Front_End/Checkout/class-pickers.php:533
+#: app/Front_End/Checkout/class-pickers.php:570
 msgid "No match. Try another word."
 msgstr "Няма съвпадение. Опитайте с друга дума."
 
-#: app/Front_End/Checkout/class-pickers.php:534
+#: app/Front_End/Checkout/class-pickers.php:571
 msgid "Enter your town in the address above to see the list."
 msgstr "Въведете населеното си място в адреса по-горе, за да видите списъка."
 
-#: app/Front_End/Checkout/class-pickers.php:535
+#: app/Front_End/Checkout/class-pickers.php:572
 msgid "Choose it on the map. The price comes from the courier's public price list."
 msgstr "Изберете на картата. Цената се изчислява по публичния ценоразпис на куриера."
 
-#: app/Front_End/Checkout/class-pickers.php:536
+#: app/Front_End/Checkout/class-pickers.php:573
 msgid "This is an office. Choose a parcel locker, or pick the office delivery option."
 msgstr "Това е офис. Изберете автомат за пратки или опцията за доставка до офис."
 
-#: app/Front_End/Checkout/class-pickers.php:537
+#: app/Front_End/Checkout/class-pickers.php:574
 msgid "This is a parcel locker. Choose an office, or pick the parcel locker delivery option."
 msgstr "Това е автомат за пратки. Изберете офис или опцията за доставка до автомат."
 
-#: app/Front_End/Checkout/class-pickers.php:539
+#: app/Front_End/Checkout/class-pickers.php:576
 msgid "Start typing the street or quarter"
 msgstr "Започнете да пишете улицата или квартала"
 
-#: app/Front_End/Checkout/class-pickers.php:540
+#: app/Front_End/Checkout/class-pickers.php:577
 msgid "Street and number"
 msgstr "Улица и номер"
 
-#: app/Front_End/Checkout/class-pickers.php:546
+#: app/Front_End/Checkout/class-pickers.php:583
 msgid "Note for the courier (optional)"
 msgstr "Бележка за куриера (незадължително)"
 
-#: app/Front_End/Checkout/class-pickers.php:547
+#: app/Front_End/Checkout/class-pickers.php:584
 msgid "The list could not be loaded. Please try again."
 msgstr "Списъкът не можа да се зареди. Опитайте отново."
 
-#: app/Front_End/Checkout/class-pickers.php:548
+#: app/Front_End/Checkout/class-pickers.php:585
 msgid "Try again"
 msgstr "Опитайте отново"
 
-#: app/Front_End/Checkout/class-pickers.php:550
+#: app/Front_End/Checkout/class-pickers.php:587
 msgid "Town or village"
 msgstr "Населено място"
 
-#: app/Front_End/Checkout/class-pickers.php:551
+#: app/Front_End/Checkout/class-pickers.php:588
 msgid "Start typing your town or village"
 msgstr "Започнете да пишете населеното място"
 
 #. translators: %s: order total for free shipping, for example 50,00 €
-#: app/Front_End/Checkout/class-pickers.php:553
+#: app/Front_End/Checkout/class-pickers.php:590
 #, php-format
 msgid "Free shipping over %s"
 msgstr "Безплатна доставка над %s"
 
 #. translators: %s: amount still missing, for example 23,40 €
-#: app/Front_End/Checkout/class-pickers.php:555
+#: app/Front_End/Checkout/class-pickers.php:592
 #, php-format
 msgid "Add %s more for free shipping."
 msgstr "Добавете още %s за безплатна доставка."
 
-#: app/Front_End/Checkout/class-pickers.php:556
+#: app/Front_End/Checkout/class-pickers.php:593
 msgid "Your order ships for free."
 msgstr "Поръчката ви е с безплатна доставка."
 
 #. translators: %s: region name
-#: app/Front_End/Checkout/class-pickers.php:558
+#: app/Front_End/Checkout/class-pickers.php:595
 #, php-format
 msgid "%s region"
 msgstr "обл. %s"
 
-#: app/Front_End/Checkout/class-pickers.php:588
+#: app/Front_End/Checkout/class-pickers.php:625
 msgid "bl."
 msgstr "бл."
 
-#: app/Front_End/Checkout/class-pickers.php:589
+#: app/Front_End/Checkout/class-pickers.php:626
 msgid "entr."
 msgstr "вх."
 
-#: app/Front_End/Checkout/class-pickers.php:590
+#: app/Front_End/Checkout/class-pickers.php:627
 msgid "fl."
 msgstr "ет."
 
-#: app/Front_End/Checkout/class-pickers.php:591
+#: app/Front_End/Checkout/class-pickers.php:628
 msgid "ap."
 msgstr "ап."
 

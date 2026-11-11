@@ -68,7 +68,7 @@ class Appearance {
 		if ( self::framework() ) {
 			return array(
 				'accent'       => 'var(--primary, currentColor)',
-				'selected_bg'  => 'var(--primary-ultra-light, color-mix(in srgb, var(--primary, currentColor) 8%, transparent))',
+				'selected_bg'  => 'color-mix(in srgb, var(--nashenski-accent) 8%, transparent)',
 				'border'       => 'var(--border-color-dark, var(--border-color, color-mix(in srgb, currentColor 20%, transparent)))',
 				'muted'        => 'var(--text-dark-muted, color-mix(in srgb, currentColor 70%, transparent))',
 				'radius'       => 'var(--radius-m, var(--radius, 6px))',
@@ -76,13 +76,13 @@ class Appearance {
 				'field_bg'     => 'transparent',
 				'field_radius' => 'var(--radius-s, var(--radius, 4px))',
 				'gap'          => 'var(--space-xs, 0.75em)',
-				'logo_height'  => '1.5em',
+				'logo_height'  => '24px',
 			);
 		}
 
 		return array(
 			'accent'       => 'currentColor',
-			'selected_bg'  => 'color-mix(in srgb, currentColor 5%, transparent)',
+			'selected_bg'  => 'color-mix(in srgb, var(--nashenski-accent) 8%, transparent)',
 			'border'       => 'color-mix(in srgb, currentColor 20%, transparent)',
 			'muted'        => 'color-mix(in srgb, currentColor 70%, transparent)',
 			'radius'       => '6px',
@@ -90,7 +90,7 @@ class Appearance {
 			'field_bg'     => 'transparent',
 			'field_radius' => '4px',
 			'gap'          => '0.75em',
-			'logo_height'  => '1.4em',
+			'logo_height'  => '24px',
 		);
 	}
 
