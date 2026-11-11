@@ -250,15 +250,19 @@ namespace {
 	$GLOBALS['wpdb']          = $wpdb;
 	$wp_filesystem            = new class() {
 		/**
-		 * Rmdir.
+		 * Rmdir: records the folder.
+		 *
+		 * @param string $path Folder.
 		 */
-		public function rmdir() {}
+		public function rmdir( $path ) {
+			$GLOBALS['removed_dirs'][] = $path; }
 	};
 	$GLOBALS['wp_filesystem'] = $wp_filesystem;
 	$plugin                   = ( new ReflectionClass( Nashenski\Plugin::class ) )->newInstanceWithoutConstructor();
 	( new ReflectionMethod( $plugin, 'maybe_upgrade' ) )->invoke( $plugin );
 	check( array( array( 'nashenski_documents_migration_version', true ) ) === $GLOBALS['autoload_set'], 'the upgrade step switches the documents migration flag to autoload' );
 	check( Nashenski\Plugin::VERSION === get_option( 'nashenski_version' ), 'the upgrade step saves the new version' );
+	check( in_array( WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski', $GLOBALS['removed_dirs'], true ), 'the upgrade step removes the cache folder used before 0.21.7' );
 
 	// The receipt cleanup is checked again in the admin, so a site that lost the job gets it back.
 	new Nashenski\Document_Storage();

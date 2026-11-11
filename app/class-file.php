@@ -13,7 +13,18 @@ defined( 'ABSPATH' ) || exit;
  * Reads and writes files in the plugin cache folder.
  */
 class File {
-	const CACHE_FOLDER = WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski' . DIRECTORY_SEPARATOR;
+	/**
+	 * The courier cache folder in uploads (its own per site on multisite), or a subfolder of it.
+	 * It holds public courier data only: countries, cities, quarters, streets, offices and lockers.
+	 *
+	 * @param string $sub Subfolder, for example the courier name.
+	 * @return string Path with a trailing separator.
+	 */
+	public static function cache_folder( $sub = '' ) {
+		$folder = trailingslashit( wp_upload_dir( null, false )['basedir'] ) . 'nashenski-cache' . DIRECTORY_SEPARATOR;
+
+		return '' === $sub ? $folder : $folder . $sub . DIRECTORY_SEPARATOR;
+	}
 
 	/**
 	 * Writes data to a file without leaving a half-written file behind.

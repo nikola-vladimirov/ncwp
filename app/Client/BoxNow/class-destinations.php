@@ -52,12 +52,12 @@ class Destinations {
 	protected function load_destinations( $size ) {
 		$box = $this->container[ Client::BOXNOW ];
 
-		if ( ! is_dir( $box::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $box::CACHE_FOLDER );
+		if ( ! is_dir( $box::cache_folder() ) ) {
+			wp_mkdir_p( $box::cache_folder() );
 		}
 
 		// Demo and live lockers differ (the demo has two test lockers), so each has its own file.
-		$destinations_file = $box::CACHE_FOLDER . 'destinations-' . ( 'live' === $box->get_env() ? 'live' : 'demo' ) . '-' . $size . '.json';
+		$destinations_file = $box::cache_folder() . 'destinations-' . ( 'live' === $box->get_env() ? 'live' : 'demo' ) . '-' . $size . '.json';
 		$destinations      = File::get_file( $destinations_file );
 
 		$failed_key = 'nashenski_boxnow_dest_failed_' . md5( $destinations_file );

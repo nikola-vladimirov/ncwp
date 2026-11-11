@@ -7,8 +7,6 @@
 
 namespace Nashenski\Client;
 
-use Nashenski\File;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -22,7 +20,7 @@ class Pigeon {
 	const CREATE_LABEL_ENDPOINT = '/shipments';
 	const CALCULATE_ENDPOINT    = '/shipments/calculate';
 
-	const CACHE_FOLDER = File::CACHE_FOLDER . 'pigeon' . DIRECTORY_SEPARATOR;
+	const CACHE_NAME = 'pigeon';
 
 	/**
 	 * Environment: live or demo.

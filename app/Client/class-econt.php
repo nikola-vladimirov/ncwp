@@ -7,8 +7,6 @@
 
 namespace Nashenski\Client;
 
-use Nashenski\File;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -23,7 +21,7 @@ class Econt {
 	const UPDATE_LABELS_ENDPOINT   = 'Shipments/LabelService.updateLabel.json';
 	const DELETE_LABELS_ENDPOINT   = 'Shipments/LabelService.deleteLabels.json';
 	const SHIPMENT_STATUS_ENDPOINT = 'Shipments/ShipmentService.getShipmentStatuses.json';
-	const CACHE_FOLDER             = File::CACHE_FOLDER . 'econt' . DIRECTORY_SEPARATOR;
+	const CACHE_NAME               = 'econt';
 
 	/**
 	 * Environment: live or demo.

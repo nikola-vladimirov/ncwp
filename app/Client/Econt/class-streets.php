@@ -47,11 +47,11 @@ class Streets {
 	 * @return mixed
 	 */
 	protected function load_streets_by_city( $city_id ) {
-		if ( ! is_dir( $this->container[ Client::ECONT ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::ECONT ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::ECONT ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::ECONT ]::cache_folder() );
 		}
 
-		$streets_file = $this->container[ Client::ECONT ]::CACHE_FOLDER . 'streets-' . $city_id . '.json';
+		$streets_file = $this->container[ Client::ECONT ]::cache_folder() . 'streets-' . $city_id . '.json';
 		$streets      = File::get_file( $streets_file );
 
 		if ( ! $streets ) {

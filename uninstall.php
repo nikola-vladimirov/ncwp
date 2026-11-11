@@ -2,7 +2,7 @@
 /**
  * Runs when the plugin is deleted from the Plugins screen.
  *
- * Removes scheduled jobs, the abandoned carts table (customer emails and phones) and transients.
+ * Removes scheduled jobs, the abandoned carts table (customer emails and phones), transients and the courier cache.
  * Settings, order data and documents stay: invoices and store data are legal records.
  *
  * @package Nashenski_Commerce
@@ -26,6 +26,30 @@ if ( function_exists( 'as_unschedule_all_actions' ) ) {
 }
 
 delete_option( 'nashenski_shipments_cursor' );
+
+// The courier cache: its folder in the uploads of every site, and the shared folder used before 0.21.7.
+global $wp_filesystem;
+if ( ! $wp_filesystem ) {
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	WP_Filesystem();
+}
+if ( $wp_filesystem ) {
+	foreach ( is_multisite() ? get_sites(
+		array(
+			'fields' => 'ids',
+			'number' => 0,
+		)
+	) : array( 0 ) as $nashenski_site ) {
+		if ( $nashenski_site ) {
+			switch_to_blog( $nashenski_site );
+		}
+		$wp_filesystem->rmdir( trailingslashit( wp_upload_dir( null, false )['basedir'] ) . 'nashenski-cache', true );
+		if ( $nashenski_site ) {
+			restore_current_blog();
+		}
+	}
+	$wp_filesystem->rmdir( WP_CONTENT_DIR . '/cache/nashenski', true );
+}
 
 global $wpdb;
 

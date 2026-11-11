@@ -49,11 +49,11 @@ class Lockers {
 	 * @return array
 	 */
 	protected function load_lockers( $city_id, $country_code = 'BG' ) {
-		if ( ! is_dir( $this->container[ Client::PIGEON ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::PIGEON ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::PIGEON ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::PIGEON ]::cache_folder() );
 		}
 
-		$lockers_file = $this->container[ Client::PIGEON ]::CACHE_FOLDER . 'lockers-' . $city_id . '.json';
+		$lockers_file = $this->container[ Client::PIGEON ]::cache_folder() . 'lockers-' . $city_id . '.json';
 		$lockers      = File::get_file( $lockers_file );
 
 		if ( ! $lockers ) {

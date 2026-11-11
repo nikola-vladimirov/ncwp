@@ -50,13 +50,13 @@ class Streets {
 	 * @return array|null
 	 */
 	protected function load_streets_by_city( $city_id, $query ) {
-		if ( ! is_dir( $this->container[ Client::SPEEDY ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::SPEEDY ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::SPEEDY ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::SPEEDY ]::cache_folder() );
 		}
 
 		$query        = mb_substr( (string) $query, 0, 64 );
 		$hash         = md5( $query );
-		$streets_file = $this->container[ Client::SPEEDY ]::CACHE_FOLDER . 'streets-' . $city_id . '-' . $hash . '.json';
+		$streets_file = $this->container[ Client::SPEEDY ]::cache_folder() . 'streets-' . $city_id . '-' . $hash . '.json';
 		$streets      = File::get_file( $streets_file );
 
 		$miss_key = 'nashenski_miss_' . md5( $streets_file );

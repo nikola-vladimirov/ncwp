@@ -49,11 +49,11 @@ class Cities {
 	 * @return array
 	 */
 	protected function load_cities( $country_code = 'BG' ) {
-		if ( ! is_dir( $this->container[ Client::PIGEON ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::PIGEON ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::PIGEON ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::PIGEON ]::cache_folder() );
 		}
 
-		$cities_file = $this->container[ Client::PIGEON ]::CACHE_FOLDER . 'cities-' . $country_code . '.json';
+		$cities_file = $this->container[ Client::PIGEON ]::cache_folder() . 'cities-' . $country_code . '.json';
 		$cities      = File::get_file( $cities_file );
 
 		if ( ! $cities ) {
@@ -119,7 +119,7 @@ class Cities {
 
 		$query       = mb_substr( (string) $query, 0, 64 );
 		$hash        = md5( $query );
-		$city_file   = $this->container[ Client::PIGEON ]::CACHE_FOLDER . 'city-search-' . $hash . '.json';
+		$city_file   = $this->container[ Client::PIGEON ]::cache_folder() . 'city-search-' . $hash . '.json';
 		$city_search = File::get_file( $city_file );
 
 		$miss_key = 'nashenski_miss_' . md5( $city_file );

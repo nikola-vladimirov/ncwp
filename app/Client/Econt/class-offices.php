@@ -49,11 +49,11 @@ class Offices {
 	 * @return array
 	 */
 	protected function load_offices( $city_id, $country_code = 'BG' ) {
-		if ( ! is_dir( $this->container[ Client::ECONT ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::ECONT ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::ECONT ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::ECONT ]::cache_folder() );
 		}
 
-		$offices_file = $this->container[ Client::ECONT ]::CACHE_FOLDER . 'offices-' . $city_id . '.json';
+		$offices_file = $this->container[ Client::ECONT ]::cache_folder() . 'offices-' . $city_id . '.json';
 		$offices      = File::get_file( $offices_file );
 
 		if ( ! $offices ) {

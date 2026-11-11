@@ -50,17 +50,17 @@ class Cities {
 	 * @return array
 	 */
 	protected function load_cities( $region, $country_id = '100' ) {
-		if ( ! is_dir( $this->container[ Client::SPEEDY ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::SPEEDY ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::SPEEDY ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::SPEEDY ]::cache_folder() );
 		}
 
 		// The "region-" part is new: earlier files were cached as empty lists by the old case-sensitive filter.
-		$cities_by_region_file = $this->container[ Client::SPEEDY ]::CACHE_FOLDER . 'cities-' . $country_id . '-region-' . $region . '.json';
+		$cities_by_region_file = $this->container[ Client::SPEEDY ]::cache_folder() . 'cities-' . $country_id . '-region-' . $region . '.json';
 
 		if ( file_exists( $cities_by_region_file ) ) {
 			$cities = json_decode( File::get_file( $cities_by_region_file ), 1 );
 		} else {
-			$cities_file = $this->container[ Client::SPEEDY ]::CACHE_FOLDER . 'cities-' . $country_id . '.csv';
+			$cities_file = $this->container[ Client::SPEEDY ]::cache_folder() . 'cities-' . $country_id . '.csv';
 
 			$failed_key = 'nashenski_speedy_cities_failed_' . $country_id;
 

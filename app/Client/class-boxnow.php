@@ -7,8 +7,6 @@
 
 namespace Nashenski\Client;
 
-use Nashenski\File;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -24,7 +22,7 @@ class BoxNow {
 	const AUTH_ENDPOINT          = '/api/v1/auth-sessions';
 	const CREATE_LABELS_ENDPOINT = '/api/v1/delivery-requests';
 
-	const CACHE_FOLDER = File::CACHE_FOLDER . 'boxnow' . DIRECTORY_SEPARATOR;
+	const CACHE_NAME = 'boxnow';
 
 	/**
 	 * Env.

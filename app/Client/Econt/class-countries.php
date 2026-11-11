@@ -47,11 +47,11 @@ class Countries {
 	 * @return array
 	 */
 	protected function load_countries() {
-		if ( ! is_dir( $this->container[ Client::ECONT ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::ECONT ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::ECONT ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::ECONT ]::cache_folder() );
 		}
 
-		$countries_file = $this->container[ Client::ECONT ]::CACHE_FOLDER . 'countries.json';
+		$countries_file = $this->container[ Client::ECONT ]::cache_folder() . 'countries.json';
 		$countries      = File::get_file( $countries_file );
 
 		if ( ! $countries ) {

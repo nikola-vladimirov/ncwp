@@ -47,11 +47,11 @@ class Quarters {
 	 * @return mixed
 	 */
 	protected function load_quarters_by_city( $city_id ) {
-		if ( ! is_dir( $this->container[ Client::ECONT ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::ECONT ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::ECONT ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::ECONT ]::cache_folder() );
 		}
 
-		$quarters_file = $this->container[ Client::ECONT ]::CACHE_FOLDER . 'quarters-' . $city_id . '.json';
+		$quarters_file = $this->container[ Client::ECONT ]::cache_folder() . 'quarters-' . $city_id . '.json';
 		$quarters      = File::get_file( $quarters_file );
 
 		if ( ! $quarters ) {
