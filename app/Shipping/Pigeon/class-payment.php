@@ -197,6 +197,28 @@ class Payment {
 	}
 
 	/**
+	 * A staff request field, sanitized where it is read. Text is sanitized; any other type (a
+	 * true, an array) is kept as it is, so amount() refuses it instead of reading "1".
+	 * request() checks the nonce before it reads any field.
+	 *
+	 * @param string $key Field name.
+	 * @return mixed Null when missing.
+	 */
+	private static function typed( $key ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- request() verified the label nonce first.
+		if ( ! isset( $_REQUEST[ $key ] ) ) {
+			return null;
+		}
+
+		return map_deep(
+			wp_unslash( $_REQUEST[ $key ] ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- request() verified the nonce; map_deep() sanitizes every text value.
+			function ( $value ) {
+				return is_string( $value ) ? sanitize_text_field( $value ) : $value;
+			}
+		);
+	}
+
+	/**
 	 * Validate every monetary instruction before any order/item write.
 	 *
 	 * @param \WC_Order $order Order.
@@ -218,12 +240,11 @@ class Payment {
 		}
 		$price = null;
 		if ( 'fixed' === $mode ) {
-			// amount() refuses anything but a number, an array from the request too.
-			$price = self::amount( nashenski_label_request( 'fixedPrice', null ) );
+			$price = self::amount( self::typed( 'fixedPrice' ) );
 			if ( ! self::shipping_item( $order ) ) {
 				throw new \InvalidArgumentException( esc_html__( 'This order has no Pigeon shipping charge.', 'nashenski-commerce' ) ); }
 		}
-		$override = nashenski_label_request( 'codOverride', null );
+		$override = self::typed( 'codOverride' );
 		if ( null !== $override ) {
 			$override = self::amount( $override );
 			if ( $order->get_payment_method() !== 'cod' ) {
