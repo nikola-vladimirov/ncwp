@@ -70,4 +70,10 @@ check(css.includes('secondary-label::before{content:"6,50 €"') && css.includes
 check(css.includes('totals-item__value::after{content:' + fee), 'the order summary keeps the full sentence');
 check(css.includes('input[value="nashenski_speedy:4"]) .wc-block-components-radio-control__secondary-label::after{content:"Price after address"'), 'a card still waiting for the address says "Price after address"');
 
+// R7: the fee is in the store currency, whatever currency the shopper switched to.
+P.feeSymbol = 'лв.';
+css = run([{ shipping_rates: [rate('nashenski_econt:3', true, { nashenski_courier_fee: '6.50' })] }]);
+check(css.includes('secondary-label::before{content:"6,50 лв."') && css.includes('totals-item__value::after{content:"6,50 лв., paid'), 'the fee shows the store currency symbol');
+delete P.feeSymbol;
+
 console.log('PASS: ' + checks + ' block checkout courier fee assertions');

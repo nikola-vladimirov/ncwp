@@ -19,6 +19,7 @@ let P = boot({ symbol: '€', format: '%2$s %1$s', decimals: 2, decimal: ',', t
 check(P.money(23.4), '23,40 €', 'decimals and the symbol after the amount');
 check(P.money('1234567.5'), '1 234 567,50 €', 'thousands separator');
 check(P.money(0), '0,00 €', 'zero');
+check(P.money(6.5, 'лв.'), '6,50 лв.', 'another currency symbol (a fee in the store currency)');
 
 P = boot({ symbol: '$', format: '%1$s%2$s', decimals: 0, decimal: '.', thousand: ',' });
 check(P.money(1500), '$1,500', 'symbol first, no decimals');

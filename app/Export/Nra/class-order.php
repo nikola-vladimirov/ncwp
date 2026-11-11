@@ -92,6 +92,9 @@ class Order {
 	 * @param string    $generate_files 'true' to create missing documents.
 	 */
 	public function __construct( $woo_order, $generate_files ) {
+		// Documents decide who pays the courier before reading the order (orders without a number only).
+		\Nashenski\Shipping\Courier_Fee::decide( $woo_order );
+
 		$this->woo_order        = $woo_order;
 		$this->order_id_to_show = \Nashenski\Hooks::filter( 'nashenski_admin_export_order_id', 'nashenski/admin/export/order_id', $this->woo_order->get_order_number(), $this->woo_order );
 		$this->load_order_number( $generate_files );

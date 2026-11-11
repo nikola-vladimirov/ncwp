@@ -995,14 +995,14 @@
 		return label.querySelector( '.brx-shipping-options__secondary-label' );
 	}
 
-	/* An amount in the store's money format, like wc_price() without the markup. */
-	function money( amount ) {
+	/* An amount in the store's money format, like wc_price() without the markup; symbol: another currency's. */
+	function money( amount, symbol ) {
 		var c = cfg.currency || {};
 		var parts = Number( amount ).toFixed( c.decimals || 0 ).split( '.' );
 
 		parts[ 0 ] = parts[ 0 ].replace( /\B(?=(\d{3})+(?!\d))/g, c.thousand || '' );
 
-		return ( c.format || '%1$s%2$s' ).replace( '%1$s', c.symbol || '' ).replace( '%2$s', parts.join( c.decimal || '.' ) );
+		return ( c.format || '%1$s%2$s' ).replace( '%1$s', ( undefined === symbol ? c.symbol : symbol ) || '' ).replace( '%2$s', parts.join( c.decimal || '.' ) );
 	}
 
 	/* The offer closest to free shipping (least left, then the lowest total), or null. */

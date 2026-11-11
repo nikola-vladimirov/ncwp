@@ -455,16 +455,11 @@ class Econt {
 
 		$order_id = nashenski_label_request( 'orderId' );
 		$label    = nashenski_label_request( 'label_data', array() );
-		$refusal  = Courier_Fee::staff_payer( wc_get_order( $order_id ), 'sender' === ( nashenski_label_request( 'paymentBy', array() )['id'] ?? '' ) );
-
-		if ( '' !== $refusal ) {
-			wp_send_json_success( array( 'message' => $refusal ) );
-		}
 
 		$label = self::update_sender( $label );
 		$label = self::update_receiver_address( $label );
 		$label = self::update_label_pay_options( $label, $order_id );
-		$label = self::update_payment_by( $label, $order_id );
+		$label = self::update_payment_by( $label );
 		$label = self::update_test_options( $label );
 		$label = self::update_shipment_type( $label );
 		$label = self::update_phone_and_names( $label );
@@ -566,6 +561,7 @@ class Econt {
 			$order->save();
 			nashenski_add_label_order_note( $order, 'Econt', $action, $response['label']['shipmentNumber'] );
 
+			Courier_Fee::label_made( $order, self::label_mode() );
 			self::update_order_shipping_price( $response, $order_id, $label );
 		}
 
@@ -945,13 +941,24 @@ class Econt {
 	}
 
 	/**
+	 * Who pays the courier on a label made in the box: "sender", "receiver" (also a fixed share
+	 * the receiver pays the courier), or '' for a label made without the box.
+	 *
+	 * @return string
+	 */
+	public static function label_mode() {
+		$by = nashenski_label_request( 'paymentBy', array() )['id'] ?? '';
+
+		return 'sender' === $by ? 'sender' : ( in_array( $by, array( 'buyer', 'fixed' ), true ) ? 'receiver' : '' );
+	}
+
+	/**
 	 * Sets who pays for the delivery.
 	 *
-	 * @param array $label    Label.
-	 * @param int   $order_id Order ID.
+	 * @param array $label Label.
 	 * @return array
 	 */
-	protected static function update_payment_by( $label, $order_id ) {
+	protected static function update_payment_by( $label ) {
 		$payment_by    = nashenski_label_request( 'paymentBy', array() );
 		$fixed_price   = ( isset( $label['paymentReceiverAmount'] ) ) ? $label['paymentReceiverAmount'] : 0;
 		$sender_method = nashenski()->container()[ Client::ECONT_PROFILE ]->get_sender_payment_method();
@@ -970,8 +977,6 @@ class Econt {
 			$label['paymentSenderMethod']   = $sender_method;
 			$label['paymentReceiverMethod'] = 'cash';
 			$label['paymentReceiverAmount'] = $fixed_price;
-
-			self::update_order_shipping_price( $label, $order_id, $label );
 		}
 
 		return $label;

@@ -35,6 +35,9 @@ class Courier_Fee {
 	/** Order meta: the payment method a "check the delivery by hand" notice was shown for. */
 	const WARNED_META = '_nashenski_fee_warned';
 
+	/** Order meta: a label box waybill made the customer pay the shop for the delivery. */
+	const SWITCHED_META = '_nashenski_fee_switched';
+
 	/** Rate and shipping line meta: the fee the customer pays the courier, with VAT. */
 	const FEE_META = 'nashenski_courier_fee';
 
@@ -253,9 +256,12 @@ class Courier_Fee {
 			$basis    = (string) $item->get_meta( self::BASIS_META );
 			$decision = self::decision( $item->get_method_id(), $item->get_instance_id(), $payment, $country, self::goods( $order ), self::free_coupon( $order ) );
 
-			// A checkout stamp has no basis: never decided again here.
+			// A checkout stamp has no basis: never decided again here. Staff are told once when the payment method is no longer the checkout's.
 			if ( '' !== $stamped && '' === $basis ) {
-				if ( $decision !== $stamped && $payment !== (string) $order->get_meta( self::WARNED_META ) ) {
+				$paid    = (string) ( ( (array) $item->get_meta( 'cookie_data' ) )['payment'] ?? '' );
+				$changed = '' !== $paid ? $paid !== $payment : $decision !== $stamped;
+
+				if ( $changed && $payment !== (string) $order->get_meta( self::WARNED_META ) ) {
 					$order->update_meta_data( self::WARNED_META, $payment );
 					$order->save_meta_data();
 					$notice = __( 'The payment method changed after checkout. Who pays the courier stays as decided at checkout: check the delivery line and the waybill by hand.', 'nashenski-commerce' );
@@ -335,32 +341,70 @@ class Courier_Fee {
 	}
 
 	/**
-	 * A label box on the order screen chose who pays the courier. When it makes the shop collect the
-	 * delivery on an order where the customer paid the courier, the order follows (no documents yet)
-	 * or the label is refused (documents already leave the delivery out). Returns the refusal, or ''.
+	 * Before a label box sends its waybill: refuses one where the customer pays the shop for the
+	 * delivery ($mode "fixed") on an order whose documents already leave the delivery out, because
+	 * the customer pays the courier. Returns the refusal, or ''.
 	 *
 	 * @param \WC_Order $order Order.
-	 * @param bool      $shop  Whether the label makes the shop collect the delivery.
+	 * @param string    $mode  "sender", "receiver" or "fixed" (the customer pays the shop for the delivery).
 	 * @return string
 	 */
-	public static function staff_payer( $order, $shop ) {
-		if ( ! $shop || 'customer' !== self::payer( $order ) ) {
-			return '';
-		}
-
-		if ( $order->get_meta( 'nashenski_order_number' ) ) {
+	public static function label_refusal( $order, $mode ) {
+		if ( 'fixed' === $mode && 'customer' === self::payer( $order ) && $order->get_meta( 'nashenski_order_number' ) ) {
 			return __( 'This order already has documents without the delivery, because the customer pays the courier. A waybill where you collect the delivery would not match them.', 'nashenski-commerce' );
 		}
 
-		foreach ( $order->get_items( 'shipping' ) as $item ) {
-			if ( self::ours( $item ) ) {
+		return '';
+	}
+
+	/**
+	 * After the courier accepted a waybill made in a label box. While the order has no documents,
+	 * "fixed" (the customer pays the shop for the delivery) makes a customer-pays order one the shop
+	 * collected, and a later "receiver" waybill puts it back. "sender" changes no decision: the shop
+	 * absorbs the fee, so nothing is shown as paid to the courier.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @param string    $mode  "sender", "receiver", "fixed", or '' for a label not made in the box.
+	 */
+	public static function label_made( $order, $mode ) {
+		$payer = self::payer( $order );
+		$lines = array_filter( $order->get_items( 'shipping' ), array( __CLASS__, 'ours' ) );
+
+		if ( 'sender' === $mode && 'customer' === $payer ) {
+			foreach ( $lines as $item ) {
+				$item->delete_meta_data( self::FEE_META );
+				$item->save();
+			}
+
+			return;
+		}
+
+		if ( $order->get_meta( 'nashenski_order_number' ) ) {
+			return;
+		}
+
+		if ( 'fixed' === $mode && 'customer' === $payer ) {
+			foreach ( $lines as $item ) {
 				$item->update_meta_data( self::PAYER_META, 'shop' );
 				$item->delete_meta_data( self::FEE_META );
 				$item->save();
 			}
-		}
 
-		return '';
+			$order->update_meta_data( self::SWITCHED_META, 'yes' );
+			$order->save_meta_data();
+		} elseif ( 'receiver' === $mode && 'shop' === $payer && 'yes' === $order->get_meta( self::SWITCHED_META ) ) {
+			// The delivery leaves the total again, as at checkout.
+			foreach ( $lines as $item ) {
+				$item->update_meta_data( self::PAYER_META, 'customer' );
+				$item->set_total( 0 );
+				$item->set_taxes( false );
+				$item->save();
+			}
+
+			$order->delete_meta_data( self::SWITCHED_META );
+			$order->calculate_totals();
+			$order->save();
+		}
 	}
 
 	/**
@@ -379,7 +423,7 @@ class Courier_Fee {
 			// Never a 0.00 fee "paid to the courier".
 			foreach ( (float) $fee > 0 ? $order->get_items( 'shipping' ) : array() as $item ) {
 				$item->update_meta_data( self::FEE_META, wc_format_decimal( $fee, wc_get_price_decimals() ) );
-				$item->update_meta_data( self::CURRENCY_META, $order->get_currency() );
+				$item->update_meta_data( self::CURRENCY_META, get_option( 'woocommerce_currency' ) );
 				$item->save();
 				break;
 			}
@@ -444,24 +488,19 @@ class Courier_Fee {
 			return 'customer' !== $payer;
 		}
 
-		// No decision on the order: the retired "Remove delivery from documents" rule, so documents and NRA files of these orders stay as they were.
+		// No decision on the order: the "Is ... courier?" rule (the update turned the retired "Remove delivery from documents" into it), so documents and NRA files of these orders stay as they were.
 		if ( is_a( $order, 'WC_Order_Refund' ) ) {
 			$order = wc_get_order( $order->get_parent_id() );
 		}
 
-		if ( ! $order ) {
-			return 'yes' !== nashenski_get_option( 'invoice', 'remove_shipping' );
-		}
-
-		if ( 'cod' !== $order->get_payment_method() ) {
+		if ( ! $order || 'cod' !== $order->get_payment_method() ) {
 			return true;
 		}
 
 		$methods = $order->get_items( 'shipping' );
 		$method  = reset( $methods );
 
-		return 'yes' !== nashenski_get_option( 'invoice', 'remove_shipping' )
-			&& ! ( $method && 'yes' === nashenski_get_option( 'shippings', $method->get_method_id() . '_is_courier' ) );
+		return ! ( $method && 'yes' === nashenski_get_option( 'shippings', $method->get_method_id() . '_is_courier' ) );
 	}
 
 	/**

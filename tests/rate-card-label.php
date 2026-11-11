@@ -70,10 +70,11 @@ function wp_strip_all_tags( $html ) {
  * Price stub.
  *
  * @param mixed $amount Amount.
+ * @param array $args   Arguments: the currency.
  * @return string
  */
-function wc_price( $amount ) {
-	return '<bdi>' . number_format( (float) $amount, 2, ',', '' ) . ' €</bdi>'; }
+function wc_price( $amount, $args = array() ) {
+	return '<bdi>' . number_format( (float) $amount, 2, ',', '' ) . ' ' . ( empty( $args['currency'] ) ? '€' : $args['currency'] ) . '</bdi>'; }
 /**
  * Hook stubs.
  */
@@ -182,6 +183,17 @@ expect( false === strpos( $label, 'Complete the fields to calculate' ), 'Not pri
 $label = Pickers::full_label( 'Econt', new FakeRate( 0, array( 'nashenski_courier_fee' => '3.52' ) ) );
 expect( false !== strpos( $label, '<bdi>3,52 €</bdi> <span class="nashenski-rate-note">to the courier</span>' ), 'Customer pays: the price and a short "to the courier" in the card' );
 expect( false !== strpos( $label, 'data-nashenski-note="3,52 €, paid to the courier on delivery, not included in the total"' ), 'Customer pays: the full sentence once under the options' );
+$label = Pickers::full_label(
+	'Econt',
+	new FakeRate(
+		0,
+		array(
+			'nashenski_courier_fee'   => '3.52',
+			'_nashenski_fee_currency' => 'BGN',
+		)
+	)
+);
+expect( false !== strpos( $label, '<bdi>3,52 BGN</bdi>' ) && false !== strpos( $label, 'data-nashenski-note="3,52 BGN, paid' ), 'R7: the fee prints in the currency it was calculated in (the store\'s), not the active one' );
 
 $label = Pickers::full_label( 'Econt', new FakeRate( 0, array( 'free_shipping' => true ) ) );
 expect( false !== strpos( $label, 'nashenski-rate-free">Free</span>' ) && false === strpos( $label, 'data-nashenski-note' ), 'Free shipping: "Free", no note' );

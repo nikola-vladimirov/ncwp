@@ -107,8 +107,8 @@ class Plugin {
 	 * the courier" of every Econt and Speedy method marked as a courier ("Is ... courier?", on by
 	 * default) and of every Pigeon Express method (its cash on delivery waybills were always paid by
 	 * the receiver), whatever "Remove delivery from documents" was. BOX NOW cannot charge the
-	 * customer. The old values stay saved: orders made before keep their documents
-	 * (Courier_Fee::shop_collects()).
+	 * customer. Orders made before keep their documents (Courier_Fee::shop_collects()) through
+	 * "Is ... courier?", which takes over the retired option.
 	 */
 	public static function upgrade_fee_payer() {
 		global $wpdb;
@@ -127,6 +127,20 @@ class Plugin {
 			$settings[ Shipping\Courier_Fee::FIELD ] = $courier ? array_values( array_unique( array_merge( $listed, array( 'cod' ) ) ) ) : $listed;
 			update_option( $key, $settings );
 		}
+
+		// "Remove delivery from documents" on left the delivery of every cash on delivery order out of the documents. It is retired: orders without a decision keep that through "Is ... courier?" of each method they used, set after the lists above.
+		if ( 'yes' === nashenski_get_option( 'invoice', 'remove_shipping' ) ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time read on upgrade: every method in a zone or on an order.
+			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT method_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods UNION SELECT meta_value FROM {$wpdb->prefix}woocommerce_order_itemmeta WHERE meta_key = %s", 'method_id' ) );
+
+			foreach ( (array) $ids as $id ) {
+				if ( '' !== (string) $id && strlen( $id ) <= 100 ) {
+					nashenski_set_option( 'shippings', $id . '_is_courier', 'yes' );
+				}
+			}
+		}
+
+		delete_option( 'nashenski_settings_invoice_remove_shipping' );
 	}
 
 	/**

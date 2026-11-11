@@ -78,7 +78,7 @@
 
 	/* "6,50 €, paid to the courier on delivery, not included in the total" in place of "Free". */
 	function feeText( fee ) {
-		return cssString( String( P.courierFee || '%s' ).replace( '%s', P.money( fee ) ) );
+		return cssString( String( P.courierFee || '%s' ).replace( '%s', P.money( fee, P.feeSymbol ) ) );
 	}
 
 	/* Cards: the price, then a short muted "to the courier" (the long text is in the summary). */
@@ -87,7 +87,7 @@
 		var size = node && window.getComputedStyle ? window.getComputedStyle( node ).fontSize : '0.875rem';
 
 		return selector + '{font-size:0!important}' + selector + '>*{display:none}' +
-			selector + '::before{content:' + cssString( P.money( fee ) ) + ';font-size:' + size + '}' +
+			selector + '::before{content:' + cssString( P.money( fee, P.feeSymbol ) ) + ';font-size:' + size + '}' +
 			selector + '::after{content:' + cssString( ' ' + P.cardTexts.toCourier ) + ';font-size:calc(' + size + ' * 0.875);color:var(--nashenski-muted);white-space:pre}';
 	}
 

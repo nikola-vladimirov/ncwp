@@ -387,7 +387,7 @@ class Pigeon {
 			wp_send_json_error( array( 'message' => $error->getMessage() ) );
 			return; }
 
-		$refusal = \Nashenski\Shipping\Courier_Fee::staff_payer( $order, in_array( $payment['mode'], array( 'fixed', 'sender' ), true ) );
+		$refusal = \Nashenski\Shipping\Courier_Fee::label_refusal( $order, $payment['mode'] );
 
 		if ( '' !== $refusal ) {
 			wp_send_json_error( array( 'message' => $refusal ) );
@@ -403,6 +403,9 @@ class Pigeon {
 			$label = self::update_customer_note( $label, $order );
 
 			$data = self::send_label_to_pigeon( $label, $order );
+		if ( isset( $data['shipmentStatus'] ) ) {
+			\Nashenski\Shipping\Courier_Fee::label_made( $order, $payment['mode'] );
+		}
 		if ( isset( $data['shipmentStatus'] ) && null !== $payment['override'] ) {
 			$order->update_meta_data( Payment::COD_OVERRIDE_META, $payment['override'] );
 			$order->save();

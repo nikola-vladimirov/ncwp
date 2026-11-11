@@ -317,7 +317,7 @@ class Pickers {
 		}
 
 		if ( ! empty( $meta[ Courier_Fee::FEE_META ] ) ) {
-			return $label . ': ' . self::courier_fee_html( $meta[ Courier_Fee::FEE_META ] );
+			return $label . ': ' . self::courier_fee_html( $meta );
 		}
 
 		return $label;
@@ -339,7 +339,8 @@ class Pickers {
 		if ( self::is_pending( $rate ) ) {
 			$price = '<span class="nashenski-rate-price nashenski-rate-pending" data-nashenski-note="' . esc_attr__( 'Choose your office, locker or address to see the delivery price.', 'nashenski-commerce' ) . '">' . esc_html__( 'Price after address', 'nashenski-commerce' ) . '</span>';
 		} elseif ( ! empty( $meta[ Courier_Fee::FEE_META ] ) ) {
-			$price = '<span class="nashenski-rate-price" data-nashenski-note="' . esc_attr( wp_strip_all_tags( Courier_Fee::text( $meta[ Courier_Fee::FEE_META ] ) ) ) . '">' . wp_kses_post( wc_price( $meta[ Courier_Fee::FEE_META ] ) ) . ' <span class="nashenski-rate-note">' . esc_html__( 'to the courier', 'nashenski-commerce' ) . '</span></span>';
+			$currency = (string) ( $meta[ Courier_Fee::CURRENCY_META ] ?? '' );
+			$price    = '<span class="nashenski-rate-price" data-nashenski-note="' . esc_attr( wp_strip_all_tags( Courier_Fee::text( $meta[ Courier_Fee::FEE_META ], $currency ) ) ) . '">' . wp_kses_post( wc_price( $meta[ Courier_Fee::FEE_META ], array( 'currency' => $currency ) ) ) . ' <span class="nashenski-rate-note">' . esc_html__( 'to the courier', 'nashenski-commerce' ) . '</span></span>';
 		} elseif ( (float) $rate->get_cost() <= 0 ) {
 			$price = '<span class="nashenski-rate-price nashenski-rate-free">' . esc_html__( 'Free', 'nashenski-commerce' ) . '</span>';
 		} else {
@@ -352,13 +353,14 @@ class Pickers {
 	}
 
 	/**
-	 * "6,50 €, paid to the courier on delivery, not included in the total" in the checkout.
+	 * "6,50 €, paid to the courier on delivery, not included in the total" in the checkout, in the
+	 * currency the fee was calculated in (the store's).
 	 *
-	 * @param mixed $fee Fee with VAT.
+	 * @param array $meta Rate meta with the fee.
 	 * @return string
 	 */
-	private static function courier_fee_html( $fee ) {
-		return '<span class="nashenski-rate-courier-fee">' . wp_kses_post( Courier_Fee::text( $fee ) ) . '</span>';
+	private static function courier_fee_html( $meta ) {
+		return '<span class="nashenski-rate-courier-fee">' . wp_kses_post( Courier_Fee::text( $meta[ Courier_Fee::FEE_META ], (string) ( $meta[ Courier_Fee::CURRENCY_META ] ?? '' ) ) ) . '</span>';
 	}
 
 	/**
@@ -381,9 +383,9 @@ class Pickers {
 			return '<span class="nashenski-rate-pending">' . esc_html( self::pending_text() ) . '</span>';
 		}
 
-		$fee = $rate ? ( $rate->get_meta_data()[ Courier_Fee::FEE_META ] ?? '' ) : '';
+		$meta = $rate ? $rate->get_meta_data() : array();
 
-		return '' !== $fee ? self::courier_fee_html( $fee ) : $value;
+		return '' !== (string) ( $meta[ Courier_Fee::FEE_META ] ?? '' ) ? self::courier_fee_html( $meta ) : $value;
 	}
 
 	/**
@@ -548,6 +550,8 @@ class Pickers {
 				'decimal'  => wc_get_price_decimal_separator(),
 				'thousand' => wc_get_price_thousand_separator(),
 			),
+			// Fees paid to the courier are in the store's currency (Courier_Fee::rate()).
+			'feeSymbol'  => html_entity_decode( get_woocommerce_currency_symbol( get_option( 'woocommerce_currency' ) ), ENT_QUOTES, 'UTF-8' ),
 			'types'      => array(
 				'office'  => __( 'To an office', 'nashenski-commerce' ),
 				'automat' => __( 'To a parcel locker', 'nashenski-commerce' ),

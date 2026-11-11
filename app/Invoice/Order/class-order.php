@@ -72,6 +72,9 @@ class Order {
 	public function __construct( $order ) {
 		$this->woo_order = $order;
 
+		// Every document path decides who pays the courier before reading it (orders without a number only).
+		\Nashenski\Shipping\Courier_Fee::decide( $order );
+
 		$this->set_vat_and_taxes();
 		$this->set_remove_shipping();
 

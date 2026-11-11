@@ -431,6 +431,28 @@ class Speedy {
 	}
 
 	/**
+	 * Who pays the courier on a label made in the box: "sender", "receiver", "fixed" (the fixed
+	 * price rides in the cash on delivery amount, so the customer pays the shop for the delivery;
+	 * on a checkout order the amount is already the order total, so the sender just pays), or ''
+	 * for a label made without the box.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return string
+	 */
+	public static function label_mode( $order ) {
+		$by = nashenski_label_request( 'paymentBy', array() )['id'] ?? '';
+
+		if ( 'fixed' === $by ) {
+			return Courier_Fee::from_checkout( $order ) ? 'sender' : 'fixed';
+		}
+
+		return array(
+			'SENDER'    => 'sender',
+			'RECIPIENT' => 'receiver',
+		)[ $by ] ?? '';
+	}
+
+	/**
 	 * Generate label.
 	 */
 	public static function generate_label() {
@@ -438,7 +460,7 @@ class Speedy {
 
 		$order   = wc_get_order( nashenski_label_request( 'orderId' ) );
 		$label   = nashenski_label_request( 'label_data', array() );
-		$refusal = Courier_Fee::staff_payer( $order, in_array( nashenski_label_request( 'paymentBy', array() )['id'] ?? '', array( 'SENDER', 'fixed' ), true ) );
+		$refusal = Courier_Fee::label_refusal( $order, self::label_mode( $order ) );
 
 		if ( '' !== $refusal ) {
 			wp_send_json_success( array( 'message' => $refusal ) );
@@ -447,7 +469,7 @@ class Speedy {
 		$label = self::update_sender( $label );
 		$label = self::update_customer_note( $label, $order );
 		$label = self::update_recipient_data( $label );
-		$label = self::update_payment_by( $label, $order );
+		$label = self::update_payment_by( $label );
 		$label = self::update_services( $label, $order );
 		$label = self::update_fiscal_items( $label, $order );
 
@@ -757,6 +779,7 @@ class Speedy {
 			$order->save();
 			nashenski_add_label_order_note( $order, 'Speedy', $action, $response['id'] ?? '' );
 
+			Courier_Fee::label_made( $order, self::label_mode( $order ) );
 			self::update_order_shipping_price( $response, $order_id );
 		}
 
@@ -876,13 +899,11 @@ class Speedy {
 	 * Update payment by.
 	 *
 	 * @param mixed $label Label.
-	 * @param mixed $order Order.
 	 * @return mixed Result.
 	 */
-	protected static function update_payment_by( $label, $order ) {
+	protected static function update_payment_by( $label ) {
 		$payment_by = nashenski_label_request( 'paymentBy', array() );
 		unset( $label['payment'] );
-		$order_id = $order->get_id();
 
 		$recipient_country = '';
 		$bulgarian_id      = 'BG';
@@ -903,9 +924,8 @@ class Speedy {
 		}
 
 		if ( 'fixed' === $payment_by['id'] ) {
+			// The order's delivery price follows once Speedy accepted the label (send_label_to_speedy()).
 			$payment['courierServicePayer'] = 'SENDER';
-
-			self::update_order_shipping_price( $label, $order_id, $label );
 		} else {
 			$payment['courierServicePayer'] = $payment_by['id'];
 		}
