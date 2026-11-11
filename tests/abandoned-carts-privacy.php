@@ -1,7 +1,8 @@
 <?php
 /**
  * Offline: the abandoned carts personal data exporter and eraser work by email, page by page, and
- * touch no other email's rows; the privacy policy text names the real retention. Run: php tests/abandoned-carts-privacy.php
+ * touch no other email's rows; the eraser deletes the unused reminder coupons and keeps (and reports) used
+ * ones; the privacy policy text names the real retention. Run: php tests/abandoned-carts-privacy.php
  *
  * @package Nashenski_Commerce
  */
@@ -58,6 +59,67 @@ function wp_add_privacy_policy_content( $name, $text ) {
 	$GLOBALS['policy'] = $name . ': ' . $text; }
 
 /**
+ * Stub.
+ *
+ * @param mixed $value Value.
+ * @return int
+ */
+function absint( $value ) {
+	return abs( (int) $value ); }
+
+/**
+ * Stub: coupons 7 (unused) and 8 (used) exist; 9 was deleted.
+ *
+ * @param int $id Post ID.
+ * @return string|false
+ */
+function get_post_type( $id ) {
+	return isset( $GLOBALS['coupons'][ $id ] ) ? 'shop_coupon' : false; }
+
+/**
+ * Coupon stub: its use count, and delete() removes it.
+ */
+class WC_Coupon {
+	/**
+	 * ID.
+	 *
+	 * @var int
+	 */
+	public $id;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param int $id ID.
+	 */
+	public function __construct( $id ) {
+		$this->id = $id; }
+
+	/**
+	 * Use count.
+	 *
+	 * @return int
+	 */
+	public function get_usage_count() {
+		return $GLOBALS['coupons'][ $this->id ]; }
+
+	/**
+	 * Delete.
+	 *
+	 * @param bool $force Skip the trash.
+	 * @return bool
+	 */
+	public function delete( $force ) {
+		unset( $GLOBALS['coupons'][ $this->id ] );
+		return $force; }
+}
+
+$GLOBALS['coupons'] = array(
+	7 => 0,
+	8 => 1,
+);
+
+/**
  * A $wpdb with the cart rows in memory. prepare() hands the query and its values on as they are.
  */
 class Fake_WPDB {
@@ -107,7 +169,17 @@ class Fake_WPDB {
 	}
 
 	/**
-	 * DELETE ... WHERE email = %s LIMIT %d.
+	 * SELECT coupon_id ... WHERE email = %s ORDER BY id LIMIT %d.
+	 *
+	 * @param array $prepared Query and values.
+	 * @return array
+	 */
+	public function get_col( $prepared ) {
+		return array_column( $this->get_results( array( '', array( '', $prepared[1][1], $prepared[1][2], 0 ) ) ), 'coupon_id' );
+	}
+
+	/**
+	 * DELETE ... WHERE email = %s ORDER BY id LIMIT %d.
 	 *
 	 * @param array $prepared Query and values.
 	 * @return int Rows removed.
@@ -162,6 +234,11 @@ for ( $n = 1; $n <= 253; $n++ ) {
 		'status'        => 'open',
 		'created_at'    => '2026-11-01 10:00:00',
 		'last_activity' => '2026-11-02 10:00:00',
+		'coupon_id'     => array(
+			1 => 7,
+			2 => 8,
+			3 => 9,
+		)[ $n ] ?? 0,
 	);
 }
 
@@ -183,13 +260,18 @@ expect( '0888123456' === $values['Phone'] && 'Ana' === $values['First name'] && 
 $bob = Tracker::export_personal_data( 'bob@example.com', 1 );
 expect( 3 === count( $bob['data'] ) && $bob['done'], 'another email gets only its own rows' );
 
-// Erase, 100 rows a call, until done.
+// Erase, 100 rows a call, until done. The first page has the coupons.
 $calls = 0;
 do {
 	$result = Tracker::erase_personal_data( 'ana@example.com' );
+	if ( 0 === $calls ) {
+		expect( true === $result['items_retained'] && false !== strpos( $result['messages'][0] ?? '', 'kept for the store' ), 'a used coupon is reported as retained' );
+	}
 	++$calls;
 } while ( ! $result['done'] && $calls < 10 );
-expect( 3 === $calls && true === $result['items_removed'] && false === $result['items_retained'], 'the eraser removes 250 rows in 3 pages' );
+expect( false === $result['items_retained'] && array() === $result['messages'], 'a page without coupons retains nothing' );
+expect( 3 === $calls && true === $result['items_removed'], 'the eraser removes 250 rows in 3 pages' );
+expect( array( 8 => 1 ) === $GLOBALS['coupons'], 'the unused reminder coupon is deleted, the used one is kept, a deleted one is skipped' );
 expect( 3 === count( $wpdb->rows ), 'the other email keeps its rows' );
 $again = Tracker::erase_personal_data( 'ana@example.com' );
 expect( false === $again['items_removed'] && $again['done'], 'nothing left to remove' );

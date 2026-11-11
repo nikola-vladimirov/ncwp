@@ -860,8 +860,10 @@ class Tracker {
 	}
 
 	/**
-	 * Deletes up to one page of the carts of an email address, for the personal data eraser. The
-	 * next page starts again from the first remaining row, so the page number is not needed.
+	 * Deletes up to one page of the carts of an email address, for the personal data eraser, with
+	 * their reminder coupons (they name the email). A coupon already used on an order is kept for
+	 * the store's accounts. The next page starts again from the first remaining row, so the page
+	 * number is not needed.
 	 *
 	 * @param string $email Email address.
 	 * @return array
@@ -869,13 +871,29 @@ class Tracker {
 	public static function erase_personal_data( $email ) {
 		global $wpdb;
 
-		$removed = get_option( self::DB_OPTION ) ? (int) $wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE email = %s LIMIT %d', self::table(), $email, self::PRIVACY_PAGE ) ) : 0;
+		$coupons  = get_option( self::DB_OPTION ) ? $wpdb->get_col( $wpdb->prepare( 'SELECT coupon_id FROM %i WHERE email = %s ORDER BY id LIMIT %d', self::table(), $email, self::PRIVACY_PAGE ) ) : array();
+		$removed  = get_option( self::DB_OPTION ) ? (int) $wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE email = %s ORDER BY id LIMIT %d', self::table(), $email, self::PRIVACY_PAGE ) ) : 0;
+		$retained = false;
+
+		foreach ( array_filter( array_map( 'absint', (array) $coupons ) ) as $coupon_id ) {
+			if ( 'shop_coupon' !== get_post_type( $coupon_id ) ) {
+				continue;
+			}
+
+			$coupon = new \WC_Coupon( $coupon_id );
+
+			if ( $coupon->get_usage_count() > 0 ) {
+				$retained = true;
+			} else {
+				$removed += (int) $coupon->delete( true );
+			}
+		}
 
 		return array(
 			'items_removed'  => $removed > 0,
-			'items_retained' => false,
-			'messages'       => array(),
-			'done'           => $removed < self::PRIVACY_PAGE,
+			'items_retained' => $retained,
+			'messages'       => $retained ? array( __( 'Cart reminder coupons already used on an order are kept for the store\'s accounts.', 'nashenski-commerce' ) ) : array(),
+			'done'           => count( (array) $coupons ) < self::PRIVACY_PAGE,
 		);
 	}
 
@@ -889,6 +907,7 @@ class Tracker {
 
 		$lines = array(
 			__( 'When abandoned carts are on, the store keeps the email, first name, phone and cart of shoppers who start the checkout and do not order. They are used only to send cart reminder emails.', 'nashenski-commerce' ),
+			__( 'A reminder coupon is made for the email of its cart and is deleted with the cart\'s personal data, unless it was already used on an order.', 'nashenski-commerce' ),
 			/* translators: %d: number of days */
 			sprintf( __( 'A cart is deleted %d days after its last change.', 'nashenski-commerce' ), self::retention_days() ),
 			__( 'When the store turns on customer checks (nekorekten.com, Connectix, NepoStop), the phone number of the order is sent to them.', 'nashenski-commerce' ),

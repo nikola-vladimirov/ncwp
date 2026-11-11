@@ -139,7 +139,8 @@ Off by default. Keeps carts that were not ordered, records the email as the shop
 sends reminders through an editable WooCommerce email, with an optional single-use coupon and a link
 that refills the cart. The list is under WooCommerce > Abandoned carts. Check the consent rules that
 apply to your store before you turn reminders on. Tools > Export Personal Data and Erase Personal
-Data cover the saved carts, and the plugin suggests text for your privacy policy.
+Data cover the saved carts (the erase also deletes their unused reminder coupons), and the plugin
+suggests text for your privacy policy.
 
 ### EU withdrawal function
 

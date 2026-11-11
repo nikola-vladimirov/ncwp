@@ -570,8 +570,13 @@ document.addEventListener("submit",function(e){
 			wp_send_json_success( array( 'message' => self::thanks_text() ) );
 		}
 
-		// Textarea sanitizing keeps the line breaks of note fields; single-line fields are sanitized again where used.
-		$post = map_deep( wp_unslash( $_POST ), 'sanitize_textarea_field' );
+		// Only the form's own fields, each sanitized for its type: the notes keep their line breaks.
+		$post = array();
+
+		foreach ( array_merge( array( 'name', 'email', 'phone', 'consent', 'context', 'product_id' ), array_keys( self::optional_fields() ) ) as $key ) {
+			$value        = isset( $_POST[ $key ] ) && is_scalar( $_POST[ $key ] ) ? wp_unslash( $_POST[ $key ] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized on the next line, by type.
+			$post[ $key ] = in_array( $key, array( 'product_notes', 'message' ), true ) ? sanitize_textarea_field( $value ) : sanitize_text_field( $value );
+		}
 
 		if ( self::too_many_requests() ) {
 			wp_send_json_error( array( 'message' => __( 'Too many requests. Try again in a few minutes.', 'nashenski-commerce' ) ) );

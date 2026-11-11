@@ -1,6 +1,8 @@
 <?php
 /**
- * Offline: a large order PDF keeps its Bulgarian text (dompdf must not guess ASCII). Run: php tests/pdf-cyrillic.php
+ * Offline: a large order PDF keeps its Bulgarian text (dompdf must not guess ASCII) in the bundled
+ * DejaVu font, and a custom template's @font-face font is installed in uploads, not in the plugin
+ * folder. Run: php tests/pdf-cyrillic.php
  *
  * @package Nashenski
  */
@@ -99,16 +101,32 @@ namespace {
 		throw new RuntimeException( 'No PDF output.' ); }
 	if ( false === strpos( $text, $word ) ) {
 		throw new RuntimeException( 'Cyrillic text was lost while loading the HTML.' ); }
+	if ( false === strpos( $out, 'DejaVuSans' ) ) {
+		throw new RuntimeException( 'The bundled DejaVu font was not used.' ); }
 	$cache = glob( Nashenski\File::cache_folder( 'fonts' ) . '*.json' );
 	if ( ! $cache ) {
 		throw new RuntimeException( 'The font metrics cache is not in uploads.' ); }
 	if ( glob( __DIR__ . '/../vendor/dompdf/dompdf/lib/fonts/*.[au]fm.json' ) ) {
 		throw new RuntimeException( 'The font metrics cache was written into the plugin folder.' ); }
-	array_map( 'unlink', $cache );
+
+	// A custom template with its own font: Dompdf installs it (installed-fonts.json and the font files) in the font folder.
+	$font = str_replace( '\\', '/', realpath( __DIR__ . '/../vendor/dompdf/dompdf/lib/fonts/DejaVuSerif.ttf' ) );
+	file_put_contents( $template, '<html><head><style>@font-face{font-family:"nashtest";src:url("' . $font . '")} p{font-family:nashtest}</style></head><body><p>' . $word . '</p></body></html>' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- offline test, WordPress is not loaded.
+	$pdf->set_template( $template );
+	$out = $pdf->generate();
+	unlink( $template ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- offline test, WordPress is not loaded.
+	if ( ! is_file( Nashenski\File::cache_folder( 'fonts' ) . 'installed-fonts.json' ) ) {
+		throw new RuntimeException( 'The custom font was not installed in uploads.' ); }
+	if ( is_file( __DIR__ . '/../vendor/dompdf/dompdf/lib/fonts/installed-fonts.json' ) ) {
+		throw new RuntimeException( 'The custom font was installed into the plugin folder.' ); }
+	// Dompdf keeps the font file open until it is freed (Windows cannot remove the folder before).
+	unset( $pdf );
+	gc_collect_cycles();
+	array_map( 'unlink', glob( Nashenski\File::cache_folder( 'fonts' ) . '*' ) );
 	// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- offline test, WordPress is not loaded.
 	rmdir( Nashenski\File::cache_folder( 'fonts' ) );
 	rmdir( Nashenski\File::cache_folder() );
 	rmdir( wp_upload_dir()['basedir'] );
 	// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
-	echo "OK pdf-cyrillic: 4 checks\n";
+	echo "OK pdf-cyrillic: 7 checks\n";
 }
