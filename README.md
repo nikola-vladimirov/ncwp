@@ -103,6 +103,8 @@ order open the courier box, check the details and press "Generate label".
   only when "VAT number required on checkout?" is ticked in Documents.
 - Article 113(9) stores (not VAT registered): the invoice, its copy and the pro forma print without
   a VAT column.
+- A delivery with no VAT, on an order with no VAT at all, prints at 0% with its full price (invoices,
+  credit notes and the NRA audit file).
 - Import the checkout fields and rules of WooCommerce Checkout Field Editor (free or Pro) in one click.
 - Optional clean-up of order documents (not invoices) of older orders.
 
@@ -153,6 +155,14 @@ Help and press "Import", then deactivate the old plugin (Nashenski Commerce asks
 screen; WordPress.org plugins never change other plugins). Its data stays in the database.
 Only users who can manage plugins see the import button. If an old document number clashes with a
 number already in use, it is skipped and the summary says "N document numbers skipped (conflict)".
+
+While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused; deactivate
+it before the import. After the import of the mreja.net Ordinance N-18 plugin, invoices and other
+documents are paused while that plugin stays active, because both would give out the same document
+numbers: an error notice says so on the Dashboard, the Plugins screen, the orders and the Nashenski
+settings, the PDF Files box of an order explains it, and orders made meanwhile get a note. Once it is
+deactivated, numbering carries on after its last number (read once) and "Regenerate PDF's" makes the
+missing documents.
 
 If a document cannot be made, the refund, subscription renewal or checkout still goes through and the
 order gets the note "Some documents were not generated" with the reason. Fix the cause and make the

@@ -63,10 +63,6 @@ Nashenski Commerce is based on Bulgarisation for WooCommerce 4.0.13 by Autopolis
 
 It also imports from the mreja.net plugins (Ordinance N-18 included), Drusoft Shipping, Econt Delivery and Speedy Shipping. After each import, deactivate the old plugin. The import runs on your site; nothing is sent anywhere.
 
-**Help inside the plugin**
-
-Every setting has a short description. WooCommerce > Settings > Nashenski Commerce > Help explains every part of the plugin.
-
 == Installation ==
 
 1. Install and activate WooCommerce.
@@ -94,7 +90,7 @@ Yes. It works with the classic checkout, the block checkout and checkout pages b
 
 = Can I move from Bulgarisation? =
 
-Yes. Deactivate Bulgarisation, activate Nashenski Commerce, then press "Import" in WooCommerce > Settings > Nashenski Commerce > Help. Your settings, shipping zones and order data come along.
+Yes. Deactivate Bulgarisation, activate Nashenski Commerce and press "Import" on its Help tab. Your settings, shipping zones and order data come along. After an import from the mreja.net N-18 plugin, documents pause until you deactivate that plugin.
 
 == Screenshots ==
 
