@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 13:59+0000\n"
-"PO-Revision-Date: 2026-11-11 13:59+0000\n"
+"POT-Creation-Date: 2026-11-11 14:11+0000\n"
+"PO-Revision-Date: 2026-11-11 14:11+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -130,7 +130,7 @@ msgstr ""
 msgid "Emptied"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:290 app/Admin/class-import-sources.php:250 app/Admin/class-migration.php:126
+#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:293 app/Admin/class-import-sources.php:284 app/Admin/class-migration.php:126
 msgid "You do not have permission to perform this action."
 msgstr ""
 
@@ -160,7 +160,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:303 app/Admin/class-help-page.php:334
+#: app/Admin/class-abandoned-carts-page.php:303 app/Admin/class-help-page.php:337
 msgid "Apply"
 msgstr ""
 
@@ -608,7 +608,7 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: app/Admin/class-econt.php:165 app/Admin/Order/class-metabox.php:93 app/Admin/Tabs/class-econt-tab.php:137 app/Export/Builder/class-fields.php:147
+#: app/Admin/class-econt.php:165 app/Admin/Order/class-metabox.php:95 app/Admin/Tabs/class-econt-tab.php:137 app/Export/Builder/class-fields.php:147
 msgid "Invoice number"
 msgstr ""
 
@@ -1352,314 +1352,330 @@ msgstr ""
 msgid "Copies can go to your accountant by email, and the monthly NRA audit file too."
 msgstr ""
 
-#: app/Admin/class-help-page.php:198
+#: app/Admin/class-help-page.php:197
+msgid "A delivery with no VAT, on an order with no VAT at all, is printed at 0% with its full price."
+msgstr ""
+
+#: app/Admin/class-help-page.php:199
 msgid "NRA audit file and exports"
 msgstr ""
 
 #. translators: %s: link to the Exports section
-#: app/Admin/class-help-page.php:200
+#: app/Admin/class-help-page.php:201
 #, php-format
 msgid "%s has the NRA audit file (Ordinance N-18), the invoice archive and the Microinvest Delta file for a chosen month. The audit file is checked against the NRA schema and has no order limit."
 msgstr ""
 
-#: app/Admin/class-help-page.php:201
+#: app/Admin/class-help-page.php:202
 msgid "Choose the month and press \"Create XML file\" for the NRA, \"Download archive\" for the invoices or \"Create file\" for Delta."
 msgstr ""
 
-#: app/Admin/class-help-page.php:202
+#: app/Admin/class-help-page.php:203
 msgid "The created files are kept for 7 days, then deleted. Download them when you create them."
 msgstr ""
 
-#: app/Admin/class-help-page.php:203
+#: app/Admin/class-help-page.php:204
 msgid "The custom export takes orders, products sold or documents, with your filters, columns and order, as CSV, Excel, JSON or XML. Save an export to run it again next month."
 msgstr ""
 
-#: app/Admin/class-help-page.php:205
+#: app/Admin/class-help-page.php:206
 msgid "EU VAT number check"
 msgstr ""
 
-#: app/Admin/class-help-page.php:206
+#: app/Admin/class-help-page.php:207
 msgid "Turn on \"Enable VIES validation\" in Documents > Invoices and documents. A company customer's VAT number is then checked with the European VIES system when the order is placed."
 msgstr ""
 
-#: app/Admin/class-help-page.php:207
+#: app/Admin/class-help-page.php:208
 msgid "An error shows only when the number is not valid or when the check itself fails. The option needs the PHP SOAP extension on your server."
 msgstr ""
 
-#: app/Admin/class-help-page.php:208
+#: app/Admin/class-help-page.php:209
 msgid "The VAT number is optional at checkout. Tick \"VAT number required on checkout?\" in Documents to make company customers enter it."
 msgstr ""
 
-#: app/Admin/class-help-page.php:210 app/Front_End/class-withdrawal.php:550 app/Front_End/class-withdrawal.php:564
+#: app/Admin/class-help-page.php:211 app/Front_End/class-withdrawal.php:550 app/Front_End/class-withdrawal.php:564
 msgid "EU withdrawal function"
 msgstr ""
 
 #. translators: %s: link to the Checkout section
-#: app/Admin/class-help-page.php:212
+#: app/Admin/class-help-page.php:213
 #, php-format
 msgid "Turn it on in %s > EU withdrawal function. A \"Withdraw from contract here\" link appears at the bottom of every page, on each order in My Account and in the order emails."
 msgstr ""
 
-#: app/Admin/class-help-page.php:213
+#: app/Admin/class-help-page.php:214
 msgid "Place the link yourself with the shortcode [nashenski_withdrawal_link] (button=\"yes\" makes it a button)."
 msgstr ""
 
-#: app/Admin/class-help-page.php:214
+#: app/Admin/class-help-page.php:215
 msgid "The links are not shown inside page-builder editors (Bricks, Oxygen, Breakdance, Elementor, Etch and others), only on the live site. A shortcode you place yourself still shows there."
 msgstr ""
 
-#: app/Admin/class-help-page.php:215
+#: app/Admin/class-help-page.php:216
 msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
 msgstr ""
 
-#: app/Admin/class-help-page.php:217 app/Admin/class-settings-page.php:159 app/Admin/Tabs/class-settings-tab.php:72 app/Reports/class-reports.php:174
+#: app/Admin/class-help-page.php:218 app/Admin/class-settings-page.php:159 app/Admin/Tabs/class-settings-tab.php:72 app/Reports/class-reports.php:174
 msgid "Customer checks"
 msgstr ""
 
-#: app/Admin/class-help-page.php:218
+#: app/Admin/class-help-page.php:219
 msgid "nekorekten.com, Connectix and NepoStop tell you whether a phone number has a history of refused parcels. Nashenski Commerce can show a warning on the order and hide cash on delivery for such customers."
 msgstr ""
 
-#: app/Admin/class-help-page.php:219
+#: app/Admin/class-help-page.php:220
 msgid "In NepoStop and nekorekten.com you can also tick the payment methods to hide under \"Hide these payment methods\". When the service flags the customer at its level of warning, those payment methods are not offered at checkout."
 msgstr ""
 
-#: app/Admin/class-help-page.php:220
+#: app/Admin/class-help-page.php:221
 msgid "Each visitor address gets at most 20 phone checks an hour. Over that, the check is skipped and the checkout goes on."
 msgstr ""
 
-#: app/Admin/class-help-page.php:221
+#: app/Admin/class-help-page.php:222
 msgid "Turn a service on in Overview, save, then enter its API key or token in Customer checks. A service without a key is not asked."
 msgstr ""
 
-#: app/Admin/class-help-page.php:222
+#: app/Admin/class-help-page.php:223
 msgid "On the order, the Reports box shows the answers. Press \"Refresh data\" to ask again."
 msgstr ""
 
-#: app/Admin/class-help-page.php:223
+#: app/Admin/class-help-page.php:224
 msgid "For nekorekten.com you can report a customer yourself: write what happened and press \"Send report\". The report carries the name, phone and email of the order. Change the text and press \"Save report\", or press \"Delete report\" to remove it from nekorekten.com."
 msgstr ""
 
-#: app/Admin/class-help-page.php:224
+#: app/Admin/class-help-page.php:225
 msgid "Connectix and NepoStop can also get tracking information or labels from your orders. Both are optional."
 msgstr ""
 
-#: app/Admin/class-help-page.php:226 app/Admin/class-impossiblevatprice.php:46 app/Admin/class-impossiblevatprice.php:47 app/Admin/class-impossiblevatprice.php:128
+#: app/Admin/class-help-page.php:227 app/Admin/class-impossiblevatprice.php:46 app/Admin/class-impossiblevatprice.php:47 app/Admin/class-impossiblevatprice.php:128
 msgid "Mathematically impossible prices"
 msgstr ""
 
-#: app/Admin/class-help-page.php:227
+#: app/Admin/class-help-page.php:228
 msgid "Open Products > Mathematically impossible prices and press \"Scan products\". It lists the prices that cannot be split into a price without VAT and the VAT without rounding."
 msgstr ""
 
-#: app/Admin/class-help-page.php:228
+#: app/Admin/class-help-page.php:229
 msgid "Press \"Fix all\" to correct them. The check matters most when your prices are entered including tax."
 msgstr ""
 
-#: app/Admin/class-help-page.php:230 app/Admin/class-help-page.php:274
+#: app/Admin/class-help-page.php:231 app/Admin/class-help-page.php:277
 msgid "Moving from another plugin"
 msgstr ""
 
-#: app/Admin/class-help-page.php:231
+#: app/Admin/class-help-page.php:232
 msgid "Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping."
 msgstr ""
 
-#: app/Admin/class-help-page.php:232
+#: app/Admin/class-help-page.php:233
 msgid "The order documents and invoices of Bulgarisation for WooCommerce move into the private documents folder and open from the order as before."
 msgstr ""
 
-#: app/Admin/class-help-page.php:233
+#: app/Admin/class-help-page.php:234
 msgid "It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database."
 msgstr ""
 
-#: app/Admin/class-help-page.php:234
-msgid "Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import."
+#: app/Admin/class-help-page.php:235
+msgid "While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused. Deactivate it before the import."
 msgstr ""
 
-#: app/Admin/class-help-page.php:235
-msgid "Only users who can manage plugins see the import button. If an old document number clashes with a number already in use, that number is skipped and the summary says \"N document numbers skipped (conflict)\"."
+#: app/Admin/class-help-page.php:236
+msgid "After the import of the mreja.net Ordinance N-18 plugin, invoices and other documents are paused while that plugin is still active, because both would give out the same document numbers. Orders made meanwhile get a note. Deactivate it: numbering carries on after its last number, and \"Regenerate PDF's\" makes the missing documents."
 msgstr ""
 
 #: app/Admin/class-help-page.php:237
-msgid "Command line (WP-CLI)"
+msgid "Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import."
 msgstr ""
 
 #: app/Admin/class-help-page.php:238
-msgid "Settings can be read and changed with WP-CLI: wp nashenski setting list, get, set and reset. The names are the option names without \"nashenski_settings_\", for example apis_enable_econt."
-msgstr ""
-
-#: app/Admin/class-help-page.php:239
-msgid "Save a password from standard input so it stays out of the shell history: echo \"$PASSWORD\" | wp nashenski setting set econt_password -"
+msgid "Only users who can manage plugins see the import button. If an old document number clashes with a number already in use, that number is skipped and the summary says \"N document numbers skipped (conflict)\"."
 msgstr ""
 
 #: app/Admin/class-help-page.php:240
-msgid "wp nashenski courier reload and check do the \"Reload offices and cities\" button and the login check of a courier."
+msgid "Command line (WP-CLI)"
+msgstr ""
+
+#: app/Admin/class-help-page.php:241
+msgid "Settings can be read and changed with WP-CLI: wp nashenski setting list, get, set and reset. The names are the option names without \"nashenski_settings_\", for example apis_enable_econt."
 msgstr ""
 
 #: app/Admin/class-help-page.php:242
-msgid "Updates"
+msgid "Save a password from standard input so it stays out of the shell history: echo \"$PASSWORD\" | wp nashenski setting set econt_password -"
 msgstr ""
 
 #: app/Admin/class-help-page.php:243
-msgid "New versions show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too."
+msgid "wp nashenski courier reload and check do the \"Reload offices and cities\" button and the login check of a courier."
 msgstr ""
 
 #: app/Admin/class-help-page.php:245
-msgid "When something does not work"
+msgid "Updates"
 msgstr ""
 
 #: app/Admin/class-help-page.php:246
-msgid "\"Nothing found\" under a courier: check the login on the courier page. In BOX NOW demo mode there are only two test lockers, both in Sofia."
-msgstr ""
-
-#: app/Admin/class-help-page.php:247
-msgid "No courier options at checkout: add the methods to the shipping zone of the customer's address and give your products a weight."
+msgid "New versions show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too."
 msgstr ""
 
 #: app/Admin/class-help-page.php:248
-msgid "\"Complete the fields to calculate\" does not go away: the customer has not chosen an office, a locker or an address yet."
+msgid "When something does not work"
 msgstr ""
 
 #: app/Admin/class-help-page.php:249
-msgid "No documents: turn on \"Invoices and N-18\" in Overview and check \"When to generate documents?\" in Documents."
+msgid "\"Nothing found\" under a courier: check the login on the courier page. In BOX NOW demo mode there are only two test lockers, both in Sofia."
 msgstr ""
 
 #: app/Admin/class-help-page.php:250
+msgid "No courier options at checkout: add the methods to the shipping zone of the customer's address and give your products a weight."
+msgstr ""
+
+#: app/Admin/class-help-page.php:251
+msgid "\"Complete the fields to calculate\" does not go away: the customer has not chosen an office, a locker or an address yet."
+msgstr ""
+
+#: app/Admin/class-help-page.php:252
+msgid "No documents: turn on \"Invoices and N-18\" in Overview and check \"When to generate documents?\" in Documents."
+msgstr ""
+
+#: app/Admin/class-help-page.php:253
 msgid "The order note \"Some documents were not generated\" means a document failed (the note gives the reason). The refund, renewal or checkout still went through. Fix the cause and make the document again from the order."
 msgstr ""
 
-#: app/Admin/class-help-page.php:263 app/Admin/class-import-sources.php:212
+#: app/Admin/class-help-page.php:266 app/Admin/class-import-sources.php:246
 msgid "Bulgarisation for WooCommerce"
 msgstr ""
 
-#: app/Admin/class-help-page.php:275
+#: app/Admin/class-help-page.php:278
 msgid "These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use. Then deactivate the old plugin."
 msgstr ""
 
 #. translators: %s: date
-#: app/Admin/class-help-page.php:285
+#: app/Admin/class-help-page.php:288
 #, php-format
 msgid "Imported on %s"
 msgstr ""
 
-#: app/Admin/class-help-page.php:288
+#: app/Admin/class-help-page.php:291
 msgid "Import"
 msgstr ""
 
 #. translators: %d: number of settings
-#: app/Admin/class-help-page.php:315
+#: app/Admin/class-help-page.php:318
 #, php-format
 msgid "%d setting changed."
 msgid_plural "%d settings changed."
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Admin/class-help-page.php:329 app/Admin/class-setup-wizard.php:722
+#: app/Admin/class-help-page.php:332 app/Admin/class-setup-wizard.php:722
 msgid "Recommended settings"
 msgstr ""
 
-#: app/Admin/class-help-page.php:330
+#: app/Admin/class-help-page.php:333
 msgid "Settings that suit most Bulgarian stores. Tick the ones you want and apply them; nothing else changes."
 msgstr ""
 
-#: app/Admin/class-help-page.php:335
+#: app/Admin/class-help-page.php:338
 msgid "Setting"
 msgstr ""
 
-#: app/Admin/class-help-page.php:336 app/class-plugin.php:341
+#: app/Admin/class-help-page.php:339 app/class-plugin.php:341
 msgid "Now"
 msgstr ""
 
-#: app/Admin/class-help-page.php:337
+#: app/Admin/class-help-page.php:340
 msgid "Recommended"
 msgstr ""
 
-#: app/Admin/class-help-page.php:338
+#: app/Admin/class-help-page.php:341
 msgid "Why"
 msgstr ""
 
-#: app/Admin/class-help-page.php:351
+#: app/Admin/class-help-page.php:354
 msgid "Already set"
 msgstr ""
 
-#: app/Admin/class-help-page.php:368
+#: app/Admin/class-help-page.php:371
 msgid "Apply recommended settings"
 msgstr ""
 
-#: app/Admin/class-help-page.php:370
+#: app/Admin/class-help-page.php:373
 msgid "All recommended settings are in place."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:86
+#: app/Admin/class-import-sources.php:89
 msgid "Econt Express shipping method (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:87
+#: app/Admin/class-import-sources.php:90
 msgid "BOX NOW Delivery (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:88
+#: app/Admin/class-import-sources.php:91
 msgid "Ordinance N-18 light regime (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:89
+#: app/Admin/class-import-sources.php:92
 msgid "Speedy shipping method (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:90
+#: app/Admin/class-import-sources.php:93
 msgid "Pigeon Express shipping (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:91
+#: app/Admin/class-import-sources.php:94
 msgid "Change Speedy and Econt Shipping Methods (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:92
+#: app/Admin/class-import-sources.php:95
 msgid "Drusoft Shipping for Econt"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:93
+#: app/Admin/class-import-sources.php:96
 msgid "Drusoft Shipping for Speedy"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:94
+#: app/Admin/class-import-sources.php:97
 msgid "Econt Delivery (Econt)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:95
+#: app/Admin/class-import-sources.php:98
 msgid "Speedy Shipping (Speedy)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:96
+#: app/Admin/class-import-sources.php:99
 msgid "WooCommerce Speedy Offices"
 msgstr ""
 
+#: app/Admin/class-import-sources.php:177 app/Admin/class-import-sources.php:629
+msgid "Go to Plugins"
+msgstr ""
+
 #. translators: %s: plugin name
-#: app/Admin/class-import-sources.php:164
+#: app/Admin/class-import-sources.php:196
 #, php-format
 msgid "Imported from %s:"
 msgstr ""
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:192
+#: app/Admin/class-import-sources.php:226
 #, php-format
 msgid "Nashenski Commerce can take over the data of %s."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:197 app/Admin/class-setup-wizard.php:588
+#: app/Admin/class-import-sources.php:231 app/Admin/class-setup-wizard.php:588
 msgid "Review and import"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:199 app/Admin/class-settings-page.php:809 app/Admin/class-setup-wizard.php:166
+#: app/Admin/class-import-sources.php:233 app/Admin/class-settings-page.php:809 app/Admin/class-setup-wizard.php:166
 msgid "Dismiss"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:462 app/Admin/class-import-sources.php:491
+#: app/Admin/class-import-sources.php:496 app/Admin/class-import-sources.php:525
 msgid "The Econt key of that plugin works only with Econt's \"Deliver with Econt\" service. Enter your Econt username and password in Couriers > Econt."
 msgstr ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:517
+#: app/Admin/class-import-sources.php:551
 #, php-format
 msgid "%d setting"
 msgid_plural "%d settings"
@@ -1667,7 +1683,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:519
+#: app/Admin/class-import-sources.php:553
 #, php-format
 msgid "%d order waybill"
 msgid_plural "%d order waybills"
@@ -1675,7 +1691,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:521
+#: app/Admin/class-import-sources.php:555
 #, php-format
 msgid "%d shipping zone method"
 msgid_plural "%d shipping zone methods"
@@ -1683,7 +1699,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:526
+#: app/Admin/class-import-sources.php:560
 #, php-format
 msgid "%d document number"
 msgid_plural "%d document numbers"
@@ -1692,7 +1708,7 @@ msgstr[1] ""
 
 #. translators: %d: number
 #. translators: %d: number of document numbers
-#: app/Admin/class-import-sources.php:531 app/Admin/class-migration.php:106
+#: app/Admin/class-import-sources.php:565 app/Admin/class-migration.php:106
 #, php-format
 msgid "%d document number skipped (conflict)"
 msgid_plural "%d document numbers skipped (conflict)"
@@ -1700,13 +1716,13 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of settings
-#: app/Admin/class-import-sources.php:536
+#: app/Admin/class-import-sources.php:570
 #, php-format
 msgid "Already set, kept as it is: %d"
 msgstr ""
 
 #. translators: %d: number of orders
-#: app/Admin/class-import-sources.php:543
+#: app/Admin/class-import-sources.php:577
 #, php-format
 msgid "%d order keeps everything the old plugin saved on it (see \"From earlier plugins\" on the order)"
 msgid_plural "%d orders keep everything the old plugin saved on them (see \"From earlier plugins\" on the order)"
@@ -1714,48 +1730,48 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:590
+#: app/Admin/class-import-sources.php:624
 #, php-format
 msgid "The import is done. Please deactivate %s: Nashenski Commerce does its work now."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:595
-msgid "Go to Plugins"
+#: app/Admin/class-import-sources.php:750
+msgid "Nashenski Commerce has paused invoices and other documents because the old N-18 plugin is still active. Both would give out the same document numbers. Deactivate it to continue; numbering then carries on after its last number."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:784
+#: app/Admin/class-import-sources.php:854
 msgid "From earlier plugins"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:797
+#: app/Admin/class-import-sources.php:867
 msgid "What the earlier plugins saved on this order, kept when their data was imported."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:840 app/Export/Builder/class-fields.php:338
+#: app/Admin/class-import-sources.php:910 app/Export/Builder/class-fields.php:338
 msgid "Order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:841 app/Admin/Order/class-documents.php:276 app/Export/Builder/class-fields.php:339
+#: app/Admin/class-import-sources.php:911 app/Admin/Order/class-documents.php:313 app/Export/Builder/class-fields.php:339
 msgid "Invoice"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:842 app/Export/Builder/class-fields.php:340
+#: app/Admin/class-import-sources.php:912 app/Export/Builder/class-fields.php:340
 msgid "Credit note"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:843
+#: app/Admin/class-import-sources.php:913
 msgid "Cancelled order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1169 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:682 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
+#: app/Admin/class-import-sources.php:1239 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:682 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
 msgid "To an office"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1170 app/Admin/class-import-sources.php:1171 app/Admin/class-setup-wizard.php:683 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
+#: app/Admin/class-import-sources.php:1240 app/Admin/class-import-sources.php:1241 app/Admin/class-setup-wizard.php:683 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
 msgid "To a parcel locker"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1172 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:684 app/Admin/Order/class-courier-info.php:46
+#: app/Admin/class-import-sources.php:1242 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:684 app/Admin/Order/class-courier-info.php:46
 msgid "To an address"
 msgstr ""
 
@@ -3353,48 +3369,48 @@ msgstr ""
 msgid "Please find attached the document copies for order #%s."
 msgstr ""
 
-#: app/Admin/Order/class-actions.php:66 app/Admin/Order/class-actions.php:166
+#: app/Admin/Order/class-actions.php:72 app/Admin/Order/class-actions.php:172
 msgid "Regenerate PDF's"
 msgstr ""
 
 #. translators: %s: number of orders
-#: app/Admin/Order/class-actions.php:111
+#: app/Admin/Order/class-actions.php:117
 #, php-format
 msgid "Documents of %s order were regenerated."
 msgid_plural "Documents of %s orders were regenerated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Admin/Order/class-actions.php:123
+#: app/Admin/Order/class-actions.php:129
 msgid "Invoice PDF"
 msgstr ""
 
-#: app/Admin/Order/class-actions.php:124
+#: app/Admin/Order/class-actions.php:130
 msgid "Invoice Copy PDF"
 msgstr ""
 
-#: app/Admin/Order/class-actions.php:125
+#: app/Admin/Order/class-actions.php:131
 msgid "Refunded Invoice PDF"
 msgstr ""
 
-#: app/Admin/Order/class-actions.php:126
+#: app/Admin/Order/class-actions.php:132
 msgid "Refunded Invoice Copy PDF"
 msgstr ""
 
-#: app/Admin/Order/class-actions.php:139
+#: app/Admin/Order/class-actions.php:145
 msgid "English"
 msgstr ""
 
-#: app/Admin/Order/class-actions.php:163
+#: app/Admin/Order/class-actions.php:169
 msgid "Generate Invoice"
 msgstr ""
 
-#: app/Admin/Order/class-actions.php:222
+#: app/Admin/Order/class-actions.php:250
 msgid "The invoice number must be 1 to 10 digits."
 msgstr ""
 
 #. translators: %s: the error message
-#: app/Admin/Order/class-actions.php:245 app/Admin/Order/class-documents.php:92 app/Admin/Order/class-documents.php:124 app/Admin/Order/class-documents.php:148 app/Admin/Order/class-subscriptions.php:62
+#: app/Admin/Order/class-actions.php:273 app/Admin/Order/class-documents.php:121 app/Admin/Order/class-documents.php:157 app/Admin/Order/class-documents.php:181 app/Admin/Order/class-subscriptions.php:62
 #, php-format
 msgid "Some documents were not generated: %s"
 msgstr ""
@@ -3447,27 +3463,31 @@ msgstr ""
 msgid "Delivery set on the order screen: %1$s, %2$s. The price comes with the label."
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:275 app/Export/Builder/class-fields.php:43 app/Reports/class-reports.php:159
+#: app/Admin/Order/class-documents.php:35
+msgid "No documents were made: Nashenski Commerce paused them while the old N-18 plugin was active. Once it is deactivated, make them here with \"Regenerate PDF's\"."
+msgstr ""
+
+#: app/Admin/Order/class-documents.php:312 app/Export/Builder/class-fields.php:43 app/Reports/class-reports.php:159
 msgid "Order"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:277
+#: app/Admin/Order/class-documents.php:314
 msgid "Invoice Copy"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:278
+#: app/Admin/Order/class-documents.php:315
 msgid "Refunded Order"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:279
+#: app/Admin/Order/class-documents.php:316
 msgid "Refunded Invoice"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:280
+#: app/Admin/Order/class-documents.php:317
 msgid "Refunded Invoice Copy"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:281 app/Invoice/Document/class-proforma.php:24
+#: app/Admin/Order/class-documents.php:318 app/Invoice/Document/class-proforma.php:24
 msgid "Pro forma"
 msgstr ""
 
@@ -3479,11 +3499,11 @@ msgstr ""
 msgid "PDF Files"
 msgstr ""
 
-#: app/Admin/Order/class-metabox.php:98
+#: app/Admin/Order/class-metabox.php:100
 msgid "Make invoice"
 msgstr ""
 
-#: app/Admin/Order/class-metabox.php:99
+#: app/Admin/Order/class-metabox.php:101
 msgid "Uses the PDF look you set under Documents. Saves the order too."
 msgstr ""
 
@@ -5921,7 +5941,7 @@ msgid "Label number: %s."
 msgstr ""
 
 #. translators: %s: invoice number
-#: app/Invoice/class-number-allocator.php:357
+#: app/Invoice/class-number-allocator.php:402
 #, php-format
 msgid "Number %s is already used by another order. Choose another invoice number."
 msgstr ""

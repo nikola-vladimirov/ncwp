@@ -194,6 +194,7 @@ class Help_Page {
 				/* translators: %s: link to the Documents section */
 				sprintf( esc_html__( 'In %s > Invoices and documents, "Invoice numbering": "Website invoices" go into the NRA audit file. "Own invoicing program" keeps the invoice out of it; you type that program\'s number on the order.', 'nashenski-commerce' ), $documents ),
 				esc_html__( 'Copies can go to your accountant by email, and the monthly NRA audit file too.', 'nashenski-commerce' ),
+				esc_html__( 'A delivery with no VAT, on an order with no VAT at all, is printed at 0% with its full price.', 'nashenski-commerce' ),
 			),
 			__( 'NRA audit file and exports', 'nashenski-commerce' ) => array(
 				/* translators: %s: link to the Exports section */
@@ -231,6 +232,8 @@ class Help_Page {
 				esc_html__( 'Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping.', 'nashenski-commerce' ),
 				esc_html__( 'The order documents and invoices of Bulgarisation for WooCommerce move into the private documents folder and open from the order as before.', 'nashenski-commerce' ),
 				esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database.', 'nashenski-commerce' ),
+				esc_html__( 'While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused. Deactivate it before the import.', 'nashenski-commerce' ),
+				esc_html__( 'After the import of the mreja.net Ordinance N-18 plugin, invoices and other documents are paused while that plugin is still active, because both would give out the same document numbers. Orders made meanwhile get a note. Deactivate it: numbering carries on after its last number, and "Regenerate PDF\'s" makes the missing documents.', 'nashenski-commerce' ),
 				esc_html__( 'Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import.', 'nashenski-commerce' ),
 				esc_html__( 'Only users who can manage plugins see the import button. If an old document number clashes with a number already in use, that number is skipped and the summary says "N document numbers skipped (conflict)".', 'nashenski-commerce' ),
 			),
