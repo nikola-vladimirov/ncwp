@@ -90,7 +90,7 @@ Yes. It works with the classic checkout, the block checkout and checkout pages b
 
 = Can I move from Bulgarisation? =
 
-Yes. Deactivate Bulgarisation, activate Nashenski Commerce and press "Import" on its Help tab. Your settings, shipping zones and order data come along. Import the mreja.net N-18 plugin while it is off; if it is turned on again, documents pause until it is off and imported again.
+Yes. Deactivate Bulgarisation, activate Nashenski Commerce and press "Import" on its Help tab. Settings, shipping zones and order data come along. Import the mreja.net N-18 plugin while it is off; documents start after that. Turned on again, it can reuse numbers, so documents pause until a new import.
 
 == Screenshots ==
 
@@ -126,5 +126,5 @@ The plugin ships these libraries in its vendor folder: dompdf (LGPL-2.1), dompdf
 All versions: CHANGELOG.md in the plugin folder (Plugins screen > Changelog).
 
 = 0.21.7 =
-* Changes: The courier cache is in the uploads folder, the import asks you to deactivate the old plugin, and library demos are gone.
+* Changes: Courier cache in the uploads folder, the import asks you to deactivate the old plugin, no library demos.
 * Fixed: A delivery with no VAT, on an order with no VAT, prints at 0% on documents and in the NRA file.

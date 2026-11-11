@@ -157,14 +157,17 @@ Only users who can manage plugins see the import button. If an old document numb
 number already in use, it is skipped and the summary says "N document numbers skipped (conflict)".
 
 While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused; deactivate
-it before the import. Deactivate the mreja.net Ordinance N-18 plugin before you import it: both would
-give out the same document numbers, so its import is refused while it is active. If it is turned on
-again after the import, Nashenski Commerce makes no invoices or other documents and takes no numbers
-until it is off and its import is run again from the Help page; that run takes over the numbers it gave
-out meanwhile and the counters continue after its highest number (order documents and cancellations;
-invoices, credit and debit notes). An error notice on the Dashboard, the Plugins screen, the orders and
-the Nashenski settings says so, the PDF Files box of an order explains it, and orders whose documents
-were skipped get a note. Then use "Regenerate PDF's" for orders it did not document.
+it before the import. Import the mreja.net Ordinance N-18 plugin while it is off (its import is refused
+while it is active). Until its data is imported, Nashenski Commerce makes no invoices or other documents
+and takes no numbers, because both would give out the same document numbers; a store without its data is
+not affected. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already
+gave out: documents pause until its import is run again from the Help page (also after it is off again).
+That run takes over its new numbers, continues the counters after its highest number (order documents
+and cancellations; invoices, credit and debit notes) and notes and lists each order whose number clashes,
+to correct. An error notice on the Dashboard, the Plugins screen, the orders and the Nashenski settings
+says so (with a link to Plugins while it is active, to the import while it is off), the PDF Files box of an
+order and the setup explain it, and orders whose documents were skipped get a note. Then use
+"Regenerate PDF's" for orders without documents.
 
 If a document cannot be made, the refund, subscription renewal or checkout still goes through and the
 order gets the note "Some documents were not generated" with the reason. Fix the cause and make the
