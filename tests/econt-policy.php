@@ -364,4 +364,82 @@ $repaired = \Nashenski\Shipping\Econt\Service_Policy::for_order( array( 'service
 expect( ! isset( $repaired['services']['declaredValueAmount'] ), 'The order repair adds no declared value to a card order' );
 $repaired = \Nashenski\Shipping\Econt\Service_Policy::for_order( array( 'services' => array() ), new EcontPolicyOrder( 'cod' ), array() );
 expect( isset( $repaired['services']['declaredValueAmount'] ) && 'EUR' === $repaired['services']['declaredValueCurrency'], 'The order repair still adds declared value to a COD order' );
+
+// Who pays the courier (docs/plans/courier-fee-payer.md): the rate follows the method's list and the payment method.
+foreach ( array(
+	'cod'  => array( 0, '12.00' ),
+	'card' => array( 12, null ),
+) as $pay => list( $cost, $fee ) ) {
+	fixture();
+	$cookie['payment']     = $pay;
+	$method                = new EcontMethod();
+	$method->customer_pays = array( 'cod' );
+	$method->calculate_shipping( package( 1 ) );
+	expect( 'cash' === $last_request['label']['paymentReceiverMethod'], "Econt, $pay: the calculation prices what the receiver would pay" );
+	expect( $cost === $method->rates[0]['cost'] && ( $method->rates[0]['meta_data']['nashenski_courier_fee'] ?? null ) === $fee, "Econt, COD listed, $pay: the total gets $cost" );
+}
+fixture();
+$cookie['payment']     = 'cod';
+$free_coupon           = true;
+$method                = new EcontMethod();
+$method->customer_pays = array( 'cod' );
+$method->calculate_shipping( package( 1 ) );
+expect( 0 === $method->rates[0]['cost'] && ! isset( $method->rates[0]['meta_data']['nashenski_courier_fee'] ) && ! isset( $last_request['label']['paymentReceiverMethod'] ), 'Econt free shipping: the sender pays, no fee to the courier' );
+
+/**
+ * Plugin stub: the container with the Econt profile.
+ *
+ * @return object
+ */
+function nashenski() {
+	return new class() {
+		/**
+		 * Container.
+		 *
+		 * @return array
+		 */
+		public function container() {
+			return array( 'client.econt.profile' => new EcontProfile() ); }
+	};
+}
+/**
+ * Econt shipping line with its checkout decision, on an order of 112.
+ */
+class EcontPayerLine {
+	/**
+	 * Decision.
+	 *
+	 * @var string
+	 */
+	public $payer;
+	/**
+	 * Constructor.
+	 *
+	 * @param string $payer Decision.
+	 */
+	public function __construct( $payer ) {
+		$this->payer = $payer; }
+	/**
+	 * Meta.
+	 *
+	 * @param string $key Key.
+	 * @return string
+	 */
+	public function get_meta( $key ) {
+		return '_nashenski_fee_payer' === $key ? $this->payer : ''; }
+	/**
+	 * Order total (the line doubles as its order here).
+	 *
+	 * @return float
+	 */
+	public function get_total() {
+		return 112.0; }
+}
+$priced = array(
+	'paymentReceiverMethod' => 'cash',
+	'services'              => array( 'cdAmount' => '100.00' ),
+);
+$label  = \Nashenski\Shipping\Econt\Method::label_payer( $priced, new EcontPayerLine( 'shop' ), new EcontPayerLine( 'shop' ) );
+expect( 'cash' === $label['paymentSenderMethod'] && ! isset( $label['paymentReceiverMethod'] ) && '112.00' === $label['services']['cdAmount'], 'Econt label, shop collects: the sender pays and cash on delivery collects the whole order total' );
+expect( \Nashenski\Shipping\Econt\Method::label_payer( $priced, new EcontPayerLine( 'customer' ), new EcontPayerLine( 'customer' ) ) === $priced, 'Econt label, customer pays: the receiver pays as calculated' );
 echo 'PASS: ' . (int) ( $checks - $policy_start ) . " Econt service-policy assertions\n";

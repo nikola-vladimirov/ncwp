@@ -95,7 +95,42 @@ class Plugin {
 		// After 0.19.9: the documents migration flag is read on every request; sites that saved it outside the autoload set load it with the other options now.
 		wp_set_option_autoload( 'nashenski_documents_migration_version', true );
 
+		if ( version_compare( (string) get_option( 'nashenski_version' ), '0.21.8', '<' ) ) {
+			self::upgrade_fee_payer();
+		}
+
 		update_option( 'nashenski_version', self::VERSION );
+	}
+
+	/**
+	 * 0.21.8: "Remove delivery from documents" on puts cash on delivery into "Customer pays the
+	 * courier" of every Econt, Speedy and Pigeon Express method marked as a courier. BOX NOW cannot
+	 * charge the customer. With the setting off the lists stay empty: the shop collects everywhere.
+	 * The old values stay saved: orders made before keep their documents (Courier_Fee::shop_collects()).
+	 */
+	public static function upgrade_fee_payer() {
+		global $wpdb;
+
+		if ( 'yes' !== nashenski_get_option( 'invoice', 'remove_shipping' ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time read on upgrade; the shipping methods are not registered yet.
+		$methods = $wpdb->get_results( $wpdb->prepare( "SELECT method_id, instance_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE method_id IN (%s, %s, %s)", 'nashenski_econt', 'nashenski_speedy', 'nashenski_pigeon' ) );
+
+		foreach ( (array) $methods as $method ) {
+			if ( 'yes' !== nashenski_get_option( 'shippings', $method->method_id . '_is_courier' ) ) {
+				continue;
+			}
+
+			$key      = 'woocommerce_' . $method->method_id . '_' . $method->instance_id . '_settings';
+			$settings = get_option( $key, array() );
+			$settings = is_array( $settings ) ? $settings : array();
+			$listed   = (array) ( $settings[ Shipping\Courier_Fee::FIELD ] ?? array() );
+
+			$settings[ Shipping\Courier_Fee::FIELD ] = array_values( array_unique( array_merge( $listed, array( 'cod' ) ) ) );
+			update_option( $key, $settings );
+		}
 	}
 
 	/**
@@ -191,6 +226,7 @@ class Plugin {
 		}
 
 		new Shipping\Register( $this->container );
+		new Shipping\Courier_Fee();
 		new Shipping\Automation();
 		new Export\Nra\Monthly();
 		new Shipping\CheckoutLayout();

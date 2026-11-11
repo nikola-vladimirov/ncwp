@@ -168,6 +168,14 @@ class FakeShipping {
 	 */
 	public function get_name() {
 		return 'Econt'; }
+	/**
+	 * Meta: no checkout decision on these orders.
+	 *
+	 * @param string $key Key.
+	 * @return string
+	 */
+	public function get_meta( $key ) {
+		return ''; }
 }
 /**
  * Product line fixture: 20% VAT before the discount, none after a 100% coupon.
@@ -312,6 +320,7 @@ class FakeOrder {
 
 require __DIR__ . '/../app/class-hooks.php';
 require __DIR__ . '/../app/functions.php';
+require __DIR__ . '/../app/Shipping/class-courier-fee.php';
 require __DIR__ . '/../app/Invoice/Order/class-order.php';
 require __DIR__ . '/../app/Export/Nra/class-order.php';
 

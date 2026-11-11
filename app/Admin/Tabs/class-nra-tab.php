@@ -82,7 +82,6 @@ class Nra_Tab extends Base_Tab {
 						'trigger',
 						__( 'When to generate documents?', 'nashenski-commerce' )
 					),
-					new Fields\TrueFalse_Field( 'remove_shipping', __( 'Remove delivery from documents', 'nashenski-commerce' ), null, null, __( 'Removes delivery from invoices and the XML file for cash on delivery orders. Use it when the courier issues its own document for the delivery price.', 'nashenski-commerce' ) ),
 					new Fields\Text_Field( 'next_invoice_number', __( 'Next NRA Document Number', 'nashenski-commerce' ), __( 'The document number of the next order.', 'nashenski-commerce' ), 'required|digits' ),
 					new Fields\Text_Field( 'next_invoice_separate_number', __( 'Next Invoice/Credit notice Number', 'nashenski-commerce' ), __( 'If it\' filled the invoices will have different number than the NRA documents.', 'nashenski-commerce' ), 'digits' ),
 					new Fields\Text_Field( 'due_days', __( 'Due days', 'nashenski-commerce' ), __( 'Days added to documents due date.', 'nashenski-commerce' ), 'digits' ),
@@ -136,7 +135,6 @@ class Nra_Tab extends Base_Tab {
 			)
 		);
 
-		$fields        = $this->add_payment_methods_fields( $fields );
 		$fields        = $this->add_shipping_methods_fields( $fields );
 		$fields['pdf'] = self::pdf_fields();
 
@@ -302,20 +300,17 @@ class Nra_Tab extends Base_Tab {
 			'nashenski_admin_nra_groups_titles',
 			'nashenski/admin/nra/groups_titles',
 			array(
-				'nap'       => array(
+				'nap'     => array(
 					'title' => __( 'Company details', 'nashenski-commerce' ),
 					'desc'  => __( 'Printed on invoices and used in the NRA audit file.', 'nashenski-commerce' ),
 				),
-				'invoice'   => array(
+				'invoice' => array(
 					'title' => __( 'Invoices and documents', 'nashenski-commerce' ),
 				),
-				'shop'      => array(
+				'shop'    => array(
 					'title' => __( 'VAT and refunds', 'nashenski-commerce' ),
 				),
-				'shippings' => array(
-					'title' => __( 'Shipping on documents', 'nashenski-commerce' ),
-				),
-				'pdf'       => array(
+				'pdf'     => array(
 					'title' => __( 'PDF appearance', 'nashenski-commerce' ),
 					'desc'  => \Nashenski\Invoice\PDF\Style::tokenforge_active()
 						? __( 'TokenForge is active: its colours fill in the fields below, and with "Follow TokenForge colours" on, documents keep matching the website.', 'nashenski-commerce' )
@@ -346,26 +341,6 @@ class Nra_Tab extends Base_Tab {
 					);
 				}
 			}
-		}
-
-		return $fields;
-	}
-
-	/**
-	 * Add payment methods fields.
-	 *
-	 * @param mixed $fields Fields.
-	 */
-	public function add_payment_methods_fields( $fields ) {
-		$shippings = WC()->shipping->get_shipping_methods();
-
-		foreach ( $shippings as $shipping ) {
-			$fields['shippings'][] = new Fields\TrueFalse_Field(
-				$shipping->id . '_is_courier',
-				/* translators: %s: shipping method name */
-				sprintf( __( 'Is %s courier?', 'nashenski-commerce' ), $shipping->method_title ),
-				__( 'If set to yes, all deliveries with PPP will be removed from documents and XML export', 'nashenski-commerce' )
-			);
 		}
 
 		return $fields;

@@ -95,6 +95,15 @@ namespace {
 	function get_option( $k, $d = false ) {
 		return $GLOBALS['options'][ $k ] ?? $d; }
 	/**
+	 * Plugin option (the upgrade reads "Remove delivery from documents"; off here).
+	 *
+	 * @param string $group Group.
+	 * @param string $key   Key.
+	 * @return mixed Result.
+	 */
+	function nashenski_get_option( $group, $key ) {
+		return get_option( 'nashenski_settings_' . $group . '_' . $key, '' ); }
+	/**
 	 * Update option.
 	 *
 	 * @param mixed $k K.

@@ -7,6 +7,8 @@
 
 namespace Nashenski\Front_End\Checkout;
 
+use Nashenski\Shipping\Courier_Fee;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -250,8 +252,8 @@ class Pickers {
 			}
 
 			if ( (float) ( $meta[ self::FREE_OVER_META ] ?? 0 ) > 0 ) {
-				// BOX NOW does not take free shipping coupons, the other couriers do.
-				$free = $free || ( ! $pending && (float) $rate->get_cost() <= 0 ) || ( 'boxnow' !== $courier && nashenski_has_free_shipping_coupon_in_cart() );
+				// BOX NOW does not take free shipping coupons, the other couriers do. A delivery paid to the courier costs 0 here but is not free.
+				$free = $free || ( ! $pending && (float) $rate->get_cost() <= 0 && empty( $meta[ Courier_Fee::FEE_META ] ) ) || ( 'boxnow' !== $courier && nashenski_has_free_shipping_coupon_in_cart() );
 				// Once per call: the total runs every fee hook.
 				$total = $total ?? nashenski_get_package_total();
 				$rate->add_meta_data( self::FREE_LEFT_META, self::free_left( $meta[ self::FREE_OVER_META ], $total, $free ) );
@@ -310,7 +312,21 @@ class Pickers {
 			return $label . ': <span class="nashenski-rate-free">' . esc_html__( 'Free shipping', 'nashenski-commerce' ) . '</span>';
 		}
 
+		if ( ! empty( $meta[ Courier_Fee::FEE_META ] ) ) {
+			return $label . ': ' . self::courier_fee_html( $meta[ Courier_Fee::FEE_META ] );
+		}
+
 		return $label;
+	}
+
+	/**
+	 * "6,50 €, paid to the courier on delivery, not included in the total" in the checkout.
+	 *
+	 * @param mixed $fee Fee with VAT.
+	 * @return string
+	 */
+	private static function courier_fee_html( $fee ) {
+		return '<span class="nashenski-rate-courier-fee">' . wp_kses_post( Courier_Fee::text( $fee ) ) . '</span>';
 	}
 
 	/**
@@ -329,7 +345,13 @@ class Pickers {
 
 		$rate = self::chosen_rate();
 
-		return $rate && self::is_pending( $rate ) ? '<span class="nashenski-rate-pending">' . esc_html( self::pending_text() ) . '</span>' : $value;
+		if ( $rate && self::is_pending( $rate ) ) {
+			return '<span class="nashenski-rate-pending">' . esc_html( self::pending_text() ) . '</span>';
+		}
+
+		$fee = $rate ? ( $rate->get_meta_data()[ Courier_Fee::FEE_META ] ?? '' ) : '';
+
+		return '' !== $fee ? self::courier_fee_html( $fee ) : $value;
 	}
 
 	/**
@@ -477,6 +499,8 @@ class Pickers {
 			'logos'      => 'no' === nashenski_get_option( 'checkout', 'courier_logos' ) ? array() : Courier_Logos::get_logos(),
 			'showType'   => 'no' !== nashenski_get_option( Appearance::GROUP, 'show_type' ),
 			'pending'    => self::pending_text(),
+			/* translators: %s: delivery price, for example 6,50 € */
+			'courierFee' => __( '%s, paid to the courier on delivery, not included in the total', 'nashenski-commerce' ),
 			'freeOver'   => 'yes' === nashenski_get_option( Appearance::GROUP, 'free_over_label' ),
 			'freeBar'    => 'yes' === nashenski_get_option( Appearance::GROUP, 'free_progress' ),
 			// The store's money format, for amounts the script writes ("Free shipping over 50,00 €").

@@ -496,44 +496,6 @@ function nashenski_calculate_vat_from_price( $price, $rate = 20 ) {
 }
 
 /**
- * Whether the documents leave out the delivery charge: 'yes' or 'no'.
- *
- * @param WC_Order|WC_Order_Refund $order Order or refund.
- * @return string
- */
-function nashenski_maybe_remove_shipping( $order ) {
-	$remove_shipping = nashenski_get_option( 'invoice', 'remove_shipping' );
-
-	if ( is_a( $order, 'Automattic\WooCommerce\Admin\Overrides\OrderRefund' ) ||
-		is_a( $order, 'WC_Order_Refund' )
-	) {
-		$order = wc_get_order( $order->get_parent_id() );
-	}
-
-	if ( ! $order ) {
-		return $remove_shipping;
-	}
-
-	// Only a cash on delivery courier receipts the delivery charge; paid orders keep it.
-	if ( 'cod' !== $order->get_payment_method() ) {
-		return 'no';
-	}
-
-	$shipping_methods = $order->get_shipping_methods();
-
-	if ( ! empty( $shipping_methods ) ) {
-		$shipping_method    = reset( $shipping_methods );
-		$shipping_method_id = $shipping_method['method_id'];
-
-		if ( $order->get_payment_method() === 'cod' && nashenski_get_option( 'shippings', $shipping_method_id . '_is_courier' ) === 'yes' ) {
-			$remove_shipping = 'yes';
-		}
-	}
-
-	return $remove_shipping;
-}
-
-/**
  * Whether the cart has a valid free shipping coupon.
  *
  * @return bool
@@ -883,6 +845,11 @@ function nashenski_save_checkout_label( $order_id, $courier ) {
 		}
 
 		$label = WC()->session->get( "nashenski-{$courier}-label" );
+
+		// Speedy: a delivery the shop collected is part of the cash on delivery amount (none is in a customer-pays total).
+		if ( 'speedy' === $courier && isset( $label['service']['additionalServices']['cod']['amount'] ) && $shipping->get_meta( \Nashenski\Shipping\Courier_Fee::PAYER_META ) ) {
+			$label['service']['additionalServices']['cod']['amount'] = wc_format_decimal( $order->get_total(), wc_get_price_decimals() );
+		}
 
 		if ( $label ) {
 			$order->update_meta_data( "nashenski_{$courier}_label", \Nashenski\Hooks::filter( "nashenski_{$courier}_label_before_save", "nashenski/{$courier}/label_before_save", $label, $order ) );

@@ -102,14 +102,14 @@ class Order {
 	}
 
 	/**
-	 * Reads whether delivery is left out of the documents.
+	 * Reads whether delivery is left out of the documents: when the shop did not collect it.
 	 */
 	private function set_remove_shipping() {
-		$this->remove_shipping = nashenski_maybe_remove_shipping( $this->woo_order );
+		$this->remove_shipping = \Nashenski\Shipping\Courier_Fee::shop_collects( $this->woo_order ) ? 'no' : 'yes';
 	}
 
 	/**
-	 * The lines of the document: products, fees and delivery. Delivery lines are taken out and put back when the setting asks to leave them out.
+	 * The lines of the document: products, fees and delivery. Delivery lines are taken out and put back when the shop did not collect the delivery.
 	 *
 	 * @return array
 	 */

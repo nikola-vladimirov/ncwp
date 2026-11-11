@@ -123,7 +123,6 @@ class Setting_Help {
 			'nashenski_settings_invoice_digital_tax_classes' => array( '', __( 'Products in these tax classes count as digital goods for EU VAT: the customer\'s country rate applies.', 'nashenski-commerce' ) ),
 			'nashenski_settings_shop_vat_group'            => array( '', __( 'The VAT group of your sales in the NRA audit file. Most shops sell in group B (20%).', 'nashenski-commerce' ) ),
 			'nashenski_settings_shop_return_method'        => array( __( 'How you pay customers back for cancelled orders.', 'nashenski-commerce' ), __( 'Goes into the NRA audit file for refunded orders.', 'nashenski-commerce' ) ),
-			'/^nashenski_settings_shippings_.+_is_courier$/' => array( '', __( 'Yes: for cash on delivery orders with this method, the delivery charge is left out of the order document and the NRA file, because the courier collects it and gives its own receipt.', 'nashenski-commerce' ) ),
 			'/_payment_type$/'                             => array( __( 'The NRA payment type of this payment method.', 'nashenski-commerce' ), __( 'How the NRA audit file reports payments made with this method.', 'nashenski-commerce' ) ),
 			'/_virtual_pos_number$/'                       => array( __( 'The number of the virtual POS terminal from your bank.', 'nashenski-commerce' ), __( 'Needed in the NRA audit file for card payments.', 'nashenski-commerce' ) ),
 			'/_identifier$/'                               => array( __( 'The identifier of the payment provider, if it gave you one.', 'nashenski-commerce' ), __( 'Goes into the NRA audit file with each payment.', 'nashenski-commerce' ) ),
@@ -156,6 +155,7 @@ class Setting_Help {
 			'method:international'                         => array( __( 'Also deliver to customers in other countries. Prices come only from the courier.', 'nashenski-commerce' ), '' ),
 			'method:free_shipping_by_country'              => array( __( 'Free shipping for customers abroad, per country: RO=150, GR=200.', 'nashenski-commerce' ), '' ),
 			'method:fixed_price'                           => array( __( 'A set delivery price instead of the courier\'s calculation.', 'nashenski-commerce' ), __( 'The difference to the real courier price is yours.', 'nashenski-commerce' ) ),
+			'method:customer_pays'                         => array( __( 'With these payment methods the customer pays the delivery to the courier on delivery. It is then not in the order total, on your documents or in the NRA file.', 'nashenski-commerce' ), __( 'Otherwise you collect the delivery and the courier bills you: other payment methods, deliveries abroad, and Speedy or Pigeon Express with a fixed price. Free shipping is always yours.', 'nashenski-commerce' ) ),
 		);
 	}
 

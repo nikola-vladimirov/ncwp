@@ -16,6 +16,7 @@ use Nashenski\Shipping\Packer\Size;
 use Nashenski\Shipping\Packer\Packing_Budget;
 use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 use Nashenski\Pricing\Price_Lists;
+use Nashenski\Shipping\Courier_Fee;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -72,6 +73,13 @@ class Method extends \WC_Shipping_Method {
 	 * @var mixed
 	 */
 	public $fixed_price;
+
+	/**
+	 * Payment methods for which the customer pays the courier.
+	 *
+	 * @var array
+	 */
+	public $customer_pays = array();
 
 	/**
 	 * Test.
@@ -153,6 +161,7 @@ class Method extends \WC_Shipping_Method {
 		$this->free_shipping_over       = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
 		$this->free_shipping_by_country = $this->get_option( 'free_shipping_by_country' );
 		$this->fixed_price              = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
+		$this->customer_pays            = (array) $this->get_option( Courier_Fee::FIELD, array() );
 		$this->test                     = $this->get_option( 'test' );
 		$this->sms                      = $this->get_option( 'sms' );
 		$this->tax_status               = ( wc_tax_enabled() ) ? 'taxable' : 'none';
@@ -253,6 +262,11 @@ class Method extends \WC_Shipping_Method {
 			$rate['meta_data']['free_shipping'] = true;
 			$rate['cost']                       = 0;
 			unset( $rate['taxes'] );
+		}
+
+		// Bulgaria only: abroad the label is always paid by the sender.
+		if ( 'BG' === $this->label_country() && Courier_Fee::customer_pays( $this->customer_pays, $this->cookie_data['payment'] ?? '' ) ) {
+			$rate = Courier_Fee::rate( $rate );
 		}
 
 		// Read by the checkout's free shipping hint and progress bar.
@@ -414,6 +428,7 @@ class Method extends \WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
+			Courier_Fee::FIELD         => Courier_Fee::field(),
 		);
 	}
 
@@ -1030,6 +1045,31 @@ class Method extends \WC_Shipping_Method {
 	}
 
 	/**
+	 * Who pays Econt on a checkout label. The calculation priced it for the receiver; when the shop
+	 * collects the delivery the sender pays, and cash on delivery collects the whole order total.
+	 *
+	 * @param array                   $label    Label.
+	 * @param \WC_Order_Item_Shipping $shipping Econt shipping line, with the checkout decision.
+	 * @param \WC_Order               $order    Order.
+	 * @return array
+	 */
+	public static function label_payer( $label, $shipping, $order ) {
+		if ( 'customer' === $shipping->get_meta( Courier_Fee::PAYER_META ) ) {
+			return $label;
+		}
+
+		unset( $label['paymentReceiverMethod'], $label['paymentReceiverAmount'] );
+
+		$label['paymentSenderMethod'] = nashenski()->container()[ Client::ECONT_PROFILE ]->get_sender_payment_method();
+
+		if ( isset( $label['services']['cdAmount'] ) ) {
+			$label['services']['cdAmount'] = wc_format_decimal( $order->get_total(), wc_get_price_decimals() );
+		}
+
+		return $label;
+	}
+
+	/**
 	 * Save label data to order.
 	 *
 	 * @param mixed $order_id Order id.
@@ -1058,22 +1098,7 @@ class Method extends \WC_Shipping_Method {
 						$label = WC()->session->get( 'nashenski-econt-label' );
 
 						if ( isset( $cookie_data['payment'] ) ) {
-							$container = nashenski()->container();
-
-							if ( 'cod' !== $cookie_data['payment'] ) {
-								unset(
-									$label['label']['paymentReceiverMethod'],
-									$label['label']['paymentReceiverAmount'],
-									$label['label']['paymentSenderMethod'],
-								);
-
-								$label['label']['paymentSenderMethod'] = $container[ Client::ECONT_PROFILE ]->get_sender_payment_method();
-							} elseif ( 'BG' !== $cookie_data['country'] &&
-								! $shipping->free_shipping &&
-								empty( $cookie_data['fixed_price'] )
-							) {
-								$label['label']['paymentReceiverMethod'] = 'cash';
-							}
+							$label['label'] = self::label_payer( $label['label'], $shipping, $order );
 						}
 
 						$overrides                          = $label[ Service_Policy::OVERRIDES ] ?? array();

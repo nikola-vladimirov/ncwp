@@ -40,7 +40,8 @@
 	line-height: 1.3;
 }
 
-.nashenski-rate-pending {
+.nashenski-rate-pending,
+.nashenski-rate-courier-fee {
 	color: var(--nashenski-muted);
 	font-size: 0.9em;
 	font-weight: 400;

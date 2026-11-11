@@ -128,6 +128,8 @@ class Help_Page {
 				esc_html__( 'To compare, open the courier page and press "Check the courier website" in "Public prices". You see what changed, and new prices are filled in only when you choose. It also checks once a week by itself.', 'nashenski-commerce' ),
 				esc_html__( '"Public prices" shows only when "Use public prices" is ticked on the courier page.', 'nashenski-commerce' ),
 				esc_html__( 'Each shipping method in a zone can have a free shipping amount and a fixed price.', 'nashenski-commerce' ),
+				esc_html__( '"Customer pays the courier" on an Econt, Speedy or Pigeon Express method in a zone lists the payment methods for which the customer pays the delivery to the courier on delivery. The checkout then shows the price for information, not in the total, and the waybill says the receiver pays. With any other payment method you collect the delivery in the total and the sender pays. BOX NOW cannot charge the customer, so you always collect it there.', 'nashenski-commerce' ),
+				esc_html__( 'The total follows the payment method the customer picks at checkout. The courier box on the order screen can still change who pays for one waybill.', 'nashenski-commerce' ),
 				esc_html__( 'Review or test before payment is set on the courier method in the shipping zone and goes on every label. For Pigeon Express choose review or test; the order screen can change it for one label.', 'nashenski-commerce' ),
 				esc_html__( 'When a courier publishes new prices, a notice says so. Save that courier\'s prices or press Dismiss.', 'nashenski-commerce' ),
 			),
@@ -195,6 +197,7 @@ class Help_Page {
 				sprintf( esc_html__( 'In %s > Invoices and documents, "Invoice numbering": "Website invoices" go into the NRA audit file. "Own invoicing program" keeps the invoice out of it; you type that program\'s number on the order.', 'nashenski-commerce' ), $documents ),
 				esc_html__( 'Copies can go to your accountant by email, and the monthly NRA audit file too.', 'nashenski-commerce' ),
 				esc_html__( 'A delivery with no VAT, on an order with no VAT at all, is printed at 0% with its full price.', 'nashenski-commerce' ),
+				esc_html__( 'A delivery the customer paid to the courier is not on the documents or in the NRA audit file, because you did not collect it. Credit notes follow their order. Each order keeps what was decided at checkout; orders from before version 0.21.8 keep the old "Remove delivery from documents" rule.', 'nashenski-commerce' ),
 			),
 			__( 'NRA audit file and exports', 'nashenski-commerce' ) => array(
 				/* translators: %s: link to the Exports section */

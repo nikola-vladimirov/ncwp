@@ -9,6 +9,7 @@ namespace Nashenski\Admin;
 
 use Nashenski\Container\Client;
 use Nashenski\Pricing\Price_Lists;
+use Nashenski\Shipping\Courier_Fee;
 use Nashenski\Shipping\Speedy\Address;
 use Nashenski\Shipping\Packer\Packing_Budget;
 use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
@@ -555,14 +556,17 @@ class Speedy {
 				}
 			}
 
-			if ( '' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' ) ) {
+			// The delivery in the cash on delivery amount: a checkout order's collected delivery, else the fixed price.
+			$delivery = '' === Courier_Fee::payer( $order ) ? Price_Lists::positive( $cookie_data['fixed_price'] ?? '' ) : (float) $order->get_shipping_total() + (float) $order->get_shipping_tax();
+
+			if ( (float) $delivery > 0 ) {
 				$rate = ( wc_tax_enabled() ) ? 20 : 0;
 
 				$label['service']['additionalServices']['cod']['fiscalReceiptItems'][] = array(
 					'description'   => nashenski_normalize_text_for_label( 'Доставка', 49 ),
 					'vatGroup'      => nashenski_get_vat_group_from_rate( $rate ),
-					'amount'        => nashenski_tax_based_price( $cookie_data['fixed_price'] ),
-					'amountWithVat' => number_format( $cookie_data['fixed_price'], 2, '.', '' ),
+					'amount'        => nashenski_tax_based_price( $delivery ),
+					'amountWithVat' => number_format( (float) $delivery, 2, '.', '' ),
 				);
 			}
 		} elseif ( isset( $label['service']['additionalServices']['cod']['fiscalReceiptItems'] ) ) {
@@ -582,7 +586,8 @@ class Speedy {
 	public static function update_cod( $label, $order ) {
 		$cookie_data = $order->get_meta( 'nashenski_speedy_cookie_data' );
 
-		if ( isset( $label['service']['additionalServices']['cod']['amount'] ) ) {
+		// A checkout order's amount is already the order total (nashenski_save_checkout_label()).
+		if ( isset( $label['service']['additionalServices']['cod']['amount'] ) && '' === Courier_Fee::payer( $order ) ) {
 			if ( isset( $label['service']['additionalServices']['cod']['amount'] ) &&
 				'' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' )
 			) {
@@ -933,7 +938,7 @@ class Speedy {
 			unset( $label['service']['additionalServices']['obpd'] );
 		}
 
-		if ( isset( $label['service']['additionalServices']['cod']['amount'] ) ) {
+		if ( isset( $label['service']['additionalServices']['cod']['amount'] ) && '' === Courier_Fee::payer( $order ) ) {
 			if ( isset( $label['service']['additionalServices']['cod']['amount'] ) &&
 				'' !== Price_Lists::positive( $cookie_data['fixed_price'] ?? '' ) &&
 				'fixed' === $payment_by['id']
@@ -1028,7 +1033,8 @@ class Speedy {
 		$order = wc_get_order( $order_id );
 		$price = 0;
 
-		if ( $order->get_payment_method() !== 'cod' ) {
+		// A checkout order keeps the delivery decided at checkout; the label payer changes only the label.
+		if ( $order->get_payment_method() !== 'cod' || '' !== Courier_Fee::payer( $order ) ) {
 			return;
 		}
 

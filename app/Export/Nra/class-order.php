@@ -239,7 +239,7 @@ class Order {
 	 * @return array
 	 */
 	public function get_order_data() {
-		$remove_shipping = nashenski_maybe_remove_shipping( $this->woo_order );
+		$remove_shipping = \Nashenski\Shipping\Courier_Fee::shop_collects( $this->woo_order ) ? 'no' : 'yes';
 		$shipping_items  = $this->woo_order->get_items( 'shipping' );
 
 		if ( count( $shipping_items ) > 0 && 'yes' === $remove_shipping ) {

@@ -174,6 +174,7 @@ function nashenski_get_option( $group, $name ) {
 }
 
 require __DIR__ . '/../app/Pricing/class-price-lists.php';
+require __DIR__ . '/../app/Shipping/class-courier-fee.php';
 foreach ( array( 'BoxNow', 'Econt', 'Pigeon', 'Speedy' ) as $courier ) {
 	require __DIR__ . "/../app/Shipping/$courier/class-method.php";
 }

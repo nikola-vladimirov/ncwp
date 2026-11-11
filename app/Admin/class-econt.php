@@ -8,6 +8,7 @@
 namespace Nashenski\Admin;
 
 use Nashenski\Container\Client;
+use Nashenski\Shipping\Courier_Fee;
 use Nashenski\Shipping\Econt\Address;
 
 defined( 'ABSPATH' ) || exit;
@@ -227,7 +228,8 @@ class Econt {
 		if ( 'cod' === $order->get_payment_method() ) {
 			$label['services'] = array(
 				'cdType'     => 'get',
-				'cdAmount'   => wc_format_decimal( $order->get_total() - $order->get_shipping_total() - $order->get_shipping_tax(), wc_get_price_decimals() ),
+				// A delivery the shop collected is part of the cash on delivery amount.
+				'cdAmount'   => wc_format_decimal( $order->get_total() - ( 'shop' === Courier_Fee::payer( $order ) ? 0 : $order->get_shipping_total() + $order->get_shipping_tax() ), wc_get_price_decimals() ),
 				'cdCurrency' => $order->get_currency(),
 			);
 		}
@@ -1088,7 +1090,8 @@ class Econt {
 		$price       = 0;
 		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
 
-		if ( 'cod' !== $order->get_payment_method() ) {
+		// A checkout order keeps the delivery decided at checkout; the label payer changes only the label.
+		if ( 'cod' !== $order->get_payment_method() || '' !== Courier_Fee::payer( $order ) ) {
 			return;
 		}
 

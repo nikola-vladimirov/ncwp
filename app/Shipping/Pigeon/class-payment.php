@@ -105,7 +105,7 @@ class Payment {
 	}
 
 	/**
-	 * $staff: the payer was chosen by staff on the order screen; checkout labels of prepaid orders are always paid by the sender.
+	 * $staff: the payer was chosen by staff on the order screen; checkout labels of prepaid orders are paid by the sender unless the customer pays the courier.
 	 *
 	 * @param array       $label    Label data.
 	 * @param \WC_Order   $order    Order.
@@ -115,7 +115,7 @@ class Payment {
 	 * @throws \InvalidArgumentException When the payer is not valid.
 	 */
 	public static function label( $label, $order, $override = null, $staff = false ) {
-		$payer = $staff || $order->get_payment_method() === 'cod' ? ( $label['who_pays'] ?? 'receiver' ) : 'sender';
+		$payer = $staff || $order->get_payment_method() === 'cod' || 'customer' === \Nashenski\Shipping\Courier_Fee::payer( $order ) ? ( $label['who_pays'] ?? 'receiver' ) : 'sender';
 		if ( ! in_array( $payer, array( 'sender', 'receiver' ), true ) ) {
 			throw new \InvalidArgumentException( esc_html__( 'Choose a valid shipping payer.', 'nashenski-commerce' ) );
 		}
