@@ -51,13 +51,15 @@ namespace Nashenski {
 	$fail = array();
 	$ds   = DIRECTORY_SEPARATOR;
 
-	if ( '/site/wp-content/uploads/nashenski-cache' . $ds !== File::cache_folder() ) {
+	$expected = '/site/wp-content/uploads/nashenski-cache' . $ds;
+	if ( File::cache_folder() !== $expected ) {
 		$fail[] = 'the cache folder is nashenski-cache in uploads: ' . File::cache_folder();
 	}
 	if ( false !== $GLOBALS['created'] ) {
 		$fail[] = 'reading the path does not make the dated uploads folder';
 	}
-	if ( File::cache_folder() . 'econt' . $ds !== Test\Courier::cache_folder() ) {
+	$expected = File::cache_folder() . 'econt' . $ds;
+	if ( Test\Courier::cache_folder() !== $expected ) {
 		$fail[] = 'a courier client caches in its own subfolder: ' . Test\Courier::cache_folder();
 	}
 
