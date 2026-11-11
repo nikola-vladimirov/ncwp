@@ -88,9 +88,11 @@ plugin's own scheduled jobs (documents, abandoned cart reminders, shipment statu
   and the sender pays. The total follows the payment method chosen at checkout. Free shipping,
   deliveries abroad, a Speedy or Pigeon Express fixed price and BOX NOW are always yours. Quick and
   admin orders are decided on the order screen once they have a shipping method and a payment
-  method, and again when either changes, until they have documents. On update to 0.21.8 every
+  method, and again when the payment method changes, until they have documents. On update to 0.21.8 every
   Econt and Speedy method marked as a courier and every Pigeon Express method get cash on delivery
-  in their list, so the cash on delivery money flow stays as it was.
+  in their list, so the cash on delivery money flow stays as it was. New methods start with cash on
+  delivery in the list. Shipping methods of other plugins keep "Is ... courier?" in Documents >
+  Shipping on documents.
 - Each order screen shows the courier, the delivery type and the chosen office, locker or address.
 - Ship abroad (off by default): Econt to Romania and Greece, Speedy to nine countries on its price
   list. Prices abroad come only from the courier. Free shipping over a total can be set per country,
@@ -136,7 +138,8 @@ label sets the delivery price, the customer gets the order details email with th
 Off by default. Keeps carts that were not ordered, records the email as the shopper types it, and
 sends reminders through an editable WooCommerce email, with an optional single-use coupon and a link
 that refills the cart. The list is under WooCommerce > Abandoned carts. Check the consent rules that
-apply to your store before you turn reminders on.
+apply to your store before you turn reminders on. Tools > Export Personal Data and Erase Personal
+Data cover the saved carts, and the plugin suggests text for your privacy policy.
 
 ### EU withdrawal function
 

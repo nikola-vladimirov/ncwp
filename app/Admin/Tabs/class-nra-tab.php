@@ -363,11 +363,11 @@ class Nra_Tab extends Base_Tab {
 				continue;
 			}
 
+			// No description: the tooltip comes from Setting_Help.
 			$fields['shippings'][] = new Fields\TrueFalse_Field(
 				$shipping->id . '_is_courier',
 				/* translators: %s: shipping method name */
-				sprintf( __( 'Is %s courier?', 'nashenski-commerce' ), $shipping->method_title ),
-				__( 'If set to yes, all deliveries with PPP will be removed from documents and XML export', 'nashenski-commerce' )
+				sprintf( __( 'Is %s courier?', 'nashenski-commerce' ), $shipping->method_title )
 			);
 		}
 

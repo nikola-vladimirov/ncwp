@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 19:52+0000\n"
-"PO-Revision-Date: 2026-11-11 19:52+0000\n"
+"POT-Creation-Date: 2026-11-11 21:12+0000\n"
+"PO-Revision-Date: 2026-11-11 21:12+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -45,83 +45,137 @@ msgstr "Съобщение"
 msgid "The body of the reminder. Placeholders: {name}, {items}, {cart_total}, {coupon}, {coupon_line} (the whole sentence about the coupon, empty when there is none), {resume_link}, {unsubscribe_link}, {site_title}. Each line becomes a paragraph."
 msgstr "Тялото на напомнянето. Заместители: {name}, {items}, {cart_total}, {coupon}, {coupon_line} (цялото изречение за купона, празно, когато няма такъв), {resume_link}, {unsubscribe_link}, {site_title}. Всеки ред става отделен абзац."
 
-#: app/Abandoned_Carts/class-tracker.php:138
+#: app/Abandoned_Carts/class-tracker.php:145
 msgid "Percentage off"
 msgstr "Отстъпка в проценти"
 
-#: app/Abandoned_Carts/class-tracker.php:139
+#: app/Abandoned_Carts/class-tracker.php:146
 msgid "Fixed amount off the cart"
 msgstr "Фиксирана сума от количката"
 
-#: app/Abandoned_Carts/class-tracker.php:140
+#: app/Abandoned_Carts/class-tracker.php:147
 msgid "Fixed amount off each product"
 msgstr "Фиксирана сума от всеки продукт"
 
-#: app/Abandoned_Carts/class-tracker.php:502
+#: app/Abandoned_Carts/class-tracker.php:509
 msgid "there"
 msgstr "приятелю"
 
 #. translators: %s: coupon code
-#: app/Abandoned_Carts/class-tracker.php:508
+#: app/Abandoned_Carts/class-tracker.php:515
 #, php-format
 msgid "Use the code %s when you order. It works once."
 msgstr "Използвайте кода %s при поръчка. Работи еднократно."
 
 #. translators: %s: shopper's first name
-#: app/Abandoned_Carts/class-tracker.php:527
+#: app/Abandoned_Carts/class-tracker.php:534
 #, php-format
 msgid "Hello %s,"
 msgstr "Здравейте, %s,"
 
-#: app/Abandoned_Carts/class-tracker.php:529
+#: app/Abandoned_Carts/class-tracker.php:536
 msgid "You left these items in your cart:"
 msgstr "В количката ви останаха тези артикули:"
 
 #. translators: %s: cart total, with the currency
-#: app/Abandoned_Carts/class-tracker.php:533
+#: app/Abandoned_Carts/class-tracker.php:540
 #, php-format
 msgid "Total: %s"
 msgstr "Общо: %s"
 
-#: app/Abandoned_Carts/class-tracker.php:542
+#: app/Abandoned_Carts/class-tracker.php:549
 msgid "Go back to your cart:"
 msgstr "Върнете се към количката си:"
 
-#: app/Abandoned_Carts/class-tracker.php:545
+#: app/Abandoned_Carts/class-tracker.php:552
 msgid "Do not want these emails? Unsubscribe here:"
 msgstr "Не искате тези имейли? Отпишете се тук:"
 
 #. translators: %s: site name
-#: app/Abandoned_Carts/class-tracker.php:551
+#: app/Abandoned_Carts/class-tracker.php:558
 #, php-format
 msgid "You left items in your cart at %s"
 msgstr "Оставихте артикули в количката си в %s"
 
 #. translators: %s: shopper's email
-#: app/Abandoned_Carts/class-tracker.php:642
+#: app/Abandoned_Carts/class-tracker.php:649
 #, php-format
 msgid "Abandoned cart coupon for %s"
 msgstr "Купон за изоставена количка за %s"
 
-#: app/Abandoned_Carts/class-tracker.php:720
+#: app/Abandoned_Carts/class-tracker.php:727
 msgid "We put the items back in your cart."
 msgstr "Върнахме артикулите в количката ви."
 
-#: app/Abandoned_Carts/class-tracker.php:722
+#: app/Abandoned_Carts/class-tracker.php:729
 msgid "The items from the reminder are no longer available."
 msgstr "Артикулите от напомнянето вече не са налични."
 
-#: app/Abandoned_Carts/class-tracker.php:751
+#: app/Abandoned_Carts/class-tracker.php:758
 msgid "You will not get more reminders from this shop."
 msgstr "Няма да получавате повече напомняния от този магазин."
 
-#: app/Abandoned_Carts/class-tracker.php:752 app/Admin/class-abandoned-carts-page.php:71
+#: app/Abandoned_Carts/class-tracker.php:759 app/Admin/class-abandoned-carts-page.php:71
 msgid "Unsubscribed"
 msgstr "Отписан"
 
-#: app/Admin/class-abandoned-carts-page.php:55 app/Admin/class-abandoned-carts-page.php:56 app/Admin/class-abandoned-carts-page.php:244 app/Admin/class-help-page.php:179 app/Admin/class-settings-page.php:151 app/Admin/Tabs/class-abandoned-carts-tab.php:23
+#: app/Abandoned_Carts/class-tracker.php:791 app/Abandoned_Carts/class-tracker.php:806 app/Abandoned_Carts/class-tracker.php:850 app/Admin/class-abandoned-carts-page.php:55 app/Admin/class-abandoned-carts-page.php:56 app/Admin/class-abandoned-carts-page.php:244
 msgid "Abandoned carts"
 msgstr "Изоставени колички"
+
+#: app/Abandoned_Carts/class-tracker.php:826 app/Admin/class-abandoned-carts-page.php:455 app/Export/Builder/class-fields.php:63 app/Front_End/Checkout/class-field-editor.php:868 app/Front_End/class-quick-order.php:512
+msgid "Email"
+msgstr "Имейл"
+
+#: app/Abandoned_Carts/class-tracker.php:827 app/Admin/class-abandoned-carts-page.php:459 app/Export/Builder/class-fields.php:61 app/Front_End/Checkout/class-field-editor.php:175
+msgid "First name"
+msgstr "Име"
+
+#: app/Abandoned_Carts/class-tracker.php:828 app/Admin/class-abandoned-carts-page.php:463 app/Admin/Tabs/class-boxnow-tab.php:93 app/Admin/Tabs/class-econt-tab.php:107 app/Admin/Tabs/class-speedy-tab.php:87 app/Export/Builder/class-fields.php:64
+msgid "Phone"
+msgstr "Телефон"
+
+#: app/Abandoned_Carts/class-tracker.php:829 app/Admin/class-abandoned-carts-page.php:352 app/Front_End/class-quick-order.php:88
+msgid "Cart"
+msgstr "Количка"
+
+#: app/Abandoned_Carts/class-tracker.php:830
+msgid "Cart total"
+msgstr "Обща стойност на количката"
+
+#: app/Abandoned_Carts/class-tracker.php:831 app/Export/Builder/class-fields.php:51
+msgid "Currency"
+msgstr "Валута"
+
+#: app/Abandoned_Carts/class-tracker.php:832 app/Admin/class-abandoned-carts-page.php:318 app/Admin/class-impossiblevatprice.php:174 app/Export/Builder/class-fields.php:47
+msgid "Status"
+msgstr "Статус"
+
+#: app/Abandoned_Carts/class-tracker.php:833
+msgid "Created"
+msgstr "Създадена"
+
+#: app/Abandoned_Carts/class-tracker.php:834
+msgid "Last activity"
+msgstr "Последна активност"
+
+#: app/Abandoned_Carts/class-tracker.php:891
+msgid "When abandoned carts are on, the store keeps the email, first name, phone and cart of shoppers who start the checkout and do not order. They are used only to send cart reminder emails."
+msgstr "Когато изоставените колички са включени, магазинът пази имейла, името, телефона и количката на клиентите, които започнат поръчка, но не я завършат. Те се използват само за имейли с напомняне за количката."
+
+#. translators: %d: number of days
+#: app/Abandoned_Carts/class-tracker.php:893
+#, php-format
+msgid "A cart is deleted %d days after its last change."
+msgstr "Количката се изтрива %d дни след последната ѝ промяна."
+
+#: app/Abandoned_Carts/class-tracker.php:894
+msgid "When the store turns on customer checks (nekorekten.com, Connectix, NepoStop), the phone number of the order is sent to them."
+msgstr "Когато магазинът включи проверките на клиенти (nekorekten.com, Connectix, NepoStop), телефонът от поръчката се изпраща към тях."
+
+#: app/Abandoned_Carts/class-tracker.php:895
+msgid "The courier of an order gets the delivery details: name, phone, address or office."
+msgstr "Куриерът на поръчката получава данните за доставка: име, телефон, адрес или офис."
 
 #: app/Admin/class-abandoned-carts-page.php:68
 msgid "Open"
@@ -135,7 +189,7 @@ msgstr "Поръчана"
 msgid "Emptied"
 msgstr "Изпразнена"
 
-#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:302 app/Admin/class-import-sources.php:302 app/Admin/class-migration.php:126
+#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:306 app/Admin/class-import-sources.php:302 app/Admin/class-migration.php:126
 msgid "You do not have permission to perform this action."
 msgstr "Нямате права за това действие."
 
@@ -165,7 +219,7 @@ msgstr "Изпращане на напомняне"
 msgid "Delete"
 msgstr "Изтриване"
 
-#: app/Admin/class-abandoned-carts-page.php:303 app/Admin/class-help-page.php:346
+#: app/Admin/class-abandoned-carts-page.php:303 app/Admin/class-help-page.php:350
 msgid "Apply"
 msgstr "Прилагане"
 
@@ -197,10 +251,6 @@ msgstr "Последна стъпка"
 msgid "Reminders"
 msgstr "Напомняния"
 
-#: app/Admin/class-abandoned-carts-page.php:318 app/Admin/class-impossiblevatprice.php:174 app/Export/Builder/class-fields.php:47
-msgid "Status"
-msgstr "Статус"
-
 #: app/Admin/class-abandoned-carts-page.php:319 app/Admin/class-impossiblevatprice.php:175
 msgid "Actions"
 msgstr "Действия"
@@ -209,13 +259,9 @@ msgstr "Действия"
 msgid "No carts found."
 msgstr "Няма намерени колички."
 
-#: app/Admin/class-abandoned-carts-page.php:352 app/Admin/class-help-page.php:96 app/Admin/class-help-page.php:110 app/Admin/class-help-page.php:145 app/Admin/class-settings-page.php:141
+#: app/Admin/class-abandoned-carts-page.php:352 app/Admin/class-help-page.php:96 app/Admin/class-help-page.php:110 app/Admin/class-help-page.php:147 app/Admin/class-settings-page.php:141
 msgid "Checkout"
 msgstr "Плащане"
-
-#: app/Admin/class-abandoned-carts-page.php:352 app/Front_End/class-quick-order.php:88
-msgid "Cart"
-msgstr "Количка"
 
 #: app/Admin/class-abandoned-carts-page.php:370 app/Admin/class-impossiblevatprice.php:97
 msgid "Edit"
@@ -236,18 +282,6 @@ msgstr "%d колички"
 #, php-format
 msgid "Edit cart #%d"
 msgstr "Редакция на количка #%d"
-
-#: app/Admin/class-abandoned-carts-page.php:455 app/Export/Builder/class-fields.php:63 app/Front_End/Checkout/class-field-editor.php:870 app/Front_End/class-quick-order.php:512
-msgid "Email"
-msgstr "Имейл"
-
-#: app/Admin/class-abandoned-carts-page.php:459 app/Export/Builder/class-fields.php:61 app/Front_End/Checkout/class-field-editor.php:175
-msgid "First name"
-msgstr "Име"
-
-#: app/Admin/class-abandoned-carts-page.php:463 app/Admin/Tabs/class-boxnow-tab.php:93 app/Admin/Tabs/class-econt-tab.php:107 app/Admin/Tabs/class-speedy-tab.php:87 app/Export/Builder/class-fields.php:64 app/Front_End/Checkout/class-field-editor.php:183
-msgid "Phone"
-msgstr "Телефон"
 
 #: app/Admin/class-abandoned-carts-page.php:467
 msgid "Save"
@@ -319,7 +353,7 @@ msgstr "Доставка с BOX NOW"
 msgid "Send to"
 msgstr "Изпращане до"
 
-#: app/Admin/class-boxnow.php:125 app/Admin/class-econt.php:168 app/Admin/class-pigeon.php:310 app/Admin/class-speedy.php:235 app/Admin/Tabs/class-econt-tab.php:164 app/Admin/Tabs/class-pigeon-tab.php:107
+#: app/Admin/class-boxnow.php:125 app/Admin/class-econt.php:169 app/Admin/class-pigeon.php:311 app/Admin/class-speedy.php:238 app/Admin/Tabs/class-econt-tab.php:164 app/Admin/Tabs/class-pigeon-tab.php:107
 msgid "Send From"
 msgstr "Изпращане от"
 
@@ -327,7 +361,7 @@ msgstr "Изпращане от"
 msgid "Warehouse/Automat"
 msgstr "Склад/автомат"
 
-#: app/Admin/class-boxnow.php:127 app/Admin/class-econt.php:149 app/Admin/class-speedy.php:213 app/Shipping/Econt/class-method.php:373 app/Shipping/Speedy/class-method.php:366
+#: app/Admin/class-boxnow.php:127 app/Admin/class-econt.php:150 app/Admin/class-speedy.php:216 app/Shipping/Econt/class-method.php:373 app/Shipping/Speedy/class-method.php:366
 msgid "Automat"
 msgstr "Автомат"
 
@@ -339,35 +373,35 @@ msgstr "Обща цена"
 msgid "Allow returns"
 msgstr "Разрешаване на връщане"
 
-#: app/Admin/class-boxnow.php:130 app/Admin/class-econt.php:126 app/Admin/class-pigeon.php:270 app/Admin/class-speedy.php:191
+#: app/Admin/class-boxnow.php:130 app/Admin/class-econt.php:127 app/Admin/class-pigeon.php:271 app/Admin/class-speedy.php:194
 msgid "Update shipment status"
 msgstr "Обновяване на статуса на пратката"
 
-#: app/Admin/class-boxnow.php:131 app/Admin/class-econt.php:128 app/Admin/class-pigeon.php:272 app/Admin/class-speedy.php:193 app/Admin/fragments/label-column.php:29
+#: app/Admin/class-boxnow.php:131 app/Admin/class-econt.php:129 app/Admin/class-pigeon.php:273 app/Admin/class-speedy.php:196 app/Admin/fragments/label-column.php:29
 msgid "Generate label"
 msgstr "Създаване на товарителница"
 
-#: app/Admin/class-boxnow.php:132 app/Admin/class-econt.php:129 app/Admin/class-pigeon.php:273 app/Admin/class-speedy.php:194
+#: app/Admin/class-boxnow.php:132 app/Admin/class-econt.php:130 app/Admin/class-pigeon.php:274 app/Admin/class-speedy.php:197
 msgid "Delete label"
 msgstr "Изтриване на товарителницата"
 
-#: app/Admin/class-boxnow.php:133 app/Admin/class-econt.php:130 app/Admin/class-pigeon.php:274 app/Admin/class-speedy.php:195 app/Admin/Order/class-columns.php:45 app/Front_End/Checkout/class-field-editor.php:878
+#: app/Admin/class-boxnow.php:133 app/Admin/class-econt.php:131 app/Admin/class-pigeon.php:275 app/Admin/class-speedy.php:198 app/Admin/Order/class-columns.php:45 app/Front_End/Checkout/class-field-editor.php:876
 msgid "Label"
 msgstr "Товарителница"
 
-#: app/Admin/class-boxnow.php:134 app/Admin/class-econt.php:132 app/Admin/class-pigeon.php:276 app/Admin/class-speedy.php:197
+#: app/Admin/class-boxnow.php:134 app/Admin/class-econt.php:133 app/Admin/class-pigeon.php:277 app/Admin/class-speedy.php:200
 msgid "Selected"
 msgstr "Избрано"
 
-#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:133 app/Admin/class-pigeon.php:277 app/Admin/class-speedy.php:198 app/Admin/Order/class-delivery-box.php:206 app/Front_End/Checkout/class-pickers.php:586
+#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:201 app/Admin/Order/class-delivery-box.php:207 app/Front_End/Checkout/class-pickers.php:586
 msgid "Choose"
 msgstr "Избери"
 
-#: app/Admin/class-boxnow.php:136 app/Admin/class-econt.php:152 app/Admin/class-pigeon.php:290 app/Admin/class-speedy.php:216
+#: app/Admin/class-boxnow.php:136 app/Admin/class-econt.php:153 app/Admin/class-pigeon.php:291 app/Admin/class-speedy.php:219
 msgid "Label data"
 msgstr "Данни за товарителницата"
 
-#: app/Admin/class-boxnow.php:137 app/Admin/class-econt.php:159 app/Admin/class-pigeon.php:297 app/Admin/class-speedy.php:225
+#: app/Admin/class-boxnow.php:137 app/Admin/class-econt.php:160 app/Admin/class-pigeon.php:298 app/Admin/class-speedy.php:228
 msgid "Shipment status"
 msgstr "Статус на пратката"
 
@@ -391,19 +425,19 @@ msgstr "Средна кутия"
 msgid "Large Box"
 msgstr "Голяма кутия"
 
-#: app/Admin/class-boxnow.php:143 app/Admin/class-econt.php:172 app/Admin/class-econt.php:254 app/Admin/class-pigeon.php:314 app/Admin/class-speedy.php:239
+#: app/Admin/class-boxnow.php:143 app/Admin/class-econt.php:173 app/Admin/class-econt.php:255 app/Admin/class-pigeon.php:315 app/Admin/class-speedy.php:242
 msgid "Pack"
 msgstr "Пакет"
 
-#: app/Admin/class-boxnow.php:144 app/Admin/class-econt.php:173 app/Admin/class-pigeon.php:315 app/Admin/class-speedy.php:240
+#: app/Admin/class-boxnow.php:144 app/Admin/class-econt.php:174 app/Admin/class-pigeon.php:316 app/Admin/class-speedy.php:243
 msgid "Add Pack"
 msgstr "Добавяне на пакет"
 
-#: app/Admin/class-boxnow.php:145 app/Admin/class-econt.php:174 app/Admin/class-pigeon.php:316 app/Admin/class-speedy.php:241
+#: app/Admin/class-boxnow.php:145 app/Admin/class-econt.php:175 app/Admin/class-pigeon.php:317 app/Admin/class-speedy.php:244
 msgid "Remove Pack"
 msgstr "Премахване на пакет"
 
-#: app/Admin/class-boxnow.php:146 app/Admin/class-econt.php:155 app/Admin/class-pigeon.php:293
+#: app/Admin/class-boxnow.php:146 app/Admin/class-econt.php:156 app/Admin/class-pigeon.php:294
 msgid "Weight"
 msgstr "Тегло"
 
@@ -429,11 +463,11 @@ msgstr "Поръчки с наложен платеж не могат да се 
 msgid "BOX NOW did not answer. Check the connection settings and try again."
 msgstr "BOX NOW не отговори. Проверете настройките за връзка и опитайте отново."
 
-#: app/Admin/class-boxnow.php:716 app/Admin/class-pigeon.php:771 app/Admin/class-speedy.php:1135
+#: app/Admin/class-boxnow.php:716 app/Admin/class-pigeon.php:780 app/Admin/class-speedy.php:1143
 msgid "This link has expired. Reload the order page and try again."
 msgstr "Връзката е изтекла. Презаредете страницата на поръчката и опитайте отново."
 
-#: app/Admin/class-boxnow.php:723 app/Admin/class-speedy.php:411 app/Admin/class-speedy.php:1157
+#: app/Admin/class-boxnow.php:723 app/Admin/class-speedy.php:414 app/Admin/class-speedy.php:1165
 msgid "Invalid parcel number."
 msgstr "Невалиден номер на пратка."
 
@@ -493,159 +527,159 @@ msgstr "Копира правилата за показване, задължи�
 msgid "Econt Delivery"
 msgstr "Доставка с Еконт"
 
-#: app/Admin/class-econt.php:127 app/Admin/class-pigeon.php:271 app/Admin/class-speedy.php:192
+#: app/Admin/class-econt.php:128 app/Admin/class-pigeon.php:272 app/Admin/class-speedy.php:195
 msgid "Update label"
 msgstr "Обновяване на товарителницата"
 
-#: app/Admin/class-econt.php:131 app/Admin/class-pigeon.php:275 app/Admin/class-recommended-settings.php:89 app/Admin/class-speedy.php:196
+#: app/Admin/class-econt.php:132 app/Admin/class-pigeon.php:276 app/Admin/class-recommended-settings.php:89 app/Admin/class-speedy.php:199
 msgid "Default"
 msgstr "По подразбиране"
 
-#: app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:199
+#: app/Admin/class-econt.php:135 app/Admin/class-pigeon.php:279 app/Admin/class-speedy.php:202
 msgid "Delivery is payed by"
 msgstr "Доставката се плаща от"
 
-#: app/Admin/class-econt.php:135 app/Admin/class-pigeon.php:279 app/Admin/class-speedy.php:200 app/Admin/Tabs/class-settings-tab.php:49
+#: app/Admin/class-econt.php:136 app/Admin/class-pigeon.php:280 app/Admin/class-speedy.php:203 app/Admin/Tabs/class-settings-tab.php:49
 msgid "Cash on delivery"
 msgstr "Наложен платеж"
 
-#: app/Admin/class-econt.php:136 app/Admin/class-pigeon.php:280 app/Admin/class-speedy.php:201
+#: app/Admin/class-econt.php:137 app/Admin/class-pigeon.php:281 app/Admin/class-speedy.php:204
 msgid "Pack count"
 msgstr "Брой пакети"
 
-#: app/Admin/class-econt.php:137 app/Admin/class-pigeon.php:281 app/Admin/class-speedy.php:202
+#: app/Admin/class-econt.php:138 app/Admin/class-pigeon.php:282 app/Admin/class-speedy.php:205
 msgid "Shipment type"
 msgstr "Вид на пратката"
 
-#: app/Admin/class-econt.php:138 app/Admin/class-pigeon.php:282 app/Admin/class-speedy.php:203 app/functions.php:129 app/functions.php:159
+#: app/Admin/class-econt.php:139 app/Admin/class-pigeon.php:283 app/Admin/class-speedy.php:206 app/functions.php:129 app/functions.php:159
 msgid "Other"
 msgstr "Друго"
 
-#: app/Admin/class-econt.php:139 app/Admin/class-pigeon.php:283 app/Admin/class-speedy.php:204
+#: app/Admin/class-econt.php:140 app/Admin/class-pigeon.php:284 app/Admin/class-speedy.php:207
 msgid "bl. vh. et."
 msgstr "бл. вх. ет."
 
-#: app/Admin/class-econt.php:140 app/Admin/class-pigeon.php:284 app/Admin/class-speedy.php:205
+#: app/Admin/class-econt.php:141 app/Admin/class-pigeon.php:285 app/Admin/class-speedy.php:208
 msgid "Street number"
 msgstr "Номер на улица"
 
-#: app/Admin/class-econt.php:141 app/Admin/class-speedy.php:206 app/Front_End/Checkout/class-pickers.php:579 app/Shipping/Econt/class-address.php:47
+#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:579 app/Shipping/Econt/class-address.php:47
 msgid "Block"
 msgstr "Блок"
 
-#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:207 app/Front_End/Checkout/class-pickers.php:580 app/Shipping/Econt/class-address.php:48
+#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:210 app/Front_End/Checkout/class-pickers.php:580 app/Shipping/Econt/class-address.php:48
 msgid "Entrance"
 msgstr "Вход"
 
-#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:208 app/Front_End/Checkout/class-pickers.php:581 app/Shipping/Econt/class-address.php:49
+#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:211 app/Front_End/Checkout/class-pickers.php:581 app/Shipping/Econt/class-address.php:49
 msgid "Floor"
 msgstr "Етаж"
 
-#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:582 app/Shipping/Econt/class-address.php:50
+#: app/Admin/class-econt.php:145 app/Admin/class-speedy.php:212 app/Front_End/Checkout/class-pickers.php:582 app/Shipping/Econt/class-address.php:50
 msgid "Apartment"
 msgstr "Апартамент"
 
-#: app/Admin/class-econt.php:145 app/Shipping/Econt/class-method.php:1007
+#: app/Admin/class-econt.php:146 app/Shipping/Econt/class-method.php:1007
 msgid "Street number is required."
 msgstr "Номерът на улицата е задължителен."
 
-#: app/Admin/class-econt.php:146 app/Shipping/Econt/class-method.php:1009
+#: app/Admin/class-econt.php:147 app/Shipping/Econt/class-method.php:1009
 msgid "Fill in at least one of block, entrance, floor or apartment."
 msgstr "Попълнете поне едно от: блок, вход, етаж или апартамент."
 
-#: app/Admin/class-econt.php:147 app/Admin/class-pigeon.php:285 app/Admin/class-speedy.php:211
+#: app/Admin/class-econt.php:148 app/Admin/class-pigeon.php:286 app/Admin/class-speedy.php:214
 msgid "Street/Quarter"
 msgstr "Улица/квартал"
 
-#: app/Admin/class-econt.php:148 app/Admin/class-pigeon.php:286 app/Admin/class-speedy.php:212 app/Admin/Tabs/class-econt-tab.php:156 app/Admin/Tabs/class-econt-tab.php:199 app/Admin/Tabs/class-pigeon-tab.php:99
+#: app/Admin/class-econt.php:149 app/Admin/class-pigeon.php:287 app/Admin/class-speedy.php:215 app/Admin/Tabs/class-econt-tab.php:156 app/Admin/Tabs/class-econt-tab.php:199 app/Admin/Tabs/class-pigeon-tab.php:99
 msgid "Office"
 msgstr "Офис"
 
-#: app/Admin/class-econt.php:150 app/Admin/class-pigeon.php:287 app/Admin/class-speedy.php:214 app/Admin/Tabs/class-econt-tab.php:160 app/Admin/Tabs/class-pigeon-tab.php:103 app/Admin/Tabs/class-pigeon-tab.php:138
+#: app/Admin/class-econt.php:151 app/Admin/class-pigeon.php:288 app/Admin/class-speedy.php:217 app/Admin/Tabs/class-econt-tab.php:160 app/Admin/Tabs/class-pigeon-tab.php:103 app/Admin/Tabs/class-pigeon-tab.php:138
 msgid "Address"
 msgstr "Адрес"
 
-#: app/Admin/class-econt.php:151 app/Admin/class-pigeon.php:289 app/Admin/class-speedy.php:215 app/Export/Builder/class-fields.php:102 app/Front_End/Checkout/class-appearance.php:211
+#: app/Admin/class-econt.php:152 app/Admin/class-pigeon.php:290 app/Admin/class-speedy.php:218 app/Export/Builder/class-fields.php:102 app/Front_End/Checkout/class-appearance.php:211
 msgid "Delivery type"
 msgstr "Вид доставка"
 
-#: app/Admin/class-econt.php:153 app/Admin/class-pigeon.php:291 app/Admin/class-speedy.php:217
+#: app/Admin/class-econt.php:154 app/Admin/class-pigeon.php:292 app/Admin/class-speedy.php:220
 msgid "Buyer"
 msgstr "Купувач"
 
-#: app/Admin/class-econt.php:154 app/Admin/class-pigeon.php:292 app/Admin/class-speedy.php:218
+#: app/Admin/class-econt.php:155 app/Admin/class-pigeon.php:293 app/Admin/class-speedy.php:221
 msgid "Sender"
 msgstr "Подател"
 
-#: app/Admin/class-econt.php:156 app/Admin/class-pigeon.php:294 app/Admin/class-speedy.php:222 app/Shipping/Pigeon/class-method.php:369 app/Shipping/Speedy/class-method.php:406
+#: app/Admin/class-econt.php:157 app/Admin/class-pigeon.php:295 app/Admin/class-speedy.php:225 app/Shipping/Pigeon/class-method.php:369 app/Shipping/Speedy/class-method.php:406
 msgid "Fixed price"
 msgstr "Фиксирана цена"
 
-#: app/Admin/class-econt.php:157 app/Admin/class-pigeon.php:295 app/Admin/class-speedy.php:223
+#: app/Admin/class-econt.php:158 app/Admin/class-pigeon.php:296 app/Admin/class-speedy.php:226
 msgid "Copy Label Data"
 msgstr "Копиране на данните за товарителницата"
 
-#: app/Admin/class-econt.php:158
+#: app/Admin/class-econt.php:159
 msgid "You just copied the label data used for the Econt API."
 msgstr "Копирахте данните за товарителницата, изпратени към API на Еконт."
 
-#: app/Admin/class-econt.php:160 app/Admin/class-pigeon.php:300 app/Admin/class-speedy.php:226
+#: app/Admin/class-econt.php:161 app/Admin/class-pigeon.php:301 app/Admin/class-speedy.php:229
 msgid "Time:"
 msgstr "Час:"
 
-#: app/Admin/class-econt.php:161 app/Admin/class-pigeon.php:301 app/Admin/class-speedy.php:227
+#: app/Admin/class-econt.php:162 app/Admin/class-pigeon.php:302 app/Admin/class-speedy.php:230
 msgid "Event:"
 msgstr "Събитие:"
 
-#: app/Admin/class-econt.php:162 app/Admin/class-pigeon.php:302 app/Admin/class-speedy.php:228
+#: app/Admin/class-econt.php:163 app/Admin/class-pigeon.php:303 app/Admin/class-speedy.php:231
 msgid "Details:"
 msgstr "Подробности:"
 
-#: app/Admin/class-econt.php:163 app/Admin/class-speedy.php:229 app/functions.php:314 app/Shipping/Econt/class-method.php:378 app/Shipping/Speedy/class-method.php:383
+#: app/Admin/class-econt.php:164 app/Admin/class-speedy.php:232 app/functions.php:314 app/Shipping/Econt/class-method.php:378 app/Shipping/Speedy/class-method.php:383
 msgid "Review and test"
 msgstr "Преглед и тест"
 
-#: app/Admin/class-econt.php:164 app/Admin/class-pigeon.php:307 app/Admin/class-speedy.php:230 app/Admin/Tabs/class-econt-tab.php:110 app/Admin/Tabs/class-pigeon-tab.php:114 app/Admin/Tabs/class-speedy-tab.php:93
+#: app/Admin/class-econt.php:165 app/Admin/class-pigeon.php:308 app/Admin/class-speedy.php:233 app/Admin/Tabs/class-econt-tab.php:110 app/Admin/Tabs/class-pigeon-tab.php:114 app/Admin/Tabs/class-speedy-tab.php:93
 msgid "Declared value"
 msgstr "Обявена стойност"
 
-#: app/Admin/class-econt.php:165 app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:232
+#: app/Admin/class-econt.php:166 app/Admin/class-pigeon.php:310 app/Admin/class-speedy.php:235
 msgid "Description"
 msgstr "Описание"
 
-#: app/Admin/class-econt.php:166 app/Admin/Order/class-metabox.php:95 app/Admin/Tabs/class-econt-tab.php:137 app/Export/Builder/class-fields.php:147
+#: app/Admin/class-econt.php:167 app/Admin/Order/class-metabox.php:95 app/Admin/Tabs/class-econt-tab.php:137 app/Export/Builder/class-fields.php:147
 msgid "Invoice number"
 msgstr "Номер на фактура"
 
-#: app/Admin/class-econt.php:167
+#: app/Admin/class-econt.php:168
 msgid "Partial delivery"
 msgstr "Частична доставка"
 
-#: app/Admin/class-econt.php:169 app/Admin/class-pigeon.php:311 app/Admin/class-speedy.php:236
+#: app/Admin/class-econt.php:170 app/Admin/class-pigeon.php:312 app/Admin/class-speedy.php:239
 msgid "Length"
 msgstr "Дължина"
 
-#: app/Admin/class-econt.php:170 app/Admin/class-pigeon.php:312 app/Admin/class-speedy.php:237 app/Front_End/Checkout/class-field-editor.php:938
+#: app/Admin/class-econt.php:171 app/Admin/class-pigeon.php:313 app/Admin/class-speedy.php:240 app/Front_End/Checkout/class-field-editor.php:936
 msgid "Width"
 msgstr "Ширина"
 
-#: app/Admin/class-econt.php:171 app/Admin/class-pigeon.php:313 app/Admin/class-speedy.php:238
+#: app/Admin/class-econt.php:172 app/Admin/class-pigeon.php:314 app/Admin/class-speedy.php:241
 msgid "Height"
 msgstr "Височина"
 
-#: app/Admin/class-econt.php:255
+#: app/Admin/class-econt.php:256
 msgid "Document"
 msgstr "Документ"
 
-#: app/Admin/class-econt.php:256
+#: app/Admin/class-econt.php:257
 msgid "Pallet"
 msgstr "Палет"
 
-#: app/Admin/class-econt.php:257
+#: app/Admin/class-econt.php:258
 msgid "Cargo"
 msgstr "Товар"
 
-#: app/Admin/class-econt.php:258
+#: app/Admin/class-econt.php:259
 msgid "Document-Pallet"
 msgstr "Документ-палет"
 
@@ -733,15 +767,15 @@ msgstr "Запазени експорти"
 msgid "Add"
 msgstr "Добавяне"
 
-#: app/Admin/class-export-builder.php:206 app/Admin/class-settings-page.php:886 app/Admin/class-settings-page.php:1110 app/Admin/class-settings-page.php:1250 app/Front_End/Checkout/class-field-editor.php:906 app/Front_End/Checkout/class-field-editor.php:940
+#: app/Admin/class-export-builder.php:206 app/Admin/class-settings-page.php:886 app/Admin/class-settings-page.php:1110 app/Admin/class-settings-page.php:1250 app/Front_End/Checkout/class-field-editor.php:904 app/Front_End/Checkout/class-field-editor.php:938
 msgid "Remove"
 msgstr "Премахване"
 
-#: app/Admin/class-export-builder.php:207 app/Front_End/Checkout/class-field-editor.php:892
+#: app/Admin/class-export-builder.php:207 app/Front_End/Checkout/class-field-editor.php:890
 msgid "Move up"
 msgstr "Нагоре"
 
-#: app/Admin/class-export-builder.php:208 app/Front_End/Checkout/class-field-editor.php:893
+#: app/Admin/class-export-builder.php:208 app/Front_End/Checkout/class-field-editor.php:891
 msgid "Move down"
 msgstr "Надолу"
 
@@ -775,7 +809,7 @@ msgstr "Първите %1$d от %2$d реда. Файл: %3$s"
 msgid "Nothing matches these filters."
 msgstr "Няма записи по тези филтри."
 
-#: app/Admin/class-export-builder.php:217 app/class-plugin.php:370 app/Front_End/class-quick-order.php:375
+#: app/Admin/class-export-builder.php:217 app/class-plugin.php:362 app/Front_End/class-quick-order.php:375
 msgid "Something went wrong. Please try again."
 msgstr "Нещо се обърка. Опитайте отново."
 
@@ -1150,476 +1184,492 @@ msgid "The total follows the payment method the customer picks at checkout. The 
 msgstr "Общата сума следва метода на плащане, който клиентът избере при плащане. Полето на куриера в поръчката пак може да смени платеца за една товарителница."
 
 #: app/Admin/class-help-page.php:133
+msgid "New Econt, Speedy and Pigeon Express methods start with cash on delivery in \"Customer pays the courier\". A cart whose goods cost nothing is always yours to collect."
+msgstr "Новите методи на Еконт, Спиди и Pigeon Express започват с наложен платеж в „Клиентът плаща на куриера“. Количка, в която стоките не струват нищо, винаги се събира от вас."
+
+#: app/Admin/class-help-page.php:134
+msgid "In the courier box of an order, a waybill where you collect the delivery makes the order one you collected, while it has no documents; once it has documents, such a waybill is refused. Choosing the receiver as payer on an order you collected shows a warning."
+msgstr "В полето на куриера в поръчката товарителница, по която вие събирате доставката, прави поръчката такава със събрана от вас доставка, докато няма документи; щом има документи, такава товарителница се отказва. Изборът на получателя за платец при поръчка, в която вие сте събрали доставката, показва предупреждение."
+
+#: app/Admin/class-help-page.php:135
 msgid "Review or test before payment is set on the courier method in the shipping zone and goes on every label. For Pigeon Express choose review or test; the order screen can change it for one label."
 msgstr "Преглед или тест преди плащане се задава в метода на куриера в зоната за доставка и се добавя към всяка товарителница. За Pigeon Express изберете преглед или тест; в поръчката може да се промени за една товарителница."
 
-#: app/Admin/class-help-page.php:134
+#: app/Admin/class-help-page.php:136
 msgid "When a courier publishes new prices, a notice says so. Save that courier's prices or press Dismiss."
 msgstr "Когато куриер публикува нови цени, се появява известие. Запазете цените на този куриер или натиснете „Скриване“."
 
-#: app/Admin/class-help-page.php:136
+#: app/Admin/class-help-page.php:138
 msgid "Shipping abroad"
 msgstr "Доставка в чужбина"
 
-#: app/Admin/class-help-page.php:137
+#: app/Admin/class-help-page.php:139
 msgid "Your store is always in Bulgaria. Only the customer may be abroad. Turn on \"Ship abroad\" on the courier method in the shipping zone, for each courier you want to use."
 msgstr "Магазинът ви е винаги в България. Само клиентът може да е в чужбина. Включете „Доставка в чужбина“ на метода на куриера в зоната за доставка, за всеки куриер, който искате да ползвате."
 
-#: app/Admin/class-help-page.php:138
+#: app/Admin/class-help-page.php:140
 msgid "Econt delivers to Romania and Greece. Speedy delivers to Romania, Greece, Cyprus, Hungary, the Czech Republic, Croatia, Poland, Slovakia and Slovenia. Other countries are not offered."
 msgstr "Еконт доставя до Румъния и Гърция. Спиди доставя до Румъния, Гърция, Кипър, Унгария, Чехия, Хърватия, Полша, Словакия и Словения. Други държави не се предлагат."
 
-#: app/Admin/class-help-page.php:139
+#: app/Admin/class-help-page.php:141
 msgid "Add the countries to the shipping zone as usual. Customers there choose the office, locker or address as at home."
 msgstr "Добавете държавите към зоната за доставка както обикновено. Клиентите там избират офис, автомат или адрес като в България."
 
-#: app/Admin/class-help-page.php:140
+#: app/Admin/class-help-page.php:142
 msgid "Prices abroad come only from the courier's live calculation, so a courier login is needed. The public price list is for Bulgaria only and is never used abroad. If there is no courier data for the order, the customer sees no price."
 msgstr "Цените в чужбина идват само от изчислението на куриера на живо, затова е нужен вход в куриера. Публичният ценоразпис е само за България и никога не се ползва в чужбина. Ако няма данни от куриера за поръчката, клиентът не вижда цена."
 
-#: app/Admin/class-help-page.php:141
+#: app/Admin/class-help-page.php:143
 msgid "If the customer has chosen no office, locker or address, the checkout says \"Please fill in your delivery address.\""
 msgstr "Ако клиентът не е избрал офис, автомат или адрес, поръчката показва „Моля, попълнете адреса за доставка.“"
 
-#: app/Admin/class-help-page.php:142
+#: app/Admin/class-help-page.php:144
 msgid "\"Free shipping over\" is for Bulgaria. For other countries use \"Free shipping over, abroad\" and write the country code and the total, for example RO=150, GR=200. A country that is not listed gets no free shipping. BG is not allowed in this field."
 msgstr "„Безплатна доставка над“ е за България. За другите държави ползвайте „Безплатна доставка в чужбина над“ и напишете кода на държавата и сумата, например RO=150, GR=200. Държава, която не е в списъка, няма безплатна доставка. BG не е позволено в това поле."
 
-#: app/Admin/class-help-page.php:143
+#: app/Admin/class-help-page.php:145
 msgid "Pigeon Express gives no price for a parcel over 30 kg."
 msgstr "Pigeon Express не дава цена за пратка над 30 кг."
 
-#: app/Admin/class-help-page.php:146
+#: app/Admin/class-help-page.php:148
 msgid "Works with the classic checkout, the block checkout and checkout pages made with a page builder, including step-by-step checkouts."
 msgstr "Работи с класическото плащане, блоковото плащане и страници за плащане, създадени с конструктор, включително плащане на стъпки."
 
-#: app/Admin/class-help-page.php:147
+#: app/Admin/class-help-page.php:149
 msgid "When the customer picks a courier, they choose an office, a locker or an address right under it, from a list or on the courier's map. Until then the option says \"Complete the fields to calculate\"."
 msgstr "Когато клиентът избере куриер, точно под него избира офис, автомат или адрес, от списък или на картата на куриера. Дотогава опцията показва „Попълнете данните за изчисляване“."
 
 #. translators: %s: link to the Checkout section
-#: app/Admin/class-help-page.php:149
+#: app/Admin/class-help-page.php:151
 #, php-format
 msgid "In %s > Checkout fields you set the order, Required, Optional or Hidden and the width of every field, and add your own fields."
 msgstr "В %s > Полета при плащане задавате реда, задължително, незадължително или скрито и ширината на всяко поле, и добавяте свои полета."
 
-#: app/Admin/class-help-page.php:150
+#: app/Admin/class-help-page.php:152
 msgid "The Condition dropdown of a field shows or hides it by the value of other fields (is, is not, greater, less, empty, not empty). Conditions in one group all have to be true (and); \"Add alternative (or)\" adds another group, and one true group is enough (or). Example: for a \"Company\" field pick \"Show when...\", then \"Invoice for a company\" \"is\" \"Yes\". \"Always shown\" removes the rule. The classic checkout follows every condition; the block checkout follows conditions on your own fields that read your own fields (not greater or less)."
 msgstr "Падащото меню „Условие“ на поле го показва или скрива според стойността на други полета (е, не е, по-голямо, по-малко, празно, не е празно). Условията в една група трябва да са верни едновременно (и); „Добави алтернатива (или)“ добавя нова група, а една вярна група е достатъчна (или). Пример: за поле „Фирма“ изберете „Показвай, когато...“, после „Фактура за фирма“ „е“ „Да“. „Винаги се показва“ маха правилото. Класическото плащане следва всяко условие; блоковото плащане следва условията на вашите полета, които четат ваши полета (не „по-голямо“ и „по-малко“)."
 
-#: app/Admin/class-help-page.php:151
+#: app/Admin/class-help-page.php:153
 msgid "Using WooCommerce Checkout Field Editor (free or Pro) before? \"Import fields from Checkout Field Editor\" copies its fields, rules and field conditions. Cart, product and repeat rules are left out and counted in the notice. Company invoice fields stay with Nashenski. The block checkout applies field conditions to the extra fields only, and not the \"greater\" and \"less\" ones."
 msgstr "Използвахте ли преди WooCommerce Checkout Field Editor (безплатния или Pro)? „Импорт на полетата от Checkout Field Editor“ копира полетата, правилата и условията между полетата. Правилата за количката, за продукт и за повтарящи се полета се пропускат и се броят в известието. Полетата за фирма остават при Nashenski. Блок поръчката прилага условията само към допълнителните полета и не прилага „по-голямо“ и „по-малко“."
 
-#: app/Admin/class-help-page.php:152
+#: app/Admin/class-help-page.php:154
 msgid "\"Shipping options look\" sets cards, buttons side by side or the plain look of your theme. \"Colours and sizes\" holds the colours, borders, corners and spacing. Empty settings follow your design tokens or theme."
 msgstr "„Вид на опциите за доставка“ задава карти, бутони един до друг или обикновения вид на темата ви. „Цветове и размери“ съдържа цветовете, рамките, закръгленията и разстоянията. Празните настройки следват дизайнерските ви токени или темата."
 
-#: app/Admin/class-help-page.php:153
+#: app/Admin/class-help-page.php:155
 msgid "\"Free shipping hint\" shows \"Free shipping over\" and the total under each option that is not free yet. \"Free shipping progress bar\" shows above the options how much more the customer needs to buy. Both use the \"Free shipping over\" total of the shipping methods."
 msgstr "„Подсказка за безплатна доставка“ показва „Безплатна доставка над“ и сумата под всяка опция, която още не е безплатна. „Лента до безплатна доставка“ показва над опциите колко още трябва да купи клиентът. И двете използват сумата „Безплатна доставка над“ на методите за доставка."
 
-#: app/Admin/class-help-page.php:155 app/Admin/class-setup-wizard.php:386 app/Admin/class-setup-wizard.php:618 app/Export/Builder/class-fields.php:122
+#: app/Admin/class-help-page.php:157 app/Admin/class-setup-wizard.php:386 app/Admin/class-setup-wizard.php:618 app/Export/Builder/class-fields.php:122
 msgid "VAT"
 msgstr "ДДС"
 
-#: app/Admin/class-help-page.php:156
+#: app/Admin/class-help-page.php:158
 msgid "Registered for VAT: the setup turns WooCommerce taxes on, shows prices with VAT and adds a 20% rate for Bulgaria, shipping included."
 msgstr "Регистрирани по ДДС: настройката включва данъците в WooCommerce, показва цените с ДДС и добавя ставка 20% за България, включително за доставката."
 
-#: app/Admin/class-help-page.php:157
+#: app/Admin/class-help-page.php:159
 msgid "Some goods at 9%: the tax class \"Reduced rate\" also gets a 9% rate. Set that tax class on those products."
 msgstr "Някои стоки с 9%: данъчният клас „Намалена ставка“ получава и ставка 9%. Задайте този данъчен клас на тези продукти."
 
-#: app/Admin/class-help-page.php:158
+#: app/Admin/class-help-page.php:160
 msgid "Not registered for VAT: the setup turns WooCommerce taxes off. Your tax rates are kept."
 msgstr "Без регистрация по ДДС: настройката изключва данъците в WooCommerce. Данъчните ви ставки се запазват."
 
-#: app/Admin/class-help-page.php:160
+#: app/Admin/class-help-page.php:162
 msgid "Waybills, couriers and order statuses"
 msgstr "Товарителници, куриери и статуси на поръчките"
 
-#: app/Admin/class-help-page.php:161
+#: app/Admin/class-help-page.php:163
 msgid "The \"Courier choice\" box on every order shows the courier, the delivery type and the chosen office, locker or address. It is only for reading."
 msgstr "Полето „Избор на куриер“ във всяка поръчка показва куриера, вида доставка и избрания офис, автомат или адрес. То е само за четене."
 
-#: app/Admin/class-help-page.php:162
+#: app/Admin/class-help-page.php:164
 msgid "Open an order to create, update, print or cancel its waybill in the courier box."
 msgstr "Отворете поръчка, за да създадете, промените, отпечатате или анулирате товарителницата ѝ в полето на куриера."
 
-#: app/Admin/class-help-page.php:163
+#: app/Admin/class-help-page.php:165
 msgid "In the \"Order actions\" box of an order, and in the bulk actions of the orders list: \"Create waybill\" makes the waybill from the customer's choices, \"Request a courier\" books a pickup with Econt or Speedy for all the chosen waybills, \"Check the shipment now\" reads the status from the courier."
 msgstr "В полето „Действия с поръчката“ и в груповите действия на списъка с поръчки: „Създай товарителница“ създава товарителница по избора на клиента, „Заяви куриер“ заявява вземане от Еконт или Спиди за всички избрани товарителници, „Провери пратката сега“ прочита статуса от куриера."
 
-#: app/Admin/class-help-page.php:164
+#: app/Admin/class-help-page.php:166
 msgid "Print the label from the order or from the orders list. Where a courier offers several print sizes, such as A4 or A6 for Speedy, choose one first."
 msgstr "Отпечатайте етикета от поръчката или от списъка с поръчки. Когато куриерът предлага няколко размера за печат, например A4 или A6 при Спиди, първо изберете размер."
 
-#: app/Admin/class-help-page.php:165
+#: app/Admin/class-help-page.php:167
 msgid "Econt courier requests skip weekends and holidays by themselves. Speedy picks the next possible day."
 msgstr "Заявките за куриер на Еконт сами прескачат почивни и празнични дни. Спиди избира следващия възможен ден."
 
-#: app/Admin/class-help-page.php:166
+#: app/Admin/class-help-page.php:168
 msgid "Speedy: the city and region of a waybill come from the order's address. In the street box, type in Bulgarian or Latin letters; the list shows Speedy's streets and quarters for that city."
 msgstr "Speedy: градът и районът на товарителницата се взимат от адреса на поръчката. В полето за улица пишете на български или латиница; списъкът показва улиците и кварталите на Speedy за този град."
 
-#: app/Admin/class-help-page.php:167
+#: app/Admin/class-help-page.php:169
 msgid "\"Generate label after checkout\" on a courier page makes the waybill as soon as an order is placed."
 msgstr "„Създаване на товарителница след поръчка“ на страницата на куриера създава товарителницата веднага щом поръчката е направена."
 
 #. translators: %s: link to the Overview section
-#: app/Admin/class-help-page.php:169
+#: app/Admin/class-help-page.php:171
 #, php-format
 msgid "In %s > Waybills and order statuses: put the order number on the waybill, and choose the status orders get when the parcel is delivered or goes back to you. Open orders are checked every hour."
 msgstr "В %s > Товарителници и статуси на поръчките: добавете номера на поръчката в товарителницата и изберете статуса, който поръчките получават, когато пратката е доставена или се връща при Вас. Отворените поръчки се проверяват всеки час."
 
-#: app/Admin/class-help-page.php:170
+#: app/Admin/class-help-page.php:172
 msgid "Customers see \"Track your parcel\" with the waybill number on their order page, and get it in the order emails."
 msgstr "Клиентите виждат „Проследете пратката си“ с номера на товарителницата на страницата на поръчката си и го получават в имейлите за поръчката."
 
-#: app/Admin/class-help-page.php:172 app/Admin/class-settings-page.php:147 app/Admin/Tabs/class-quick-order-tab.php:23 app/Admin/Tabs/class-quick-order-tab.php:119 app/Admin/Tabs/class-settings-tab.php:41 app/Front_End/class-quick-order.php:340
+#: app/Admin/class-help-page.php:174 app/Admin/class-settings-page.php:147 app/Admin/Tabs/class-quick-order-tab.php:23 app/Admin/Tabs/class-quick-order-tab.php:119 app/Admin/Tabs/class-settings-tab.php:41 app/Front_End/class-quick-order.php:340
 msgid "Quick order"
 msgstr "Бърза поръчка"
 
-#: app/Admin/class-help-page.php:173
+#: app/Admin/class-help-page.php:175
 msgid "Turn it on in WooCommerce > Settings > Nashenski Commerce > Quick order. A \"Quick order\" button then shows on the product page and/or the cart, for shoppers who do not want to go through checkout."
 msgstr "Включете я в WooCommerce > Настройки > Нашенски Комерс > Бърза поръчка. След това бутонът „Бърза поръчка“ се показва на страницата на продукта и/или в количката, за клиенти, които не искат да минават през плащане."
 
-#: app/Admin/class-help-page.php:174
+#: app/Admin/class-help-page.php:176
 msgid "Choose how the form opens (dialog, inline or side panel) and its fields: a ready-made template or a Custom one. Name, phone and email are always asked, and only Bulgarian phone numbers are accepted."
 msgstr "Изберете как се отваря формата (прозорец, под бутона или страничен панел) и полетата ѝ: готов шаблон или свой. Име, телефон и имейл се искат винаги, а се приемат само български телефонни номера."
 
-#: app/Admin/class-help-page.php:175
+#: app/Admin/class-help-page.php:177
 msgid "Each submission becomes an order with the status \"Quick order\". No stock is reserved and no payment link is sent until you change the status. You get the WooCommerce \"New order\" email."
 msgstr "Всяко изпращане става поръчка със статус „Бърза поръчка“. Наличността не се резервира и не се изпраща връзка за плащане, докато не смените статуса. Получавате имейла „Нова поръчка“ на WooCommerce."
 
-#: app/Admin/class-help-page.php:176
+#: app/Admin/class-help-page.php:178
 msgid "To ship it, open the order. In the Delivery box choose the shipping option, the town and the office, locker or address, then press \"Save delivery\". The courier box for the label appears, and the price comes when the label is made. The customer then gets an email with the delivery price and the new total."
 msgstr "За да я изпратите, отворете поръчката. В полето „Доставка“ изберете опцията за доставка, града и офиса, автомата или адреса, после натиснете „Запази доставката“. Появява се полето на куриера за етикета, а цената идва при създаването на етикета. Тогава клиентът получава имейл с цената на доставката и новата обща сума."
 
-#: app/Admin/class-help-page.php:177
+#: app/Admin/class-help-page.php:179
 msgid "For Econt, once the delivery is saved, the label button in the orders list also makes the label."
 msgstr "При Еконт, след като доставката е запазена, бутонът за етикет в списъка с поръчки също създава етикета."
 
-#: app/Admin/class-help-page.php:180
+#: app/Admin/class-help-page.php:182
 msgid "Turn it on in WooCommerce > Settings > Nashenski Commerce > Abandoned carts. It is off by default."
 msgstr "Включете я в WooCommerce > Настройки > Нашенски Комерс > Изоставени колички. По подразбиране е изключена."
 
-#: app/Admin/class-help-page.php:181
+#: app/Admin/class-help-page.php:183
 msgid "It keeps the carts that were not ordered and records the email as soon as the shopper types it, even at checkout without an account. Mention this in your privacy policy."
 msgstr "Запазва количките, които не са поръчани, и записва имейла веднага щом клиентът го въведе, дори при плащане без профил. Споменете това в политиката си за поверителност."
 
-#: app/Admin/class-help-page.php:182
+#: app/Admin/class-help-page.php:184
 msgid "Set when the reminders go out (by default 1, 24 and 72 hours after the last change, at most three, only between 08:00 and 22:00) and whether each cart gets a single-use coupon. Edit the \"Abandoned cart reminder\" email in WooCommerce > Settings > Emails."
 msgstr "Задайте кога се изпращат напомнянията (по подразбиране 1, 24 и 72 часа след последната промяна, най-много три, само между 08:00 и 22:00) и дали всяка количка получава купон за еднократна употреба. Редактирайте имейла „Напомняне за изоставена количка“ в WooCommerce > Настройки > Имейли."
 
-#: app/Admin/class-help-page.php:183
+#: app/Admin/class-help-page.php:185
 msgid "The link in the email refills the cart. Every email has an unsubscribe link, and a shopper who unsubscribes gets no more reminders."
 msgstr "Връзката в имейла пълни количката отново. Всеки имейл има връзка за отписване, а клиент, който се отпише, не получава повече напомняния."
 
-#: app/Admin/class-help-page.php:184
+#: app/Admin/class-help-page.php:186
 msgid "See the carts in WooCommerce > Abandoned carts. Filter them by status, send a reminder by hand or delete carts. Old carts are deleted once the retention period ends."
 msgstr "Количките са в WooCommerce > Изоставени колички. Филтрирайте ги по статус, изпратете напомняне ръчно или изтрийте колички. Старите колички се изтриват, когато срокът за съхранение изтече."
 
-#: app/Admin/class-help-page.php:186 app/Admin/Tabs/class-nra-tab.php:308
+#: app/Admin/class-help-page.php:188 app/Admin/Tabs/class-nra-tab.php:309
 msgid "Invoices and documents"
 msgstr "Фактури и документи"
 
-#: app/Admin/class-help-page.php:187
+#: app/Admin/class-help-page.php:189
 msgid "The order document is made for every order. Invoices are made as set in \"When to generate invoices?\", and credit notes for refunds."
 msgstr "Документът за продажба се създава за всяка поръчка. Фактурите се създават според „Кога да се издават фактури?“, а кредитните известия при връщане на суми."
 
-#: app/Admin/class-help-page.php:188
+#: app/Admin/class-help-page.php:190
 msgid "To make an invoice by hand, open the order and use \"Make invoice\" in the PDF Files box. You can change the number; the next automatic number continues after it."
 msgstr "За фактура на ръка отворете поръчката и използвайте „Издай фактура“ в полето „PDF файлове“. Можете да смените номера; следващият автоматичен номер продължава след него."
 
 #. translators: %s: link to the Documents section
-#: app/Admin/class-help-page.php:190
+#: app/Admin/class-help-page.php:192
 #, php-format
 msgid "The look of the PDF files (logo, colours, font, spacing) is in %s > PDF appearance. Every document is made in Bulgarian and in English."
 msgstr "Видът на PDF файловете (лого, цветове, шрифт, разстояния) е в %s > Вид на PDF документите. Всеки документ се създава на български и на английски."
 
 #. translators: %s: link to the Documents section
-#: app/Admin/class-help-page.php:192
+#: app/Admin/class-help-page.php:194
 #, php-format
 msgid "Your company details, the numbering and when documents are made are in %s > Company details and Invoices and documents."
 msgstr "Данните на фирмата ви, номерацията и кога се издават документите са в %s > Данни за фирмата и Фактури и документи."
 
-#: app/Admin/class-help-page.php:193
+#: app/Admin/class-help-page.php:195
 msgid "To save disk space, set \"Delete order documents after (days)\" in Documents > Invoices and documents. Only the order document PDFs of older orders are deleted; invoices, credit notes and refund documents stay. \"Delete all order documents now\" does it at once, after a confirmation."
 msgstr "За да спестите място на диска, задайте „Изтриване на документите за продажба след (дни)“ в Документи > Фактури и документи. Изтриват се само PDF файловете на документите към по-стари поръчки; фактурите, кредитните известия и документите за връщане остават. „Изтрий всички документи към поръчките сега“ го прави веднага, след потвърждение."
 
 #. translators: %s: link to the Documents section
-#: app/Admin/class-help-page.php:195
+#: app/Admin/class-help-page.php:197
 #, php-format
 msgid "In %s > Company invoice, \"Company invoice fields\" adds \"I want an invoice for a company\" with company name, EIK, VAT number, MOL, town and address."
 msgstr "В %s > Фактура за фирма опцията „Полета за фирмена фактура“ добавя „Искам фактура за фирма“ с фирма, ЕИК, ДДС номер, МОЛ, град и адрес."
 
 #. translators: %s: link to the Documents section
-#: app/Admin/class-help-page.php:197
+#: app/Admin/class-help-page.php:199
 #, php-format
 msgid "In %s > Invoices and documents, \"Invoice numbering\": \"Website invoices\" go into the NRA audit file. \"Own invoicing program\" keeps the invoice out of it; you type that program's number on the order."
 msgstr "В %s > Фактури и документи, „Номериране на фактури“: „Фактури от сайта“ влизат в одитния файл на НАП. „Собствена програма за фактуриране“ оставя фактурата извън него; номера от тази програма въвеждате в поръчката."
 
-#: app/Admin/class-help-page.php:198
+#: app/Admin/class-help-page.php:200
 msgid "Copies can go to your accountant by email, and the monthly NRA audit file too."
 msgstr "Копията могат да се изпращат на счетоводителя Ви по имейл, както и месечният одиторски файл за НАП."
 
-#: app/Admin/class-help-page.php:199
+#: app/Admin/class-help-page.php:201
 msgid "A delivery with no VAT, on an order with no VAT at all, is printed at 0% with its full price."
 msgstr "Доставка без ДДС в поръчка изцяло без ДДС се отпечатва с 0% и с пълната си цена."
 
-#: app/Admin/class-help-page.php:200
+#: app/Admin/class-help-page.php:202
 msgid "A delivery the customer paid to the courier is not on the documents or in the NRA audit file, because you did not collect it. Credit notes follow their order. Each order keeps what was decided at checkout; orders from before version 0.21.8 keep the old \"Remove delivery from documents\" rule."
 msgstr "Доставка, платена от клиента на куриера, не е в документите и в одиторския файл за НАП, защото не сте я събрали Вие. Кредитните известия следват поръчката си. Всяка поръчка пази решението, взето при плащане; поръчките отпреди версия 0.21.8 запазват старото правило „Без доставката в документите“."
 
-#: app/Admin/class-help-page.php:201
+#: app/Admin/class-help-page.php:203
 msgid "Quick orders and orders made on the order screen are decided the same way once they have a shipping method and a payment method, and again when either changes, until the order has documents. A waybill made there for an order whose customer pays the courier shows its price for information only."
 msgstr "Бързите поръчки и поръчките, създадени в екрана на поръчката, се решават по същия начин, щом имат метод за доставка и метод на плащане, и отново, когато някой от тях се смени, докато поръчката няма документи. Товарителница, създадена там за поръчка, при която клиентът плаща на куриера, показва цената си само за сведение."
 
-#: app/Admin/class-help-page.php:203
+#: app/Admin/class-help-page.php:204
+msgid "Shipping methods of other plugins keep \"Is ... courier?\" in Documents > Shipping on documents: with cash on delivery, their delivery is left out of documents and the NRA audit file."
+msgstr "Методите за доставка на други добавки запазват „... куриер ли е?“ в Документи > Доставка в документите: при наложен платеж доставката им не влиза в документите и в одиторския файл за НАП."
+
+#: app/Admin/class-help-page.php:205
+msgid "When the payment method of a checkout order is changed on the order screen, who pays the courier stays as decided at checkout, and a notice asks you to check the delivery line and the waybill by hand."
+msgstr "Когато методът на плащане на поръчка от плащането се смени в екрана на поръчката, кой плаща на куриера остава както е решено при плащане, а известие ви моли да проверите на ръка реда за доставка и товарителницата."
+
+#: app/Admin/class-help-page.php:207
 msgid "NRA audit file and exports"
 msgstr "Одиторски файл за НАП и експорти"
 
 #. translators: %s: link to the Exports section
-#: app/Admin/class-help-page.php:205
+#: app/Admin/class-help-page.php:209
 #, php-format
 msgid "%s has the NRA audit file (Ordinance N-18), the invoice archive and the Microinvest Delta file for a chosen month. The audit file is checked against the NRA schema and has no order limit."
 msgstr "%s съдържа одиторския файл за НАП (Наредба Н-18), архива с фактури и файла за Microinvest Delta за избран месец. Одиторският файл се проверява спрямо схемата на НАП и няма ограничение за броя поръчки."
 
-#: app/Admin/class-help-page.php:206
+#: app/Admin/class-help-page.php:210
 msgid "Choose the month and press \"Create XML file\" for the NRA, \"Download archive\" for the invoices or \"Create file\" for Delta."
 msgstr "Изберете месеца и натиснете „Създай XML файл“ за НАП, „Изтегли архива“ за фактурите или „Създай файл“ за Делта."
 
-#: app/Admin/class-help-page.php:207
+#: app/Admin/class-help-page.php:211
 msgid "The created files are kept for 7 days, then deleted. Download them when you create them."
 msgstr "Създадените файлове се пазят 7 дни, след това се изтриват. Изтеглете ги, когато ги създадете."
 
-#: app/Admin/class-help-page.php:208
+#: app/Admin/class-help-page.php:212
 msgid "The custom export takes orders, products sold or documents, with your filters, columns and order, as CSV, Excel, JSON or XML. Save an export to run it again next month."
 msgstr "Собственият експорт взема поръчки, продадени продукти или документи, с Вашите филтри, колони и подредба, като CSV, Excel, JSON или XML. Запазете експорта, за да го пуснете отново следващия месец."
 
-#: app/Admin/class-help-page.php:210
+#: app/Admin/class-help-page.php:214
 msgid "EU VAT number check"
 msgstr "Проверка на ДДС номер в ЕС"
 
-#: app/Admin/class-help-page.php:211
+#: app/Admin/class-help-page.php:215
 msgid "Turn on \"Enable VIES validation\" in Documents > Invoices and documents. A company customer's VAT number is then checked with the European VIES system when the order is placed."
 msgstr "Включете „Включи проверка във VIES“ в Документи > Фактури и документи. ДДС номерът на фирмен клиент се проверява с европейската система VIES при подаване на поръчката."
 
-#: app/Admin/class-help-page.php:212
+#: app/Admin/class-help-page.php:216
 msgid "An error shows only when the number is not valid or when the check itself fails. The option needs the PHP SOAP extension on your server."
 msgstr "Грешка се показва само когато номерът е невалиден или самата проверка се провали. Опцията изисква PHP разширението SOAP на сървъра ви."
 
-#: app/Admin/class-help-page.php:213
+#: app/Admin/class-help-page.php:217
 msgid "The VAT number is optional at checkout. Tick \"VAT number required on checkout?\" in Documents to make company customers enter it."
 msgstr "ДДС номерът не е задължителен при плащане. Отметнете „Задължителен ДДС номер при плащане?“ в Документи, за да го въвеждат клиентите фирми."
 
-#: app/Admin/class-help-page.php:215 app/Front_End/class-withdrawal.php:550 app/Front_End/class-withdrawal.php:564
+#: app/Admin/class-help-page.php:219 app/Front_End/class-withdrawal.php:550 app/Front_End/class-withdrawal.php:564
 msgid "EU withdrawal function"
 msgstr "Функция за отказ (ЕС)"
 
 #. translators: %s: link to the Checkout section
-#: app/Admin/class-help-page.php:217
+#: app/Admin/class-help-page.php:221
 #, php-format
 msgid "Turn it on in %s > EU withdrawal function. A \"Withdraw from contract here\" link appears at the bottom of every page, on each order in My Account and in the order emails."
 msgstr "Включете я в %s > Функция за отказ (ЕС). Връзката „откажете се от договора тук“ се появява в долната част на всяка страница, при всяка поръчка в „Моят профил“ и в имейлите за поръчката."
 
-#: app/Admin/class-help-page.php:218
+#: app/Admin/class-help-page.php:222
 msgid "Place the link yourself with the shortcode [nashenski_withdrawal_link] (button=\"yes\" makes it a button)."
 msgstr "Поставете връзката сами с краткия код [nashenski_withdrawal_link] (button=\"yes\" я прави бутон)."
 
-#: app/Admin/class-help-page.php:219
+#: app/Admin/class-help-page.php:223
 msgid "The links are not shown inside page-builder editors (Bricks, Oxygen, Breakdance, Elementor, Etch and others), only on the live site. A shortcode you place yourself still shows there."
 msgstr "Връзките не се показват в редакторите на конструкторите (Bricks, Oxygen, Breakdance, Elementor, Etch и други), а само в живия сайт. Кратък код, който сте поставили сами, се показва и там."
 
-#: app/Admin/class-help-page.php:220
+#: app/Admin/class-help-page.php:224
 msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
 msgstr "Заявките се виждат в списъка с поръчки (колона „Отказ“) и в поръчката, с всичко, което клиентът е подал."
 
-#: app/Admin/class-help-page.php:222 app/Admin/class-settings-page.php:159 app/Admin/Tabs/class-settings-tab.php:72 app/Reports/class-reports.php:174
+#: app/Admin/class-help-page.php:226 app/Admin/class-settings-page.php:159 app/Admin/Tabs/class-settings-tab.php:72 app/Reports/class-reports.php:174
 msgid "Customer checks"
 msgstr "Проверки на клиенти"
 
-#: app/Admin/class-help-page.php:223
+#: app/Admin/class-help-page.php:227
 msgid "nekorekten.com, Connectix and NepoStop tell you whether a phone number has a history of refused parcels. Nashenski Commerce can show a warning on the order and hide cash on delivery for such customers."
 msgstr "nekorekten.com, Connectix и NepoStop показват дали един телефонен номер има история на отказани пратки. Нашенски Комерс може да покаже предупреждение в поръчката и да скрие наложения платеж за такива клиенти."
 
-#: app/Admin/class-help-page.php:224
+#: app/Admin/class-help-page.php:228
 msgid "In NepoStop and nekorekten.com you can also tick the payment methods to hide under \"Hide these payment methods\". When the service flags the customer at its level of warning, those payment methods are not offered at checkout."
 msgstr "В NepoStop и nekorekten.com може също да отметнете начините на плащане, които да се скрият, под „Скрий тези начини на плащане“. Когато услугата маркира клиента при нивото си на предупреждение, тези начини на плащане не се предлагат при поръчка."
 
-#: app/Admin/class-help-page.php:225
+#: app/Admin/class-help-page.php:229
 msgid "Each visitor address gets at most 20 phone checks an hour. Over that, the check is skipped and the checkout goes on."
 msgstr "Всеки адрес на посетител има най-много 20 проверки на телефон на час. Над това проверката се пропуска и поръчката продължава."
 
-#: app/Admin/class-help-page.php:226
+#: app/Admin/class-help-page.php:230
 msgid "Turn a service on in Overview, save, then enter its API key or token in Customer checks. A service without a key is not asked."
 msgstr "Включете услуга в „Общ преглед“, запазете, после въведете нейния API ключ или токен в „Проверки на клиенти“. Услуга без ключ не се пита."
 
-#: app/Admin/class-help-page.php:227
+#: app/Admin/class-help-page.php:231
 msgid "On the order, the Reports box shows the answers. Press \"Refresh data\" to ask again."
 msgstr "В поръчката полето „Сигнали“ показва отговорите. Натиснете „Обнови данните“, за да попитате отново."
 
-#: app/Admin/class-help-page.php:228
+#: app/Admin/class-help-page.php:232
 msgid "For nekorekten.com you can report a customer yourself: write what happened and press \"Send report\". The report carries the name, phone and email of the order. Change the text and press \"Save report\", or press \"Delete report\" to remove it from nekorekten.com."
 msgstr "В nekorekten.com можете сами да подадете сигнал за клиент: опишете какво се е случило и натиснете „Изпрати сигнал“. Сигналът съдържа името, телефона и имейла от поръчката. Променете текста и натиснете „Запази сигнала“ или натиснете „Изтрий сигнала“, за да го премахнете от nekorekten.com."
 
-#: app/Admin/class-help-page.php:229
+#: app/Admin/class-help-page.php:233
 msgid "Connectix and NepoStop can also get tracking information or labels from your orders. Both are optional."
 msgstr "Connectix и NepoStop могат да получават и информация за проследяване или етикети от вашите поръчки. И двете са по избор."
 
-#: app/Admin/class-help-page.php:231 app/Admin/class-impossiblevatprice.php:46 app/Admin/class-impossiblevatprice.php:47 app/Admin/class-impossiblevatprice.php:128
+#: app/Admin/class-help-page.php:235 app/Admin/class-impossiblevatprice.php:46 app/Admin/class-impossiblevatprice.php:47 app/Admin/class-impossiblevatprice.php:128
 msgid "Mathematically impossible prices"
 msgstr "Математически невъзможни цени"
 
-#: app/Admin/class-help-page.php:232
+#: app/Admin/class-help-page.php:236
 msgid "Open Products > Mathematically impossible prices and press \"Scan products\". It lists the prices that cannot be split into a price without VAT and the VAT without rounding."
 msgstr "Отворете Продукти > Математически невъзможни цени и натиснете „Сканирай продуктите“. Показва цените, които не могат да се разделят на цена без ДДС и ДДС без закръгляне."
 
-#: app/Admin/class-help-page.php:233
+#: app/Admin/class-help-page.php:237
 msgid "Press \"Fix all\" to correct them. The check matters most when your prices are entered including tax."
 msgstr "Натиснете „Поправи всички“, за да ги коригирате. Проверката е най-важна, когато цените ви се въвеждат с включен данък."
 
-#: app/Admin/class-help-page.php:235 app/Admin/class-help-page.php:284
+#: app/Admin/class-help-page.php:239 app/Admin/class-help-page.php:288
 msgid "Moving from another plugin"
 msgstr "Преминаване от друг плъгин"
 
-#: app/Admin/class-help-page.php:236
+#: app/Admin/class-help-page.php:240
 msgid "Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping."
 msgstr "Нашенски Комерс внася данни от Bulgarisation for WooCommerce, плъгините на mreja.net (Еконт Експрес, BOX NOW Delivery, Метод за доставка Спиди, Pigeon Express, Наредба Н-18), Drusoft Shipping за Еконт и за Спиди, Econt Delivery и Speedy Shipping."
 
-#: app/Admin/class-help-page.php:237
+#: app/Admin/class-help-page.php:241
 msgid "The order documents and invoices of Bulgarisation for WooCommerce move into the private documents folder and open from the order as before."
 msgstr "Документите и фактурите от Bulgarisation for WooCommerce се преместват в частната папка за документи и се отварят от поръчката както преди."
 
-#: app/Admin/class-help-page.php:238
+#: app/Admin/class-help-page.php:242
 msgid "It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database."
 msgstr "Взема данните за вход към куриерите, данните на подателя, номерата на товарителниците на поръчките, методите в зоните за доставка с праговете за безплатна доставка от mreja.net, а от плъгина за Н-18 и данните на фирмата и номерата на документите. След това деактивирайте стария плъгин от екрана Разширения. Неговите данни остават в базата данни."
 
-#: app/Admin/class-help-page.php:239
+#: app/Admin/class-help-page.php:243
 msgid "While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused. Deactivate it before the import."
 msgstr "Докато Bulgarisation for WooCommerce (4.x или 5.x) е активен, Нашенски Комерс е на пауза. Деактивирайте го преди внасянето."
 
-#: app/Admin/class-help-page.php:240
+#: app/Admin/class-help-page.php:244
 msgid "Import the mreja.net Ordinance N-18 plugin while it is off. Until its documents are imported, Nashenski Commerce makes no invoices or other documents while a new number could clash with one of them. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already gave out: documents pause until it is off and its import is run again. Correct the orders that import lists, then use \"Regenerate PDF's\" for orders without documents."
 msgstr "Внесете плъгина на mreja.net за Наредба Н-18, докато е изключен. Докато документите му не са внесени, Нашенски Комерс не създава фактури и други документи, ако нов номер може да съвпадне с някой от тях. Ако след внасянето той бъде включен отново, може да използва повторно номера, които Нашенски Комерс вече е дал: документите са на пауза, докато не бъде изключен и внасянето му не бъде пуснато отново. Поправете поръчките, които това внасяне изброи, после използвайте „Повторно създаване на PDF файловете“ за поръчките без документи."
 
-#: app/Admin/class-help-page.php:241
+#: app/Admin/class-help-page.php:245
 msgid "Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import."
 msgstr "Econt Delivery и Drusoft Shipping за Еконт използват друг ключ на Еконт: след внасянето въведете потребителското си име и паролата за Еконт."
 
-#: app/Admin/class-help-page.php:242
+#: app/Admin/class-help-page.php:246
 msgid "Only users who can manage plugins see the import button. If an old document number clashes with a number already in use, that number is skipped and the summary says \"N document numbers skipped (conflict)\"."
 msgstr "Бутонът за внасяне се вижда само на потребители, които могат да управляват добавките. Ако стар номер на документ съвпада с вече използван, той се пропуска и обобщението показва „N номера на документи са пропуснати (конфликт)“."
 
-#: app/Admin/class-help-page.php:244
+#: app/Admin/class-help-page.php:248
 msgid "Command line (WP-CLI)"
 msgstr "Команден ред (WP-CLI)"
 
-#: app/Admin/class-help-page.php:245
+#: app/Admin/class-help-page.php:249
 msgid "Settings can be read and changed with WP-CLI: wp nashenski setting list, get, set and reset. The names are the option names without \"nashenski_settings_\", for example apis_enable_econt."
 msgstr "Настройките могат да се четат и променят с WP-CLI: wp nashenski setting list, get, set и reset. Имената са имената на опциите без \"nashenski_settings_\", например apis_enable_econt."
 
-#: app/Admin/class-help-page.php:246
+#: app/Admin/class-help-page.php:250
 msgid "Save a password from standard input so it stays out of the shell history: echo \"$PASSWORD\" | wp nashenski setting set econt_password -"
 msgstr "Запишете паролата от стандартния вход, за да не остане в историята на командния ред: echo \"$PASSWORD\" | wp nashenski setting set econt_password -"
 
-#: app/Admin/class-help-page.php:247
+#: app/Admin/class-help-page.php:251
 msgid "wp nashenski courier reload and check do the \"Reload offices and cities\" button and the login check of a courier."
 msgstr "С wp nashenski courier reload и check се изпълняват бутонът \"Презареждане на офиси и населени места\" и проверката на входа на куриера."
 
-#: app/Admin/class-help-page.php:249
+#: app/Admin/class-help-page.php:253
 msgid "Updates"
 msgstr "Обновления"
 
-#: app/Admin/class-help-page.php:250
+#: app/Admin/class-help-page.php:254
 msgid "New versions show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too."
 msgstr "Новите версии се появяват в Табло > Обновления и на екрана с разширенията, като всяко друго обновление. Там може да включите и автоматичните обновления."
 
-#: app/Admin/class-help-page.php:252
+#: app/Admin/class-help-page.php:256
 msgid "When something does not work"
 msgstr "Когато нещо не работи"
 
-#: app/Admin/class-help-page.php:253
+#: app/Admin/class-help-page.php:257
 msgid "\"Nothing found\" under a courier: check the login on the courier page. In BOX NOW demo mode there are only two test lockers, both in Sofia."
 msgstr "„Нищо не е намерено“ под куриер: проверете входа на страницата на куриера. В демо режим на BOX NOW има само два тестови автомата, и двата в София."
 
-#: app/Admin/class-help-page.php:254
+#: app/Admin/class-help-page.php:258
 msgid "No courier options at checkout: add the methods to the shipping zone of the customer's address and give your products a weight."
 msgstr "Няма опции за куриер при плащане: добавете методите към зоната за доставка на адреса на клиента и задайте тегло на продуктите."
 
-#: app/Admin/class-help-page.php:255
+#: app/Admin/class-help-page.php:259
 msgid "\"Complete the fields to calculate\" does not go away: the customer has not chosen an office, a locker or an address yet."
 msgstr "„Попълнете данните за изчисляване“ не изчезва: клиентът още не е избрал офис, автомат или адрес."
 
-#: app/Admin/class-help-page.php:256
+#: app/Admin/class-help-page.php:260
 msgid "No documents: turn on \"Invoices and N-18\" in Overview and check \"When to generate documents?\" in Documents."
 msgstr "Няма документи: включете „Фактури и Н-18“ в „Общ преглед“ и проверете „Кога да се създават документите?“ в „Документи“."
 
-#: app/Admin/class-help-page.php:257
+#: app/Admin/class-help-page.php:261
 msgid "The order note \"Some documents were not generated\" means a document failed (the note gives the reason). The refund, renewal or checkout still went through. Fix the cause and make the document again from the order."
 msgstr "Бележката към поръчката „Някои документи не бяха създадени“ означава, че документ е неуспешен (бележката дава причината). Възстановяването, подновяването или поръчката са преминали. Отстранете причината и създайте документа отново от поръчката."
 
-#: app/Admin/class-help-page.php:270 app/Admin/class-import-sources.php:263
+#: app/Admin/class-help-page.php:274 app/Admin/class-import-sources.php:263
 msgid "Bulgarisation for WooCommerce"
 msgstr "Bulgarisation for WooCommerce"
 
-#: app/Admin/class-help-page.php:285
+#: app/Admin/class-help-page.php:289
 msgid "These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use. Then deactivate the old plugin."
 msgstr "Тези плъгини са инсталирани или са оставили данни на сайта Ви. Внасянето взема това, което Нашенски Комерс може да използва. След това деактивирайте стария плъгин."
 
 #. translators: %s: date
-#: app/Admin/class-help-page.php:297
+#: app/Admin/class-help-page.php:301
 #, php-format
 msgid "Imported on %s"
 msgstr "Внесено на %s"
 
-#: app/Admin/class-help-page.php:300
+#: app/Admin/class-help-page.php:304
 msgid "Import"
 msgstr "Внеси"
 
 #. translators: %d: number of settings
-#: app/Admin/class-help-page.php:327
+#: app/Admin/class-help-page.php:331
 #, php-format
 msgid "%d setting changed."
 msgid_plural "%d settings changed."
 msgstr[0] "Променена е %d настройка."
 msgstr[1] "Променени са %d настройки."
 
-#: app/Admin/class-help-page.php:341 app/Admin/class-setup-wizard.php:727
+#: app/Admin/class-help-page.php:345 app/Admin/class-setup-wizard.php:727
 msgid "Recommended settings"
 msgstr "Препоръчителни настройки"
 
-#: app/Admin/class-help-page.php:342
+#: app/Admin/class-help-page.php:346
 msgid "Settings that suit most Bulgarian stores. Tick the ones you want and apply them; nothing else changes."
 msgstr "Настройки, подходящи за повечето български магазини. Отметнете желаните и ги приложете; нищо друго не се променя."
 
-#: app/Admin/class-help-page.php:347
+#: app/Admin/class-help-page.php:351
 msgid "Setting"
 msgstr "Настройка"
 
-#: app/Admin/class-help-page.php:348 app/class-plugin.php:375
+#: app/Admin/class-help-page.php:352 app/class-plugin.php:367
 msgid "Now"
 msgstr "Сега"
 
-#: app/Admin/class-help-page.php:349
+#: app/Admin/class-help-page.php:353
 msgid "Recommended"
 msgstr "Препоръчано"
 
-#: app/Admin/class-help-page.php:350
+#: app/Admin/class-help-page.php:354
 msgid "Why"
 msgstr "Защо"
 
-#: app/Admin/class-help-page.php:363
+#: app/Admin/class-help-page.php:367
 msgid "Already set"
 msgstr "Вече е зададено"
 
-#: app/Admin/class-help-page.php:380
+#: app/Admin/class-help-page.php:384
 msgid "Apply recommended settings"
 msgstr "Прилагане на препоръчителните настройки"
 
-#: app/Admin/class-help-page.php:382
+#: app/Admin/class-help-page.php:386
 msgid "All recommended settings are in place."
 msgstr "Всички препоръчителни настройки са приложени."
 
@@ -1988,7 +2038,7 @@ msgstr "Вид"
 msgid "SKU"
 msgstr "Код (SKU)"
 
-#: app/Admin/class-impossiblevatprice.php:168 app/Front_End/Checkout/class-field-editor.php:936
+#: app/Admin/class-impossiblevatprice.php:168 app/Front_End/Checkout/class-field-editor.php:934
 msgid "Field"
 msgstr "Поле"
 
@@ -2060,51 +2110,51 @@ msgstr "Промоционалната цена е променена на %s, �
 msgid "Import finished: %1$d settings, %2$d shipping method settings, %3$d shipping zone methods, %4$d order shipping lines and %5$d order data rows."
 msgstr "Импортирането приключи: %1$d настройки, %2$d настройки на методи за доставка, %3$d метода в зони за доставка, %4$d реда за доставка в поръчки и %5$d реда с данни на поръчки."
 
-#: app/Admin/class-pigeon.php:51 app/Admin/class-setup-wizard.php:100 app/Admin/Tabs/class-pigeon-tab.php:39 app/Admin/Tabs/class-settings-tab.php:39 app/functions.php:809 app/Shipping/Pigeon/class-method.php:333
+#: app/Admin/class-pigeon.php:51 app/Admin/class-setup-wizard.php:100 app/Admin/Tabs/class-pigeon-tab.php:39 app/Admin/Tabs/class-settings-tab.php:39 app/functions.php:806 app/Shipping/Pigeon/class-method.php:333
 msgid "Pigeon Express"
 msgstr "Pigeon Express"
 
-#: app/Admin/class-pigeon.php:288
+#: app/Admin/class-pigeon.php:289
 msgid "Locker"
 msgstr "Шкафче"
 
-#: app/Admin/class-pigeon.php:296
+#: app/Admin/class-pigeon.php:297
 msgid "You just copied the label data used for the Pigeon Express API."
 msgstr "Копирахте данните за товарителницата, изпратени към API на Pigeon Express."
 
-#: app/Admin/class-pigeon.php:298
+#: app/Admin/class-pigeon.php:299
 msgid "Reference number"
 msgstr "Референтен номер"
 
-#: app/Admin/class-pigeon.php:299
+#: app/Admin/class-pigeon.php:300
 msgid "Tracking codes"
 msgstr "Кодове за проследяване"
 
-#: app/Admin/class-pigeon.php:303 app/Shipping/Pigeon/class-method.php:348
+#: app/Admin/class-pigeon.php:304 app/Shipping/Pigeon/class-method.php:348
 msgid "Review or test before payment"
 msgstr "Преглед или тест преди плащане"
 
-#: app/Admin/class-pigeon.php:304 app/Shipping/Pigeon/class-method.php:356
+#: app/Admin/class-pigeon.php:305 app/Shipping/Pigeon/class-method.php:356
 msgid "Review before payment"
 msgstr "Преглед преди плащане"
 
-#: app/Admin/class-pigeon.php:305 app/Shipping/Pigeon/class-method.php:357
+#: app/Admin/class-pigeon.php:306 app/Shipping/Pigeon/class-method.php:357
 msgid "Review and test before payment"
 msgstr "Преглед и тест преди плащане"
 
-#: app/Admin/class-pigeon.php:306 app/Admin/class-recommended-settings.php:140 app/Front_End/Checkout/class-field-editor.php:744 app/functions.php:312 app/Shipping/Econt/class-method.php:390 app/Shipping/Econt/class-method.php:402
+#: app/Admin/class-pigeon.php:307 app/Admin/class-recommended-settings.php:140 app/Front_End/Checkout/class-field-editor.php:742 app/functions.php:312 app/Shipping/Econt/class-method.php:390 app/Shipping/Econt/class-method.php:402
 msgid "No"
 msgstr "Не"
 
-#: app/Admin/class-pigeon.php:308 app/Admin/class-speedy.php:231 app/Front_End/Checkout/class-pickers.php:575
+#: app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:234 app/Front_End/Checkout/class-pickers.php:575
 msgid "Street or quarter"
 msgstr "Улица или квартал"
 
-#: app/Admin/class-pigeon.php:317
+#: app/Admin/class-pigeon.php:318
 msgid "Return at my expense"
 msgstr "Връщане за моя сметка"
 
-#: app/Admin/class-pigeon.php:318
+#: app/Admin/class-pigeon.php:319
 msgid "Note for courier"
 msgstr "Бележка за куриера"
 
@@ -2116,15 +2166,15 @@ msgstr "Включено"
 msgid "Off"
 msgstr "Изключено"
 
-#: app/Admin/class-recommended-settings.php:38 app/Front_End/Checkout/class-field-editor.php:861
+#: app/Admin/class-recommended-settings.php:38 app/Front_End/Checkout/class-field-editor.php:859
 msgid "Required"
 msgstr "Задължително"
 
-#: app/Admin/class-recommended-settings.php:39 app/Front_End/Checkout/class-field-editor.php:862
+#: app/Admin/class-recommended-settings.php:39 app/Front_End/Checkout/class-field-editor.php:860
 msgid "Optional"
 msgstr "Незадължително"
 
-#: app/Admin/class-recommended-settings.php:40 app/Admin/Tabs/class-fields-tab.php:64 app/Front_End/Checkout/class-field-editor.php:863
+#: app/Admin/class-recommended-settings.php:40 app/Admin/Tabs/class-fields-tab.php:64 app/Front_End/Checkout/class-field-editor.php:861
 msgid "Hidden"
 msgstr "Скрито"
 
@@ -2248,7 +2298,7 @@ msgstr "Цени, въведени с данък"
 msgid "Prices in Bulgaria are shown and entered with VAT included."
 msgstr "В България цените се показват и въвеждат с включен ДДС."
 
-#: app/Admin/class-recommended-settings.php:139 app/Front_End/Checkout/class-field-editor.php:744 app/Shipping/Econt/class-method.php:403
+#: app/Admin/class-recommended-settings.php:139 app/Front_End/Checkout/class-field-editor.php:742 app/Shipping/Econt/class-method.php:403
 msgid "Yes"
 msgstr "Да"
 
@@ -2653,174 +2703,178 @@ msgid "Goes into the NRA audit file for refunded orders."
 msgstr "Влиза в одиторския файл за НАП при върнати поръчки."
 
 #: app/Admin/class-setting-help.php:126
+msgid "For shipping methods of other plugins. Yes: with cash on delivery the courier collects the delivery and gives its own receipt, so it is left out of the order document and the NRA file. Econt, Speedy and Pigeon Express of Nashenski Commerce use \"Customer pays the courier\" on each method instead."
+msgstr "За методи за доставка на други добавки. Да: при наложен платеж куриерът събира доставката и издава собствен документ, затова тя не влиза в документа за продажба и във файла за НАП. Еконт, Спиди и Pigeon Express на Нашенски Комерс ползват вместо това „Клиентът плаща на куриера“ във всеки метод."
+
+#: app/Admin/class-setting-help.php:127
 msgid "The NRA payment type of this payment method."
 msgstr "Видът плащане за НАП за този метод на плащане."
 
-#: app/Admin/class-setting-help.php:126
+#: app/Admin/class-setting-help.php:127
 msgid "How the NRA audit file reports payments made with this method."
 msgstr "Как одиторският файл за НАП отчита плащанията с този метод."
 
-#: app/Admin/class-setting-help.php:127
+#: app/Admin/class-setting-help.php:128
 msgid "The number of the virtual POS terminal from your bank."
 msgstr "Номерът на виртуалния ПОС терминал от банката Ви."
 
-#: app/Admin/class-setting-help.php:127
+#: app/Admin/class-setting-help.php:128
 msgid "Needed in the NRA audit file for card payments."
 msgstr "Нужен е в одиторския файл за НАП при плащания с карта."
 
-#: app/Admin/class-setting-help.php:128
+#: app/Admin/class-setting-help.php:129
 msgid "The identifier of the payment provider, if it gave you one."
 msgstr "Идентификаторът на доставчика на плащания, ако Ви е дал такъв."
 
-#: app/Admin/class-setting-help.php:128
+#: app/Admin/class-setting-help.php:129
 msgid "Goes into the NRA audit file with each payment."
 msgstr "Влиза в одиторския файл за НАП с всяко плащане."
 
-#: app/Admin/class-setting-help.php:129
+#: app/Admin/class-setting-help.php:130
 msgid "A PNG or JPG about 600 pixels wide prints sharp."
 msgstr "PNG или JPG с ширина около 600 пиксела се отпечатва ясно."
 
-#: app/Admin/class-setting-help.php:130
+#: app/Admin/class-setting-help.php:131
 msgid "How big the logo is at the top of the document."
 msgstr "Колко голямо е логото в горната част на документа."
 
-#: app/Admin/class-setting-help.php:130
+#: app/Admin/class-setting-help.php:131
 msgid "Larger logos push the document down; Small keeps long orders on one page."
 msgstr "По-голямото лого избутва документа надолу; „Малко“ запазва дългите поръчки на една страница."
 
-#: app/Admin/class-setting-help.php:131
+#: app/Admin/class-setting-help.php:132
 msgid "Turn off when your logo already has these details."
 msgstr "Изключете, когато логото Ви вече съдържа тези данни."
 
-#: app/Admin/class-setting-help.php:132
+#: app/Admin/class-setting-help.php:133
 msgid "Documents then keep the colours of your site."
 msgstr "Тогава документите следват цветовете на сайта Ви."
 
-#: app/Admin/class-setting-help.php:133
+#: app/Admin/class-setting-help.php:134
 msgid "Pick a colour or type a hex code."
 msgstr "Изберете цвят или въведете шестнадесетичен код."
 
-#: app/Admin/class-setting-help.php:133
+#: app/Admin/class-setting-help.php:134
 msgid "Dark text on a light table header prints best."
 msgstr "Тъмен текст върху светла заглавна част на таблицата се отпечатва най-добре."
 
-#: app/Admin/class-setting-help.php:134
+#: app/Admin/class-setting-help.php:135
 msgid "Both have Cyrillic letters."
 msgstr "И двата имат кирилица."
 
-#: app/Admin/class-setting-help.php:135
+#: app/Admin/class-setting-help.php:136
 msgid "Size of the document text."
 msgstr "Размер на текста в документа."
 
-#: app/Admin/class-setting-help.php:135
+#: app/Admin/class-setting-help.php:136
 msgid "Smaller text fits more products on a page."
 msgstr "По-малкият текст побира повече продукти на страница."
 
-#: app/Admin/class-setting-help.php:136
+#: app/Admin/class-setting-help.php:137
 msgid "The page size of the PDF documents."
 msgstr "Размерът на страницата на PDF документите."
 
-#: app/Admin/class-setting-help.php:136
+#: app/Admin/class-setting-help.php:137
 msgid "A4 suits most office printers."
 msgstr "A4 е подходящ за повечето офис принтери."
 
-#: app/Admin/class-setting-help.php:137
+#: app/Admin/class-setting-help.php:138
 msgid "Compact fits long orders on one page."
 msgstr "„Сбито“ побира дългите поръчки на една страница."
 
-#: app/Admin/class-setting-help.php:138
+#: app/Admin/class-setting-help.php:139
 msgid "How dates look on the documents."
 msgstr "Как изглеждат датите в документите."
 
-#: app/Admin/class-setting-help.php:138
+#: app/Admin/class-setting-help.php:139
 msgid "Bulgarian documents usually use day.month.year."
 msgstr "Българските документи обикновено използват ден.месец.година."
 
-#: app/Admin/class-setting-help.php:139
+#: app/Admin/class-setting-help.php:140
 msgid "Turn off to keep phone numbers and emails off printed documents."
 msgstr "Изключете, за да няма телефони и имейли в отпечатаните документи."
 
-#: app/Admin/class-setting-help.php:140
+#: app/Admin/class-setting-help.php:141
 msgid "The space where the customer signs on receipt."
 msgstr "Мястото, където клиентът се подписва при получаване."
 
-#: app/Admin/class-setting-help.php:143
+#: app/Admin/class-setting-help.php:144
 msgid "A warning sign in the orders list for customers with reports."
 msgstr "Предупредителен знак в списъка с поръчки за клиенти със сигнали."
 
-#: app/Admin/class-setting-help.php:144
+#: app/Admin/class-setting-help.php:145
 msgid "Customers with refused parcels then pay online or by bank transfer."
 msgstr "Клиентите с отказани пратки тогава плащат онлайн или по банков път."
 
-#: app/Admin/class-setting-help.php:145
+#: app/Admin/class-setting-help.php:146
 msgid "From your account on the service's website."
 msgstr "От профила Ви в сайта на услугата."
 
-#: app/Admin/class-setting-help.php:146
+#: app/Admin/class-setting-help.php:147
 msgid "Lower means stricter: more customers get a warning."
 msgstr "По-ниско значи по-строго: повече клиенти получават предупреждение."
 
-#: app/Admin/class-setting-help.php:147
+#: app/Admin/class-setting-help.php:148
 msgid "Shares your waybills with NepoStop, so its data about refused parcels grows. Tell your customers in your privacy policy."
 msgstr "Споделя товарителниците Ви с NepoStop, така че данните му за отказани пратки растат. Уведомете клиентите си в политиката за поверителност."
 
-#: app/Admin/class-setting-help.php:150
+#: app/Admin/class-setting-help.php:151
 msgid "The name customers see at checkout."
 msgstr "Името, което клиентите виждат при плащане."
 
-#: app/Admin/class-setting-help.php:150
+#: app/Admin/class-setting-help.php:151
 msgid "Short is best, for example \"To an office\". The courier logo is shown next to it."
 msgstr "Най-добре е кратко, например „До офис“. Логото на куриера се показва до него."
 
-#: app/Admin/class-setting-help.php:151
+#: app/Admin/class-setting-help.php:152
 msgid "Add one method per delivery type to the zone."
 msgstr "Добавете към зоната по един метод за всеки вид доставка."
 
-#: app/Admin/class-setting-help.php:151
+#: app/Admin/class-setting-help.php:152
 msgid "Office and parcel locker show a list and a map; address shows the street search."
 msgstr "Офис и автомат показват списък и карта; адрес показва търсене на улица."
 
-#: app/Admin/class-setting-help.php:152
+#: app/Admin/class-setting-help.php:153
 msgid "Whether the customer may open or test the parcel before paying."
 msgstr "Дали клиентът може да отвори или тества пратката преди плащане."
 
-#: app/Admin/class-setting-help.php:152
+#: app/Admin/class-setting-help.php:153
 msgid "Not possible at parcel lockers. If the customer refuses after a test, the return is paid as your contract says."
 msgstr "Не е възможно при автомати. Ако клиентът откаже след тест, връщането се плаща според договора Ви."
 
-#: app/Admin/class-setting-help.php:153
+#: app/Admin/class-setting-help.php:154
 msgid "The courier texts the customer about the delivery. It may cost extra."
 msgstr "Куриерът изпраща SMS на клиента за доставката. Може да струва допълнително."
 
-#: app/Admin/class-setting-help.php:154
+#: app/Admin/class-setting-help.php:155
 msgid "Orders at or above this total ship for free with this method."
 msgstr "Поръчки на тази стойност или по-висока се доставят безплатно с този метод."
 
-#: app/Admin/class-setting-help.php:154
+#: app/Admin/class-setting-help.php:155
 msgid "You still pay the courier; the customer sees \"Free\"."
 msgstr "Вие пак плащате на куриера; клиентът вижда „Безплатно“."
 
-#: app/Admin/class-setting-help.php:155
+#: app/Admin/class-setting-help.php:156
 msgid "Also deliver to customers in other countries. Prices come only from the courier."
 msgstr "Доставяйте и до клиенти в други държави. Цените идват само от куриера."
 
-#: app/Admin/class-setting-help.php:156
+#: app/Admin/class-setting-help.php:157
 msgid "Free shipping for customers abroad, per country: RO=150, GR=200."
 msgstr "Безплатна доставка за клиенти в чужбина, за всяка държава: RO=150, GR=200."
 
-#: app/Admin/class-setting-help.php:157
+#: app/Admin/class-setting-help.php:158
 msgid "A set delivery price instead of the courier's calculation."
 msgstr "Определена цена за доставка вместо изчислението на куриера."
 
-#: app/Admin/class-setting-help.php:157
+#: app/Admin/class-setting-help.php:158
 msgid "The difference to the real courier price is yours."
 msgstr "Разликата до реалната цена на куриера е за Ваша сметка."
 
-#: app/Admin/class-setting-help.php:158
+#: app/Admin/class-setting-help.php:159
 msgid "With these payment methods the customer pays the delivery to the courier on delivery. It is then not in the order total, on your documents or in the NRA file."
 msgstr "При тези методи на плащане клиентът плаща доставката на куриера при получаване. Тогава тя не влиза в сумата на поръчката, в документите Ви и в одиторския файл за НАП."
 
-#: app/Admin/class-setting-help.php:158
+#: app/Admin/class-setting-help.php:159
 msgid "Otherwise you collect the delivery and the courier bills you: other payment methods, deliveries abroad, and Speedy or Pigeon Express with a fixed price. Free shipping is always yours."
 msgstr "Иначе Вие събирате доставката, а куриерът я начислява на Вас: при другите методи на плащане, при доставки в чужбина и при Спиди или Pigeon Express с фиксирана цена. Безплатната доставка винаги е за Ваша сметка."
 
@@ -2918,7 +2972,7 @@ msgstr "До автомат"
 msgid "Up to (kg)"
 msgstr "До (кг)"
 
-#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:371
+#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:363
 msgid "Remove row"
 msgstr "Премахване на реда"
 
@@ -3042,15 +3096,15 @@ msgstr "Създаване на липсващите документи за п�
 msgid "Set up Nashenski Commerce"
 msgstr "Настройка на Нашенски Комерс"
 
-#: app/Admin/class-setup-wizard.php:97 app/Admin/Tabs/class-econt-tab.php:39 app/functions.php:806 app/Shipping/Econt/class-method.php:363
+#: app/Admin/class-setup-wizard.php:97 app/Admin/Tabs/class-econt-tab.php:39 app/functions.php:803 app/Shipping/Econt/class-method.php:363
 msgid "Econt"
 msgstr "Еконт"
 
-#: app/Admin/class-setup-wizard.php:98 app/Admin/Tabs/class-settings-tab.php:37 app/Admin/Tabs/class-speedy-tab.php:39 app/functions.php:807 app/Shipping/Speedy/class-method.php:356
+#: app/Admin/class-setup-wizard.php:98 app/Admin/Tabs/class-settings-tab.php:37 app/Admin/Tabs/class-speedy-tab.php:39 app/functions.php:804 app/Shipping/Speedy/class-method.php:356
 msgid "Speedy"
 msgstr "Спиди"
 
-#: app/Admin/class-setup-wizard.php:99 app/Admin/Tabs/class-boxnow-tab.php:39 app/Admin/Tabs/class-settings-tab.php:38 app/functions.php:808 app/Shipping/BoxNow/class-method.php:231
+#: app/Admin/class-setup-wizard.php:99 app/Admin/Tabs/class-boxnow-tab.php:39 app/Admin/Tabs/class-settings-tab.php:38 app/functions.php:805 app/Shipping/BoxNow/class-method.php:231
 msgid "BOX NOW"
 msgstr "BOX NOW"
 
@@ -3248,7 +3302,7 @@ msgstr "Минавате от друг плъгин (%s)? Първо импор�
 msgid "Company"
 msgstr "Фирма"
 
-#: app/Admin/class-setup-wizard.php:603 app/Admin/Tabs/class-nra-tab.php:305
+#: app/Admin/class-setup-wizard.php:603 app/Admin/Tabs/class-nra-tab.php:306
 msgid "Printed on invoices and used in the NRA audit file."
 msgstr "Отпечатват се във фактурите и се използват в одиторския файл за НАП."
 
@@ -3380,31 +3434,31 @@ msgstr "Запази и завърши"
 msgid "Speedy Delivery"
 msgstr "Доставка със Спиди"
 
-#: app/Admin/class-speedy.php:210
+#: app/Admin/class-speedy.php:213
 msgid "Fill in at least one of street number, block, entrance, floor or apartment."
 msgstr "Попълнете поне едно от: номер на улица, блок, вход, етаж или апартамент."
 
-#: app/Admin/class-speedy.php:219
+#: app/Admin/class-speedy.php:222
 msgid "Physical Weight"
 msgstr "Физическо тегло"
 
-#: app/Admin/class-speedy.php:220
+#: app/Admin/class-speedy.php:223
 msgid "Volumetric weight"
 msgstr "Обемно тегло"
 
-#: app/Admin/class-speedy.php:221
+#: app/Admin/class-speedy.php:224
 msgid "Chargeable weight"
 msgstr "Тегло за таксуване"
 
-#: app/Admin/class-speedy.php:224
+#: app/Admin/class-speedy.php:227
 msgid "You just copied the label data used for the Speedy API."
 msgstr "Копирахте данните за товарителницата, изпратени към API на Спиди."
 
-#: app/Admin/class-speedy.php:233
+#: app/Admin/class-speedy.php:236
 msgid "A4 with copy on same page"
 msgstr "A4 с копие на същата страница"
 
-#: app/Admin/class-speedy.php:234
+#: app/Admin/class-speedy.php:237
 msgid "A4 with copy on single page"
 msgstr "A4 с копие на отделна страница"
 
@@ -3466,12 +3520,12 @@ msgstr "English"
 msgid "Generate Invoice"
 msgstr "Създаване на фактура"
 
-#: app/Admin/Order/class-actions.php:258
+#: app/Admin/Order/class-actions.php:257
 msgid "The invoice number must be 1 to 10 digits."
 msgstr "Номерът на фактурата трябва да е от 1 до 10 цифри."
 
 #. translators: %s: the error message
-#: app/Admin/Order/class-actions.php:281 app/Admin/Order/class-documents.php:122 app/Admin/Order/class-documents.php:158 app/Admin/Order/class-documents.php:182 app/Admin/Order/class-subscriptions.php:62
+#: app/Admin/Order/class-actions.php:280 app/Admin/Order/class-documents.php:122 app/Admin/Order/class-documents.php:158 app/Admin/Order/class-documents.php:182 app/Admin/Order/class-subscriptions.php:62
 #, php-format
 msgid "Some documents were not generated: %s"
 msgstr "Някои документи не бяха създадени: %s"
@@ -3489,37 +3543,37 @@ msgid "No courier"
 msgstr "Няма куриер"
 
 #. translators: 1: delivery price, 2: order total
-#: app/Admin/Order/class-delivery-box.php:71
+#: app/Admin/Order/class-delivery-box.php:72
 #, php-format
 msgid "Delivery price %1$s and the new total %2$s emailed to the customer."
 msgstr "Цената за доставка %1$s и новата обща сума %2$s са изпратени на клиента по имейл."
 
-#: app/Admin/Order/class-delivery-box.php:158 app/Export/Builder/class-fields.php:90 app/Shipping/class-courier-fee.php:367
+#: app/Admin/Order/class-delivery-box.php:159 app/Export/Builder/class-fields.php:90 app/Shipping/class-courier-fee.php:535
 msgid "Delivery"
 msgstr "Доставка"
 
-#: app/Admin/Order/class-delivery-box.php:171
+#: app/Admin/Order/class-delivery-box.php:172
 msgid "No courier shipping option is set up. Add one under WooCommerce > Settings > Shipping."
 msgstr "Няма настроена куриерска доставка. Добавете от WooCommerce > Настройки > Доставка."
 
-#: app/Admin/Order/class-delivery-box.php:202
+#: app/Admin/Order/class-delivery-box.php:203
 msgid "Choose how the order is delivered, then the town and the office, locker or address. Save the order to add the shipping line; the courier box for the label appears after saving."
 msgstr "Изберете начина на доставка, после населеното място и офиса, автомата или адреса. Запазете поръчката, за да се добави доставката; полето на куриера за товарителницата се появява след запазване."
 
-#: app/Admin/Order/class-delivery-box.php:204
+#: app/Admin/Order/class-delivery-box.php:205
 msgid "Shipping option"
 msgstr "Начин на доставка"
 
-#: app/Admin/Order/class-delivery-box.php:215
+#: app/Admin/Order/class-delivery-box.php:216
 msgid "Save delivery"
 msgstr "Запази доставката"
 
-#: app/Admin/Order/class-delivery-box.php:248
+#: app/Admin/Order/class-delivery-box.php:249
 msgid "Delivery was not saved: choose the town and the office, locker or address first."
 msgstr "Доставката не е запазена: първо изберете населеното място и офиса, автомата или адреса."
 
 #. translators: 1: shipping option, 2: office, locker or address
-#: app/Admin/Order/class-delivery-box.php:293
+#: app/Admin/Order/class-delivery-box.php:294
 #, php-format
 msgid "Delivery set on the order screen: %1$s, %2$s. The price comes with the label."
 msgstr "Доставката е зададена от страницата на поръчката: %1$s, %2$s. Цената идва с товарителницата."
@@ -3714,7 +3768,7 @@ msgstr " до "
 msgid "+ Add new row"
 msgstr "+ Добавяне на ред"
 
-#: app/Admin/Tabs/class-boxnow-tab.php:166 app/Front_End/Checkout/class-field-editor.php:981
+#: app/Admin/Tabs/class-boxnow-tab.php:166 app/Front_End/Checkout/class-field-editor.php:979
 msgid "and"
 msgstr "и"
 
@@ -3782,7 +3836,7 @@ msgstr "Въведете токена, получен от connectix.bg."
 msgid "Low"
 msgstr "Ниско"
 
-#: app/Admin/Tabs/class-connectix-tab.php:78 app/Admin/Tabs/class-nra-tab.php:159 app/Client/class-connectix.php:211
+#: app/Admin/Tabs/class-connectix-tab.php:78 app/Admin/Tabs/class-nra-tab.php:160 app/Client/class-connectix.php:211
 msgid "Medium"
 msgstr "Средно"
 
@@ -3968,7 +4022,7 @@ msgstr "Открити грешки във файла:"
 msgid "File generated successfully! <a href=\"%s\" download target=\"_blank\">Download</a>"
 msgstr "Файлът е създаден! <a href=\"%s\" download target=\"_blank\">Изтегляне</a>"
 
-#: app/Admin/Tabs/class-fields-tab.php:23 app/Front_End/Checkout/class-field-editor.php:814
+#: app/Admin/Tabs/class-fields-tab.php:23 app/Front_End/Checkout/class-field-editor.php:812
 msgid "Checkout fields"
 msgstr "Полета при плащане"
 
@@ -3996,7 +4050,7 @@ msgstr "Номериране на фактури"
 msgid "Own invoicing program: no invoice is made automatically. Type the number from your program on the order screen and press \"Make invoice\". Those orders stay out of the NRA audit file and the monthly audit email."
 msgstr "Собствена програма за фактуриране: фактурата не се създава автоматично. Въведете номера от програмата си на екрана на поръчката и натиснете \"Създай фактура\". Тези поръчки остават извън одитния файл на НАП и месечния одитен имейл."
 
-#: app/Admin/Tabs/class-fields-tab.php:60 app/Front_End/Checkout/class-field-editor.php:860
+#: app/Admin/Tabs/class-fields-tab.php:60 app/Front_End/Checkout/class-field-editor.php:858
 msgid "Default (as WooCommerce shows it)"
 msgstr "По подразбиране (както го показва WooCommerce)"
 
@@ -4298,179 +4352,189 @@ msgstr "Начин на връщане"
 msgid "How to return the amount when the client cancel the order."
 msgstr "Как се връща сумата, когато клиентът откаже поръчката."
 
-#: app/Admin/Tabs/class-nra-tab.php:150
+#: app/Admin/Tabs/class-nra-tab.php:151
 msgid "Logo"
 msgstr "Лого"
 
-#: app/Admin/Tabs/class-nra-tab.php:150
+#: app/Admin/Tabs/class-nra-tab.php:151
 msgid "Shown at the top of every document. Without one, the site logo from the theme or the site icon is used."
 msgstr "Показва се най-горе във всеки документ. Ако няма, се използва логото на сайта от темата или иконата на сайта."
 
-#: app/Admin/Tabs/class-nra-tab.php:155 app/Admin/Tabs/class-nra-tab.php:201
+#: app/Admin/Tabs/class-nra-tab.php:156 app/Admin/Tabs/class-nra-tab.php:202
 msgid "Small"
 msgstr "Малко"
 
-#: app/Admin/Tabs/class-nra-tab.php:163 app/Admin/Tabs/class-nra-tab.php:209
+#: app/Admin/Tabs/class-nra-tab.php:164 app/Admin/Tabs/class-nra-tab.php:210
 msgid "Large"
 msgstr "Голямо"
 
-#: app/Admin/Tabs/class-nra-tab.php:167
+#: app/Admin/Tabs/class-nra-tab.php:168
 msgid "Logo size"
 msgstr "Размер на логото"
 
-#: app/Admin/Tabs/class-nra-tab.php:169
+#: app/Admin/Tabs/class-nra-tab.php:170
 msgid "Website details"
 msgstr "Данни за сайта"
 
-#: app/Admin/Tabs/class-nra-tab.php:169
+#: app/Admin/Tabs/class-nra-tab.php:170
 msgid "Show the website name, address, email and phone under the logo"
 msgstr "Показване на името, адреса, имейла и телефона на сайта под логото"
 
-#: app/Admin/Tabs/class-nra-tab.php:173
+#: app/Admin/Tabs/class-nra-tab.php:174
 msgid "Follow TokenForge colours"
 msgstr "Цветове от TokenForge"
 
-#: app/Admin/Tabs/class-nra-tab.php:173
+#: app/Admin/Tabs/class-nra-tab.php:174
 msgid "Use the TokenForge palette for the colours below, now and after you change it"
 msgstr "Използване на палитрата на TokenForge за цветовете по-долу, сега и след като я промените"
 
-#: app/Admin/Tabs/class-nra-tab.php:176
+#: app/Admin/Tabs/class-nra-tab.php:177
 msgid "Title colour"
 msgstr "Цвят на заглавието"
 
-#: app/Admin/Tabs/class-nra-tab.php:176
+#: app/Admin/Tabs/class-nra-tab.php:177
 msgid "Document title and website name."
 msgstr "Заглавието на документа и името на сайта."
 
-#: app/Admin/Tabs/class-nra-tab.php:177 app/Front_End/Checkout/class-appearance.php:229
+#: app/Admin/Tabs/class-nra-tab.php:178 app/Front_End/Checkout/class-appearance.php:229
 msgid "Accent colour"
 msgstr "Акцентен цвят"
 
-#: app/Admin/Tabs/class-nra-tab.php:177
+#: app/Admin/Tabs/class-nra-tab.php:178
 msgid "Lines under the header and above the footer."
 msgstr "Линиите под горния и над долния колонтитул."
 
-#: app/Admin/Tabs/class-nra-tab.php:178
+#: app/Admin/Tabs/class-nra-tab.php:179
 msgid "Text colour"
 msgstr "Цвят на текста"
 
-#: app/Admin/Tabs/class-nra-tab.php:179
+#: app/Admin/Tabs/class-nra-tab.php:180
 msgid "Table header background"
 msgstr "Фон на заглавния ред на таблицата"
 
-#: app/Admin/Tabs/class-nra-tab.php:184
+#: app/Admin/Tabs/class-nra-tab.php:185
 msgid "Sans serif (DejaVu Sans)"
 msgstr "Безсерифен (DejaVu Sans)"
 
-#: app/Admin/Tabs/class-nra-tab.php:188
+#: app/Admin/Tabs/class-nra-tab.php:189
 msgid "Serif (DejaVu Serif)"
 msgstr "Серифен (DejaVu Serif)"
 
-#: app/Admin/Tabs/class-nra-tab.php:192
+#: app/Admin/Tabs/class-nra-tab.php:193
 msgid "Font"
 msgstr "Шрифт"
 
-#: app/Admin/Tabs/class-nra-tab.php:195
+#: app/Admin/Tabs/class-nra-tab.php:196
 msgid "Both fonts print Cyrillic and Latin."
 msgstr "И двата шрифта поддържат кирилица и латиница."
 
-#: app/Admin/Tabs/class-nra-tab.php:205 app/Admin/Tabs/class-nra-tab.php:237
+#: app/Admin/Tabs/class-nra-tab.php:206 app/Admin/Tabs/class-nra-tab.php:238
 msgid "Normal"
 msgstr "Нормален"
 
-#: app/Admin/Tabs/class-nra-tab.php:213
+#: app/Admin/Tabs/class-nra-tab.php:214
 msgid "Text size"
 msgstr "Размер на текста"
 
-#: app/Admin/Tabs/class-nra-tab.php:219
+#: app/Admin/Tabs/class-nra-tab.php:220
 msgid "A4"
 msgstr "A4"
 
-#: app/Admin/Tabs/class-nra-tab.php:223
+#: app/Admin/Tabs/class-nra-tab.php:224
 msgid "Letter"
 msgstr "Letter"
 
-#: app/Admin/Tabs/class-nra-tab.php:227
+#: app/Admin/Tabs/class-nra-tab.php:228
 msgid "Paper size"
 msgstr "Размер на хартията"
 
-#: app/Admin/Tabs/class-nra-tab.php:233
+#: app/Admin/Tabs/class-nra-tab.php:234
 msgid "Compact"
 msgstr "Сбито"
 
-#: app/Admin/Tabs/class-nra-tab.php:241
+#: app/Admin/Tabs/class-nra-tab.php:242
 msgid "Spacious"
 msgstr "Просторно"
 
-#: app/Admin/Tabs/class-nra-tab.php:245 app/Front_End/Checkout/class-appearance.php:237
+#: app/Admin/Tabs/class-nra-tab.php:246 app/Front_End/Checkout/class-appearance.php:237
 msgid "Spacing"
 msgstr "Разстояния"
 
-#: app/Admin/Tabs/class-nra-tab.php:248
+#: app/Admin/Tabs/class-nra-tab.php:249
 msgid "Line spacing of the supplier and customer boxes and padding of the tables."
 msgstr "Разстояние между редовете в полетата на доставчика и получателя и отстъп в таблиците."
 
-#: app/Admin/Tabs/class-nra-tab.php:258
+#: app/Admin/Tabs/class-nra-tab.php:259
 msgid "Date format"
 msgstr "Формат на датата"
 
-#: app/Admin/Tabs/class-nra-tab.php:260
+#: app/Admin/Tabs/class-nra-tab.php:261
 msgid "Phone and email"
 msgstr "Телефон и имейл"
 
-#: app/Admin/Tabs/class-nra-tab.php:260
+#: app/Admin/Tabs/class-nra-tab.php:261
 msgid "Show the phone and email of the supplier and the customer"
 msgstr "Показване на телефона и имейла на доставчика и получателя"
 
-#: app/Admin/Tabs/class-nra-tab.php:261
+#: app/Admin/Tabs/class-nra-tab.php:262
 msgid "Received by"
 msgstr "Получил"
 
-#: app/Admin/Tabs/class-nra-tab.php:261
+#: app/Admin/Tabs/class-nra-tab.php:262
 msgid "Show the \"Received\" box with the customer name"
 msgstr "Показване на полето „Получил“ с името на клиента"
 
 #. translators: %s: payment method name
-#: app/Admin/Tabs/class-nra-tab.php:283
+#: app/Admin/Tabs/class-nra-tab.php:284
 #, php-format
 msgid "Payment method: %s"
 msgstr "Начин на плащане: %s"
 
-#: app/Admin/Tabs/class-nra-tab.php:304
+#: app/Admin/Tabs/class-nra-tab.php:305
 msgid "Company details"
 msgstr "Данни за фирмата"
 
-#: app/Admin/Tabs/class-nra-tab.php:311
+#: app/Admin/Tabs/class-nra-tab.php:312
 msgid "VAT and refunds"
 msgstr "ДДС и възстановявания"
 
-#: app/Admin/Tabs/class-nra-tab.php:314
+#: app/Admin/Tabs/class-nra-tab.php:315
+msgid "Shipping on documents"
+msgstr "Доставка в документите"
+
+#: app/Admin/Tabs/class-nra-tab.php:318
 msgid "PDF appearance"
 msgstr "Вид на PDF документите"
 
-#: app/Admin/Tabs/class-nra-tab.php:316
+#: app/Admin/Tabs/class-nra-tab.php:320
 msgid "TokenForge is active: its colours fill in the fields below, and with \"Follow TokenForge colours\" on, documents keep matching the website."
 msgstr "TokenForge е активен: цветовете му попълват полетата по-долу, а с „Цветове от TokenForge“ документите продължават да съвпадат със сайта."
 
-#: app/Admin/Tabs/class-nra-tab.php:317
+#: app/Admin/Tabs/class-nra-tab.php:321
 msgid "Logo, colours, font and paper of invoices, credit notes and order documents."
 msgstr "Лого, цветове, шрифт и хартия на фактурите, кредитните известия и документите за продажба."
 
-#: app/Admin/Tabs/class-nra-tab.php:338
+#: app/Admin/Tabs/class-nra-tab.php:342
 msgid "Payment Type"
 msgstr "Вид плащане"
 
-#: app/Admin/Tabs/class-nra-tab.php:338
+#: app/Admin/Tabs/class-nra-tab.php:342
 msgid "Manner of payment of the order according to the NRA system."
 msgstr "Начин на плащане на поръчката според системата на НАП."
 
-#: app/Admin/Tabs/class-nra-tab.php:339
+#: app/Admin/Tabs/class-nra-tab.php:343
 msgid "Virtual POS №"
 msgstr "Виртуален ПОС №"
 
-#: app/Admin/Tabs/class-nra-tab.php:340
+#: app/Admin/Tabs/class-nra-tab.php:344
 msgid "Identifier"
 msgstr "Идентификатор"
+
+#. translators: %s: shipping method name
+#: app/Admin/Tabs/class-nra-tab.php:370
+#, php-format
+msgid "Is %s courier?"
+msgstr "%s куриер ли е?"
 
 #: app/Admin/Tabs/class-pigeon-tab.php:70
 msgid "Enter your API key."
@@ -4614,7 +4678,7 @@ msgstr "Показване във формата (собствен шаблон)
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr "Кратка форма за купувачи, които не искат да минават през количката. Купувачът изпраща име, телефон и имейл, а поръчката чака вашето потвърждение. Наличността не се резервира, докато не потвърдите. Сменете статуса на поръчката на „Очаква плащане“, за да изпратите линк за плащане."
 
-#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:154 app/class-plugin.php:313
+#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:152 app/class-plugin.php:305
 msgid "Settings"
 msgstr "Настройки"
 
@@ -4783,40 +4847,40 @@ msgid "The document was not found or you do not have access to it."
 msgstr "Документът не е намерен или нямате достъп до него."
 
 #. translators: %s: link to the settings
-#: app/class-plugin.php:154
+#: app/class-plugin.php:152
 #, php-format
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr "Нашенски Комерс: прегледайте настройките и ги запазете отново от „%s“."
 
-#: app/class-plugin.php:369
+#: app/class-plugin.php:361
 msgid "The file was downloaded."
 msgstr "Файлът е изтеглен."
 
-#: app/class-plugin.php:372
+#: app/class-plugin.php:364
 msgid "Built-in prices restored. Save to keep them."
 msgstr "Вградените цени са възстановени. Запазете, за да ги задържите."
 
-#: app/class-plugin.php:373
+#: app/class-plugin.php:365
 msgid "Your prices match the courier website."
 msgstr "Цените ви съвпадат със сайта на куриера."
 
-#: app/class-plugin.php:374
+#: app/class-plugin.php:366
 msgid "The courier website has different prices:"
 msgstr "Сайтът на куриера има различни цени:"
 
-#: app/class-plugin.php:376 app/Front_End/class-quick-order.php:500
+#: app/class-plugin.php:368 app/Front_End/class-quick-order.php:500
 msgid "Website"
 msgstr "Сайт"
 
-#: app/class-plugin.php:377
+#: app/class-plugin.php:369
 msgid "Use these prices"
 msgstr "Използване на тези цени"
 
-#: app/class-plugin.php:378
+#: app/class-plugin.php:370
 msgid "New prices filled in. Check them and save."
 msgstr "Новите цени са попълнени. Проверете ги и запазете."
 
-#: app/class-plugin.php:412
+#: app/class-plugin.php:404
 msgid "The request failed. Reload the page and try again."
 msgstr "Заявката не успя. Презаредете страницата и опитайте отново."
 
@@ -4933,10 +4997,6 @@ msgstr "Платена на"
 #: app/Export/Builder/class-fields.php:50
 msgid "Completed on"
 msgstr "Изпълнена на"
-
-#: app/Export/Builder/class-fields.php:51
-msgid "Currency"
-msgstr "Валута"
 
 #: app/Export/Builder/class-fields.php:52
 msgid "Customer note"
@@ -5290,7 +5350,7 @@ msgstr "Населено място по регистрация"
 msgid "Registered address"
 msgstr "Адрес по регистрация"
 
-#: app/Front_End/Checkout/class-company-fields.php:133 app/Front_End/Checkout/class-field-editor.php:680
+#: app/Front_End/Checkout/class-company-fields.php:133 app/Front_End/Checkout/class-field-editor.php:678
 msgid "(optional)"
 msgstr "(незадължително)"
 
@@ -5342,191 +5402,191 @@ msgstr "Област"
 msgid "Postcode"
 msgstr "Пощенски код"
 
-#: app/Front_End/Checkout/class-field-editor.php:611
+#: app/Front_End/Checkout/class-field-editor.php:609
 msgid "Choose an option"
 msgstr "Изберете"
 
-#: app/Front_End/Checkout/class-field-editor.php:815
+#: app/Front_End/Checkout/class-field-editor.php:813
 msgid "Show, require or hide each field, set its width and order, and add your own fields."
 msgstr "Показвайте, задължавайте или скривайте всяко поле, задавайте ширината и реда му и добавяйте свои полета."
 
-#: app/Front_End/Checkout/class-field-editor.php:820
+#: app/Front_End/Checkout/class-field-editor.php:818
 msgid "Fields"
 msgstr "Полета"
 
-#: app/Front_End/Checkout/class-field-editor.php:857 app/Front_End/class-withdrawal.php:495
+#: app/Front_End/Checkout/class-field-editor.php:855 app/Front_End/class-withdrawal.php:495
 msgid "Email address"
 msgstr "Имейл адрес"
 
-#: app/Front_End/Checkout/class-field-editor.php:866
+#: app/Front_End/Checkout/class-field-editor.php:864
 msgid "Text"
 msgstr "Текст"
 
-#: app/Front_End/Checkout/class-field-editor.php:867
+#: app/Front_End/Checkout/class-field-editor.php:865
 msgid "Text area"
 msgstr "Текстово поле"
 
-#: app/Front_End/Checkout/class-field-editor.php:868
+#: app/Front_End/Checkout/class-field-editor.php:866
 msgid "List"
 msgstr "Списък"
 
-#: app/Front_End/Checkout/class-field-editor.php:869
+#: app/Front_End/Checkout/class-field-editor.php:867
 msgid "Checkbox"
 msgstr "Отметка"
 
-#: app/Front_End/Checkout/class-field-editor.php:872 app/Front_End/Checkout/class-pickers.php:578
+#: app/Front_End/Checkout/class-field-editor.php:870 app/Front_End/Checkout/class-pickers.php:578
 msgid "Number"
 msgstr "Номер"
 
-#: app/Front_End/Checkout/class-field-editor.php:873
+#: app/Front_End/Checkout/class-field-editor.php:871
 msgid "Date"
 msgstr "Дата"
 
-#: app/Front_End/Checkout/class-field-editor.php:880
+#: app/Front_End/Checkout/class-field-editor.php:878
 msgid "One choice per line"
 msgstr "По един избор на ред"
 
-#: app/Front_End/Checkout/class-field-editor.php:901
+#: app/Front_End/Checkout/class-field-editor.php:899
 msgid "Full width"
 msgstr "Цяла ширина"
 
-#: app/Front_End/Checkout/class-field-editor.php:902
+#: app/Front_End/Checkout/class-field-editor.php:900
 msgid "Half width"
 msgstr "Половин ширина"
 
-#: app/Front_End/Checkout/class-field-editor.php:907 app/Front_End/Checkout/class-field-editor.php:939
+#: app/Front_End/Checkout/class-field-editor.php:905 app/Front_End/Checkout/class-field-editor.php:937
 msgid "Condition"
 msgstr "Условие"
 
-#: app/Front_End/Checkout/class-field-editor.php:911
+#: app/Front_End/Checkout/class-field-editor.php:909
 msgid "Always shown"
 msgstr "Винаги се показва"
 
-#: app/Front_End/Checkout/class-field-editor.php:913
+#: app/Front_End/Checkout/class-field-editor.php:911
 msgid "Show when..."
 msgstr "Показвай, когато..."
 
-#: app/Front_End/Checkout/class-field-editor.php:915
+#: app/Front_End/Checkout/class-field-editor.php:913
 msgid "Hide when..."
 msgstr "Скривай, когато..."
 
-#: app/Front_End/Checkout/class-field-editor.php:917
+#: app/Front_End/Checkout/class-field-editor.php:915
 msgid "Edit condition"
 msgstr "Промени условието"
 
-#: app/Front_End/Checkout/class-field-editor.php:935
+#: app/Front_End/Checkout/class-field-editor.php:933
 msgid "Position"
 msgstr "Позиция"
 
-#: app/Front_End/Checkout/class-field-editor.php:937
+#: app/Front_End/Checkout/class-field-editor.php:935
 msgid "Show"
 msgstr "Показване"
 
 #. translators: %s: the field, the operator and the value
-#: app/Front_End/Checkout/class-field-editor.php:972
+#: app/Front_End/Checkout/class-field-editor.php:970
 #, php-format
 msgid "Shown when: %s"
 msgstr "Показва се, когато: %s"
 
 #. translators: %s: the field, the operator and the value
-#: app/Front_End/Checkout/class-field-editor.php:978
+#: app/Front_End/Checkout/class-field-editor.php:976
 #, php-format
 msgid "Hidden when: %s"
 msgstr "Скрива се, когато: %s"
 
-#: app/Front_End/Checkout/class-field-editor.php:982 app/Front_End/Checkout/class-field-editor.php:1008
+#: app/Front_End/Checkout/class-field-editor.php:980 app/Front_End/Checkout/class-field-editor.php:1006
 msgid "or"
 msgstr "или"
 
 #. translators: %s: field label
-#: app/Front_End/Checkout/class-field-editor.php:986
+#: app/Front_End/Checkout/class-field-editor.php:984
 #, php-format
 msgid "%s is hidden, so its value always counts as empty."
 msgstr "%s е скрито, затова стойността му винаги се счита за празна."
 
 #. translators: %s: field key
-#: app/Front_End/Checkout/class-field-editor.php:992
+#: app/Front_End/Checkout/class-field-editor.php:990
 #, php-format
 msgid "%s is not in the table any more. The rule is dropped on save."
 msgstr "%s вече го няма в таблицата. Правилото се отхвърля при запис."
 
-#: app/Front_End/Checkout/class-field-editor.php:995
+#: app/Front_End/Checkout/class-field-editor.php:993
 msgid "ticked"
 msgstr "отметнато"
 
-#: app/Front_End/Checkout/class-field-editor.php:996
+#: app/Front_End/Checkout/class-field-editor.php:994
 msgid "not ticked"
 msgstr "неотметнато"
 
-#: app/Front_End/Checkout/class-field-editor.php:997
+#: app/Front_End/Checkout/class-field-editor.php:995
 msgid "Choose a field"
 msgstr "Изберете поле"
 
-#: app/Front_End/Checkout/class-field-editor.php:1001
+#: app/Front_End/Checkout/class-field-editor.php:999
 msgid "Show this field when:"
 msgstr "Показвай полето, когато:"
 
-#: app/Front_End/Checkout/class-field-editor.php:1002
+#: app/Front_End/Checkout/class-field-editor.php:1000
 msgid "Hide this field when:"
 msgstr "Скривай полето, когато:"
 
-#: app/Front_End/Checkout/class-field-editor.php:1005
+#: app/Front_End/Checkout/class-field-editor.php:1003
 msgid "Add alternative (or)"
 msgstr "Добави алтернатива (или)"
 
-#: app/Front_End/Checkout/class-field-editor.php:1005 app/Front_End/Checkout/class-pickers.php:567 app/Front_End/class-quick-order.php:376
+#: app/Front_End/Checkout/class-field-editor.php:1003 app/Front_End/Checkout/class-pickers.php:567 app/Front_End/class-quick-order.php:376
 msgid "Close"
 msgstr "Затваряне"
 
-#: app/Front_End/Checkout/class-field-editor.php:1009
+#: app/Front_End/Checkout/class-field-editor.php:1007
 msgid "All of these are true:"
 msgstr "Всички тези са верни:"
 
-#: app/Front_End/Checkout/class-field-editor.php:1011
+#: app/Front_End/Checkout/class-field-editor.php:1009
 msgid "Add condition"
 msgstr "Добавяне на условие"
 
-#: app/Front_End/Checkout/class-field-editor.php:1016
+#: app/Front_End/Checkout/class-field-editor.php:1014
 msgid "is"
 msgstr "е"
 
-#: app/Front_End/Checkout/class-field-editor.php:1017
+#: app/Front_End/Checkout/class-field-editor.php:1015
 msgid "is not"
 msgstr "не е"
 
-#: app/Front_End/Checkout/class-field-editor.php:1018
+#: app/Front_End/Checkout/class-field-editor.php:1016
 msgid "is greater than"
 msgstr "е по-голямо от"
 
-#: app/Front_End/Checkout/class-field-editor.php:1019
+#: app/Front_End/Checkout/class-field-editor.php:1017
 msgid "is less than"
 msgstr "е по-малко от"
 
-#: app/Front_End/Checkout/class-field-editor.php:1020
+#: app/Front_End/Checkout/class-field-editor.php:1018
 msgid "is empty"
 msgstr "е празно"
 
-#: app/Front_End/Checkout/class-field-editor.php:1021
+#: app/Front_End/Checkout/class-field-editor.php:1019
 msgid "is not empty"
 msgstr "не е празно"
 
-#: app/Front_End/Checkout/class-field-editor.php:1028
+#: app/Front_End/Checkout/class-field-editor.php:1026
 msgid "Add your own field"
 msgstr "Добавяне на собствено поле"
 
-#: app/Front_End/Checkout/class-field-editor.php:1029
+#: app/Front_End/Checkout/class-field-editor.php:1027
 msgid "Use the arrows to change the order. Two half-width fields next to each other share a line. With company invoice fields on, the company name belongs to them."
 msgstr "Сменете реда със стрелките. Две съседни полета с половин ширина са на един ред. Когато полетата за фактура на фирма са включени, името на фирмата е част от тях."
 
-#: app/Front_End/Checkout/class-field-editor.php:1032
+#: app/Front_End/Checkout/class-field-editor.php:1030
 msgid "Which checkouts follow what"
 msgstr "Кои касови процеси какво следват"
 
-#: app/Front_End/Checkout/class-field-editor.php:1033
+#: app/Front_End/Checkout/class-field-editor.php:1031
 msgid "Show, required and hidden apply to the billing and shipping address in every checkout. Order and width also apply to the address in the block checkout, where the email always comes first and your own fields come after it. The place of the email applies to the classic checkout and to builder checkouts that show WooCommerce's billing fields. Builder checkouts made of single field elements keep the order you placed them in. When the town or region is hidden, the courier fields ask for the town (from Econt's list of towns when Econt is on)."
 msgstr "Показване, задължителност и скриване важат за адреса за фактуриране и за адреса за доставка във всеки касов процес. Редът и ширината важат и за адреса в блоковия касов процес, където имейлът винаги е първи, а вашите полета са след него. Мястото на имейла важи за класическия касов процес и за конструираните касови процеси, които показват полетата за фактуриране на WooCommerce. Конструираните касови процеси от отделни полета запазват реда, в който сте ги поставили. Когато градът или областта са скрити, полетата на куриера искат град (от списъка на градовете на Econt, когато Econt е включен)."
 
-#: app/Front_End/Checkout/class-field-editor.php:1034
+#: app/Front_End/Checkout/class-field-editor.php:1032
 msgid "Conditions: the classic checkout follows all of them. The block checkout follows conditions on your own fields that read your own fields, and not \"greater\" or \"less\"; other conditions are ignored there."
 msgstr "Условия: класическото плащане следва всички. Блоковото плащане следва условията на вашите полета, които четат ваши полета, но не „по-голямо“ и „по-малко“; другите условия там се пренебрегват."
 
@@ -5551,7 +5611,7 @@ msgid "Free"
 msgstr "Безплатно"
 
 #. translators: %s: delivery price, for example 6,50 €
-#: app/Front_End/Checkout/class-pickers.php:540 app/Shipping/class-courier-fee.php:327
+#: app/Front_End/Checkout/class-pickers.php:540 app/Shipping/class-courier-fee.php:476
 #, php-format
 msgid "%s, paid to the courier on delivery, not included in the total"
 msgstr "%s, плаща се на куриера при доставка, не е включена в общата сума"
@@ -5977,34 +6037,34 @@ msgstr "Отразено с касова бележка"
 msgid "Review only"
 msgstr "Само преглед"
 
-#: app/functions.php:580 app/functions.php:619 app/Shipping/Pigeon/class-payment.php:209
+#: app/functions.php:576 app/functions.php:615 app/Shipping/Pigeon/class-payment.php:209
 msgid "This page has expired. Reload it and try again."
 msgstr "Страницата е изтекла. Презаредете я и опитайте отново."
 
-#: app/functions.php:584
+#: app/functions.php:580
 msgid "You cannot create labels."
 msgstr "Не можете да създавате товарителници."
 
-#: app/functions.php:910
+#: app/functions.php:907
 msgid "Label created."
 msgstr "Товарителницата е създадена."
 
-#: app/functions.php:911
+#: app/functions.php:908
 msgid "Label updated."
 msgstr "Товарителницата е обновена."
 
-#: app/functions.php:912
+#: app/functions.php:909
 msgid "Label deleted."
 msgstr "Товарителницата е изтрита."
 
 #. translators: %s: waybill number
-#: app/functions.php:929
+#: app/functions.php:926
 #, php-format
 msgid "Label number: %s."
 msgstr "Номер на товарителница: %s."
 
 #. translators: %s: invoice number
-#: app/Invoice/class-number-allocator.php:392
+#: app/Invoice/class-number-allocator.php:396
 #, php-format
 msgid "Number %s is already used by another order. Choose another invoice number."
 msgstr "Номер %s вече е използван от друга поръчка. Изберете друг номер на фактурата."
@@ -6573,9 +6633,21 @@ msgstr "Еконт не прие заявката."
 msgid "Speedy did not accept the request."
 msgstr "Спиди не прие заявката."
 
-#: app/Shipping/class-courier-fee.php:90
+#: app/Shipping/class-courier-fee.php:96
 msgid "Customer pays the courier"
 msgstr "Клиентът плаща на куриера"
+
+#: app/Shipping/class-courier-fee.php:261
+msgid "The payment method changed after checkout. Who pays the courier stays as decided at checkout: check the delivery line and the waybill by hand."
+msgstr "Методът на плащане се смени след поръчката. Кой плаща на куриера остава както е решено при плащане: проверете на ръка реда за доставка и товарителницата."
+
+#: app/Shipping/class-courier-fee.php:333
+msgid "You collected the delivery on this order. If the receiver pays the courier too, the customer pays the delivery twice."
+msgstr "Вие сте събрали доставката по тази поръчка. Ако и получателят плати на куриера, клиентът ще плати доставката два пъти."
+
+#: app/Shipping/class-courier-fee.php:352
+msgid "This order already has documents without the delivery, because the customer pays the courier. A waybill where you collect the delivery would not match them."
+msgstr "Тази поръчка вече има документи без доставката, защото клиентът плаща на куриера. Товарителница, по която вие събирате доставката, няма да съвпада с тях."
 
 #: app/Shipping/class-register.php:84
 msgid "The shipping price was calculated for your choice. Please check the updated total and place the order again."
@@ -6734,7 +6806,7 @@ msgstr "Изберете шкафче."
 msgid "Please choose an address."
 msgstr "Изберете адрес."
 
-#: app/Shipping/Pigeon/class-payment.php:42 app/Shipping/Pigeon/class-payment.php:47 app/Shipping/Pigeon/class-payment.php:222 app/Shipping/Pigeon/class-payment.php:231
+#: app/Shipping/Pigeon/class-payment.php:42 app/Shipping/Pigeon/class-payment.php:47
 msgid "Enter a finite, nonnegative shipping or COD amount."
 msgstr "Въведете крайна, неотрицателна сума за доставка или наложен платеж."
 
@@ -6746,11 +6818,11 @@ msgstr "Изберете валиден платец на доставката."
 msgid "Reload this order before generating a Pigeon label."
 msgstr "Презаредете поръчката, преди да създадете етикет за Pigeon."
 
-#: app/Shipping/Pigeon/class-payment.php:226
+#: app/Shipping/Pigeon/class-payment.php:224
 msgid "This order has no Pigeon shipping charge."
 msgstr "Тази поръчка няма такса за доставка с Pigeon."
 
-#: app/Shipping/Pigeon/class-payment.php:235
+#: app/Shipping/Pigeon/class-payment.php:230
 msgid "COD is available only for cash-on-delivery orders."
 msgstr "Наложен платеж е възможен само за поръчки с плащане при доставка."
 

@@ -123,6 +123,6 @@ Vendor libraries: LGPL, MIT or Apache-2.0 (GPL-compatible). Licences are in each
 All versions: CHANGELOG.md in the plugin folder (Plugins screen > Changelog).
 
 = 0.21.8 =
-* New: Who pays the courier, per shipping method and payment method.
-* Changes: Courier cache in the uploads folder, the import asks you to deactivate the old plugin, no library demos.
-* Fixed: A delivery with no VAT, on an order with no VAT, prints at 0% on documents and in the NRA file.
+* New: Who pays the courier, per method and payment method. Personal data export and erase for abandoned carts.
+* Changes: Caches in uploads, clearer shipping option cards, the import asks you to deactivate the old plugin.
+* Fixed: A delivery with no VAT, on an order with no VAT, prints at 0%.
