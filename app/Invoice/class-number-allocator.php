@@ -236,8 +236,39 @@ class Number_Allocator {
 		if ( $wpdb->last_error ) {
 			throw new \RuntimeException( 'Could not read document numbering.' );
 		}
+		if ( null === $value ) {
+			$value = self::n18_used( $number, $option, $except );
+		}
 		wp_cache_set( $key, array( $value ), self::CACHE_GROUP, MINUTE_IN_SECONDS );
 		return $value;
+	}
+
+	/**
+	 * After the import of the mreja.net N-18 plugin, the order of its own document with the number, or null.
+	 * A request that loaded that plugin before it was deactivated can still give out a number. One query;
+	 * its table has no index on the number, and it is only read while a number is chosen.
+	 *
+	 * @param int    $number Number.
+	 * @param string $option Sequence setting.
+	 * @param int    $except Order id to leave out.
+	 * @return string|null
+	 */
+	private static function n18_used( $number, $option, $except ) {
+		global $wpdb;
+		static $table = null;
+		$types        = class_exists( \Nashenski\Admin\Import_Sources::class ) ? \Nashenski\Admin\Import_Sources::n18_types( $option ) : array();
+		if ( ! $types ) {
+			return null;
+		}
+		if ( null === $table ) {
+			$table = $wpdb->prefix . 'notasupto_documents';
+			$table = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) === $table ? $table : ''; // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching -- once per request.
+		}
+		if ( ! $table ) {
+			return null;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching -- used() caches the answer for the locked section.
+		return $wpdb->get_var( $wpdb->prepare( 'SELECT order_id FROM %i WHERE type IN (' . implode( ',', array_fill( 0, count( $types ), '%s' ) ) . ') AND CAST(num AS UNSIGNED) = %d AND order_id <> %d LIMIT 1', array_merge( array( $table ), $types, array( $number, $except ) ) ) );
 	}
 
 	/**
@@ -313,8 +344,8 @@ class Number_Allocator {
 	 * highest number moves to the number after it. With $flag, only once: the first request records
 	 * $flag under the numbering lock, so a request running at the same time finds it and does nothing.
 	 *
-	 * @param array  $highest Sequence setting => highest number used elsewhere.
-	 * @param string $flag    Option that records it was done, or ''.
+	 * @param callable $highest Returns sequence setting => highest number used elsewhere; called under the lock, after the flag check.
+	 * @param string   $flag    Option that records it was done, or ''.
 	 * @return int|false Counters moved, or false when $flag was already set.
 	 */
 	public static function continue_after( $highest, $flag = '' ) {
@@ -326,7 +357,7 @@ class Number_Allocator {
 					return false;
 				}
 				$moved = 0;
-				foreach ( $highest as $option => $number ) {
+				foreach ( $highest() as $option => $number ) {
 					if ( (int) $number && (int) $number + 1 > (int) self::option( $option ) ) {
 						self::advance( $option, (int) $number + 1 );
 						++$moved;
@@ -372,7 +403,8 @@ class Number_Allocator {
 				}
 				$number = max( 1, (int) self::option( $option ) );
 				if ( self::used( $number, $option ) ) {
-					$number = max( $number, (int) self::highest( self::keys( $option ) ) + 1 );
+					$n18    = class_exists( \Nashenski\Admin\Import_Sources::class ) ? \Nashenski\Admin\Import_Sources::n18_max( $option ) : 0;
+					$number = max( $number, (int) self::highest( self::keys( $option ) ) + 1, $n18 + 1 );
 				}
 				if ( ! is_int( $number ) || $number >= PHP_INT_MAX ) {
 					throw new \RuntimeException( 'Document numbering sequence exhausted.' );

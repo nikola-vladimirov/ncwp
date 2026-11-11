@@ -28,6 +28,23 @@ class Import_Sources {
 	/** Set once the counters continued after the N-18 plugin's numbers, when it was no longer active. */
 	const N18_CONTINUED = 'nashenski_n18_numbers_continued';
 
+	/** The N-18 plugin's document types by the sequence of ours that continues them (its document_number()). */
+	const N18_SEQUENCES = array(
+		'purchase_order'        => 'next_invoice_number',
+		'purchase_order_cancel' => 'next_invoice_number',
+		'invoice'               => 'next_invoice_separate_number',
+		'credit_note'           => 'next_invoice_separate_number',
+		'debit_note'            => 'next_invoice_separate_number',
+	);
+
+	/**
+	 * Whether the last n18_paused() was true only because numbering could not continue yet (the lock was
+	 * busy, or a storefront request waits for an admin request to catch up): paused_reason() says so.
+	 *
+	 * @var bool
+	 */
+	public static $busy = false;
+
 	/** Order data of the old plugin kept on each order, shown in "From earlier plugins". */
 	const LEGACY_META = '_nashenski_legacy';
 
@@ -156,7 +173,17 @@ class Import_Sources {
 	 * The error while documents are paused for the N-18 plugin (n18_paused()), with a link to the Plugins screen.
 	 */
 	public static function n18_notice() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! self::n18_paused() ) {
+		// A busy numbering lock is a moment, not something to act on.
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! self::n18_paused() || self::$busy ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			printf(
+				'<div class="notice notice-error"><p>%s %s</p></div>',
+				esc_html( self::paused_reason() ),
+				esc_html__( 'Ask an administrator to deactivate it.', 'nashenski-commerce' )
+			);
 			return;
 		}
 
@@ -584,6 +611,9 @@ class Import_Sources {
 			'time'   => time(),
 			'report' => $report,
 		);
+		if ( 'mreja_n18' === $slug ) {
+			$done[ $slug ]['n18_last_id'] = self::n18_last_id(); // Documents after it are caught up later (n18_catch_up()).
+		}
 		update_option( self::DONE_OPTION, $done, false );
 		wp_cache_flush();
 
@@ -664,12 +694,29 @@ class Import_Sources {
 		}
 
 		// Order documents keep their numbers; the next numbers continue after the highest one.
+		self::n18_numbers( self::table_rows( 'notasupto_documents' ), $count );
+
+		$count['settings'] += (int) \Nashenski\Invoice\Number_Allocator::continue_after(
+			function () {
+				return self::n18_highest();
+			}
+		);
+	}
+
+	/**
+	 * Order documents and invoices of the N-18 plugin keep their numbers on their orders. An order
+	 * that already has a number keeps it (import_number()), so running it twice is harmless.
+	 *
+	 * @param array $rows  Rows of its documents table.
+	 * @param array $count Counters of the report.
+	 */
+	private static function n18_numbers( $rows, &$count ) {
 		$keys = array(
 			'purchase_order' => 'nashenski_order_number',
 			'invoice'        => 'nashenski_order_invoice_number',
 		);
 
-		foreach ( self::table_rows( 'notasupto_documents' ) as $row ) {
+		foreach ( $rows as $row ) {
 			$order = isset( $keys[ $row['type'] ] ) ? wc_get_order( $row['order_id'] ) : null;
 
 			$option = 'purchase_order' === $row['type'] ? 'next_invoice_number' : 'next_invoice_separate_number';
@@ -682,75 +729,194 @@ class Import_Sources {
 				++$count['skipped'];
 			}
 		}
-
-		$count['settings'] += (int) \Nashenski\Invoice\Number_Allocator::continue_after( self::n18_highest() );
 	}
 
 	/**
-	 * The highest numbers the N-18 plugin gave out, by the sequence setting that continues them.
+	 * The N-18 plugin's documents table, or '' once it is gone.
+	 *
+	 * @return string
+	 */
+	private static function n18_table() {
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'notasupto_documents';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- another plugin's own table; it can be dropped at any time.
+		return $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) === $table ? $table : '';
+	}
+
+	/**
+	 * The last row of the N-18 plugin's documents table, 0 without it.
+	 *
+	 * @return int
+	 */
+	private static function n18_last_id() {
+		global $wpdb;
+
+		$table = self::n18_table();
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- another plugin's own table, read when it changes hands.
+		return $table ? (int) $wpdb->get_var( $wpdb->prepare( 'SELECT MAX(id) FROM %i', $table ) ) : 0;
+	}
+
+	/**
+	 * After the N-18 import, its document types that share a sequence of ours; array() before it.
+	 *
+	 * @param string $option Sequence setting.
+	 * @return array
+	 */
+	public static function n18_types( $option ) {
+		$done = (array) get_option( self::DONE_OPTION, array() );
+
+		if ( empty( $done['mreja_n18'] ) ) {
+			return array();
+		}
+
+		// Shared numbering (empty separate counter): all its documents continue the one sequence.
+		if ( ! nashenski_get_option( 'invoice', 'next_invoice_separate_number' ) ) {
+			return 'next_invoice_number' === $option ? array_keys( self::N18_SEQUENCES ) : array();
+		}
+
+		return array_keys( self::N18_SEQUENCES, $option, true );
+	}
+
+	/**
+	 * After the N-18 import, the highest number it gave out in a sequence of ours; 0 before it.
+	 *
+	 * @param string $option Sequence setting.
+	 * @return int
+	 */
+	public static function n18_max( $option ) {
+		return self::n18_types( $option ) ? (int) ( self::n18_highest()[ $option ] ?? 0 ) : 0;
+	}
+
+	/**
+	 * The highest numbers the N-18 plugin gave out, by the sequence setting that continues them: one
+	 * grouped query, so its documents are never loaded.
 	 *
 	 * @return array Sequence setting => highest number.
 	 */
 	private static function n18_highest() {
-		$highest = array(
-			'purchase_order' => 0,
-			'invoice'        => 0,
-		);
+		global $wpdb;
 
-		foreach ( self::table_rows( 'notasupto_documents' ) as $row ) {
-			if ( in_array( $row['type'], array( 'purchase_order', 'invoice', 'credit_note' ), true ) ) {
-				$type             = 'credit_note' === $row['type'] ? 'invoice' : $row['type'];
-				$highest[ $type ] = max( $highest[ $type ], (int) $row['num'] );
+		$table   = self::n18_table();
+		$shared  = ! nashenski_get_option( 'invoice', 'next_invoice_separate_number' );
+		$highest = array( 'next_invoice_number' => 0 );
+
+		if ( ! $shared ) {
+			$highest['next_invoice_separate_number'] = 0;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- another plugin's own table, read under the numbering lock.
+		$rows = $table ? (array) $wpdb->get_results( $wpdb->prepare( 'SELECT type, MAX(CAST(num AS UNSIGNED)) AS num FROM %i GROUP BY type', $table ), ARRAY_A ) : array();
+
+		foreach ( $rows as $row ) {
+			if ( isset( self::N18_SEQUENCES[ $row['type'] ] ) ) {
+				// An empty separate counter means shared numbering: setting it would switch the shop to separate
+				// numbering, so the shared counter has to move past the invoice numbers instead.
+				$option             = $shared ? 'next_invoice_number' : self::N18_SEQUENCES[ $row['type'] ];
+				$highest[ $option ] = max( $highest[ $option ], (int) $row['num'] );
 			}
 		}
 
-		// An empty separate counter means shared numbering: setting it would switch the shop to separate numbering,
-		// so the shared counter has to move past the imported invoice numbers instead.
-		if ( ! nashenski_get_option( 'invoice', 'next_invoice_separate_number' ) ) {
-			return array( 'next_invoice_number' => max( $highest ) );
-		}
-
-		return array(
-			'next_invoice_number'          => $highest['purchase_order'],
-			'next_invoice_separate_number' => $highest['invoice'],
-		);
+		return $highest;
 	}
 
 	/**
 	 * After the import of the mreja.net N-18 plugin, while that plugin is still active, both would give
 	 * out the same document numbers: Nashenski Commerce then makes no documents and takes no numbers.
-	 * Once it is off, the counters first continue after its highest numbers (once, see N18_CONTINUED).
+	 * Once it is off, the orders it documented meanwhile get its numbers and the counters continue after
+	 * its highest numbers (once, see N18_CONTINUED); then numbering goes on.
 	 *
 	 * @return bool Whether documents and numbering are paused.
 	 */
 	public static function n18_paused() {
-		$done = (array) get_option( self::DONE_OPTION, array() );
+		self::$busy = false;
+		$done       = (array) get_option( self::DONE_OPTION, array() );
 
 		if ( empty( $done['mreja_n18'] ) ) {
 			return false;
 		}
 
 		if ( defined( 'NOTASUPTO_VERSION_NUM' ) ) {
+			// Active again after the counters continued: they continue again at its next deactivation.
+			if ( get_option( self::N18_CONTINUED ) ) {
+				delete_option( self::N18_CONTINUED );
+			}
 			return true;
 		}
 
-		if ( ! get_option( self::N18_CONTINUED ) ) {
-			try {
-				\Nashenski\Invoice\Number_Allocator::continue_after( self::n18_highest(), self::N18_CONTINUED );
-			} catch ( \RuntimeException $e ) {
-				return true; // The numbering lock was busy: no numbers until the counters have continued.
-			}
+		if ( get_option( self::N18_CONTINUED ) ) {
+			return false;
+		}
+
+		// The catch-up loads and saves orders, so it runs in an admin, cron or WP-CLI request (deactivating
+		// the plugin is one). A storefront request waits for it, without a number.
+		if ( ! ( is_admin() && ! wp_doing_ajax() ) && ! wp_doing_cron() && ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			self::$busy = true;
+			return true;
+		}
+
+		try {
+			self::n18_catch_up( $done );
+			\Nashenski\Invoice\Number_Allocator::continue_after(
+				function () {
+					return self::n18_highest();
+				},
+				self::N18_CONTINUED
+			);
+		} catch ( \RuntimeException $e ) {
+			self::$busy = true; // The numbering lock was busy: no numbers until the counters have continued.
+			return true;
 		}
 
 		return false;
 	}
 
 	/**
-	 * Why documents are paused, for notices and the order screen.
+	 * The orders the N-18 plugin documented after its import (or the last catch-up) get its numbers and
+	 * keep its documents, as in the import, so "Regenerate PDF's" never gives them a second number.
+	 * Running it twice is harmless: an order with a number keeps it, and kept rows are matched by id.
+	 *
+	 * @param array $done Imports done.
+	 */
+	private static function n18_catch_up( $done ) {
+		$after = $done['mreja_n18']['n18_last_id'] ?? null;
+
+		// shortcut: imports before 0.21.7 kept no row id and deactivated the plugin, so they start from the current last row; documents it made after a reactivation are not caught up.
+		if ( null === $after ) {
+			$done['mreja_n18']['n18_last_id'] = self::n18_last_id();
+			update_option( self::DONE_OPTION, $done, false );
+			return;
+		}
+
+		$rows = self::table_rows( 'notasupto_documents', (int) $after );
+
+		if ( ! $rows ) {
+			return;
+		}
+
+		$count = array(
+			'documents' => 0,
+			'skipped'   => 0,
+		);
+		self::n18_numbers( $rows, $count );
+		self::keep( 'mreja_n18', (int) $after );
+
+		$done['mreja_n18']['n18_last_id'] = max( array_map( 'intval', array_column( $rows, 'id' ) ) );
+		update_option( self::DONE_OPTION, $done, false );
+	}
+
+	/**
+	 * Why documents are paused, for notices, notes and the order screen.
 	 *
 	 * @return string
 	 */
 	public static function paused_reason() {
+		if ( self::$busy ) {
+			return __( 'Document numbering is busy. Please try again in a moment.', 'nashenski-commerce' );
+		}
+
 		return __( 'Nashenski Commerce has paused invoices and other documents because the old N-18 plugin is still active. Both would give out the same document numbers. Deactivate it to continue; numbering then carries on after its last number.', 'nashenski-commerce' );
 	}
 
@@ -761,9 +927,10 @@ class Import_Sources {
 	 * events and document PDF files) to the order, so it stays visible once the plugin is off.
 	 * Returns the number of orders.
 	 *
-	 * @param mixed $slug Slug.
+	 * @param mixed $slug  Slug.
+	 * @param int   $after Only the rows after this id of the plugin's tables, added to what the orders keep.
 	 */
-	public static function keep( $slug ) {
+	public static function keep( $slug, $after = 0 ) {
 		global $wpdb;
 
 		$spec       = self::KEEP[ $slug ] ?? array();
@@ -787,7 +954,8 @@ class Import_Sources {
 		}
 
 		foreach ( $spec['tables'] ?? array() as $table ) {
-			foreach ( self::table_rows( $table ) as $row ) {
+			// Document lines belong to the documents after $after.
+			foreach ( self::table_rows( $table, $after, 'notasupto_document_products' === $table ? 'document_id' : 'id' ) as $row ) {
 				if ( empty( $row['order_id'] ) ) {
 					continue;
 				}
@@ -814,7 +982,16 @@ class Import_Sources {
 				continue;
 			}
 
-			$legacy          = (array) $order->get_meta( self::LEGACY_META );
+			$legacy = (array) $order->get_meta( self::LEGACY_META );
+
+			if ( $after ) {
+				// Rows matched by id, so a second run adds nothing.
+				foreach ( $values as $table => $rows ) {
+					$values[ $table ] = array_values( array_column( array_merge( $legacy[ $slug ][ $table ] ?? array(), $rows ), null, 'id' ) );
+				}
+				$values += $legacy[ $slug ] ?? array();
+			}
+
 			$legacy[ $slug ] = $values;
 			$order->update_meta_data( self::LEGACY_META, $legacy );
 			$order->save();
@@ -990,9 +1167,11 @@ class Import_Sources {
 	/**
 	 * All rows of another plugin's own table (one-time import), or array() without the table.
 	 *
-	 * @param mixed $table Table.
+	 * @param mixed  $table  Table.
+	 * @param int    $after  Only rows whose $column is above it; 0 for all.
+	 * @param string $column Id column for $after.
 	 */
-	private static function table_rows( $table ) {
+	private static function table_rows( $table, $after = 0, $column = 'id' ) {
 		global $wpdb;
 
 		$table = $wpdb->prefix . $table;
@@ -1002,8 +1181,13 @@ class Import_Sources {
 			return array();
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import from another plugin's own table.
-		return (array) $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i', $table ), ARRAY_A );
+		if ( ! $after ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import from another plugin's own table.
+			return (array) $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i', $table ), ARRAY_A );
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- the rows another plugin added after the import.
+		return (array) $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i WHERE %i > %d', $table, $column, $after ), ARRAY_A );
 	}
 
 	/**

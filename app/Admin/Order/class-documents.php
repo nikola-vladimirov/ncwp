@@ -24,15 +24,20 @@ class Documents {
 	 *
 	 * @param \WC_Order|false $order Order whose automatic documents are skipped.
 	 * @return bool
+	 * @throws \RuntimeException While numbering is only busy: the caller notes "Some documents were not generated".
 	 */
 	public static function paused( $order ) {
 		if ( ! \Nashenski\Admin\Import_Sources::n18_paused() ) {
 			return false;
 		}
 
+		if ( \Nashenski\Admin\Import_Sources::$busy ) {
+			throw new \RuntimeException( esc_html( \Nashenski\Admin\Import_Sources::paused_reason() ) );
+		}
+
 		// shortcut: one note per order; a later pause on an order that got documents in between adds none, add a reset when that matters.
 		if ( $order && ! $order->get_meta( self::PAUSED_META ) ) {
-			$order->add_order_note( __( 'No documents were made: Nashenski Commerce paused them while the old N-18 plugin was active. Once it is deactivated, make them here with "Regenerate PDF\'s".', 'nashenski-commerce' ) );
+			$order->add_order_note( __( 'No documents were made: Nashenski Commerce paused them while the old N-18 plugin was active. If that plugin made documents for this order, the order keeps its numbers. If not, make them here with "Regenerate PDF\'s" once it is deactivated.', 'nashenski-commerce' ) );
 			$order->update_meta_data( self::PAUSED_META, 'yes' );
 			$order->save();
 		}
