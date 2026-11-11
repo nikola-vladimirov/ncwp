@@ -16,6 +16,7 @@ use Nashenski\Shipping\Packer\Size;
 use Nashenski\Shipping\Packer\Packing_Budget;
 use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 use Nashenski\Pricing\Price_Lists;
+use Nashenski\Shipping\Courier_Fee;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -75,6 +76,13 @@ class Method extends \WC_Shipping_Method {
 	 * @var mixed
 	 */
 	public $fixed_price;
+
+	/**
+	 * Payment methods for which the customer pays the courier.
+	 *
+	 * @var array
+	 */
+	public $customer_pays = array();
 
 	/**
 	 * Test.
@@ -169,6 +177,7 @@ class Method extends \WC_Shipping_Method {
 		$this->free_shipping_over       = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
 		$this->free_shipping_by_country = $this->get_option( 'free_shipping_by_country' );
 		$this->fixed_price              = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
+		$this->customer_pays            = (array) $this->get_option( Courier_Fee::FIELD, array() );
 		$this->test                     = $this->get_option( 'test' );
 		$this->tax_status               = ( wc_tax_enabled() ) ? 'taxable' : 'none';
 
@@ -290,6 +299,11 @@ class Method extends \WC_Shipping_Method {
 			}
 		}
 
+		// The recipient pays Speedy (customer in the method's list, Bulgaria, no free shipping or fixed price).
+		if ( 'BG' === $this->label_country() && 'RECIPIENT' === $payment_by_data['payment']['courierServicePayer'] ) {
+			$rate = Courier_Fee::rate( $rate );
+		}
+
 		// Read by the checkout's free shipping hint and progress bar.
 		$free_over = Price_Lists::free_over( $this->label_country(), $this->free_shipping_over, $this->free_shipping_by_country );
 		if ( (float) $free_over > 0 ) {
@@ -396,6 +410,7 @@ class Method extends \WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
+			Courier_Fee::FIELD         => Courier_Fee::field(),
 		);
 	}
 
@@ -1186,7 +1201,8 @@ class Method extends \WC_Shipping_Method {
 			'packagePayer'        => $shipping_costs_payer,
 		);
 
-		if ( isset( $this->cookie_data['payment'] ) && 'cod' !== $this->cookie_data['payment'] ) {
+		// The shop collects the delivery for payment methods not in the method's list.
+		if ( ! Courier_Fee::customer_pays_cart( $this->customer_pays, $this->cookie_data['payment'] ?? '' ) ) {
 			$payment['courierServicePayer'] = 'SENDER';
 			$payment['declaredValuePayer']  = 'SENDER';
 			$payment['packagePayer']        = 'SENDER';

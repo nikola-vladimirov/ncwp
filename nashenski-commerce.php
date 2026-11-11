@@ -12,11 +12,11 @@ Description:  WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shippi
 Requires Plugins: woocommerce
 Author:       PristaDigital
 Author URI:   https://pristadigital.com/
-Version:      0.21.6
+Version:      0.21.8
 Requires at least: 6.5
 Requires PHP: 8.2
 WC requires at least: 9.4.0
-WC tested up to: 11.1
+WC tested up to: 11.3
 Text Domain:  nashenski-commerce
 Domain Path:  /languages
 License:      GPLv3 or later
@@ -113,6 +113,18 @@ function nashenski_document_text_bg( $translation, $text ) {
 }
 
 /**
+ * Whether a notice about why the plugin did not start belongs here: for users who manage plugins, on
+ * the Dashboard, the Plugins screen and the WooCommerce screens only.
+ *
+ * @return bool
+ */
+function nashenski_start_notice_here() {
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+
+	return current_user_can( 'activate_plugins' ) && $screen && ( in_array( $screen->id, array( 'dashboard', 'plugins', 'edit-shop_order', 'shop_order' ), true ) || false !== strpos( $screen->id, 'woocommerce' ) );
+}
+
+/**
  * Start the plugin and return its instance.
  *
  * @return \Nashenski\Plugin
@@ -126,6 +138,9 @@ function nashenski_init() {
 		add_action(
 			'admin_notices',
 			function () {
+				if ( ! nashenski_start_notice_here() ) {
+					return;
+				}
 				/* translators: %1$s is minimum php version and %2$s is minimum WP version*/
 				$message = sprintf( esc_html__( 'Nashenski Commerce requires PHP version %1$s+ and WP version %2$s+, plugin is currently NOT RUNNING.', 'nashenski-commerce' ), NASHENSKI_PHP_MINIMUM_VERSION, NASHENSKI_WP_MINIMUM_VERSION );
 				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
@@ -135,11 +150,15 @@ function nashenski_init() {
 		return;
 	}
 
-	// The plugin we forked registers the same checkout fields and shipping methods; never run both.
-	if ( function_exists( 'woo_bg_init' ) ) {
+	// The plugin we forked (woo_bg_init up to 4.x, bulgarisation_init from 5.0) registers the same checkout fields and
+	// shipping methods and numbers the same documents; never run both.
+	if ( function_exists( 'woo_bg_init' ) || function_exists( 'bulgarisation_init' ) ) {
 		add_action(
 			'admin_notices',
 			function () {
+				if ( ! nashenski_start_notice_here() ) {
+					return;
+				}
 				$message = esc_html__( 'Nashenski Commerce is paused: please deactivate Bulgarisation for WooCommerce first. Your settings and orders can be imported afterwards.', 'nashenski-commerce' );
 				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
 			}
@@ -152,6 +171,9 @@ function nashenski_init() {
 		add_action(
 			'admin_notices',
 			function () {
+				if ( ! nashenski_start_notice_here() ) {
+					return;
+				}
 				$message = sprintf( esc_html__( 'Nashenski Commerce - Please enable WooCommerce first.', 'nashenski-commerce' ) );
 				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
 			}
@@ -167,6 +189,9 @@ function nashenski_init() {
 		add_action(
 			'admin_notices',
 			function () {
+				if ( ! nashenski_start_notice_here() ) {
+					return;
+				}
 				$message = sprintf( esc_html__( 'Please run `composer install` in the plugin folder `nashenski-commerce`', 'nashenski-commerce' ) );
 				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
 			}

@@ -364,4 +364,225 @@ $repaired = \Nashenski\Shipping\Econt\Service_Policy::for_order( array( 'service
 expect( ! isset( $repaired['services']['declaredValueAmount'] ), 'The order repair adds no declared value to a card order' );
 $repaired = \Nashenski\Shipping\Econt\Service_Policy::for_order( array( 'services' => array() ), new EcontPolicyOrder( 'cod' ), array() );
 expect( isset( $repaired['services']['declaredValueAmount'] ) && 'EUR' === $repaired['services']['declaredValueCurrency'], 'The order repair still adds declared value to a COD order' );
+
+// Who pays the courier (docs/plans/courier-fee-payer.md): the rate follows the method's list and the payment method.
+foreach ( array(
+	'cod'  => array( 0, '12.00' ),
+	'card' => array( 12, null ),
+) as $pay => list( $cost, $fee ) ) {
+	fixture();
+	$cookie['payment']     = $pay;
+	$method                = new EcontMethod();
+	$method->customer_pays = array( 'cod' );
+	$method->calculate_shipping( package( 1 ) );
+	expect( 'cash' === $last_request['label']['paymentReceiverMethod'], "Econt, $pay: the calculation prices what the receiver would pay" );
+	expect( $cost === $method->rates[0]['cost'] && ( $method->rates[0]['meta_data']['nashenski_courier_fee'] ?? null ) === $fee, "Econt, COD listed, $pay: the total gets $cost" );
+}
+fixture();
+$cookie['payment']     = 'cod';
+$free_coupon           = true;
+$method                = new EcontMethod();
+$method->customer_pays = array( 'cod' );
+$method->calculate_shipping( package( 1 ) );
+expect( 0 === $method->rates[0]['cost'] && ! isset( $method->rates[0]['meta_data']['nashenski_courier_fee'] ) && ! isset( $last_request['label']['paymentReceiverMethod'] ), 'Econt free shipping: the sender pays, no fee to the courier' );
+
+/**
+ * Plugin stub: the container with the Econt profile.
+ *
+ * @return object
+ */
+function nashenski() {
+	return new class() {
+		/**
+		 * Container.
+		 *
+		 * @return array
+		 */
+		public function container() {
+			return array( 'client.econt.profile' => new EcontProfile() ); }
+	};
+}
+/**
+ * Econt shipping line with its checkout decision, on an order of 112.
+ */
+class EcontPayerLine {
+	/**
+	 * Decision.
+	 *
+	 * @var string
+	 */
+	public $payer;
+	/**
+	 * Constructor.
+	 *
+	 * @param string $payer Decision.
+	 */
+	public function __construct( $payer ) {
+		$this->payer = $payer; }
+	/**
+	 * Meta.
+	 *
+	 * @param string $key Key.
+	 * @return string
+	 */
+	public function get_meta( $key ) {
+		return '_nashenski_fee_payer' === $key ? $this->payer : ''; }
+	/**
+	 * Order total (the line doubles as its order here).
+	 *
+	 * @return float
+	 */
+	public function get_total() {
+		return 112.0; }
+}
+$priced = array(
+	'paymentReceiverMethod' => 'cash',
+	'services'              => array( 'cdAmount' => '100.00' ),
+);
+$label  = \Nashenski\Shipping\Econt\Method::label_payer( $priced, new EcontPayerLine( 'shop' ), new EcontPayerLine( 'shop' ) );
+expect( 'cash' === $label['paymentSenderMethod'] && ! isset( $label['paymentReceiverMethod'] ) && '112.00' === $label['services']['cdAmount'], 'Econt label, shop collects: the sender pays and cash on delivery collects the whole order total' );
+expect( \Nashenski\Shipping\Econt\Method::label_payer( $priced, new EcontPayerLine( 'customer' ), new EcontPayerLine( 'customer' ) ) === $priced, 'Econt label, customer pays: the receiver pays as calculated' );
+/**
+ * Quick or admin COD order of 100 with an Econt shipping line and its order-screen decision.
+ */
+class EcontDraftOrder {
+	/**
+	 * Decision.
+	 *
+	 * @var string
+	 */
+	public $payer;
+	/**
+	 * Constructor.
+	 *
+	 * @param string $payer Decision.
+	 */
+	public function __construct( $payer ) {
+		$this->payer = $payer; }
+	/**
+	 * Lines: the Econt line when asked for shipping, no products.
+	 *
+	 * @param string $type Type.
+	 * @return array
+	 */
+	public function get_items( $type = 'line_item' ) {
+		return 'shipping' === $type ? array( new EcontPayerLine( $this->payer ) ) : array(); }
+	/**
+	 * Name.
+	 *
+	 * @return string
+	 */
+	public function get_formatted_shipping_full_name() {
+		return 'Test'; }
+	/**
+	 * Phone.
+	 *
+	 * @return string
+	 */
+	public function get_billing_phone() {
+		return '0888000000'; }
+	/**
+	 * Payment method.
+	 *
+	 * @return string
+	 */
+	public function get_payment_method() {
+		return 'cod'; }
+	/**
+	 * Total.
+	 *
+	 * @return float
+	 */
+	public function get_total() {
+		return 100.0; }
+	/**
+	 * Shipping total.
+	 *
+	 * @return float
+	 */
+	public function get_shipping_total() {
+		return 0.0; }
+	/**
+	 * Shipping tax.
+	 *
+	 * @return float
+	 */
+	public function get_shipping_tax() {
+		return 0.0; }
+	/**
+	 * Currency.
+	 *
+	 * @return string
+	 */
+	public function get_currency() {
+		return 'EUR'; }
+}
+$draft = new ReflectionMethod( '\Nashenski\Admin\Econt', 'draft_label' );
+if ( PHP_VERSION_ID < 80100 ) {
+	$draft->setAccessible( true );
+}
+$label = $draft->invoke( null, new EcontDraftOrder( 'shop' ), array() );
+expect( 'cash' === $label['paymentSenderMethod'] && ! isset( $label['paymentReceiverMethod'] ), 'Econt box, quick or admin order the shop collects: the sender pays by default' );
+$label = $draft->invoke( null, new EcontDraftOrder( 'customer' ), array() );
+expect( 'cash' === $label['paymentReceiverMethod'] && ! isset( $label['paymentSenderMethod'] ) && '100.00' === $label['services']['cdAmount'], 'Econt box, customer pays: the receiver pays by default' );
+// M6: goods that cost nothing (a free sample, a 100% coupon): the shop collects, the rate keeps its price.
+fixture();
+$cookie['payment']     = 'cod';
+$package_total         = 0;
+$method                = new EcontMethod();
+$method->customer_pays = array( 'cod' );
+$method->calculate_shipping( package( 1 ) );
+expect( 12 === $method->rates[0]['cost'] && ! isset( $method->rates[0]['meta_data']['nashenski_courier_fee'] ), 'Econt: a cart whose goods cost nothing is not turned into "paid to the courier"' );
+unset( $package_total );
+
+/**
+ * Quick or admin COD order whose delivery of 5 + 1 VAT is in the total, for the packing list.
+ */
+class EcontPackingOrder extends EcontDraftOrder {
+	/**
+	 * Meta: the checkout choice says cash on delivery.
+	 *
+	 * @param string $key Key.
+	 * @return mixed
+	 */
+	public function get_meta( $key ) {
+		return 'nashenski_econt_cookie_data' === $key ? array( 'payment' => 'cod' ) : ''; }
+	/**
+	 * Shipping total.
+	 *
+	 * @return float
+	 */
+	public function get_shipping_total() {
+		return 5.0; }
+	/**
+	 * Shipping tax.
+	 *
+	 * @return float
+	 */
+	public function get_shipping_tax() {
+		return 1.0; }
+}
+if ( ! function_exists( 'wc_get_order' ) ) {
+	/**
+	 * Order lookup stub.
+	 *
+	 * @param mixed $id Order ID.
+	 * @return object
+	 */
+	function wc_get_order( $id ) {
+		return $GLOBALS['econt_order']; }
+}
+$options['econt/pay_options']             = '7';
+$options['econt/invoice_or_packing_list'] = 'packing_list';
+$pay_options                              = new ReflectionMethod( '\Nashenski\Admin\Econt', 'update_label_pay_options' );
+if ( PHP_VERSION_ID < 80100 ) {
+	$pay_options->setAccessible( true );
+}
+$econt_order = new EcontPackingOrder( 'shop' );
+$label       = $pay_options->invoke( null, array( 'services' => array() ), 1 );
+$delivery    = end( $label['packingList'] );
+expect( 'Доставка' === $delivery['description'] && '6.00' === $delivery['price'], 'Econt packing list: the delivery the shop collects (in the cash on delivery amount) is a row of the list' );
+$econt_order = new EcontPackingOrder( 'customer' );
+$label       = $pay_options->invoke( null, array( 'services' => array() ), 1 );
+expect( array() === $label['packingList'], 'Econt packing list: a delivery the customer pays the courier is not on it' );
 echo 'PASS: ' . (int) ( $checks - $policy_start ) . " Econt service-policy assertions\n";

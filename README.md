@@ -81,6 +81,18 @@ plugin's own scheduled jobs (documents, abandoned cart reminders, shipment statu
   customer. Order statuses can follow the shipment (delivered or returned).
 - Review or test before payment, set on each courier method in the shipping zone and changeable per
   label (Pigeon Express: review or test, one of the two).
+- Who pays the courier: "Customer pays the courier" on each Econt, Speedy and Pigeon Express method
+  lists the payment methods for which the customer pays the delivery to the courier on delivery. The
+  price is then shown for information only, not in the order total, on the documents or in the NRA
+  file, and the waybill is paid by the receiver. Any other payment method: you collect the delivery
+  and the sender pays. The total follows the payment method chosen at checkout. Free shipping,
+  deliveries abroad, a Speedy or Pigeon Express fixed price and BOX NOW are always yours. Quick and
+  admin orders are decided on the order screen once they have a shipping method and a payment
+  method, and again when the payment method changes, until they have documents. On update to 0.21.8 every
+  Econt and Speedy method marked as a courier and every Pigeon Express method get cash on delivery
+  in their list, so the cash on delivery money flow stays as it was. New methods start with cash on
+  delivery in the list. Shipping methods of other plugins keep "Is ... courier?" in Documents >
+  Shipping on documents.
 - Each order screen shows the courier, the delivery type and the chosen office, locker or address.
 - Ship abroad (off by default): Econt to Romania and Greece, Speedy to nine countries on its price
   list. Prices abroad come only from the courier. Free shipping over a total can be set per country,
@@ -103,6 +115,10 @@ order open the courier box, check the details and press "Generate label".
   only when "VAT number required on checkout?" is ticked in Documents.
 - Article 113(9) stores (not VAT registered): the invoice, its copy and the pro forma print without
   a VAT column.
+- A delivery with no VAT, on an order with no VAT at all, prints at 0% with its full price (invoices,
+  credit notes and the NRA audit file).
+- A delivery the customer paid to the courier is not on the documents or in the NRA audit file. Each
+  order keeps what was decided at checkout or on the order screen; credit notes follow their order.
 - Import the checkout fields and rules of WooCommerce Checkout Field Editor (free or Pro) in one click.
 - Optional clean-up of order documents (not invoices) of older orders.
 
@@ -122,7 +138,9 @@ label sets the delivery price, the customer gets the order details email with th
 Off by default. Keeps carts that were not ordered, records the email as the shopper types it, and
 sends reminders through an editable WooCommerce email, with an optional single-use coupon and a link
 that refills the cart. The list is under WooCommerce > Abandoned carts. Check the consent rules that
-apply to your store before you turn reminders on.
+apply to your store before you turn reminders on. Tools > Export Personal Data and Erase Personal
+Data cover the saved carts (the erase also deletes their unused reminder coupons), and the plugin
+suggests text for your privacy policy.
 
 ### EU withdrawal function
 
@@ -149,9 +167,24 @@ Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drus
 Shipping: courier logins, sender details, waybill numbers, shipping zone methods with the mreja.net free
 shipping totals and, from the N-18 plugin, company details and document numbers. Bulgarisation's order documents and invoices move into
 the private documents folder and still open from the order. Go to WooCommerce > Settings > Nashenski Commerce >
-Help and press "Import now". The old plugin is switched off; its data stays in the database.
+Help and press "Import", then deactivate the old plugin (Nashenski Commerce asks, with a link to the Plugins
+screen; WordPress.org plugins never change other plugins). Its data stays in the database.
 Only users who can manage plugins see the import button. If an old document number clashes with a
 number already in use, it is skipped and the summary says "N document numbers skipped (conflict)".
+
+While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused; deactivate
+it before the import. Import the mreja.net Ordinance N-18 plugin while it is off (its import is refused
+while it is active). Until its documents are imported, Nashenski Commerce makes no invoices or other
+documents and takes no numbers while a new number could clash with one of them (the plugin is active, or
+one of our counters has not passed its numbers). A store without its documents, or whose counters are
+already past them, is not paused; the import is still offered. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already
+gave out: documents pause until its import is run again from the Help page (also after it is off again).
+That run takes over its new numbers, continues the counters after its highest number (order documents
+and cancellations; invoices, credit and debit notes) and notes and lists each order whose number clashes,
+to correct. An error notice on the Dashboard, the Plugins screen, the orders and the Nashenski settings
+says so (with a link to Plugins while it is active, to the import while it is off), the PDF Files box of an
+order and the setup explain it, and orders whose documents were skipped get a note. Then use
+"Regenerate PDF's" for orders without documents.
 
 If a document cannot be made, the refund, subscription renewal or checkout still goes through and the
 order gets the note "Some documents were not generated" with the reason. Fix the cause and make the
@@ -188,8 +221,10 @@ document again from the order.
   file). Every new text needs its translation. The WordPress.org zip leaves them out (WordPress.org
   delivers translations as language packs); import the PO on translate.wordpress.org.
 - **Releases:** bump `Version:` in `nashenski-commerce.php` and `Plugin::VERSION`, add a `CHANGELOG.md`
-  entry and a `readme.txt` changelog line, update the Help page, and push to `main`. The
+  entry, replace the `readme.txt` changelog with the new version's line (the readme keeps only the
+  current release, to stay under the 10 KB WordPress.org asks for), update the Help page, and push to `main`. The
   [Release workflow](.github/workflows/release.yml) publishes `vX.Y.Z` with two zips: the plugin, `nashenski-commerce-wporg-X.Y.Z.zip` (for WordPress.org, no bundled translation). A version with
   a dash is published as a pre-release.
 - The release zip is `git archive` of the tag: everything marked `export-ignore` in
-  [.gitattributes](.gitattributes) (docs, this README, repository files) stays out.
+  [.gitattributes](.gitattributes) (docs, this README, repository files, the demos,
+  docs and development files of the libraries in `vendor/`) stays out.

@@ -65,7 +65,9 @@ class MetaBox {
 			<?php endforeach ?>
 		</ul>
 		<?php
-		if ( Documents::documents_on() && ! $order->get_meta( 'nashenski_invoice_document' ) ) {
+		if ( \Nashenski\Admin\Import_Sources::n18_paused() ) {
+			echo '<p class="nashenski-documents-paused"><strong>' . esc_html( \Nashenski\Admin\Import_Sources::paused_reason() ) . '</strong></p>';
+		} elseif ( Documents::documents_on() && ! $order->get_meta( 'nashenski_invoice_document' ) ) {
 			self::make_invoice_form( $order );
 		}
 	}

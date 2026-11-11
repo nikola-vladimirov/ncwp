@@ -268,6 +268,16 @@ namespace {
 	$trigger = '';
 	$hooks   = array();
 	/**
+	 * Option stub: nothing was imported, so documents are not paused.
+	 *
+	 * @param string $name     Option name.
+	 * @param mixed  $fallback Default.
+	 * @return mixed
+	 */
+	function get_option( $name, $fallback = false ) {
+		return 'nashenski_n18_state' === $name ? 'none' : $fallback; // No N-18 documents on this site.
+	}
+	/**
 	 * Nashenski get option.
 	 *
 	 * @param mixed $group Group.

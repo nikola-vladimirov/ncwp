@@ -972,6 +972,34 @@ namespace {
 		 */
 		public $total = 'untouched';
 		/**
+		 * Who pays the courier, as checkout stores it ('' on an order from before 0.21.8).
+		 *
+		 * @var string
+		 */
+		public $payer = '';
+		/**
+		 * Meta.
+		 *
+		 * @param mixed $key Key.
+		 * @return string
+		 */
+		public function get_meta( $key ) {
+			return '_nashenski_fee_payer' === $key ? $this->payer : ( $this->fee[ $key ] ?? '' ); }
+		/**
+		 * Meta written by the label (the fee paid to the courier).
+		 *
+		 * @var array
+		 */
+		public $fee = array();
+		/**
+		 * Update meta.
+		 *
+		 * @param string $key   Key.
+		 * @param mixed  $value Value.
+		 */
+		public function update_meta_data( $key, $value ) {
+			$this->fee[ $key ] = $value; }
+		/**
 		 * Set total.
 		 *
 		 * @param mixed $total Total.
@@ -1012,6 +1040,26 @@ namespace {
 		public function get_items( $type = 'line_item' ) {
 			return array( 1 => $this->item ); }
 		/**
+		 * Where the order was made.
+		 *
+		 * @var string
+		 */
+		public $via = 'checkout';
+		/**
+		 * Created via.
+		 *
+		 * @return string
+		 */
+		public function get_created_via() {
+			return $this->via; }
+		/**
+		 * Currency.
+		 *
+		 * @return string
+		 */
+		public function get_currency() {
+			return 'EUR'; }
+		/**
 		 * Calculate totals.
 		 */
 		public function calculate_totals() {}
@@ -1044,5 +1092,118 @@ namespace {
 		expect( $total === $order->item->total, "Speedy shipping price with a staff fixed price '$price' is set to " . var_export( $total, true ) );
 	}
 	$GLOBALS['label_request'] = array();
+
+	if ( ! function_exists( 'wc_format_decimal' ) ) {
+		/**
+		 * Stub of the WooCommerce function.
+		 *
+		 * @param mixed $number Number.
+		 * @param int   $dp     Decimals.
+		 * @return string
+		 */
+		function wc_format_decimal( $number, $dp ) {
+			return number_format( (float) $number, $dp, '.', '' ); }
+		/**
+		 * Stub of the WooCommerce function.
+		 *
+		 * @return int
+		 */
+		function wc_get_price_decimals() {
+			return 2; }
+	}
+	// Who pays the courier: a checkout order (stamped) keeps its amounts when staff change the payer.
+	$GLOBALS['label_request'] = array(
+		'paymentBy'   => array( 'id' => 'fixed' ),
+		'cookie_data' => array( 'fixed_price' => '4.50' ),
+	);
+	$order                    = new SpeedyRequestOrder();
+	$order->item->payer       = 'shop';
+	$label                    = array( 'service' => array( 'additionalServices' => array( 'cod' => array( 'amount' => '14.50' ) ) ) );
+	$out                      = $services->invoke( null, $label, $order );
+	expect( '14.50' === (string) $out['service']['additionalServices']['cod']['amount'], 'Speedy: a checkout order\'s cash on delivery amount (already the order total) gets no fixed price added again' );
+	$GLOBALS['label_order'] = $order;
+	$shipping->invoke( null, array(), 5 );
+	expect( 'untouched' === $order->item->total, 'Speedy: a checkout order\'s shipping total is not rewritten by the label payer' );
+
+	// Quick and admin orders: the label price goes into the total when the shop collects, into the info text when the customer pays.
+	$order              = new SpeedyRequestOrder();
+	$order->via         = 'admin';
+	$order->item->payer = 'shop';
+	// Decided on the order screen: it records the payment method it was decided for.
+	$order->item->fee['_nashenski_fee_basis'] = 'cod';
+	$out                                      = $services->invoke( null, $label, $order );
+	expect( '19.00' === (string) $out['service']['additionalServices']['cod']['amount'], 'Speedy: a quick order with a staff fixed price gets it added to the cash on delivery amount, as before' );
+	$GLOBALS['label_order'] = $order;
+	$shipping->invoke( null, array(), 5 );
+	expect( '4.50' === $order->item->total, 'Speedy: a quick order the shop collects gets the fixed price as its delivery price, as before' );
+	$order->item->total     = 'untouched';
+	$order->item->payer     = 'customer';
+	$GLOBALS['label_order'] = $order;
+	$shipping->invoke( null, array(), 5 );
+	expect( 'untouched' === $order->item->total && '4.50' === $order->item->get_meta( 'nashenski_courier_fee' ), 'Speedy: a quick order whose customer pays the courier keeps the price as information, not in the total' );
+	$GLOBALS['label_request'] = array();
+
+	/**
+	 * Quick order of 25 with a typed delivery of 5.
+	 */
+	class SpeedyTypedDeliveryOrder extends SpeedyRequestOrder {
+		/**
+		 * Total.
+		 *
+		 * @return float
+		 */
+		public function get_total() {
+			return 25.0; }
+		/**
+		 * Shipping total.
+		 *
+		 * @return float
+		 */
+		public function get_shipping_total() {
+			return 5.0; }
+		/**
+		 * Shipping tax.
+		 *
+		 * @return float
+		 */
+		public function get_shipping_tax() {
+			return 0.0; }
+	}
+	$order              = new SpeedyTypedDeliveryOrder();
+	$order->item->payer = 'customer';
+	$out                = \Nashenski\Admin\Speedy::fix_cod_data( array( 'service' => array( 'serviceId' => '505' ) ), $order );
+	expect( '20.00' === (string) $out['service']['additionalServices']['cod']['amount'], 'Speedy box: a delivery the customer pays the courier is left out of the cash on delivery amount (L3)' );
+	$order->item->payer = 'shop';
+	$out                = \Nashenski\Admin\Speedy::fix_cod_data( array( 'service' => array( 'serviceId' => '505' ) ), $order );
+	expect( '25.00' === (string) $out['service']['additionalServices']['cod']['amount'], 'Speedy box: a delivery the shop collects stays in the cash on delivery amount' );
+
+	// Who pays the courier at checkout: the method's list and the payment method in the cookie.
+	foreach ( array(
+		'cod'  => array( 'RECIPIENT', 0, '12.00' ),
+		'card' => array( 'SENDER', '12.00', null ),
+	) as $pay => list( $payer, $cost, $fee ) ) {
+		fixture();
+		$cookie['payment'] = $pay;
+		$m                 = new SpeedyMethod();
+		$m->customer_pays  = array( 'cod' );
+		$m->calculate_shipping( package( 1 ) );
+		$sent = $wc->session->get( 'nashenski-speedy-label' );
+		expect( $payer === $sent['payment']['courierServicePayer'], "Speedy, COD listed, $pay: the label is paid by $payer" );
+		expect( $cost === $m->rates[0]['cost'] && ( $m->rates[0]['meta_data']['nashenski_courier_fee'] ?? null ) === $fee, "Speedy, COD listed, $pay: the total gets " . var_export( $cost, true ) );
+	}
+	fixture();
+	$cookie['payment'] = 'cod';
+	$free_coupon       = true;
+	$m                 = new SpeedyMethod();
+	$m->customer_pays  = array( 'cod' );
+	$m->calculate_shipping( package( 1 ) );
+	expect( 'SENDER' === $wc->session->get( 'nashenski-speedy-label' )['payment']['courierServicePayer'] && ! isset( $m->rates[0]['meta_data']['nashenski_courier_fee'] ), 'Speedy free shipping: the shop pays, no fee to the courier' );
+	fixture();
+	$cookie['payment'] = 'cod';
+	$m                 = new SpeedyMethod();
+	$m->customer_pays  = array( 'cod' );
+	$m->fixed_price    = 4;
+	$m->calculate_shipping( package( 1 ) );
+	expect( 'SENDER' === $wc->session->get( 'nashenski-speedy-label' )['payment']['courierServicePayer'] && 4.0 === (float) $m->rates[0]['cost'] && ! isset( $m->rates[0]['meta_data']['nashenski_courier_fee'] ), 'Speedy fixed price: the shop collects it, whatever the list says' );
 	echo 'PASS: ' . $checks . " Speedy assertions\n";
 }

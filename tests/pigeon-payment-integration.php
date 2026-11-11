@@ -54,9 +54,12 @@ class PaymentFixtureClient extends PdfFixtureApi {
 	 * @param mixed  $body     Body.
 	 * @param string $method   Method.
 	 * @return mixed
+	 * @throws LogicException When a test asks for no answer.
 	 */
 	public function api_call( $endpoint, $body, $method = '' ) {
 		$GLOBALS['payment_calls'][] = $body;
+		if ( ! empty( $GLOBALS['payment_throw'] ) ) {
+			throw new LogicException( 'No answer from Pigeon' ); }
 		return $GLOBALS['payment_response']; }
 	/**
 	 * Get filtered cities.
@@ -398,6 +401,13 @@ $result           = payment_rpc(
 $saved            = wc_get_order( $test_order->get_id() );
 $saved->read_meta_data( true );
 pdf_check( ! $saved->meta_exists( Payment::COD_OVERRIDE_META ) && ! empty( $result['data']['message'] ), 'Failed courier request does not persist a new staff COD override' );
+pdf_check( 5.0 === (float) $saved->get_shipping_total() && 105.0 === (float) $saved->get_total(), 'Refused fixed price label: the shipping line and the order total are back as they were' );
+$test_order    = payment_order();
+$payment_throw = true;
+$result        = payment_rpc( $test_order, array( 'fixedPrice' => '6' ) );
+$payment_throw = false;
+$saved         = wc_get_order( $test_order->get_id() );
+pdf_check( false === $result['success'] && false !== strpos( $result['data']['message'], 'could not be made' ) && 5.0 === (float) $saved->get_shipping_total() && 105.0 === (float) $saved->get_total(), 'A fixed price label that throws: the order is back as it was and the box gets a plain error, not a server error' );
 $payment_response = array(
 	'success' => true,
 	'data'    => array( 'reference_number' => '123' ),

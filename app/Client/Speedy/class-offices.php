@@ -49,11 +49,11 @@ class Offices {
 	 * @return array|null
 	 */
 	protected function load_offices( $city_id, $country_id = 100 ) {
-		if ( ! is_dir( $this->container[ Client::SPEEDY ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::SPEEDY ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::SPEEDY ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::SPEEDY ]::cache_folder() );
 		}
 
-		$offices_file = $this->container[ Client::SPEEDY ]::CACHE_FOLDER . 'offices-' . $city_id . '.json';
+		$offices_file = $this->container[ Client::SPEEDY ]::cache_folder() . 'offices-' . $city_id . '.json';
 		$offices      = File::get_file( $offices_file );
 		if ( ! $offices ) {
 			$api_call = $this->container[ Client::SPEEDY ]->api_call(

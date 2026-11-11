@@ -88,10 +88,11 @@ class Register {
 	}
 
 	/**
-	 * The courier price and waybill (cash on delivery amount included or not) were calculated with
-	 * the payment method saved in the courier cookie. The order must be placed with a payment method
-	 * of the same kind, or the waybill would not collect the cash (or the price would be wrong).
-	 * On a mismatch the rates are calculated again and the customer is asked to check the total.
+	 * The courier price and waybill (cash on delivery amount included or not, who pays the courier)
+	 * were calculated with the payment method saved in the courier cookie. The order must be placed
+	 * with a payment method of the same kind, or the waybill would not collect the cash (or the price
+	 * and the total would be wrong). On a mismatch the rates are calculated again and the customer is
+	 * asked to check the total.
 	 *
 	 * @param array     $data   Posted checkout data.
 	 * @param \WP_Error $errors Checkout errors.
@@ -101,7 +102,8 @@ class Register {
 			return;
 		}
 
-		$cod      = 'cod' === ( $data['payment_method'] ?? '' );
+		$payment  = (string) ( $data['payment_method'] ?? '' );
+		$cod      = 'cod' === $payment;
 		$mismatch = false;
 
 		foreach ( (array) WC()->session->get( 'chosen_shipping_methods' ) as $key => $chosen ) {
@@ -117,7 +119,10 @@ class Register {
 				continue;
 			}
 
-			if ( ( 'cod' === ( $meta['cookie_data']['payment'] ?? '' ) ) !== $cod ) {
+			$priced = (string) ( $meta['cookie_data']['payment'] ?? '' );
+			$listed = Courier_Fee::listed( $rate->get_method_id(), $rate->get_instance_id() );
+
+			if ( ( 'cod' === $priced ) !== $cod || Courier_Fee::customer_pays_cart( $listed, $priced ) !== Courier_Fee::customer_pays_cart( $listed, $payment ) ) {
 				$mismatch = true;
 				WC()->session->__unset( 'shipping_for_package_' . $key );
 			}
@@ -255,14 +260,28 @@ class Register {
 	 */
 	private static function get_checkout_post_data() {
 		$posted = array();
+		$keys   = array( 'payment_method', 'ship_to_different_address', 'has_full_address', 'country', 'state', 'postcode', 'city', 'address', 'address_2', 's_country', 's_state', 's_postcode', 's_city', 's_address', 's_address_2' );
 
-		foreach ( $_POST as $key => $value ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			if ( 'post_data' !== $key ) {
-				$posted[ $key ] = wc_clean( wp_unslash( $value ) );
+		foreach ( array( 'billing', 'shipping' ) as $prefix ) {
+			foreach ( array( 'country', 'state', 'postcode', 'city', 'address_1', 'address_2' ) as $field ) {
+				$keys[] = $prefix . '_' . $field;
 			}
 		}
 
-		return self::normalize_checkout_post_data( array_replace_recursive( nashenski_order_review_data(), $posted ) );
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- WooCommerce checked its nonce.
+		foreach ( $keys as $key ) {
+			if ( isset( $_POST[ $key ] ) && is_scalar( $_POST[ $key ] ) ) {
+				$posted[ $key ] = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+			}
+		}
+
+		// One chosen method per package: shipping_method[0], shipping_method[1] and so on.
+		if ( isset( $_POST['shipping_method'] ) ) {
+			$posted['shipping_method'] = map_deep( wp_unslash( $_POST['shipping_method'] ), 'sanitize_text_field' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- map_deep() sanitizes each value.
+		}
+		// phpcs:enable
+
+		return self::normalize_checkout_post_data( array_replace_recursive( nashenski_order_review_data( array_merge( $keys, array( 'shipping_method' ) ) ), $posted ) );
 	}
 
 	/**

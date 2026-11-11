@@ -482,11 +482,9 @@ class Field_Editor {
 		$values = array();
 
 		foreach ( self::layout() as $row ) {
-			$name = self::field_name( 'billing', $row['key'] );
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checks the checkout nonce before it reads the fields.
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- read only to compare with the rule; never output or saved, and not stripped, so it matches the script.
-			$posted                = wp_unslash( $_POST[ $name ] ?? '' );
-			$values[ $row['key'] ] = Conditions::clean_text( is_scalar( $posted ) ? $posted : '' );
+			$name                  = self::field_name( 'billing', $row['key'] );
+			$posted                = isset( $_POST[ $name ] ) && is_scalar( $_POST[ $name ] ) ? sanitize_text_field( wp_unslash( $_POST[ $name ] ) ) : '';
+			$values[ $row['key'] ] = Conditions::clean_text( $posted );
 		}
 
 		// A hidden field counts as empty for the rules that read it, as in the script; a few passes settle the chains.

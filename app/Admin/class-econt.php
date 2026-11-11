@@ -8,6 +8,7 @@
 namespace Nashenski\Admin;
 
 use Nashenski\Container\Client;
+use Nashenski\Shipping\Courier_Fee;
 use Nashenski\Shipping\Econt\Address;
 
 defined( 'ABSPATH' ) || exit;
@@ -106,6 +107,7 @@ class Econt {
 							'testsOptions'     => nashenski_return_array_for_select( nashenski_get_shipping_tests_options() ),
 							'testOption'       => self::get_test_option( $label_data['label'] ?? array() ),
 							'i18n'             => self::get_i18n(),
+							'feeNotice'        => Courier_Fee::receiver_notice( $theorder ),
 							'nonce'            => wp_create_nonce( 'nashenski_admin_label' ),
 						)
 					);
@@ -224,10 +226,17 @@ class Econt {
 			$label['receiverOfficeCode'] = $cookie_data['selectedOffice'];
 		}
 
+		// The shop collects the delivery of this order: the sender pays Econt.
+		if ( 'shop' === Courier_Fee::payer( $order ) ) {
+			unset( $label['paymentReceiverMethod'] );
+			$label['paymentSenderMethod'] = nashenski()->container()[ Client::ECONT_PROFILE ]->get_sender_payment_method();
+		}
+
 		if ( 'cod' === $order->get_payment_method() ) {
 			$label['services'] = array(
 				'cdType'     => 'get',
-				'cdAmount'   => wc_format_decimal( $order->get_total() - $order->get_shipping_total() - $order->get_shipping_tax(), wc_get_price_decimals() ),
+				// A delivery the shop collected is part of the cash on delivery amount.
+				'cdAmount'   => wc_format_decimal( $order->get_total() - ( 'shop' === Courier_Fee::payer( $order ) ? 0 : $order->get_shipping_total() + $order->get_shipping_tax() ), wc_get_price_decimals() ),
 				'cdCurrency' => $order->get_currency(),
 			);
 		}
@@ -450,7 +459,7 @@ class Econt {
 		$label = self::update_sender( $label );
 		$label = self::update_receiver_address( $label );
 		$label = self::update_label_pay_options( $label, $order_id );
-		$label = self::update_payment_by( $label, $order_id );
+		$label = self::update_payment_by( $label );
 		$label = self::update_test_options( $label );
 		$label = self::update_shipment_type( $label );
 		$label = self::update_phone_and_names( $label );
@@ -552,6 +561,7 @@ class Econt {
 			$order->save();
 			nashenski_add_label_order_note( $order, 'Econt', $action, $response['label']['shipmentNumber'] );
 
+			Courier_Fee::label_made( $order, self::label_mode() );
 			self::update_order_shipping_price( $response, $order_id, $label );
 		}
 
@@ -850,6 +860,19 @@ class Econt {
 							);
 						}
 					}
+
+					// The shop collects the delivery: it is in the cash on delivery amount, so it is on the list too.
+					$delivery = (float) $order->get_shipping_total() + (float) $order->get_shipping_tax();
+
+					if ( 'shop' === Courier_Fee::payer( $order ) && $delivery > 0 ) {
+						$label['packingList'][] = array(
+							'inventoryNum' => 'delivery',
+							'description'  => 'Доставка',
+							'weight'       => 0.05,
+							'count'        => 1,
+							'price'        => number_format( $delivery, 2, '.', '' ),
+						);
+					}
 				} elseif ( ( empty( $packing_list_or_invoice ) || 'invoice' === $packing_list_or_invoice ) && empty( $label['services']['invoiceNum'] ) ) {
 					$label['services']['invoiceNum'] = self::get_invoice_number( $order_id );
 				}
@@ -918,13 +941,24 @@ class Econt {
 	}
 
 	/**
+	 * Who pays the courier on a label made in the box: "sender", "receiver" (also a fixed share
+	 * the receiver pays the courier), or '' for a label made without the box.
+	 *
+	 * @return string
+	 */
+	public static function label_mode() {
+		$by = nashenski_label_request( 'paymentBy', array() )['id'] ?? '';
+
+		return 'sender' === $by ? 'sender' : ( in_array( $by, array( 'buyer', 'fixed' ), true ) ? 'receiver' : '' );
+	}
+
+	/**
 	 * Sets who pays for the delivery.
 	 *
-	 * @param array $label    Label.
-	 * @param int   $order_id Order ID.
+	 * @param array $label Label.
 	 * @return array
 	 */
-	protected static function update_payment_by( $label, $order_id ) {
+	protected static function update_payment_by( $label ) {
 		$payment_by    = nashenski_label_request( 'paymentBy', array() );
 		$fixed_price   = ( isset( $label['paymentReceiverAmount'] ) ) ? $label['paymentReceiverAmount'] : 0;
 		$sender_method = nashenski()->container()[ Client::ECONT_PROFILE ]->get_sender_payment_method();
@@ -943,8 +977,6 @@ class Econt {
 			$label['paymentSenderMethod']   = $sender_method;
 			$label['paymentReceiverMethod'] = 'cash';
 			$label['paymentReceiverAmount'] = $fixed_price;
-
-			self::update_order_shipping_price( $label, $order_id, $label );
 		}
 
 		return $label;
@@ -1086,6 +1118,7 @@ class Econt {
 
 		$order       = wc_get_order( $order_id );
 		$price       = 0;
+		$fee         = 0;
 		$cookie_data = $order->get_meta( 'nashenski_econt_cookie_data' );
 
 		if ( 'cod' !== $order->get_payment_method() ) {
@@ -1098,13 +1131,20 @@ class Econt {
 			$tax_rate = \Nashenski\Hooks::filter( 'nashenski_econt_fixed_price_tax_rate', 'nashenski/econt/fixed_price_tax_rate', 20, $order->get_shipping_country() );
 
 			if ( 'buyer' === $payment_by['id'] ) {
-				$price = nashenski_tax_based_price( $response['label']['receiverDueAmount'], $tax_rate );
+				$fee   = $response['label']['receiverDueAmount'];
+				$price = nashenski_tax_based_price( $fee, $tax_rate );
 			} elseif ( 'fixed' === $payment_by['id'] && ! empty( $request_body['paymentReceiverAmount'] ) ) {
-				$price = nashenski_tax_based_price( $request_body['paymentReceiverAmount'], $tax_rate );
+				$fee   = $request_body['paymentReceiverAmount'];
+				$price = nashenski_tax_based_price( $fee, $tax_rate );
 			}
 		}
 
-		$price = \Nashenski\Hooks::filter( 'nashenski_admin_econt_price_for_update', 'nashenski/admin/econt/price_for_update', $price, $order, nashenski_label_request(), $response, $request_body );
+		// The customer pays the courier: the price is information only. A checkout order keeps its total.
+		if ( Courier_Fee::keep_total( $order, $fee ) ) {
+			return;
+		}
+
+		$price = \Nashenski\Hooks::filter( 'nashenski_admin_econt_price_for_update', 'nashenski/admin/econt/price_for_update', $price, $order, array( 'paymentBy' => nashenski_label_request( 'paymentBy', array() ) ), $response, $request_body );
 
 		foreach ( $order->get_items( 'shipping' ) as $item_id => $item ) {
 			$item->set_total( $price );

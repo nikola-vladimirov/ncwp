@@ -995,14 +995,14 @@
 		return label.querySelector( '.brx-shipping-options__secondary-label' );
 	}
 
-	/* An amount in the store's money format, like wc_price() without the markup. */
-	function money( amount ) {
+	/* An amount in the store's money format, like wc_price() without the markup; symbol: another currency's. */
+	function money( amount, symbol ) {
 		var c = cfg.currency || {};
 		var parts = Number( amount ).toFixed( c.decimals || 0 ).split( '.' );
 
 		parts[ 0 ] = parts[ 0 ].replace( /\B(?=(\d{3})+(?!\d))/g, c.thousand || '' );
 
-		return ( c.format || '%1$s%2$s' ).replace( '%1$s', c.symbol || '' ).replace( '%2$s', parts.join( c.decimal || '.' ) );
+		return ( c.format || '%1$s%2$s' ).replace( '%1$s', ( undefined === symbol ? c.symbol : symbol ) || '' ).replace( '%2$s', parts.join( c.decimal || '.' ) );
 	}
 
 	/* The offer closest to free shipping (least left, then the lowest total), or null. */
@@ -1065,6 +1065,7 @@
 		var rates = cfg.rates || {};
 		var shown = [];
 		var list = null;
+		var chosen = null;
 
 		Array.prototype.forEach.call( inputs, function ( input ) {
 			var match = RATE.exec( input.value || '' );
@@ -1131,9 +1132,38 @@
 					price.classList.add( 'nashenski-rate-pending' );
 				}
 			}
+
+			if ( input.checked || 'hidden' === input.type ) {
+				chosen = { list: input.closest( '#shipping_method, .brx-shipping-options__control' ), label: label };
+			}
 		} );
 
 		showProgress( list, lowestOffer( shown ) );
+		showNote( chosen );
+	}
+
+	var note = null;
+
+	/*
+	 * The long text of the chosen option (what it costs at the courier, or what to choose first),
+	 * once under the options instead of in every card. The block checkout says it in its summary.
+	 * One live region right after the list (not an option of it): created once, put back when the
+	 * checkout redraws the list, and only its text changes, so screen readers announce it.
+	 */
+	function showNote( chosen ) {
+		var source = chosen && chosen.list ? chosen.label.querySelector( '[data-nashenski-note]' ) : null;
+
+		if ( ! note ) {
+			note = document.createElement( 'p' );
+			note.className = 'nashenski-rates-note';
+			note.setAttribute( 'aria-live', 'polite' );
+		}
+
+		if ( chosen && chosen.list && chosen.list.nextElementSibling !== note ) {
+			chosen.list.after( note );
+		}
+
+		setText( note, source ? source.getAttribute( 'data-nashenski-note' ) : '' );
 	}
 
 	window.nashenskiPickers = Object.assign( cfg, {

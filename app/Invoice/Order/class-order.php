@@ -72,6 +72,9 @@ class Order {
 	public function __construct( $order ) {
 		$this->woo_order = $order;
 
+		// Every document path decides who pays the courier before reading it (orders without a number only).
+		\Nashenski\Shipping\Courier_Fee::decide( $order );
+
 		$this->set_vat_and_taxes();
 		$this->set_remove_shipping();
 
@@ -102,14 +105,14 @@ class Order {
 	}
 
 	/**
-	 * Reads whether delivery is left out of the documents.
+	 * Reads whether delivery is left out of the documents: when the shop did not collect it.
 	 */
 	private function set_remove_shipping() {
-		$this->remove_shipping = nashenski_maybe_remove_shipping( $this->woo_order );
+		$this->remove_shipping = \Nashenski\Shipping\Courier_Fee::shop_collects( $this->woo_order ) ? 'no' : 'yes';
 	}
 
 	/**
-	 * The lines of the document: products, fees and delivery. Delivery lines are taken out and put back when the setting asks to leave them out.
+	 * The lines of the document: products, fees and delivery. Delivery lines are taken out and put back when the shop did not collect the delivery.
 	 *
 	 * @return array
 	 */
@@ -196,6 +199,8 @@ class Order {
 				if ( wc_tax_enabled() && 'taxable' === $item_tax_status ) {
 					if ( $item->get_total_tax() ) {
 						$item_vat = $shipping_vat;
+					} elseif ( nashenski_shipping_has_no_vat( $item, $this->woo_order ) ) {
+						$item_vat = 0;
 					} else {
 						$item_tax   = $this->wc_tax::calc_tax(
 							$item_price,

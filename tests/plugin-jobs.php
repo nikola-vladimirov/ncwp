@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable Generic.Files.OneObjectStructurePerFile -- offline test: WordPress fixtures beside the test.
 /**
  * Offline: deactivation stops the plugin's Action Scheduler jobs and resets the flags that bring them back; the receipt cleanup returns when missing. Run: php tests/plugin-jobs.php
  *
@@ -42,6 +42,8 @@ namespace {
 		}
 	);
 	define( 'WP_CONTENT_DIR', $GLOBALS['scratch'] . 'wp-content' );
+	define( 'FS_CHMOD_DIR', 0755 );
+	define( 'FS_CHMOD_FILE', 0644 );
 	define( 'HOUR_IN_SECONDS', 3600 );
 	define( 'DAY_IN_SECONDS', 86400 );
 
@@ -84,6 +86,22 @@ namespace {
 	function wp_clear_scheduled_hook( $h ) {
 		$GLOBALS['cleared'][] = $h; }
 	/**
+	 * Wp next scheduled: nothing pending.
+	 *
+	 * @param string $h Hook.
+	 * @return false
+	 */
+	function wp_next_scheduled( $h ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- the stub keeps WordPress's signature.
+		return false; }
+	/**
+	 * Wp schedule single event: records the one-off job.
+	 *
+	 * @param int    $t Time.
+	 * @param string $h Hook.
+	 */
+	function wp_schedule_single_event( $t, $h ) {
+		$GLOBALS['single_events'][] = $h; }
+	/**
 	 * Get option.
 	 *
 	 * @param mixed $k K.
@@ -92,6 +110,15 @@ namespace {
 	 */
 	function get_option( $k, $d = false ) {
 		return $GLOBALS['options'][ $k ] ?? $d; }
+	/**
+	 * Plugin option (the upgrade reads "Remove delivery from documents"; off here).
+	 *
+	 * @param string $group Group.
+	 * @param string $key   Key.
+	 * @return mixed Result.
+	 */
+	function nashenski_get_option( $group, $key ) {
+		return get_option( 'nashenski_settings_' . $group . '_' . $key, '' ); }
 	/**
 	 * Update option.
 	 *
@@ -219,7 +246,7 @@ namespace {
 	check( true === $GLOBALS['autoload'][ Nashenski\Document_Storage::MIGRATE_VERSION_OPTION ] && Nashenski\Document_Storage::MIGRATE_VERSION === get_option( Nashenski\Document_Storage::MIGRATE_VERSION_OPTION ), 'the migration flag is saved with autoload on' );
 
 	// The upgrade step puts the documents migration flag in the autoload set, for sites that saved it outside it.
-	$wpdb                     = new class() {
+	$wpdb            = new class() {
 		/**
 		 * Options table name.
 		 *
@@ -246,19 +273,39 @@ namespace {
 		 * Query.
 		 */
 		public function query() {}
-	};
-	$GLOBALS['wpdb']          = $wpdb;
-	$wp_filesystem            = new class() {
 		/**
-		 * Rmdir.
+		 * Table prefix.
+		 *
+		 * @var string
 		 */
-		public function rmdir() {}
+		public $prefix = 'wp_';
+		/**
+		 * Rows: no courier methods in the zones (the 0.21.8 "Customer pays the courier" upgrade finds none).
+		 *
+		 * @return array
+		 */
+		public function get_results() {
+			return array(); }
 	};
-	$GLOBALS['wp_filesystem'] = $wp_filesystem;
-	$plugin                   = ( new ReflectionClass( Nashenski\Plugin::class ) )->newInstanceWithoutConstructor();
+	$GLOBALS['wpdb'] = $wpdb;
+	/**
+	 * Filesystem fixture: File::filesystem() makes WordPress's direct filesystem class; this one records removed folders.
+	 */
+	class WP_Filesystem_Direct {
+		/**
+		 * Rmdir: records the folder.
+		 *
+		 * @param string $path Folder.
+		 */
+		public function rmdir( $path ) {
+			$GLOBALS['removed_dirs'][] = $path; }
+	}
+	$plugin = ( new ReflectionClass( Nashenski\Plugin::class ) )->newInstanceWithoutConstructor();
 	( new ReflectionMethod( $plugin, 'maybe_upgrade' ) )->invoke( $plugin );
 	check( array( array( 'nashenski_documents_migration_version', true ) ) === $GLOBALS['autoload_set'], 'the upgrade step switches the documents migration flag to autoload' );
 	check( Nashenski\Plugin::VERSION === get_option( 'nashenski_version' ), 'the upgrade step saves the new version' );
+	check( array( Nashenski\Plugin::REMOVE_SHIPPING_JOB ) === $GLOBALS['single_events'], 'the 0.21.8 step leaves the order lines to a one-off background job' );
+	check( array( WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski' ) === $GLOBALS['removed_dirs'], 'the upgrade step removes the cache folder used before 0.21.7, and nothing else' );
 
 	// The receipt cleanup is checked again in the admin, so a site that lost the job gets it back.
 	new Nashenski\Document_Storage();

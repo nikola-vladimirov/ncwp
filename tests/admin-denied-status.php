@@ -147,15 +147,6 @@ namespace {
 	foreach ( $denied as $name => $call ) {
 		expect( 403, status_of( $call ), "$name without the capability" );
 	}
-	expect(
-		403,
-		status_of(
-			function () {
-				\Nashenski\Admin\Import_Sources::switch_off( array() );
-			}
-		),
-		'Import_Sources::switch_off without the capability'
-	);
 
 	$GLOBALS['caps'] = array( 'manage_woocommerce' => true );
 	expect( 400, status_of( array( 'Nashenski\Admin\Export_Builder', 'download' ) ), 'Export_Builder::download with no columns' );

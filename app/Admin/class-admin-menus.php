@@ -204,7 +204,9 @@ class Admin_Menus {
 			return;
 		}
 
-		extract( $atts ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- the fragments read these variables by name.
+		// The only fragment, label-column, reads $data and $order.
+		$data  = $atts['data'] ?? array();
+		$order = $atts['order'] ?? null;
 
 		include $fragment_dir;
 	}

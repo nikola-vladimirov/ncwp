@@ -1,9 +1,8 @@
 <?php
 /**
- * Bulgarian for the texts printed on documents (invoices, credit notes, order documents), used when
- * the site has no Bulgarian translation of this plugin yet (WordPress.org serves it as a language pack).
- * Ordinance N-18 documents must be in Bulgarian whatever the site language. Made from
- * languages/nashenski-commerce-bg_BG.po with nashenski-tools/doc-texts.py; do not edit by hand.
+ * Bulgarian for the texts printed on invoices, credit notes and order documents: Ordinance N-18 requires
+ * them in Bulgarian whatever the site language. Used only for a text the loaded translation lacks.
+ * Made from languages/nashenski-commerce-bg_BG.po with nashenski-tools/doc-texts.py; do not edit by hand.
  *
  * @package Nashenski
  */

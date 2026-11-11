@@ -99,7 +99,7 @@ class Office {
 	 * @return array
 	 */
 	public static function public_list( $type, $city ) {
-		$folder = nashenski()->container()[ Client::PIGEON ]::CACHE_FOLDER;
+		$folder = nashenski()->container()[ Client::PIGEON ]::cache_folder();
 		$file   = $folder . 'public-locations.json';
 		$list   = json_decode( (string) \Nashenski\File::get_file( $file ), true );
 

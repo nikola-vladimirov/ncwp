@@ -41,6 +41,8 @@ function sanitize_email( $value ) {
 	return filter_var( $value, FILTER_SANITIZE_EMAIL ); }
 function is_email( $value ) {
 	return false !== filter_var( $value, FILTER_VALIDATE_EMAIL ); }
+function map_deep( $value, $callback ) {
+	return is_array( $value ) ? array_map( fn( $item ) => map_deep( $item, $callback ), $value ) : $callback( $value ); }
 function wp_unslash( $value ) {
 	return $value; }
 function get_option( $key, $fallback = false ) {
@@ -137,8 +139,8 @@ class Zone_Method {
 }
 
 class WC_Shipping_Zone {
-	private $id = 0;
-	private $name = '';
+	private $id        = 0;
+	private $name      = '';
 	private $locations = array();
 	public function __construct( $id = null ) {
 		if ( $id ) {
@@ -157,7 +159,7 @@ class WC_Shipping_Zone {
 		if ( 0 !== $this->id ) {
 			$this->locations[] = $type . ':' . $code; } }
 	public function save() {
-		$this->id                    = $this->id ? $this->id : count( $GLOBALS['zones'] ) + 1;
+		$this->id                      = $this->id ? $this->id : count( $GLOBALS['zones'] ) + 1;
 		$GLOBALS['zones'][ $this->id ] = array(
 			'name'      => $this->name,
 			'locations' => $this->locations,
@@ -175,7 +177,7 @@ class WC_Shipping_Zone {
 		// Like WooCommerce: only registered methods are added.
 		if ( ! isset( apply_filters( 'woocommerce_shipping_methods', array() )[ $type ] ) ) {
 			return 0; }
-		$instance                                         = ++$GLOBALS['instance'];
+		$instance = ++$GLOBALS['instance'];
 		$GLOBALS['zones'][ $this->id ]['methods'][ $instance ] = $type;
 		return $instance; }
 }
@@ -193,12 +195,12 @@ require dirname( __DIR__ ) . '/app/autoload.php';
 
 use Nashenski\Admin\Setup_Wizard;
 
-$fails = 0;
-$check = function ( $name, $ok ) use ( &$fails ) {
+$fails        = 0;
+$check        = function ( $name, $ok ) use ( &$fails ) {
 	$fails += $ok ? 0 : 1;
 	echo ( $ok ? 'PASS ' : 'FAIL ' ) . $name . "\n";
 };
-$run   = function ( $form ) {
+$run          = function ( $form ) {
 	$_POST = array( 'nashenski_setup' => $form );
 	try {
 		Setup_Wizard::handle();
@@ -207,7 +209,7 @@ $run   = function ( $form ) {
 	}
 	return null;
 };
-$bg    = function ( $tax_class ) {
+$bg           = function ( $tax_class ) {
 	return array_values(
 		array_filter(
 			WC_Tax::get_rates_for_tax_class( $tax_class ),
@@ -321,12 +323,14 @@ $check(
 			'title'              => 'Econt to an office',
 			'delivery_type'      => 'office',
 			'free_shipping_over' => '50.5',
+			'customer_pays'      => array( 'cod' ),
 		),
 		array(
 			'nashenski_econt',
 			'title'              => 'Econt to a parcel locker',
 			'delivery_type'      => 'automat',
 			'free_shipping_over' => '50.5',
+			'customer_pays'      => array( 'cod' ),
 		),
 		array(
 			'nashenski_boxnow',
@@ -410,11 +414,13 @@ $check(
 		'nashenski_econt',
 		'title'         => 'To an office',
 		'delivery_type' => 'office',
+		'customer_pays' => array( 'cod' ),
 	) === $methods[2] && array(
 		'nashenski_econt',
 		'title'              => 'To a parcel locker',
 		'delivery_type'      => 'automat',
 		'free_shipping_over' => '40',
+		'customer_pays'      => array( 'cod' ),
 	) === $methods[3]
 );
 

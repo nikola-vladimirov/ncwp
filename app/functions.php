@@ -328,7 +328,20 @@ function nashenski_get_order_shipping_vat( $order, $show_group = false ) {
 	if ( wc_tax_enabled() && ! empty( $order->get_items( 'tax' ) ) ) {
 		foreach ( $order->get_items( 'tax' ) as $tax_item ) {
 			if ( $tax_item->get_shipping_tax_total() ) {
-				$shipping_vat = $tax_item->get_rate_percent();
+				// Rate ID 0 is the 20% nashenski_get_shipping_rate_taxes() adds when the shop has no shipping rate.
+				$shipping_vat = $tax_item->get_rate_id() ? $tax_item->get_rate_percent() : 20;
+				break;
+			}
+		}
+	}
+
+	// The checkout makes no tax line for rate ID 0 (only a recalculation does): read it from the delivery lines.
+	if ( ! $shipping_vat && wc_tax_enabled() ) {
+		foreach ( $order->get_items( 'shipping' ) as $shipping_item ) {
+			$taxes = $shipping_item->get_taxes();
+
+			if ( ! empty( $taxes['total'][0] ) ) {
+				$shipping_vat = 20;
 				break;
 			}
 		}
@@ -339,6 +352,36 @@ function nashenski_get_order_shipping_vat( $order, $show_group = false ) {
 	}
 
 	return \Nashenski\Hooks::filter( 'nashenski_order_item_shipping_vat_rate', 'nashenski/order_item/shipping_vat_rate', $shipping_vat, $order );
+}
+
+/**
+ * Whether a shipping line prints at 0% VAT with its price as it is: the line has no tax, its order
+ * has no tax at all and no product or fee line had tax before discounts (for example goods at 0%).
+ * Otherwise documents keep taking the VAT out of an untaxed delivery price. A refund follows the
+ * order it refunds.
+ *
+ * @param WC_Order_Item_Shipping   $item  Shipping line.
+ * @param WC_Order|WC_Order_Refund $order Order or refund.
+ * @return bool
+ */
+function nashenski_shipping_has_no_vat( $item, $order ) {
+	if ( $order instanceof WC_Order_Refund ) {
+		$parent = wc_get_order( $order->get_parent_id() );
+		$order  = $parent ? $parent : $order;
+	}
+
+	if ( 0.0 !== (float) $item->get_total_tax() || 0.0 !== (float) $order->get_total_tax() ) {
+		return false;
+	}
+
+	// A 100% coupon leaves no tax on the order, but the goods still print with their VAT: so must the delivery.
+	foreach ( $order->get_items( array( 'line_item', 'fee' ) ) as $line ) {
+		if ( 0.0 !== (float) ( method_exists( $line, 'get_subtotal_tax' ) ? $line->get_subtotal_tax() : $line->get_total_tax() ) ) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /**
@@ -466,44 +509,6 @@ function nashenski_calculate_vat_from_price( $price, $rate = 20 ) {
 }
 
 /**
- * Whether the documents leave out the delivery charge: 'yes' or 'no'.
- *
- * @param WC_Order|WC_Order_Refund $order Order or refund.
- * @return string
- */
-function nashenski_maybe_remove_shipping( $order ) {
-	$remove_shipping = nashenski_get_option( 'invoice', 'remove_shipping' );
-
-	if ( is_a( $order, 'Automattic\WooCommerce\Admin\Overrides\OrderRefund' ) ||
-		is_a( $order, 'WC_Order_Refund' )
-	) {
-		$order = wc_get_order( $order->get_parent_id() );
-	}
-
-	if ( ! $order ) {
-		return $remove_shipping;
-	}
-
-	// Only a cash on delivery courier receipts the delivery charge; paid orders keep it.
-	if ( 'cod' !== $order->get_payment_method() ) {
-		return 'no';
-	}
-
-	$shipping_methods = $order->get_shipping_methods();
-
-	if ( ! empty( $shipping_methods ) ) {
-		$shipping_method    = reset( $shipping_methods );
-		$shipping_method_id = $shipping_method['method_id'];
-
-		if ( $order->get_payment_method() === 'cod' && nashenski_get_option( 'shippings', $shipping_method_id . '_is_courier' ) === 'yes' ) {
-			$remove_shipping = 'yes';
-		}
-	}
-
-	return $remove_shipping;
-}
-
-/**
  * Whether the cart has a valid free shipping coupon.
  *
  * @return bool
@@ -549,10 +554,10 @@ function nashenski_format_phone( $phone, $country = 'BG' ) {
 
 /**
  * A request value once its nonce checks out, sanitized all the way down; $fallback when it is
- * missing or the nonce is wrong. With no key, the whole sanitized request. The nonce check and the
- * read stay in this one function on purpose: that is where Plugin Check looks for them.
+ * missing or the nonce is wrong. Only the named key is read. The nonce check and the read stay in
+ * this one function on purpose: that is where Plugin Check looks for them.
  *
- * @param string|null     $key      Request key.
+ * @param string          $key      Request key.
  * @param mixed           $fallback Value when missing or not verified.
  * @param string          $field    Request key of the nonce.
  * @param string|string[] $actions  Accepted nonce actions.
@@ -570,11 +575,7 @@ function nashenski_verified_request( $key, $fallback, $field, $actions ) {
 		return $fallback;
 	}
 
-	if ( null === $key ) {
-		return map_deep( wp_unslash( $_REQUEST ), 'sanitize_text_field' );
-	}
-
-	return isset( $_REQUEST[ $key ] ) ? map_deep( wp_unslash( $_REQUEST[ $key ] ), 'sanitize_text_field' ) : $fallback;
+	return null !== $key && isset( $_REQUEST[ $key ] ) ? map_deep( wp_unslash( $_REQUEST[ $key ] ), 'sanitize_text_field' ) : $fallback;
 }
 
 /**
@@ -672,14 +673,13 @@ function nashenski_checkout_posted( $key, $fallback = '' ) {
 
 /**
  * The classic checkout form sent with "update order review" (WooCommerce checks its nonce
- * before; it is checked again here), as sanitized fields.
+ * before; it is checked again here): only the named fields, sanitized.
  *
+ * @param string[] $keys Fields to read.
  * @return array
  */
-function nashenski_order_review_data() {
-	$nonce = isset( $_POST['security'] ) ? sanitize_text_field( wp_unslash( $_POST['security'] ) ) : '';
-
-	if ( ! isset( $_POST['post_data'] ) || ! wp_verify_nonce( $nonce, 'update-order-review' ) ) {
+function nashenski_order_review_data( array $keys ) {
+	if ( ! isset( $_POST['post_data'], $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'update-order-review' ) ) {
 		return array();
 	}
 
@@ -687,7 +687,7 @@ function nashenski_order_review_data() {
 	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a query string; every value is sanitized below.
 	parse_str( wp_unslash( $_POST['post_data'] ), $data );
 
-	return map_deep( $data, 'sanitize_text_field' );
+	return map_deep( array_intersect_key( $data, array_flip( $keys ) ), 'sanitize_text_field' );
 }
 /**
  * Send a temporary file to the browser as a download, delete it and stop.
@@ -855,6 +855,11 @@ function nashenski_save_checkout_label( $order_id, $courier ) {
 		}
 
 		$label = WC()->session->get( "nashenski-{$courier}-label" );
+
+		// Speedy: a delivery the shop collected is part of the cash on delivery amount (none is in a customer-pays total).
+		if ( 'speedy' === $courier && isset( $label['service']['additionalServices']['cod']['amount'] ) && $shipping->get_meta( \Nashenski\Shipping\Courier_Fee::PAYER_META ) ) {
+			$label['service']['additionalServices']['cod']['amount'] = wc_format_decimal( $order->get_total(), wc_get_price_decimals() );
+		}
 
 		if ( $label ) {
 			$order->update_meta_data( "nashenski_{$courier}_label", \Nashenski\Hooks::filter( "nashenski_{$courier}_label_before_save", "nashenski/{$courier}/label_before_save", $label, $order ) );

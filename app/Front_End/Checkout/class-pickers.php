@@ -7,6 +7,8 @@
 
 namespace Nashenski\Front_End\Checkout;
 
+use Nashenski\Shipping\Courier_Fee;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -250,8 +252,8 @@ class Pickers {
 			}
 
 			if ( (float) ( $meta[ self::FREE_OVER_META ] ?? 0 ) > 0 ) {
-				// BOX NOW does not take free shipping coupons, the other couriers do.
-				$free = $free || ( ! $pending && (float) $rate->get_cost() <= 0 ) || ( 'boxnow' !== $courier && nashenski_has_free_shipping_coupon_in_cart() );
+				// BOX NOW does not take free shipping coupons, the other couriers do. A delivery paid to the courier costs 0 here but is not free.
+				$free = $free || ( ! $pending && (float) $rate->get_cost() <= 0 && empty( $meta[ Courier_Fee::FEE_META ] ) ) || ( 'boxnow' !== $courier && nashenski_has_free_shipping_coupon_in_cart() );
 				// Once per call: the total runs every fee hook.
 				$total = $total ?? nashenski_get_package_total();
 				$rate->add_meta_data( self::FREE_LEFT_META, self::free_left( $meta[ self::FREE_OVER_META ], $total, $free ) );
@@ -300,6 +302,10 @@ class Pickers {
 	 * @return string
 	 */
 	public static function full_label( $label, $rate ) {
+		if ( is_object( $rate ) && self::courier_of( $rate->get_id() ) && 'plain' !== Appearance::layout() ) {
+			return self::card_label( $label, $rate );
+		}
+
 		if ( self::is_pending( $rate ) ) {
 			return $label . ': <span class="nashenski-rate-pending">' . esc_html( self::pending_text() ) . '</span>';
 		}
@@ -310,7 +316,51 @@ class Pickers {
 			return $label . ': <span class="nashenski-rate-free">' . esc_html__( 'Free shipping', 'nashenski-commerce' ) . '</span>';
 		}
 
+		if ( ! empty( $meta[ Courier_Fee::FEE_META ] ) ) {
+			return $label . ': ' . self::courier_fee_html( $meta );
+		}
+
 		return $label;
+	}
+
+	/**
+	 * Cards and side by side: the courier name (for screen readers; the logo shows it), then one
+	 * short price line. The script adds the logo and the delivery type, and puts the long texts
+	 * (data-nashenski-note) once under the options.
+	 *
+	 * @param string            $label Rate label: "Econt" or "Econt: price".
+	 * @param \WC_Shipping_Rate $rate  Shipping rate.
+	 * @return string
+	 */
+	private static function card_label( $label, $rate ) {
+		$meta = $rate->get_meta_data();
+		$name = $rate->get_label();
+
+		if ( self::is_pending( $rate ) ) {
+			$price = '<span class="nashenski-rate-price nashenski-rate-pending" data-nashenski-note="' . esc_attr__( 'Choose your office, locker or address to see the delivery price.', 'nashenski-commerce' ) . '">' . esc_html__( 'Price after address', 'nashenski-commerce' ) . '</span>';
+		} elseif ( ! empty( $meta[ Courier_Fee::FEE_META ] ) ) {
+			$currency = (string) ( $meta[ Courier_Fee::CURRENCY_META ] ?? '' );
+			$price    = '<span class="nashenski-rate-price" data-nashenski-note="' . esc_attr( wp_strip_all_tags( Courier_Fee::text( $meta[ Courier_Fee::FEE_META ], $currency ) ) ) . '">' . wp_kses_post( wc_price( $meta[ Courier_Fee::FEE_META ], array( 'currency' => $currency ) ) ) . ' <span class="nashenski-rate-note">' . esc_html__( 'to the courier', 'nashenski-commerce' ) . '</span></span>';
+		} elseif ( (float) $rate->get_cost() <= 0 ) {
+			$price = '<span class="nashenski-rate-price nashenski-rate-free">' . esc_html__( 'Free', 'nashenski-commerce' ) . '</span>';
+		} else {
+			// WooCommerce and the builder pass "Name: price"; the price part keeps their tax display.
+			$price = 0 === strpos( $label, $name . ': ' ) ? substr( $label, strlen( $name ) + 2 ) : wc_price( (float) $rate->get_cost() + array_sum( (array) $rate->get_taxes() ) );
+			$price = '<span class="nashenski-rate-price">' . wp_kses_post( $price ) . '</span>';
+		}
+
+		return '<span class="nashenski-rate-courier">' . esc_html( $name ) . '</span>' . $price;
+	}
+
+	/**
+	 * "6,50 €, paid to the courier on delivery, not included in the total" in the checkout, in the
+	 * currency the fee was calculated in (the store's).
+	 *
+	 * @param array $meta Rate meta with the fee.
+	 * @return string
+	 */
+	private static function courier_fee_html( $meta ) {
+		return '<span class="nashenski-rate-courier-fee">' . wp_kses_post( Courier_Fee::text( $meta[ Courier_Fee::FEE_META ], (string) ( $meta[ Courier_Fee::CURRENCY_META ] ?? '' ) ) ) . '</span>';
 	}
 
 	/**
@@ -329,7 +379,13 @@ class Pickers {
 
 		$rate = self::chosen_rate();
 
-		return $rate && self::is_pending( $rate ) ? '<span class="nashenski-rate-pending">' . esc_html( self::pending_text() ) . '</span>' : $value;
+		if ( $rate && self::is_pending( $rate ) ) {
+			return '<span class="nashenski-rate-pending">' . esc_html( self::pending_text() ) . '</span>';
+		}
+
+		$meta = $rate ? $rate->get_meta_data() : array();
+
+		return '' !== (string) ( $meta[ Courier_Fee::FEE_META ] ?? '' ) ? self::courier_fee_html( $meta ) : $value;
 	}
 
 	/**
@@ -477,6 +533,13 @@ class Pickers {
 			'logos'      => 'no' === nashenski_get_option( 'checkout', 'courier_logos' ) ? array() : Courier_Logos::get_logos(),
 			'showType'   => 'no' !== nashenski_get_option( Appearance::GROUP, 'show_type' ),
 			'pending'    => self::pending_text(),
+			// Short texts of the block checkout's option cards (the long ones go to its summary).
+			'cardTexts'  => 'plain' === Appearance::layout() ? null : array(
+				'pending'   => __( 'Price after address', 'nashenski-commerce' ),
+				'toCourier' => __( 'to the courier', 'nashenski-commerce' ),
+			),
+			/* translators: %s: delivery price, for example 6,50 € */
+			'courierFee' => __( '%s, paid to the courier on delivery, not included in the total', 'nashenski-commerce' ),
 			'freeOver'   => 'yes' === nashenski_get_option( Appearance::GROUP, 'free_over_label' ),
 			'freeBar'    => 'yes' === nashenski_get_option( Appearance::GROUP, 'free_progress' ),
 			// The store's money format, for amounts the script writes ("Free shipping over 50,00 €").
@@ -487,6 +550,8 @@ class Pickers {
 				'decimal'  => wc_get_price_decimal_separator(),
 				'thousand' => wc_get_price_thousand_separator(),
 			),
+			// Fees paid to the courier are in the store's currency (Courier_Fee::rate()).
+			'feeSymbol'  => html_entity_decode( get_woocommerce_currency_symbol( get_option( 'woocommerce_currency' ) ), ENT_QUOTES, 'UTF-8' ),
 			'types'      => array(
 				'office'  => __( 'To an office', 'nashenski-commerce' ),
 				'automat' => __( 'To a parcel locker', 'nashenski-commerce' ),

@@ -15,6 +15,7 @@ namespace {
 	file_put_contents( $root . 'wp-admin/includes/file.php', '<?php function wp_tempnam( $name ) { $GLOBALS["temp_files"][] = $f = tempnam( sys_get_temp_dir(), "nsk" ); return $f; }' );
 	define( 'ABSPATH', $root );
 	define( 'FS_CHMOD_FILE', 0644 );
+	define( 'FS_CHMOD_DIR', 0755 );
 	error_reporting( E_ALL & ~E_DEPRECATED ); // dompdf 3.0 deprecations on PHP 8.4+.
 	require __DIR__ . '/../vendor/autoload.php';
 	require_once __DIR__ . '/../app/autoload.php';
@@ -47,8 +48,14 @@ namespace {
 	function wp_delete_file( $file ) {
 		@unlink( $file ); // phpcs:ignore
 	}
-	/** Filesystem fixture. */
-	class FakeFilesystem {
+	/** Filesystem fixture: File::filesystem() makes WordPress's direct filesystem class; this one writes plain files. */
+	class WP_Filesystem_Direct {
+		/**
+		 * Constructor.
+		 *
+		 * @param mixed $arg Unused.
+		 */
+		public function __construct( $arg = null ) {}
 		/**
 		 * Writes a file.
 		 *
@@ -80,7 +87,7 @@ namespace {
 			return @unlink( $file ); // phpcs:ignore
 		}
 	}
-	$wp_filesystem = new FakeFilesystem();
+	$wp_filesystem = new WP_Filesystem_Direct();
 
 	/** PDF fixture: a real one-page PDF per call, so the merge runs for real. */
 	class FakePdf {
@@ -103,7 +110,7 @@ namespace {
 		 */
 		public function generate() {
 			$this->titles[] = $this->document->title;
-			$dompdf         = new \Dompdf\Dompdf();
+			$dompdf         = new \Dompdf\Dompdf( array( 'fontCache' => sys_get_temp_dir() ) ); // Font metrics cache out of vendor/, as the plugin does.
 			$dompdf->loadHtml( '<p>' . $this->document->title . '</p>' );
 			$dompdf->render();
 			return $dompdf->output();

@@ -108,10 +108,6 @@ class Migration {
 							)
 						);
 					}
-
-					foreach ( (array) ( $r['switched_off'] ?? array() ) as $line ) {
-						echo '<br>' . esc_html( $line );
-					}
 					?>
 				</p>
 			</div>
@@ -134,8 +130,7 @@ class Migration {
 
 		// A second run would overwrite options such as the next invoice numbers.
 		if ( ! get_option( self::DONE_OPTION ) ) {
-			$report                 = self::run();
-			$report['switched_off'] = Import_Sources::switch_off( self::plugin_files() );
+			$report = self::run();
 			// The old plugin's documents sit in a public folder; move them into the private one.
 			\Nashenski\Document_Storage::schedule_migration( true );
 			update_option(
@@ -154,21 +149,24 @@ class Migration {
 	}
 
 	/**
-	 * Bulgarisation for WooCommerce and its Pro add-on, wherever they are installed.
+	 * Bulgarisation for WooCommerce and its Pro add-on, wherever they are installed: file => name.
+	 *
+	 * @return array
 	 */
-	private static function plugin_files() {
+	public static function plugin_files() {
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		return array_keys(
-			array_filter(
-				get_plugins(),
-				function ( $plugin ) {
-					return in_array( $plugin['Name'], array( 'Bulgarisation for WooCommerce', 'Bulgarisation for WooCommerce - Pro' ), true );
-				}
-			)
-		);
+		$plugins = array();
+
+		foreach ( get_plugins() as $file => $plugin ) {
+			if ( in_array( $plugin['Name'], array( 'Bulgarisation for WooCommerce', 'Bulgarisation for WooCommerce - Pro' ), true ) ) {
+				$plugins[ $file ] = $plugin['Name'];
+			}
+		}
+
+		return $plugins;
 	}
 
 	/**

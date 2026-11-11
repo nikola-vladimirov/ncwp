@@ -461,7 +461,7 @@ class Reports {
 	 * The phone of the checkout: the billing phone, or the cart customer's for the block checkout.
 	 */
 	public static function checkout_phone() {
-		$data  = nashenski_order_review_data();
+		$data  = nashenski_order_review_data( array( 'billing_phone' ) );
 		$phone = $data['billing_phone'] ?? '';
 
 		// Block checkout: the Store API keeps the phone on the cart's customer.

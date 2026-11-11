@@ -3,10 +3,9 @@
 namespace {
 	$root = sys_get_temp_dir() . '/nashenski-origins-' . bin2hex( random_bytes( 4 ) );
 	mkdir( $root . '/uploads', 0777, true );
-	mkdir( $root . '/content/cache/nashenski/boxnow', 0777, true );
 	define( 'ABSPATH', $root . '/' );
-	define( 'WP_CONTENT_DIR', $root . '/content' );
 	define( 'FS_CHMOD_FILE', 0644 );
+	define( 'FS_CHMOD_DIR', 0755 );
 	const MINUTE_IN_SECONDS = 60;
 
 	$GLOBALS['root'] = $root;
@@ -106,7 +105,16 @@ namespace {
 	 * @return void
 	 */
 	function set_transient( $k, $v, $t ) {}
-	$GLOBALS['wp_filesystem'] = new class() { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- the test installs its own filesystem stub.
+	/**
+	 * Filesystem fixture: File::filesystem() makes WordPress's direct filesystem class; this one writes plain files.
+	 */
+	class WP_Filesystem_Direct {
+		/**
+		 * Constructor.
+		 *
+		 * @param mixed $a Unused.
+		 */
+		public function __construct( $a = null ) {}
 		/**
 		 * Writes a file.
 		 *
@@ -147,7 +155,7 @@ namespace {
 		 */
 		public function delete( $f ) {
 			return unlink( $f ); }
-	};
+	}
 }
 
 namespace Nashenski\Container {
@@ -164,7 +172,6 @@ namespace Nashenski\Test {
 	 * BOX NOW API fixture.
 	 */
 	class Api {
-		const CACHE_FOLDER = WP_CONTENT_DIR . '/cache/nashenski/boxnow/';
 		/**
 		 * One sender origin.
 		 *
@@ -203,18 +210,14 @@ namespace Nashenski {
 			exit( 1 ); }
 	}
 
-	$public = WP_CONTENT_DIR . '/cache/nashenski/boxnow/origins.json';
-	file_put_contents( $public, '[]' ); // Old public cache from before the fix.
-
 	$origins = new Client\BoxNow\Origins( array( Container\Client::BOXNOW => new Test\Api() ) );
 	expect( 1 === count( $origins->get_origins() ), 'Origins still load' );
-	expect( ! file_exists( $public ), 'Old public origins.json is removed' );
 
 	$dir = $GLOBALS['root'] . '/uploads/' . Document_Storage::subdir();
 	expect( 1 === preg_match( '/nashenski-documents-[a-f0-9]{32}$/', $dir ), 'Cache lives in the random private folder' );
 	expect( file_exists( $dir . '/boxnow-origins.json' ), 'Cache file is in the private folder' );
 	expect( file_exists( $dir . '/.htaccess' ) && file_exists( $dir . '/index.php' ), 'Folder has deny rule and index guard' );
-	expect( ! glob( WP_CONTENT_DIR . '/cache/nashenski/boxnow/*' ), 'Nothing is written to the public cache folder' );
+	expect( ! file_exists( File::cache_folder() ), 'Nothing is written to the public cache folder' );
 	Client\BoxNow\Origins::clear();
 	expect( ! file_exists( $dir . '/boxnow-origins.json' ), 'Clearing the cache removes the origins file' );
 

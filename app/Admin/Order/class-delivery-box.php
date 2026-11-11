@@ -26,7 +26,8 @@ class Delivery_Box {
 	 */
 	public function __construct() {
 		add_action( 'add_meta_boxes', array( __CLASS__, 'add_meta_box' ), 20 );
-		add_action( 'woocommerce_process_shop_order_meta', array( __CLASS__, 'save' ), 60 );
+		// Before the invoice made on save (60) and who pays the courier (70).
+		add_action( 'woocommerce_process_shop_order_meta', array( __CLASS__, 'save' ), 55 );
 
 		foreach ( \Nashenski\Plugin::COURIERS as $courier ) {
 			add_action( "nashenski_{$courier}_after_send_label", array( __CLASS__, 'email_delivery_price' ), 10, 2 );

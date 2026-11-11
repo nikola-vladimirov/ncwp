@@ -83,6 +83,11 @@ class PDF {
 		// Logos and QR codes are embedded as data URIs; page numbers are added after rendering.
 		$options->set( 'isPhpEnabled', false );
 		$options->set( 'isRemoteEnabled', false );
+		// Font metrics cache and fonts a custom template installs (@font-face, with installed-fonts.json) go to uploads, never the plugin folder. Dompdf skips the cache when the folder is missing; its bundled DejaVu still loads from the library folder.
+		$font_cache = \Nashenski\File::cache_folder( 'fonts' );
+		wp_mkdir_p( $font_cache );
+		$options->set( 'fontCache', $font_cache );
+		$options->set( 'fontDir', $font_cache );
 
 		$dompdf = new Dompdf( $options );
 		$dompdf->setPaper( 'letter' === Style::get()['paper'] ? 'letter' : 'A4' );
@@ -110,6 +115,30 @@ class PDF {
 		}
 
 		include $this->get_template();
+	}
+
+	/**
+	 * Joins PDF files into one, in the order given. Each page keeps its size and orientation.
+	 *
+	 * @param string[] $files PDF file paths.
+	 * @return string PDF data.
+	 */
+	public static function merge( $files ) {
+		$pdf = new \setasign\Fpdi\Fpdi();
+
+		foreach ( $files as $file ) {
+			$pages = $pdf->setSourceFile( $file );
+
+			for ( $page = 1; $page <= $pages; $page++ ) {
+				$template = $pdf->importPage( $page );
+				$size     = $pdf->getTemplateSize( $template );
+
+				$pdf->AddPage( $size['orientation'], array( $size['width'], $size['height'] ) );
+				$pdf->useTemplate( $template );
+			}
+		}
+
+		return $pdf->Output( 'S' );
 	}
 
 	/**

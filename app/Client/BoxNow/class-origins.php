@@ -65,12 +65,7 @@ class Origins {
 	 * @return mixed
 	 */
 	protected function load_origins() {
-		$origins_file    = self::file();
-		$old_public_file = $this->container[ Client::BOXNOW ]::CACHE_FOLDER . 'origins.json';
-
-		if ( file_exists( $old_public_file ) ) {
-			wp_delete_file( $old_public_file );
-		}
+		$origins_file = self::file();
 
 		$origins = File::get_file( $origins_file );
 

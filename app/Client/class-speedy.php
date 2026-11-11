@@ -7,8 +7,6 @@
 
 namespace Nashenski\Client;
 
-use Nashenski\File;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -24,7 +22,7 @@ class Speedy {
 	const DELETE_LABELS_ENDPOINT = 'shipment/cancel';
 	const PRINT_LABELS_ENDPOINT  = 'print';
 	const TRACK_ENDPOINT         = 'track';
-	const CACHE_FOLDER           = File::CACHE_FOLDER . 'speedy' . DIRECTORY_SEPARATOR;
+	const CACHE_NAME             = 'speedy';
 
 	/**
 	 * API user name.

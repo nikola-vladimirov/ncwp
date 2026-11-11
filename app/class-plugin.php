@@ -13,7 +13,10 @@ defined( 'ABSPATH' ) || exit;
  * Plugin.
  */
 class Plugin {
-	const VERSION = '0.21.6';
+	const VERSION = '0.21.8';
+
+	/** Cron hook: the one-off 0.21.8 job that turns "Remove delivery from documents" into "Is ... courier?". */
+	const REMOVE_SHIPPING_JOB = 'nashenski/upgrade/remove_shipping';
 
 	/**
 	 * Courier slugs, in display order (names: nashenski_couriers()).
@@ -48,6 +51,7 @@ class Plugin {
 	 */
 	public function init() {
 		require_once __DIR__ . '/functions.php';
+		add_action( self::REMOVE_SHIPPING_JOB, array( __CLASS__, 'upgrade_remove_shipping' ) );
 		$this->maybe_upgrade();
 		$this->load_default_options();
 		$this->load_classes();
@@ -88,19 +92,72 @@ class Plugin {
 			)
 		);
 		wp_clear_scheduled_hook( 'nashenski/cvc/clear_cache_folder' );
-		$cvc_files = glob( File::CACHE_FOLDER . 'cvc' . DIRECTORY_SEPARATOR . '*' );
-		foreach ( $cvc_files ? $cvc_files : array() as $cvc_file ) {
-			wp_delete_file( $cvc_file );
-		}
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		WP_Filesystem();
-		global $wp_filesystem;
-		$wp_filesystem->rmdir( File::CACHE_FOLDER . 'cvc', true ); // A missing folder is fine.
+
+		// 0.21.7: the courier cache moved to File::cache_folder() in uploads. The old folder is only a cache (CVC files too), shared by all sites of a network.
+		File::filesystem()->rmdir( WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski', true ); // A missing folder is fine.
 
 		// After 0.19.9: the documents migration flag is read on every request; sites that saved it outside the autoload set load it with the other options now.
 		wp_set_option_autoload( 'nashenski_documents_migration_version', true );
 
+		if ( version_compare( (string) get_option( 'nashenski_version' ), '0.21.8', '<' ) ) {
+			self::upgrade_fee_payer();
+		}
+
 		update_option( 'nashenski_version', self::VERSION );
+	}
+
+	/**
+	 * 0.21.8 (owner decision D6, keep today's money flow): cash on delivery goes into "Customer pays
+	 * the courier" of every Econt and Speedy method marked as a courier ("Is ... courier?", on by
+	 * default) and of every Pigeon Express method (its cash on delivery waybills were always paid by
+	 * the receiver), whatever "Remove delivery from documents" was. BOX NOW cannot charge the
+	 * customer. Orders made before keep their documents (Courier_Fee::shop_collects()) through
+	 * "Is ... courier?", which takes over the retired option (upgrade_remove_shipping()).
+	 */
+	public static function upgrade_fee_payer() {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time read on upgrade; the shipping methods are not registered yet.
+		$methods = $wpdb->get_results( $wpdb->prepare( "SELECT method_id, instance_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE method_id IN (%s, %s, %s)", 'nashenski_econt', 'nashenski_speedy', 'nashenski_pigeon' ) );
+
+		foreach ( (array) $methods as $method ) {
+			$key      = 'woocommerce_' . $method->method_id . '_' . $method->instance_id . '_settings';
+			$settings = get_option( $key, array() );
+			$settings = is_array( $settings ) ? $settings : array();
+			$listed   = (array) ( $settings[ Shipping\Courier_Fee::FIELD ] ?? array() );
+			$courier  = 'nashenski_pigeon' === $method->method_id || 'yes' === nashenski_get_option( 'shippings', $method->method_id . '_is_courier' );
+
+			// Written for every method: a method left out keeps an empty list, not the new methods' default.
+			$settings[ Shipping\Courier_Fee::FIELD ] = $courier ? array_values( array_unique( array_merge( $listed, array( 'cod' ) ) ) ) : $listed;
+			update_option( $key, $settings );
+		}
+
+		// After the lists above: the retired option becomes "Is ... courier?" in a background job, so the first request after the update does not read every order line.
+		if ( ! wp_next_scheduled( self::REMOVE_SHIPPING_JOB ) ) {
+			wp_schedule_single_event( time(), self::REMOVE_SHIPPING_JOB );
+		}
+	}
+
+	/**
+	 * 0.21.8, once, in the background: "Remove delivery from documents" on left the delivery of
+	 * every cash on delivery order out of the documents. It is retired: orders without a decision
+	 * keep that through "Is ... courier?" of each method they used, then the option goes.
+	 */
+	public static function upgrade_remove_shipping() {
+		global $wpdb;
+
+		if ( 'yes' === nashenski_get_option( 'invoice', 'remove_shipping' ) ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time read in a background job: every method in a zone or on an order.
+			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT method_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods UNION SELECT meta_value FROM {$wpdb->prefix}woocommerce_order_itemmeta WHERE meta_key = %s", 'method_id' ) );
+
+			foreach ( (array) $ids as $id ) {
+				if ( '' !== (string) $id && strlen( $id ) <= 100 ) {
+					nashenski_set_option( 'shippings', $id . '_is_courier', 'yes' );
+				}
+			}
+		}
+
+		delete_option( 'nashenski_settings_invoice_remove_shipping' );
 	}
 
 	/**
@@ -136,12 +193,6 @@ class Plugin {
 
 		if ( nashenski_get_option( 'reports', 'enable_nepostop' ) && ! nashenski_get_option( 'nepostop', 'level_of_warning' ) ) {
 			nashenski_set_option( 'nepostop', 'level_of_warning', '20' );
-		}
-
-		if ( ! nashenski_get_option( 'shippings', 'nashenski_econt_is_courier' ) ) {
-			nashenski_set_option( 'shippings', 'nashenski_econt_is_courier', 'yes' );
-			nashenski_set_option( 'shippings', 'nashenski_speedy_is_courier', 'yes' );
-			nashenski_set_option( 'shippings', 'nashenski_boxnow_is_courier', 'yes' );
 		}
 	}
 
@@ -196,6 +247,7 @@ class Plugin {
 		}
 
 		new Shipping\Register( $this->container );
+		new Shipping\Courier_Fee();
 		new Shipping\Automation();
 		new Export\Nra\Monthly();
 		new Shipping\CheckoutLayout();

@@ -404,6 +404,8 @@
 			L.field( i18n.description, L.input( label, 'shipmentDescription' ) ),
 			state.useInvoiceNumber ? L.field( i18n.invoiceNum, L.input( label.services, 'invoiceNum' ) ) : null,
 			L.field( i18n.deliveryPayedBy, L.select( payers, state.paymentBy, choose( 'paymentBy' ), { placeholder: i18n.choose } ) ),
+			// The shop collected the delivery: with the receiver paying too, the customer would pay it twice.
+			data.feeNotice && 'buyer' === state.paymentBy.id ? L.errorNotice( data.feeNotice ) : null,
 			L.field( i18n.reviewAndTest, L.select( tests, state.testOption, choose( 'testOption' ), { placeholder: i18n.choose } ) ),
 			state.useInvoiceNumber || 'no' === state.testOption.id ? null : partialDeliveryField(),
 			'fixed' === state.paymentBy.id ? L.field( i18n.fixedPrice, L.input( label, 'paymentReceiverAmount', { type: 'number' } ) ) : null,

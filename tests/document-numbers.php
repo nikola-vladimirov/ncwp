@@ -345,7 +345,8 @@ foreach ( array( false, true ) as $hpos ) {
 		check( fresh_number( $orders[16]->get_id(), 'nashenski_invoice_own_program' ) === 'yes' && (int) nashenski_get_option( 'invoice', 'next_invoice_separate_number' ) === $sequence, 'Own-program number is flagged and does not advance the sequence' );
 		$legacy       = random_int( 1800000000, 1900000000 );
 		$legacy_table = $wpdb->prefix . 'notasupto_documents';
-		$wpdb->query( "CREATE TABLE IF NOT EXISTS $legacy_table (order_id BIGINT, type VARCHAR(32), num VARCHAR(20))" );
+		$wpdb->query( "DROP TABLE IF EXISTS $legacy_table" ); // A table left by an earlier run may lack the id column.
+		$wpdb->query( "CREATE TABLE $legacy_table (id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, order_id BIGINT, type VARCHAR(32), num VARCHAR(20))" );
 		$wpdb->query( "TRUNCATE TABLE $legacy_table" );
 		$wpdb->insert(
 			$legacy_table,
@@ -461,7 +462,8 @@ foreach ( array( false, true ) as $hpos ) {
 	// N-18 import on a shared-numbering shop must not set the separate counter.
 	nashenski_set_option( 'invoice', 'next_invoice_separate_number', '' );
 	$legacy_table = $wpdb->prefix . 'notasupto_documents';
-	$wpdb->query( "CREATE TABLE IF NOT EXISTS $legacy_table (order_id BIGINT, type VARCHAR(32), num VARCHAR(20))" );
+	$wpdb->query( "DROP TABLE IF EXISTS $legacy_table" ); // A table left by an earlier run may lack the id column.
+	$wpdb->query( "CREATE TABLE $legacy_table (id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, order_id BIGINT, type VARCHAR(32), num VARCHAR(20))" );
 	$wpdb->query( "TRUNCATE TABLE $legacy_table" );
 	$imported = wc_create_order();
 	$orders[] = $imported;

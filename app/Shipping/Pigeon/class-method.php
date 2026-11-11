@@ -16,6 +16,7 @@ use Nashenski\Shipping\Packer\Packing_Budget;
 use Nashenski\Shipping\Packer\Packing_Limit_Exceeded;
 use Nashenski\Transliteration;
 use Nashenski\Pricing\Price_Lists;
+use Nashenski\Shipping\Courier_Fee;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -65,6 +66,13 @@ class Method extends \WC_Shipping_Method {
 	 * @var mixed
 	 */
 	public $fixed_price;
+
+	/**
+	 * Payment methods for which the customer pays the courier.
+	 *
+	 * @var array
+	 */
+	public $customer_pays = array();
 
 	/**
 	 * Pigeon service code for each "test" option value ("yes" is the old value for test). Pigeon
@@ -147,6 +155,7 @@ class Method extends \WC_Shipping_Method {
 		$this->delivery_type      = $this->get_option( 'delivery_type' );
 		$this->free_shipping_over = Price_Lists::non_negative( $this->get_option( 'free_shipping_over' ) );
 		$this->fixed_price        = Price_Lists::positive( $this->get_option( 'fixed_price' ) );
+		$this->customer_pays      = (array) $this->get_option( Courier_Fee::FIELD, array() );
 		$this->test               = $this->get_option( 'test' );
 		$this->tax_status         = ( wc_tax_enabled() ) ? 'taxable' : 'none';
 
@@ -268,6 +277,11 @@ class Method extends \WC_Shipping_Method {
 			}
 		}
 
+		// The receiver pays Pigeon (customer in the method's list, no free shipping or fixed price).
+		if ( 'receiver' === $payment_by_data['who_pays'] ) {
+			$rate = Courier_Fee::rate( $rate );
+		}
+
 		// Read by the checkout's free shipping hint and progress bar.
 		if ( (float) $this->free_shipping_over > 0 ) {
 			$rate['meta_data']['nashenski_free_over'] = $this->free_shipping_over;
@@ -359,6 +373,7 @@ class Method extends \WC_Shipping_Method {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
+			Courier_Fee::FIELD   => Courier_Fee::field(),
 		);
 	}
 
@@ -718,7 +733,8 @@ class Method extends \WC_Shipping_Method {
 			$payment['service_codes']['cod_amount'] = nashenski_get_package_total();
 		}
 
-		if ( isset( $this->cookie_data['payment'] ) && 'cod' !== $this->cookie_data['payment'] ) {
+		// The shop collects the delivery for payment methods not in the method's list.
+		if ( ! Courier_Fee::customer_pays_cart( $this->customer_pays, $this->cookie_data['payment'] ?? '' ) ) {
 			$payment['who_pays'] = 'sender';
 		}
 
@@ -736,9 +752,13 @@ class Method extends \WC_Shipping_Method {
 			}
 		}
 
-		if ( ! empty( $this->fixed_price ) && 'receiver' === $payment['who_pays'] ) {
-			$payment['who_pays']                     = 'sender';
-			$payment['service_codes']['cod_amount'] += number_format( $this->fixed_price, 2, '.', '' );
+		// The shop always collects a fixed price: the sender pays Pigeon, and cash on delivery carries the fixed price.
+		if ( ! empty( $this->fixed_price ) && ! $this->free_shipping ) {
+			$payment['who_pays'] = 'sender';
+
+			if ( isset( $payment['service_codes']['cod_amount'] ) ) {
+				$payment['service_codes']['cod_amount'] += number_format( $this->fixed_price, 2, '.', '' );
+			}
 		}
 
 		return $payment;

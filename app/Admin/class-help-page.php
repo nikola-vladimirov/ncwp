@@ -128,6 +128,10 @@ class Help_Page {
 				esc_html__( 'To compare, open the courier page and press "Check the courier website" in "Public prices". You see what changed, and new prices are filled in only when you choose. It also checks once a week by itself.', 'nashenski-commerce' ),
 				esc_html__( '"Public prices" shows only when "Use public prices" is ticked on the courier page.', 'nashenski-commerce' ),
 				esc_html__( 'Each shipping method in a zone can have a free shipping amount and a fixed price.', 'nashenski-commerce' ),
+				esc_html__( '"Customer pays the courier" on an Econt, Speedy or Pigeon Express method in a zone lists the payment methods for which the customer pays the delivery to the courier on delivery. The checkout then shows the price for information, not in the total, and the waybill says the receiver pays. With any other payment method you collect the delivery in the total and the sender pays. BOX NOW cannot charge the customer, so you always collect it there.', 'nashenski-commerce' ),
+				esc_html__( 'The total follows the payment method the customer picks at checkout. The courier box on the order screen can still change who pays for one waybill.', 'nashenski-commerce' ),
+				esc_html__( 'New Econt, Speedy and Pigeon Express methods start with cash on delivery in "Customer pays the courier". A cart whose goods cost nothing is always yours to collect.', 'nashenski-commerce' ),
+				esc_html__( 'In the courier box of an order whose customer pays the courier, a waybill paid by the sender changes nothing: you pay the courier. A fixed price you collect in the cash on delivery amount makes it an order you collected once the courier accepts the waybill, while it has no documents; a later waybill paid by the receiver puts it back. Once the order has documents, a fixed price waybill is refused. Choosing the receiver as payer on an order you collected shows a warning.', 'nashenski-commerce' ),
 				esc_html__( 'Review or test before payment is set on the courier method in the shipping zone and goes on every label. For Pigeon Express choose review or test; the order screen can change it for one label.', 'nashenski-commerce' ),
 				esc_html__( 'When a courier publishes new prices, a notice says so. Save that courier\'s prices or press Dismiss.', 'nashenski-commerce' ),
 			),
@@ -194,6 +198,11 @@ class Help_Page {
 				/* translators: %s: link to the Documents section */
 				sprintf( esc_html__( 'In %s > Invoices and documents, "Invoice numbering": "Website invoices" go into the NRA audit file. "Own invoicing program" keeps the invoice out of it; you type that program\'s number on the order.', 'nashenski-commerce' ), $documents ),
 				esc_html__( 'Copies can go to your accountant by email, and the monthly NRA audit file too.', 'nashenski-commerce' ),
+				esc_html__( 'A delivery with no VAT, on an order with no VAT at all, is printed at 0% with its full price.', 'nashenski-commerce' ),
+				esc_html__( 'A delivery the customer paid to the courier is not on the documents or in the NRA audit file, because you did not collect it. Credit notes follow their order. Each order keeps what was decided at checkout; orders from before version 0.21.8 keep the old "Remove delivery from documents" rule.', 'nashenski-commerce' ),
+				esc_html__( 'Quick orders and orders made on the order screen are decided the same way once they have a shipping method and a payment method, and again when either changes, until the order has documents. A waybill made there for an order whose customer pays the courier shows its price for information only.', 'nashenski-commerce' ),
+				esc_html__( 'Shipping methods of other plugins keep "Is ... courier?" in Documents > Shipping on documents: with cash on delivery, their delivery is left out of documents and the NRA audit file.', 'nashenski-commerce' ),
+				esc_html__( 'When the payment method of a checkout order is changed on the order screen, who pays the courier stays as decided at checkout, and a notice asks you to check the delivery line and the waybill by hand.', 'nashenski-commerce' ),
 			),
 			__( 'NRA audit file and exports', 'nashenski-commerce' ) => array(
 				/* translators: %s: link to the Exports section */
@@ -230,7 +239,9 @@ class Help_Page {
 			__( 'Moving from another plugin', 'nashenski-commerce' ) => array(
 				esc_html__( 'Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping.', 'nashenski-commerce' ),
 				esc_html__( 'The order documents and invoices of Bulgarisation for WooCommerce move into the private documents folder and open from the order as before.', 'nashenski-commerce' ),
-				esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then the old plugin is switched off. Its own data stays in the database.', 'nashenski-commerce' ),
+				esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database.', 'nashenski-commerce' ),
+				esc_html__( 'While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused. Deactivate it before the import.', 'nashenski-commerce' ),
+				esc_html__( 'Import the mreja.net Ordinance N-18 plugin while it is off. Until its documents are imported, Nashenski Commerce makes no invoices or other documents while a new number could clash with one of them. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already gave out: documents pause until it is off and its import is run again. Correct the orders that import lists, then use "Regenerate PDF\'s" for orders without documents.', 'nashenski-commerce' ),
 				esc_html__( 'Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import.', 'nashenski-commerce' ),
 				esc_html__( 'Only users who can manage plugins see the import button. If an old document number clashes with a number already in use, that number is skipped and the summary says "N document numbers skipped (conflict)".', 'nashenski-commerce' ),
 			),
@@ -260,11 +271,14 @@ class Help_Page {
 		$can_import = current_user_can( 'manage_woocommerce' ) && current_user_can( 'activate_plugins' );
 
 		if ( Migration::has_old_data() ) {
-			$rows[] = array( __( 'Bulgarisation for WooCommerce', 'nashenski-commerce' ), get_option( Migration::DONE_OPTION ), $can_import ? wp_nonce_url( admin_url( 'admin-post.php?action=' . Migration::ACTION ), Migration::ACTION ) : '' );
+			$rows[] = array( __( 'Bulgarisation for WooCommerce', 'nashenski-commerce' ), get_option( Migration::DONE_OPTION ), $can_import ? wp_nonce_url( admin_url( 'admin-post.php?action=' . Migration::ACTION ), Migration::ACTION ) : '', false );
 		}
 
 		foreach ( Import_Sources::sources() as $slug => $source ) {
-			$rows[] = array( $source['name'], $source['done'], $can_import ? Import_Sources::url( $slug ) : '' );
+			// The N-18 plugin is imported only while it is off; active again after its import, it is imported again.
+			$wait   = 'mreja_n18' === $slug && Import_Sources::n18_active();
+			$done   = ( 'mreja_n18' === $slug && 'again' === Import_Sources::n18_state() ) ? null : $source['done'];
+			$rows[] = array( $source['name'], $done, $can_import ? Import_Sources::url( $slug ) : '', $wait );
 		}
 
 		if ( ! $rows ) {
@@ -272,20 +286,22 @@ class Help_Page {
 		}
 		?>
 		<h2 id="import"><?php esc_html_e( 'Moving from another plugin', 'nashenski-commerce' ); ?></h2>
-		<p><?php esc_html_e( 'These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use and switches the plugin off.', 'nashenski-commerce' ); ?></p>
+		<p><?php esc_html_e( 'These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use. Then deactivate the old plugin.', 'nashenski-commerce' ); ?></p>
 		<table class="widefat striped nashenski-import">
 			<tbody>
-				<?php foreach ( $rows as list( $name, $done, $url ) ) : ?>
+				<?php foreach ( $rows as list( $name, $done, $url, $wait ) ) : ?>
 					<tr>
 						<td><?php echo esc_html( $name ); ?></td>
 						<td>
-							<?php if ( $done ) : ?>
+							<?php if ( $wait ) : ?>
+								<?php echo wp_kses_post( Import_Sources::n18_first_html() ); ?>
+							<?php elseif ( $done ) : ?>
 								<?php
 								/* translators: %s: date */
 								echo esc_html( sprintf( __( 'Imported on %s', 'nashenski-commerce' ), wp_date( get_option( 'date_format' ), (int) ( $done['time'] ?? 0 ) ) ) );
 								?>
 							<?php elseif ( $url ) : ?>
-								<a class="button" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Import and switch off', 'nashenski-commerce' ); ?></a>
+								<a class="button" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Import', 'nashenski-commerce' ); ?></a>
 							<?php else : ?>
 								<span class="description"><?php esc_html_e( 'You do not have permission to perform this action.', 'nashenski-commerce' ); ?></span>
 							<?php endif; ?>

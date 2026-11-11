@@ -49,11 +49,11 @@ class Cities {
 	 * @return array|null
 	 */
 	protected function load_cities( $country_code = 'BG' ) {
-		if ( ! is_dir( $this->container[ Client::ECONT ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::ECONT ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::ECONT ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::ECONT ]::cache_folder() );
 		}
 
-		$cities_file = $this->container[ Client::ECONT ]::CACHE_FOLDER . 'cities-' . $country_code . '.json';
+		$cities_file = $this->container[ Client::ECONT ]::cache_folder() . 'cities-' . $country_code . '.json';
 		$cities      = File::get_file( $cities_file );
 
 		if ( ! $cities ) {

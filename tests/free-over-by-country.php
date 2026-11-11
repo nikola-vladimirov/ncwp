@@ -195,6 +195,7 @@ require __DIR__ . '/../app/Shipping/Packer/class-packing-limit-exceeded.php';
 require __DIR__ . '/../app/Shipping/Packer/class-packing-budget.php';
 require __DIR__ . '/../app/Pricing/class-price-lists.php';
 require __DIR__ . '/../app/Pricing/class-public-price.php';
+require __DIR__ . '/../app/Shipping/class-courier-fee.php';
 require __DIR__ . '/../app/Shipping/Econt/class-method.php';
 require __DIR__ . '/../app/Shipping/Speedy/class-method.php';
 

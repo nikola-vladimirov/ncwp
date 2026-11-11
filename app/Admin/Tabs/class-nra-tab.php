@@ -82,7 +82,6 @@ class Nra_Tab extends Base_Tab {
 						'trigger',
 						__( 'When to generate documents?', 'nashenski-commerce' )
 					),
-					new Fields\TrueFalse_Field( 'remove_shipping', __( 'Remove delivery from documents', 'nashenski-commerce' ), null, null, __( 'Removes delivery from invoices and the XML file for cash on delivery orders. Use it when the courier issues its own document for the delivery price.', 'nashenski-commerce' ) ),
 					new Fields\Text_Field( 'next_invoice_number', __( 'Next NRA Document Number', 'nashenski-commerce' ), __( 'The document number of the next order.', 'nashenski-commerce' ), 'required|digits' ),
 					new Fields\Text_Field( 'next_invoice_separate_number', __( 'Next Invoice/Credit notice Number', 'nashenski-commerce' ), __( 'If it\' filled the invoices will have different number than the NRA documents.', 'nashenski-commerce' ), 'digits' ),
 					new Fields\Text_Field( 'due_days', __( 'Due days', 'nashenski-commerce' ), __( 'Days added to documents due date.', 'nashenski-commerce' ), 'digits' ),
@@ -352,19 +351,23 @@ class Nra_Tab extends Base_Tab {
 	}
 
 	/**
-	 * Add payment methods fields.
+	 * "Is ... courier?" for the shipping methods of other plugins: with cash on delivery, their
+	 * delivery is left out of documents and the NRA file. Econt, Speedy and Pigeon Express of this
+	 * plugin use "Customer pays the courier" on each method instead (owner decision H1).
 	 *
 	 * @param mixed $fields Fields.
 	 */
 	public function add_payment_methods_fields( $fields ) {
-		$shippings = WC()->shipping->get_shipping_methods();
+		foreach ( WC()->shipping->get_shipping_methods() as $shipping ) {
+			if ( 0 === strpos( $shipping->id, 'nashenski_' ) ) {
+				continue;
+			}
 
-		foreach ( $shippings as $shipping ) {
+			// No description: the tooltip comes from Setting_Help.
 			$fields['shippings'][] = new Fields\TrueFalse_Field(
 				$shipping->id . '_is_courier',
 				/* translators: %s: shipping method name */
-				sprintf( __( 'Is %s courier?', 'nashenski-commerce' ), $shipping->method_title ),
-				__( 'If set to yes, all deliveries with PPP will be removed from documents and XML export', 'nashenski-commerce' )
+				sprintf( __( 'Is %s courier?', 'nashenski-commerce' ), $shipping->method_title )
 			);
 		}
 

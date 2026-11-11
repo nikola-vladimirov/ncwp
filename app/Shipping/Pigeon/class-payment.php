@@ -105,7 +105,7 @@ class Payment {
 	}
 
 	/**
-	 * $staff: the payer was chosen by staff on the order screen; checkout labels of prepaid orders are always paid by the sender.
+	 * $staff: the payer was chosen by staff on the order screen; checkout labels of prepaid orders are paid by the sender unless the customer pays the courier.
 	 *
 	 * @param array       $label    Label data.
 	 * @param \WC_Order   $order    Order.
@@ -115,7 +115,8 @@ class Payment {
 	 * @throws \InvalidArgumentException When the payer is not valid.
 	 */
 	public static function label( $label, $order, $override = null, $staff = false ) {
-		$payer = $staff || $order->get_payment_method() === 'cod' ? ( $label['who_pays'] ?? 'receiver' ) : 'sender';
+		$decided = \Nashenski\Shipping\Courier_Fee::payer( $order );
+		$payer   = $staff || $order->get_payment_method() === 'cod' || 'customer' === $decided ? ( $label['who_pays'] ?? ( 'shop' === $decided ? 'sender' : 'receiver' ) ) : 'sender';
 		if ( ! in_array( $payer, array( 'sender', 'receiver' ), true ) ) {
 			throw new \InvalidArgumentException( esc_html__( 'Choose a valid shipping payer.', 'nashenski-commerce' ) );
 		}
@@ -196,6 +197,28 @@ class Payment {
 	}
 
 	/**
+	 * A staff request field, sanitized where it is read. Text is sanitized; any other type (a
+	 * true, an array) is kept as it is, so amount() refuses it instead of reading "1".
+	 * request() checks the nonce before it reads any field.
+	 *
+	 * @param string $key Field name.
+	 * @return mixed Null when missing.
+	 */
+	private static function typed( $key ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- request() verified the label nonce first.
+		if ( ! isset( $_REQUEST[ $key ] ) ) {
+			return null;
+		}
+
+		return map_deep(
+			wp_unslash( $_REQUEST[ $key ] ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- request() verified the nonce; map_deep() sanitizes every text value.
+			function ( $value ) {
+				return is_string( $value ) ? sanitize_text_field( $value ) : $value;
+			}
+		);
+	}
+
+	/**
 	 * Validate every monetary instruction before any order/item write.
 	 *
 	 * @param \WC_Order $order Order.
@@ -217,18 +240,12 @@ class Payment {
 		}
 		$price = null;
 		if ( 'fixed' === $mode ) {
-			if ( isset( $_REQUEST['fixedPrice'] ) && ( is_bool( $_REQUEST['fixedPrice'] ) || is_array( $_REQUEST['fixedPrice'] ) || is_object( $_REQUEST['fixedPrice'] ) ) ) {
-				throw new \InvalidArgumentException( esc_html__( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
-			}
-			$price = self::amount( nashenski_label_request( 'fixedPrice', null ) );
+			$price = self::amount( self::typed( 'fixedPrice' ) );
 			if ( ! self::shipping_item( $order ) ) {
 				throw new \InvalidArgumentException( esc_html__( 'This order has no Pigeon shipping charge.', 'nashenski-commerce' ) ); }
 		}
-		$override = nashenski_label_request( 'codOverride', null );
+		$override = self::typed( 'codOverride' );
 		if ( null !== $override ) {
-			if ( isset( $_REQUEST['codOverride'] ) && ( is_bool( $_REQUEST['codOverride'] ) || is_array( $_REQUEST['codOverride'] ) || is_object( $_REQUEST['codOverride'] ) ) ) {
-				throw new \InvalidArgumentException( esc_html__( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
-			}
 			$override = self::amount( $override );
 			if ( $order->get_payment_method() !== 'cod' ) {
 				throw new \InvalidArgumentException( esc_html__( 'COD is available only for cash-on-delivery orders.', 'nashenski-commerce' ) ); }
@@ -241,5 +258,71 @@ class Payment {
 			'price'    => $price,
 			'override' => $override,
 		);
+	}
+
+	/**
+	 * Runs a staff label request. A fixed price is written on the order before sending (the cash on
+	 * delivery amount is read from it), so when Pigeon refuses the label or anything throws, every
+	 * line's total and taxes and the order totals go back to what they were.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @param string    $mode  Payer of the request: "fixed" writes the price first.
+	 * @param callable  $send  Builds and sends the label; returns the label data (shipmentStatus on success).
+	 * @return array
+	 * @throws \Throwable What $send throws, once the order is back as it was.
+	 */
+	public static function send( $order, $mode, $send ) {
+		if ( 'fixed' !== $mode ) {
+			return $send();
+		}
+
+		$lines  = array();
+		$totals = array();
+
+		foreach ( $order->get_items( array( 'line_item', 'fee', 'shipping' ) ) as $id => $item ) {
+			$lines[ $id ] = array( $item->get_total( 'edit' ), $item->get_taxes( 'edit' ) );
+		}
+
+		foreach ( array( 'shipping_total', 'shipping_tax', 'cart_tax', 'discount_total', 'discount_tax', 'total' ) as $key ) {
+			$totals[ $key ] = $order->{'get_' . $key}( 'edit' );
+		}
+
+		try {
+			$data = $send();
+		} catch ( \Throwable $error ) {
+			self::restore( $order, $lines, $totals );
+			throw $error;
+		}
+
+		if ( ! isset( $data['shipmentStatus'] ) ) {
+			self::restore( $order, $lines, $totals );
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Puts back the lines and totals send() kept. The tax lines are built again from the lines.
+	 *
+	 * @param \WC_Order $order  Order.
+	 * @param array     $lines  Line ID => total and taxes.
+	 * @param array     $totals Order total name => value.
+	 */
+	private static function restore( $order, $lines, $totals ) {
+		foreach ( $order->get_items( array( 'line_item', 'fee', 'shipping' ) ) as $id => $item ) {
+			if ( isset( $lines[ $id ] ) ) {
+				$item->set_total( $lines[ $id ][0] );
+				$item->set_taxes( $lines[ $id ][1] );
+				$item->save();
+			}
+		}
+
+		$order->update_taxes();
+
+		foreach ( $totals as $key => $value ) {
+			$order->{'set_' . $key}( $value );
+		}
+
+		$order->save();
 	}
 }

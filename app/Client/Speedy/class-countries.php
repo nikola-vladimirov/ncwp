@@ -48,11 +48,11 @@ class Countries {
 	 * @return array
 	 */
 	protected function load_countries( $name_en ) {
-		if ( ! is_dir( $this->container[ Client::SPEEDY ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::SPEEDY ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::SPEEDY ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::SPEEDY ]::cache_folder() );
 		}
 
-		$countries_file = $this->container[ Client::SPEEDY ]::CACHE_FOLDER . 'countries.csv';
+		$countries_file = $this->container[ Client::SPEEDY ]::cache_folder() . 'countries.csv';
 
 		$failed_key = 'nashenski_speedy_countries_failed';
 

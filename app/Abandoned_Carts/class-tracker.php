@@ -42,6 +42,9 @@ class Tracker {
 	/** Rows handled per send run. */
 	const BATCH = 100;
 
+	/** Rows per page of a personal data export or erase. */
+	const PRIVACY_PAGE = 100;
+
 	/**
 	 * Constructor.
 	 */
@@ -51,6 +54,10 @@ class Tracker {
 		add_action( self::SEND_HOOK, array( __CLASS__, 'send_due' ) );
 		add_action( self::CLEAN_HOOK, array( __CLASS__, 'clean_old' ) );
 		add_filter( 'woocommerce_email_classes', array( __CLASS__, 'register_email' ) );
+		// Old rows may exist with the feature off, so these are always on.
+		add_filter( 'wp_privacy_personal_data_exporters', array( __CLASS__, 'register_exporter' ) );
+		add_filter( 'wp_privacy_personal_data_erasers', array( __CLASS__, 'register_eraser' ) );
+		add_action( 'admin_init', array( __CLASS__, 'privacy_policy_text' ) );
 
 		if ( ! self::enabled() ) {
 			return;
@@ -771,6 +778,143 @@ class Tracker {
 				gmdate( 'Y-m-d H:i:s', time() - self::retention_days() * DAY_IN_SECONDS )
 			)
 		);
+	}
+
+	/**
+	 * Adds the abandoned carts to Tools > Export Personal Data.
+	 *
+	 * @param array $exporters Exporters.
+	 * @return array
+	 */
+	public static function register_exporter( $exporters ) {
+		$exporters['nashenski-abandoned-carts'] = array(
+			'exporter_friendly_name' => __( 'Abandoned carts', 'nashenski-commerce' ),
+			'callback'               => array( __CLASS__, 'export_personal_data' ),
+		);
+
+		return $exporters;
+	}
+
+	/**
+	 * Adds the abandoned carts to Tools > Erase Personal Data.
+	 *
+	 * @param array $erasers Erasers.
+	 * @return array
+	 */
+	public static function register_eraser( $erasers ) {
+		$erasers['nashenski-abandoned-carts'] = array(
+			'eraser_friendly_name' => __( 'Abandoned carts', 'nashenski-commerce' ),
+			'callback'             => array( __CLASS__, 'erase_personal_data' ),
+		);
+
+		return $erasers;
+	}
+
+	/**
+	 * One page of the carts of an email address, for the personal data export.
+	 *
+	 * @param string $email Email address.
+	 * @param int    $page  Page, from 1.
+	 * @return array
+	 */
+	public static function export_personal_data( $email, $page = 1 ) {
+		global $wpdb;
+
+		// No table yet: the feature was never turned on.
+		$rows   = get_option( self::DB_OPTION ) ? $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i WHERE email = %s ORDER BY id LIMIT %d OFFSET %d', self::table(), $email, self::PRIVACY_PAGE, ( max( 1, (int) $page ) - 1 ) * self::PRIVACY_PAGE ) ) : array();
+		$fields = array(
+			'email'         => __( 'Email', 'nashenski-commerce' ),
+			'first_name'    => __( 'First name', 'nashenski-commerce' ),
+			'phone'         => __( 'Phone', 'nashenski-commerce' ),
+			'cart'          => __( 'Cart', 'nashenski-commerce' ),
+			'cart_total'    => __( 'Cart total', 'nashenski-commerce' ),
+			'currency'      => __( 'Currency', 'nashenski-commerce' ),
+			'status'        => __( 'Status', 'nashenski-commerce' ),
+			'created_at'    => __( 'Created', 'nashenski-commerce' ),
+			'last_activity' => __( 'Last activity', 'nashenski-commerce' ),
+		);
+		$data   = array();
+
+		foreach ( (array) $rows as $row ) {
+			$values = array();
+
+			foreach ( $fields as $key => $name ) {
+				$values[] = array(
+					'name'  => $name,
+					'value' => (string) ( $row->$key ?? '' ),
+				);
+			}
+
+			$data[] = array(
+				'group_id'    => 'nashenski-abandoned-carts',
+				'group_label' => __( 'Abandoned carts', 'nashenski-commerce' ),
+				'item_id'     => 'nashenski-cart-' . $row->id,
+				'data'        => $values,
+			);
+		}
+
+		return array(
+			'data' => $data,
+			'done' => count( $data ) < self::PRIVACY_PAGE,
+		);
+	}
+
+	/**
+	 * Deletes up to one page of the carts of an email address, for the personal data eraser, with
+	 * their reminder coupons (they name the email). A coupon already used on an order is kept for
+	 * the store's accounts. The next page starts again from the first remaining row, so the page
+	 * number is not needed.
+	 *
+	 * @param string $email Email address.
+	 * @return array
+	 */
+	public static function erase_personal_data( $email ) {
+		global $wpdb;
+
+		$coupons  = get_option( self::DB_OPTION ) ? $wpdb->get_col( $wpdb->prepare( 'SELECT coupon_id FROM %i WHERE email = %s ORDER BY id LIMIT %d', self::table(), $email, self::PRIVACY_PAGE ) ) : array();
+		$removed  = get_option( self::DB_OPTION ) ? (int) $wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE email = %s ORDER BY id LIMIT %d', self::table(), $email, self::PRIVACY_PAGE ) ) : 0;
+		$retained = false;
+
+		foreach ( array_filter( array_map( 'absint', (array) $coupons ) ) as $coupon_id ) {
+			if ( 'shop_coupon' !== get_post_type( $coupon_id ) ) {
+				continue;
+			}
+
+			$coupon = new \WC_Coupon( $coupon_id );
+
+			if ( $coupon->get_usage_count() > 0 ) {
+				$retained = true;
+			} else {
+				$removed += (int) $coupon->delete( true );
+			}
+		}
+
+		return array(
+			'items_removed'  => $removed > 0,
+			'items_retained' => $retained,
+			'messages'       => $retained ? array( __( 'Cart reminder coupons already used on an order are kept for the store\'s accounts.', 'nashenski-commerce' ) ) : array(),
+			'done'           => count( (array) $coupons ) < self::PRIVACY_PAGE,
+		);
+	}
+
+	/**
+	 * Suggested text for the site's privacy policy (Settings > Privacy).
+	 */
+	public static function privacy_policy_text() {
+		if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
+			return;
+		}
+
+		$lines = array(
+			__( 'When abandoned carts are on, the store keeps the email, first name, phone and cart of shoppers who start the checkout and do not order. They are used only to send cart reminder emails.', 'nashenski-commerce' ),
+			__( 'A reminder coupon is made for the email of its cart and is deleted with the cart\'s personal data, unless it was already used on an order.', 'nashenski-commerce' ),
+			/* translators: %d: number of days */
+			sprintf( __( 'A cart is deleted %d days after its last change.', 'nashenski-commerce' ), self::retention_days() ),
+			__( 'When the store turns on customer checks (nekorekten.com, Connectix, NepoStop), the phone number of the order is sent to them.', 'nashenski-commerce' ),
+			__( 'The courier of an order gets the delivery details: name, phone, address or office.', 'nashenski-commerce' ),
+		);
+
+		wp_add_privacy_policy_content( 'Nashenski Commerce', '<p>' . implode( '</p><p>', array_map( 'esc_html', $lines ) ) . '</p>' );
 	}
 
 	// The read and write helpers the WooCommerce > Abandoned carts screen uses.

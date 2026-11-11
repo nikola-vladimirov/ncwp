@@ -50,13 +50,13 @@ class Quarters {
 	 * @return array
 	 */
 	protected function load_quarters_by_city( $city_id, $query ) {
-		if ( ! is_dir( $this->container[ Client::SPEEDY ]::CACHE_FOLDER ) ) {
-			wp_mkdir_p( $this->container[ Client::SPEEDY ]::CACHE_FOLDER );
+		if ( ! is_dir( $this->container[ Client::SPEEDY ]::cache_folder() ) ) {
+			wp_mkdir_p( $this->container[ Client::SPEEDY ]::cache_folder() );
 		}
 
 		$query         = mb_substr( (string) $query, 0, 64 );
 		$hash          = md5( $query );
-		$quarters_file = $this->container[ Client::SPEEDY ]::CACHE_FOLDER . 'quarters-' . $city_id . '-' . $hash . '.json';
+		$quarters_file = $this->container[ Client::SPEEDY ]::cache_folder() . 'quarters-' . $city_id . '-' . $hash . '.json';
 		$quarters      = File::get_file( $quarters_file );
 
 		$miss_key = 'nashenski_miss_' . md5( $quarters_file );

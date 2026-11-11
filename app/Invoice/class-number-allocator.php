@@ -298,6 +298,39 @@ class Number_Allocator {
 	}
 
 	/**
+	 * No numbers while another plugin gives out the same ones (Import_Sources::n18_paused()).
+	 *
+	 * @throws \RuntimeException While numbering is paused.
+	 */
+	private static function not_paused() {
+		if ( class_exists( \Nashenski\Admin\Import_Sources::class ) && \Nashenski\Admin\Import_Sources::n18_paused() ) {
+			throw new \RuntimeException( esc_html( \Nashenski\Admin\Import_Sources::paused_reason() ) );
+		}
+	}
+
+	/**
+	 * Continue the sequences after numbers another plugin gave out: under the numbering lock, each
+	 * counter lower than the highest number moves to the number after it.
+	 *
+	 * @param callable $highest Returns sequence setting => highest number used elsewhere; called under the lock.
+	 * @return int Counters moved.
+	 */
+	public static function continue_after( $highest ) {
+		return self::locked(
+			function () use ( $highest ) {
+				$moved = 0;
+				foreach ( $highest() as $option => $number ) {
+					if ( (int) $number && (int) $number + 1 > (int) self::option( $option ) ) {
+						self::advance( $option, (int) $number + 1 );
+						++$moved;
+					}
+				}
+				return $moved;
+			}
+		);
+	}
+
+	/**
 	 * The order's document number: the saved one, or the next one of the sequence.
 	 *
 	 * @param \WC_Order $order   Order.
@@ -307,6 +340,11 @@ class Number_Allocator {
 	 * @return mixed
 	 */
 	public static function allocate( $order, $meta, $option, $replace = false ) {
+		self::not_paused();
+		// Who pays the courier is settled before the first document number (quick, admin and REST orders).
+		if ( $order instanceof \WC_Order && class_exists( '\Nashenski\Shipping\Courier_Fee' ) ) {
+			\Nashenski\Shipping\Courier_Fee::decide( $order );
+		}
 		return self::locked(
 			function () use ( $order, $meta, $option, $replace ) {
 				if ( ! $order->get_id() || ! in_array( $option, array( 'next_invoice_number', 'next_invoice_separate_number' ), true ) || ! in_array( $meta, self::keys( $option ), true ) ) {
@@ -349,6 +387,7 @@ class Number_Allocator {
 	 * @return string Error message, or ''.
 	 */
 	public static function manual( $order, $number, $own_program = false ) {
+		self::not_paused();
 		return self::locked(
 			function () use ( $order, $number, $own_program ) {
 				$option = self::option( 'next_invoice_separate_number' ) ? 'next_invoice_separate_number' : 'next_invoice_number';

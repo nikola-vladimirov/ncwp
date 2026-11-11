@@ -9,6 +9,7 @@ namespace Nashenski\Admin\Order;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
 use Nashenski\Invoice\Document;
+use Nashenski\Admin\Import_Sources;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -63,6 +64,11 @@ class Actions {
 	 * @return mixed Result.
 	 */
 	public static function add_selections_to_bulk_action( $actions ) {
+		// Paused for the old N-18 plugin: the orders list shows why (Import_Sources::n18_notice()).
+		if ( Import_Sources::n18_paused() ) {
+			return $actions;
+		}
+
 		$actions['nashenski_regenerate_pdfs'] = __( 'Regenerate PDF\'s', 'nashenski-commerce' );
 
 		return $actions;
@@ -77,36 +83,48 @@ class Actions {
 	 * @return mixed Result.
 	 */
 	public static function regenerate_order_pdfs_bulk_action_process( $redirect_to, $action, $ids ) {
-		if ( 'nashenski_regenerate_pdfs' === $action ) {
-			foreach ( $ids as $order_id ) {
-				Documents::generate_documents( $order_id );
-			}
-
-			// Adding the right query vars to the returned URL.
-			$redirect_to = add_query_arg(
-				array(
-					'processed_count' => count( $ids ),
-				),
-				$redirect_to
-			);
+		if ( 'nashenski_regenerate_pdfs' !== $action ) {
+			return $redirect_to;
 		}
 
-		return $redirect_to;
+		// Documents paused for the old N-18 plugin: nothing is made, and the orders list says why.
+		if ( Import_Sources::n18_paused() ) {
+			return add_query_arg( 'nashenski_regenerate_paused', 1, $redirect_to );
+		}
+
+		foreach ( $ids as $order_id ) {
+			Documents::generate_documents( $order_id );
+		}
+
+		return add_query_arg( 'nashenski_regenerated', count( $ids ), $redirect_to );
 	}
 
 	/**
-	 * Pdf regeneration bulk action admin notices.
+	 * The notice after the bulk action, on the orders list only.
 	 */
 	public static function pdf_regeneration_bulk_action_admin_notices() {
-		if ( '' !== nashenski_query_arg( 'processed_count' ) ) {
-			$count = absint( nashenski_query_arg( 'processed_count' ) );
+		$screen = get_current_screen();
 
-			printf(
-				/* translators: %s: number of orders */
-				'<div id="message" class="updated fade">' . wp_kses_post( wpautop( _n( '%s order documents were regenerated.', '%s orders documents were regenerated.', $count, 'nashenski-commerce' ) ) ) . '</div>',
-				esc_html( $count )
-			);
+		if ( ! $screen || ! in_array( $screen->id, array( 'woocommerce_page_wc-orders', 'edit-shop_order' ), true ) ) {
+			return;
 		}
+
+		if ( '' !== nashenski_query_arg( 'nashenski_regenerate_paused' ) ) {
+			printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html( Import_Sources::paused_reason() ) );
+			return;
+		}
+
+		if ( '' === nashenski_query_arg( 'nashenski_regenerated' ) ) {
+			return;
+		}
+
+		$count = absint( nashenski_query_arg( 'nashenski_regenerated' ) );
+
+		printf(
+			/* translators: %s: number of orders */
+			'<div class="notice notice-success is-dismissible">' . wp_kses_post( wpautop( _n( 'Documents of %s order were regenerated.', 'Documents of %s orders were regenerated.', $count, 'nashenski-commerce' ) ) ) . '</div>',
+			esc_html( $count )
+		);
 	}
 
 	/**
@@ -171,7 +189,23 @@ class Actions {
 	 * @param mixed $order Order.
 	 */
 	public static function process_order_meta_box_actions( $order ) {
-		Documents::generate_documents( $order->get_id() );
+		if ( ! self::paused_error() ) {
+			Documents::generate_documents( $order->get_id() );
+		}
+	}
+
+	/**
+	 * On the order screen, says why the document buttons do nothing while documents are paused.
+	 *
+	 * @return bool Whether they are paused.
+	 */
+	private static function paused_error() {
+		if ( ! Import_Sources::n18_paused() ) {
+			return false;
+		}
+
+		\WC_Admin_Meta_Boxes::add_error( Import_Sources::paused_reason() );
+		return true;
 	}
 
 	/**
@@ -180,7 +214,9 @@ class Actions {
 	 * @param mixed $order Order.
 	 */
 	public static function generate_invoice_action( $order ) {
-		( new Document\Invoice( $order ) )->generate_file();
+		if ( ! self::paused_error() ) {
+			( new Document\Invoice( $order ) )->generate_file();
+		}
 	}
 
 	/**
@@ -190,14 +226,17 @@ class Actions {
 	 * @param mixed $order_id Order id.
 	 */
 	public static function make_invoice( $order_id ) {
-		$request = nashenski_verified_request( null, array(), 'nashenski_make_invoice_nonce', 'nashenski_make_invoice' );
-
-		if ( empty( $request['nashenski_make_invoice'] ) || ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( empty( nashenski_verified_request( 'nashenski_make_invoice', '', 'nashenski_make_invoice_nonce', 'nashenski_make_invoice' ) ) || ! current_user_can( 'edit_shop_orders' ) ) {
 			return;
 		}
 
-		$order = wc_get_order( $order_id );
-		$error = self::use_invoice_number( $order, (string) ( $request['nashenski_invoice_number'] ?? '' ) );
+		if ( self::paused_error() ) {
+			return;
+		}
+
+		$order  = wc_get_order( $order_id );
+		$number = nashenski_verified_request( 'nashenski_invoice_number', '', 'nashenski_make_invoice_nonce', 'nashenski_make_invoice' );
+		$error  = self::use_invoice_number( $order, is_string( $number ) ? $number : '' );
 
 		if ( $error ) {
 			\WC_Admin_Meta_Boxes::add_error( $error );
