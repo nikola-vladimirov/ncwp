@@ -108,14 +108,11 @@ class Migration {
 							)
 						);
 					}
-
-					foreach ( (array) ( $r['switched_off'] ?? array() ) as $line ) {
-						echo '<br>' . esc_html( $line );
-					}
 					?>
 				</p>
 			</div>
 			<?php
+			Import_Sources::ask_to_deactivate( self::plugin_files() );
 			return;
 		}
 
@@ -134,8 +131,7 @@ class Migration {
 
 		// A second run would overwrite options such as the next invoice numbers.
 		if ( ! get_option( self::DONE_OPTION ) ) {
-			$report                 = self::run();
-			$report['switched_off'] = Import_Sources::switch_off( self::plugin_files() );
+			$report = self::run();
 			// The old plugin's documents sit in a public folder; move them into the private one.
 			\Nashenski\Document_Storage::schedule_migration( true );
 			update_option(

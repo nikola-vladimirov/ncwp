@@ -372,16 +372,14 @@ namespace {
 			expect( ! $GLOBALS['deactivated'] && ! $GLOBALS['options'] && 0 === $GLOBALS['wpdb']->writes, 'Denied requests must not mutate data or plugin state' );
 		}
 	}
-	reset_fixture( array( 'manage_woocommerce' ) );
-	expect(
-		denied(
-			function () {
-				\Nashenski\Admin\Import_Sources::switch_off( array( 'woo-bg/main.php' ) );
-			}
-		),
-		'Shared deactivation boundary must enforce plugin-management permission'
-	);
-	expect( ! $GLOBALS['deactivated'], 'Direct helper call must not deactivate plugins' );
+	foreach ( array( false, true ) as $authorized ) {
+		reset_fixture( $authorized ? array( 'manage_woocommerce', 'activate_plugins' ) : array( 'manage_woocommerce' ) );
+		ob_start();
+		\Nashenski\Admin\Import_Sources::ask_to_deactivate( array( 'woo-bg/main.php' ) );
+		$html = ob_get_clean();
+		expect( ( false !== strpos( $html, '/admin/plugins.php' ) ) === $authorized, 'Only users who manage plugins are asked to deactivate the old one' );
+		expect( ! $GLOBALS['deactivated'], 'Asking never deactivates a plugin' );
+	}
 	reset_fixture( array( 'manage_woocommerce', 'activate_plugins' ), false );
 	expect( denied( array( 'Nashenski\\Admin\\Migration', 'handle' ) ), 'Administrator still needs a valid nonce' );
 	expect( ! $GLOBALS['deactivated'] && 0 === $GLOBALS['wpdb']->writes, 'Invalid nonce must not mutate data or plugin state' );
@@ -392,7 +390,7 @@ namespace {
 		// The handler ends with a redirect; the checks below read what it did.
 		unset( $e );
 	}
-	expect( array( 'woo-bg/main.php', 'woo-bg-pro/main.php' ) === $GLOBALS['deactivated'], 'Authorized legacy migration must deactivate exactly its two legacy plugins' );
+	expect( ! $GLOBALS['deactivated'], 'The migration never deactivates another plugin (WordPress.org rule)' );
 	expect( isset( $GLOBALS['options'][ \Nashenski\Admin\Migration::DONE_OPTION ]['report'] ), 'Authorized migration must save its completion report' );
 	expect( array( \Nashenski\Admin\Migration::ACTION ) === $GLOBALS['nonce_checks'], 'Authorized migration must verify its own nonce' );
 	$render = new \ReflectionMethod( 'Nashenski\\Admin\\Help_Page', 'output_import' );
@@ -404,7 +402,7 @@ namespace {
 		$render->invoke( null );
 		$html = ob_get_clean();
 		expect( false !== strpos( $html, 'Bulgarisation for WooCommerce' ), 'Read-only import information must remain visible' );
-		expect( ( false !== strpos( $html, 'Import and switch off</a>' ) ) === $authorized, 'Import actions must match handler authorization' );
+		expect( ( false !== strpos( $html, 'Import</a>' ) ) === $authorized, 'Import actions must match handler authorization' );
 		expect( ! empty( $GLOBALS['nonce_urls'] ) === $authorized, 'Unauthorized viewers must not be issued import nonce URLs' );
 	}
 	reset_fixture( array( 'manage_woocommerce' ) );

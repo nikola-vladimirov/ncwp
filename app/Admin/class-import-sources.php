@@ -10,8 +10,8 @@ namespace Nashenski\Admin;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * One-click import from the other Bulgarian shipping and N-18 plugins, then the plugin is
- * switched off. Bulgarisation for WooCommerce has its own import (Migration).
+ * One-click import from the other Bulgarian shipping and N-18 plugins, then the owner is asked to
+ * deactivate the old plugin. Bulgarisation for WooCommerce has its own import (Migration).
  *
  * Taken over: courier logins that work with Nashenski Commerce, sender name and phone, the
  * waybill numbers of old orders (so tracking, status checks and courier requests work),
@@ -167,6 +167,14 @@ class Import_Sources {
 			) . '</strong><br>' . wp_kses_post( implode( '<br>', array_map( 'esc_html', $sources[ $imported ]['done']['report'] ) ) ) . '</p></div>';
 		}
 
+		$imported_files = array();
+		foreach ( $sources as $source ) {
+			if ( $source['done'] ) {
+				$imported_files = array_merge( $imported_files, array_keys( $source['plugins'] ) );
+			}
+		}
+		self::ask_to_deactivate( $imported_files );
+
 		$open = self::open_names();
 
 		// Dismissed: back only when another plugin turns up.
@@ -180,7 +188,7 @@ class Import_Sources {
 				echo esc_html(
 					sprintf(
 					/* translators: %s: plugin names */
-						__( 'Nashenski Commerce can take over the data of %s, then switch it off.', 'nashenski-commerce' ),
+						__( 'Nashenski Commerce can take over the data of %s.', 'nashenski-commerce' ),
 						implode( ', ', $open )
 					)
 				);
@@ -256,7 +264,7 @@ class Import_Sources {
 	/* ---------- import ---------- */
 
 	/**
-	 * Import one source and switch its plugins off. Returns the lines of the report.
+	 * Import one source. Returns the lines of the report.
 	 *
 	 * @param mixed $slug Slug.
 	 */
@@ -534,7 +542,7 @@ class Import_Sources {
 			$report[] = sprintf( _n( '%d order keeps everything the old plugin saved on it (see "From earlier plugins" on the order)', '%d orders keep everything the old plugin saved on them (see "From earlier plugins" on the order)', $kept, 'nashenski-commerce' ), $kept );
 		}
 
-		$report = array_merge( $report, $notes, self::switch_off( array_keys( $source['plugins'] ) ) );
+		$report = array_merge( $report, $notes );
 
 		$done          = (array) get_option( self::DONE_OPTION, array() );
 		$done[ $slug ] = array(
@@ -548,31 +556,41 @@ class Import_Sources {
 	}
 
 	/**
-	 * Switch plugins off. Returns one line per plugin that was on.
+	 * After an import, asks the owner to deactivate the old plugins that are still active, with a
+	 * link to the Plugins screen. A plugin must not change the state of other plugins.
 	 *
-	 * @param mixed $files Files.
+	 * @param array $files Plugin files.
 	 */
-	public static function switch_off( $files ) {
-		if ( ! current_user_can( 'activate_plugins' ) ) {
-			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
-		}
-
-		if ( ! function_exists( 'deactivate_plugins' ) ) {
+	public static function ask_to_deactivate( $files ) {
+		if ( ! function_exists( 'is_plugin_active' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		$lines = array();
+		$names = array();
 
 		foreach ( $files as $file ) {
 			if ( is_plugin_active( $file ) ) {
-				deactivate_plugins( $file );
-				$plugin = get_plugin_data( WP_PLUGIN_DIR . '/' . $file, false, false );
-				/* translators: %s: plugin name */
-				$lines[] = sprintf( __( '%s was switched off.', 'nashenski-commerce' ), ! empty( $plugin['Name'] ) ? $plugin['Name'] : $file );
+				$plugin  = get_plugin_data( WP_PLUGIN_DIR . '/' . $file, false, false );
+				$names[] = ! empty( $plugin['Name'] ) ? $plugin['Name'] : $file;
 			}
 		}
 
-		return $lines;
+		if ( ! $names || ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-warning"><p>%s <a href="%s">%s</a></p></div>',
+			esc_html(
+				sprintf(
+					/* translators: %s: plugin names */
+					__( 'The import is done. Please deactivate %s: Nashenski Commerce does its work now.', 'nashenski-commerce' ),
+					implode( ', ', $names )
+				)
+			),
+			esc_url( admin_url( 'plugins.php' ) ),
+			esc_html__( 'Go to Plugins', 'nashenski-commerce' )
+		);
 	}
 
 	/**

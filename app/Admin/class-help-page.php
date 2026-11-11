@@ -230,7 +230,7 @@ class Help_Page {
 			__( 'Moving from another plugin', 'nashenski-commerce' ) => array(
 				esc_html__( 'Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping.', 'nashenski-commerce' ),
 				esc_html__( 'The order documents and invoices of Bulgarisation for WooCommerce move into the private documents folder and open from the order as before.', 'nashenski-commerce' ),
-				esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then the old plugin is switched off. Its own data stays in the database.', 'nashenski-commerce' ),
+				esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database.', 'nashenski-commerce' ),
 				esc_html__( 'Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import.', 'nashenski-commerce' ),
 				esc_html__( 'Only users who can manage plugins see the import button. If an old document number clashes with a number already in use, that number is skipped and the summary says "N document numbers skipped (conflict)".', 'nashenski-commerce' ),
 			),
@@ -272,7 +272,7 @@ class Help_Page {
 		}
 		?>
 		<h2 id="import"><?php esc_html_e( 'Moving from another plugin', 'nashenski-commerce' ); ?></h2>
-		<p><?php esc_html_e( 'These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use and switches the plugin off.', 'nashenski-commerce' ); ?></p>
+		<p><?php esc_html_e( 'These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use. Then deactivate the old plugin.', 'nashenski-commerce' ); ?></p>
 		<table class="widefat striped nashenski-import">
 			<tbody>
 				<?php foreach ( $rows as list( $name, $done, $url ) ) : ?>
@@ -285,7 +285,7 @@ class Help_Page {
 								echo esc_html( sprintf( __( 'Imported on %s', 'nashenski-commerce' ), wp_date( get_option( 'date_format' ), (int) ( $done['time'] ?? 0 ) ) ) );
 								?>
 							<?php elseif ( $url ) : ?>
-								<a class="button" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Import and switch off', 'nashenski-commerce' ); ?></a>
+								<a class="button" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Import', 'nashenski-commerce' ); ?></a>
 							<?php else : ?>
 								<span class="description"><?php esc_html_e( 'You do not have permission to perform this action.', 'nashenski-commerce' ); ?></span>
 							<?php endif; ?>
