@@ -342,6 +342,24 @@ function nashenski_get_order_shipping_vat( $order, $show_group = false ) {
 }
 
 /**
+ * Whether a shipping line prints at 0% VAT with its price as it is: the line has no tax and its
+ * order has no tax at all (for example goods at 0%). With other tax on the order, documents keep
+ * taking the VAT out of an untaxed delivery price. A refund follows the order it refunds.
+ *
+ * @param WC_Order_Item_Shipping   $item  Shipping line.
+ * @param WC_Order|WC_Order_Refund $order Order or refund.
+ * @return bool
+ */
+function nashenski_shipping_has_no_vat( $item, $order ) {
+	if ( $order instanceof WC_Order_Refund ) {
+		$parent = wc_get_order( $order->get_parent_id() );
+		$order  = $parent ? $parent : $order;
+	}
+
+	return 0.0 === (float) $item->get_total_tax() && 0.0 === (float) $order->get_total_tax();
+}
+
+/**
  * VAT rate of an order line.
  *
  * @param WC_Order_Item $item         Order line.

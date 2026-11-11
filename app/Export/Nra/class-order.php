@@ -213,6 +213,8 @@ class Order {
 			if ( wc_tax_enabled() ) {
 				if ( $item->get_total_tax() ) {
 					$item_vat = $shipping_vat;
+				} elseif ( nashenski_shipping_has_no_vat( $item, $this->woo_order ) ) {
+					$item_vat = 0;
 				}
 			}
 
