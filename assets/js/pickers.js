@@ -1147,35 +1147,23 @@
 	/*
 	 * The long text of the chosen option (what it costs at the courier, or what to choose first),
 	 * once under the options instead of in every card. The block checkout says it in its summary.
+	 * One live region right after the list (not an option of it): created once, put back when the
+	 * checkout redraws the list, and only its text changes, so screen readers announce it.
 	 */
 	function showNote( chosen ) {
 		var source = chosen && chosen.list ? chosen.label.querySelector( '[data-nashenski-note]' ) : null;
-		var text = source ? source.getAttribute( 'data-nashenski-note' ) : '';
-		var tag = chosen && chosen.list && 'UL' === chosen.list.tagName ? 'LI' : 'P';
 
-		if ( ! text ) {
-			if ( note && note.parentNode ) {
-				note.remove();
-			}
-
-			return;
-		}
-
-		if ( ! note || note.tagName !== tag ) {
-			if ( note && note.parentNode ) {
-				note.remove();
-			}
-
-			note = document.createElement( tag );
+		if ( ! note ) {
+			note = document.createElement( 'p' );
 			note.className = 'nashenski-rates-note';
 			note.setAttribute( 'aria-live', 'polite' );
 		}
 
-		setText( note, text );
-
-		if ( note.parentNode !== chosen.list ) {
-			chosen.list.appendChild( note );
+		if ( chosen && chosen.list && chosen.list.nextElementSibling !== note ) {
+			chosen.list.after( note );
 		}
+
+		setText( note, source ? source.getAttribute( 'data-nashenski-note' ) : '' );
 	}
 
 	window.nashenskiPickers = Object.assign( cfg, {
