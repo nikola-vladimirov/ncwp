@@ -158,9 +158,10 @@ number already in use, it is skipped and the summary says "N document numbers sk
 
 While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused; deactivate
 it before the import. Import the mreja.net Ordinance N-18 plugin while it is off (its import is refused
-while it is active). Until its data is imported, Nashenski Commerce makes no invoices or other documents
-and takes no numbers, because both would give out the same document numbers; a store without its data is
-not affected. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already
+while it is active). Until its documents are imported, Nashenski Commerce makes no invoices or other
+documents and takes no numbers while a new number could clash with one of them (the plugin is active, or
+one of our counters has not passed its numbers). A store without its documents, or whose counters are
+already past them, is not paused; the import is still offered. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already
 gave out: documents pause until its import is run again from the Help page (also after it is off again).
 That run takes over its new numbers, continues the counters after its highest number (order documents
 and cancellations; invoices, credit and debit notes) and notes and lists each order whose number clashes,

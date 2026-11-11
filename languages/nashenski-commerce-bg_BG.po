@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 17:10+0000\n"
-"PO-Revision-Date: 2026-11-11 17:10+0000\n"
+"POT-Creation-Date: 2026-11-11 17:19+0000\n"
+"PO-Revision-Date: 2026-11-11 17:19+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -135,7 +135,7 @@ msgstr "Поръчана"
 msgid "Emptied"
 msgstr "Изпразнена"
 
-#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:298 app/Admin/class-import-sources.php:295 app/Admin/class-migration.php:126
+#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:298 app/Admin/class-import-sources.php:302 app/Admin/class-migration.php:126
 msgid "You do not have permission to perform this action."
 msgstr "Нямате права за това действие."
 
@@ -1053,7 +1053,7 @@ msgstr "Общ преглед"
 msgid "In %s, enter the login or API keys the courier gave you for online shops."
 msgstr "В %s въведете данните за вход или API ключовете, които куриерът Ви е дал за онлайн магазини."
 
-#: app/Admin/class-help-page.php:92 app/Admin/class-help-page.php:109 app/Admin/class-settings-page.php:137 app/Admin/class-settings-page.php:658 app/Admin/class-setup-wizard.php:671 app/Admin/class-setup-wizard.php:674
+#: app/Admin/class-help-page.php:92 app/Admin/class-help-page.php:109 app/Admin/class-settings-page.php:137 app/Admin/class-settings-page.php:658 app/Admin/class-setup-wizard.php:672 app/Admin/class-setup-wizard.php:675
 msgid "Couriers"
 msgstr "Куриери"
 
@@ -1211,7 +1211,7 @@ msgstr "„Вид на опциите за доставка“ задава ка
 msgid "\"Free shipping hint\" shows \"Free shipping over\" and the total under each option that is not free yet. \"Free shipping progress bar\" shows above the options how much more the customer needs to buy. Both use the \"Free shipping over\" total of the shipping methods."
 msgstr "„Подсказка за безплатна доставка“ показва „Безплатна доставка над“ и сумата под всяка опция, която още не е безплатна. „Лента до безплатна доставка“ показва над опциите колко още трябва да купи клиентът. И двете използват сумата „Безплатна доставка над“ на методите за доставка."
 
-#: app/Admin/class-help-page.php:153 app/Admin/class-setup-wizard.php:386 app/Admin/class-setup-wizard.php:617 app/Export/Builder/class-fields.php:122
+#: app/Admin/class-help-page.php:153 app/Admin/class-setup-wizard.php:386 app/Admin/class-setup-wizard.php:618 app/Export/Builder/class-fields.php:122
 msgid "VAT"
 msgstr "ДДС"
 
@@ -1486,8 +1486,8 @@ msgid "While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Com
 msgstr "Докато Bulgarisation for WooCommerce (4.x или 5.x) е активен, Нашенски Комерс е на пауза. Деактивирайте го преди внасянето."
 
 #: app/Admin/class-help-page.php:236
-msgid "Import the mreja.net Ordinance N-18 plugin while it is off. Until its data is imported, Nashenski Commerce makes no invoices or other documents, because both would give out the same document numbers. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already gave out: documents pause until it is off and its import is run again. Correct the orders that import lists, then use \"Regenerate PDF's\" for orders without documents."
-msgstr "Внесете плъгина на mreja.net за Наредба Н-18, докато е изключен. Докато данните му не са внесени, Нашенски Комерс не създава фактури и други документи, защото двата биха дали едни и същи номера на документи. Ако след внасянето той бъде включен отново, може да използва повторно номера, които Нашенски Комерс вече е дал: документите са на пауза, докато не бъде изключен и внасянето му не бъде пуснато отново. Поправете поръчките, които това внасяне изброи, после използвайте „Повторно създаване на PDF файловете“ за поръчките без документи."
+msgid "Import the mreja.net Ordinance N-18 plugin while it is off. Until its documents are imported, Nashenski Commerce makes no invoices or other documents while a new number could clash with one of them. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already gave out: documents pause until it is off and its import is run again. Correct the orders that import lists, then use \"Regenerate PDF's\" for orders without documents."
+msgstr "Внесете плъгина на mreja.net за Наредба Н-18, докато е изключен. Докато документите му не са внесени, Нашенски Комерс не създава фактури и други документи, ако нов номер може да съвпадне с някой от тях. Ако след внасянето той бъде включен отново, може да използва повторно номера, които Нашенски Комерс вече е дал: документите са на пауза, докато не бъде изключен и внасянето му не бъде пуснато отново. Поправете поръчките, които това внасяне изброи, после използвайте „Повторно създаване на PDF файловете“ за поръчките без документи."
 
 #: app/Admin/class-help-page.php:237
 msgid "Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import."
@@ -1545,7 +1545,7 @@ msgstr "Няма документи: включете „Фактури и Н-18
 msgid "The order note \"Some documents were not generated\" means a document failed (the note gives the reason). The refund, renewal or checkout still went through. Fix the cause and make the document again from the order."
 msgstr "Бележката към поръчката „Някои документи не бяха създадени“ означава, че документ е неуспешен (бележката дава причината). Възстановяването, подновяването или поръчката са преминали. Отстранете причината и създайте документа отново от поръчката."
 
-#: app/Admin/class-help-page.php:266 app/Admin/class-import-sources.php:256
+#: app/Admin/class-help-page.php:266 app/Admin/class-import-sources.php:263
 msgid "Bulgarisation for WooCommerce"
 msgstr "Bulgarisation for WooCommerce"
 
@@ -1571,7 +1571,7 @@ msgid_plural "%d settings changed."
 msgstr[0] "Променена е %d настройка."
 msgstr[1] "Променени са %d настройки."
 
-#: app/Admin/class-help-page.php:337 app/Admin/class-setup-wizard.php:726
+#: app/Admin/class-help-page.php:337 app/Admin/class-setup-wizard.php:727
 msgid "Recommended settings"
 msgstr "Препоръчителни настройки"
 
@@ -1607,92 +1607,92 @@ msgstr "Прилагане на препоръчителните настрой�
 msgid "All recommended settings are in place."
 msgstr "Всички препоръчителни настройки са приложени."
 
-#: app/Admin/class-import-sources.php:103
+#: app/Admin/class-import-sources.php:102
 msgid "Econt Express shipping method (mreja.net)"
 msgstr "Метод за доставка Еконт Експрес (mreja.net)"
 
-#: app/Admin/class-import-sources.php:104
+#: app/Admin/class-import-sources.php:103
 msgid "BOX NOW Delivery (mreja.net)"
 msgstr "BOX NOW Delivery (mreja.net)"
 
-#: app/Admin/class-import-sources.php:105
+#: app/Admin/class-import-sources.php:104
 msgid "Ordinance N-18 light regime (mreja.net)"
 msgstr "Наредба Н-18 облекчен режим (mreja.net)"
 
-#: app/Admin/class-import-sources.php:106
+#: app/Admin/class-import-sources.php:105
 msgid "Speedy shipping method (mreja.net)"
 msgstr "Метод за доставка Спиди (mreja.net)"
 
-#: app/Admin/class-import-sources.php:107
+#: app/Admin/class-import-sources.php:106
 msgid "Pigeon Express shipping (mreja.net)"
 msgstr "Доставка с Pigeon Express (mreja.net)"
 
-#: app/Admin/class-import-sources.php:108
+#: app/Admin/class-import-sources.php:107
 msgid "Change Speedy and Econt Shipping Methods (mreja.net)"
 msgstr "Бутони за методите за доставка на Спиди и Еконт (mreja.net)"
 
-#: app/Admin/class-import-sources.php:109
+#: app/Admin/class-import-sources.php:108
 msgid "Drusoft Shipping for Econt"
 msgstr "Drusoft Shipping за Еконт"
 
-#: app/Admin/class-import-sources.php:110
+#: app/Admin/class-import-sources.php:109
 msgid "Drusoft Shipping for Speedy"
 msgstr "Drusoft Shipping за Спиди"
 
-#: app/Admin/class-import-sources.php:111
+#: app/Admin/class-import-sources.php:110
 msgid "Econt Delivery (Econt)"
 msgstr "Econt Delivery (Еконт)"
 
-#: app/Admin/class-import-sources.php:112
+#: app/Admin/class-import-sources.php:111
 msgid "Speedy Shipping (Speedy)"
 msgstr "Speedy Shipping (Спиди)"
 
-#: app/Admin/class-import-sources.php:113
+#: app/Admin/class-import-sources.php:112
 msgid "WooCommerce Speedy Offices"
 msgstr "WooCommerce Speedy Offices"
 
-#: app/Admin/class-import-sources.php:178
+#: app/Admin/class-import-sources.php:183
 msgid "Go to the import"
 msgstr "Към внасянето"
 
-#: app/Admin/class-import-sources.php:180 app/Admin/class-import-sources.php:663 app/Admin/class-import-sources.php:965
+#: app/Admin/class-import-sources.php:185 app/Admin/class-import-sources.php:671 app/Admin/class-import-sources.php:993
 msgid "Go to Plugins"
 msgstr "Към Разширения"
 
-#: app/Admin/class-import-sources.php:182 app/Admin/class-import-sources.php:962
+#: app/Admin/class-import-sources.php:187 app/Admin/class-import-sources.php:990
 msgid "Ask an administrator to deactivate it."
 msgstr "Помолете администратор да го деактивира."
 
 #. translators: %s: plugin name
-#: app/Admin/class-import-sources.php:203
+#: app/Admin/class-import-sources.php:210
 #, php-format
 msgid "Imported from %s:"
 msgstr "Внесено от %s:"
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:233
+#: app/Admin/class-import-sources.php:240
 #, php-format
 msgid "Nashenski Commerce can take over the data of %s."
 msgstr "Нашенски Комерс може да поеме данните на %s."
 
-#: app/Admin/class-import-sources.php:241 app/Admin/class-setup-wizard.php:588
+#: app/Admin/class-import-sources.php:248 app/Admin/class-setup-wizard.php:588
 msgid "Review and import"
 msgstr "Преглед и внасяне"
 
-#: app/Admin/class-import-sources.php:243 app/Admin/class-settings-page.php:809 app/Admin/class-setup-wizard.php:166
+#: app/Admin/class-import-sources.php:250 app/Admin/class-settings-page.php:809 app/Admin/class-setup-wizard.php:166
 msgid "Dismiss"
 msgstr "Скриване"
 
-#: app/Admin/class-import-sources.php:331 app/Admin/class-import-sources.php:959
+#: app/Admin/class-import-sources.php:338 app/Admin/class-import-sources.php:987
 msgid "Deactivate the N-18 plugin first, then import."
 msgstr "Първо деактивирайте плъгина за Н-18, след това внесете."
 
-#: app/Admin/class-import-sources.php:524 app/Admin/class-import-sources.php:553
+#: app/Admin/class-import-sources.php:532 app/Admin/class-import-sources.php:561
 msgid "The Econt key of that plugin works only with Econt's \"Deliver with Econt\" service. Enter your Econt username and password in Couriers > Econt."
 msgstr "Ключът на Еконт от този плъгин работи само с услугата „Достави с Еконт“. Въведете потребителското си име и паролата за Еконт в Куриери > Еконт."
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:579
+#: app/Admin/class-import-sources.php:587
 #, php-format
 msgid "%d setting"
 msgid_plural "%d settings"
@@ -1700,7 +1700,7 @@ msgstr[0] "%d настройка"
 msgstr[1] "%d настройки"
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:581
+#: app/Admin/class-import-sources.php:589
 #, php-format
 msgid "%d order waybill"
 msgid_plural "%d order waybills"
@@ -1708,7 +1708,7 @@ msgstr[0] "%d товарителница на поръчка"
 msgstr[1] "%d товарителници на поръчки"
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:583
+#: app/Admin/class-import-sources.php:591
 #, php-format
 msgid "%d shipping zone method"
 msgid_plural "%d shipping zone methods"
@@ -1716,7 +1716,7 @@ msgstr[0] "%d метод в зона за доставка"
 msgstr[1] "%d метода в зони за доставка"
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:588
+#: app/Admin/class-import-sources.php:596
 #, php-format
 msgid "%d document number"
 msgid_plural "%d document numbers"
@@ -1725,7 +1725,7 @@ msgstr[1] "%d номера на документи"
 
 #. translators: %d: number
 #. translators: %d: number of document numbers
-#: app/Admin/class-import-sources.php:593 app/Admin/class-migration.php:106
+#: app/Admin/class-import-sources.php:601 app/Admin/class-migration.php:106
 #, php-format
 msgid "%d document number skipped (conflict)"
 msgid_plural "%d document numbers skipped (conflict)"
@@ -1733,13 +1733,13 @@ msgstr[0] "%d номер на документ е пропуснат (конфл
 msgstr[1] "%d номера на документи са пропуснати (конфликт)"
 
 #. translators: %d: number of settings
-#: app/Admin/class-import-sources.php:598
+#: app/Admin/class-import-sources.php:606
 #, php-format
 msgid "Already set, kept as it is: %d"
 msgstr "Вече е зададено, оставено както е: %d"
 
 #. translators: %d: number of orders
-#: app/Admin/class-import-sources.php:605
+#: app/Admin/class-import-sources.php:613
 #, php-format
 msgid "%d order keeps everything the old plugin saved on it (see \"From earlier plugins\" on the order)"
 msgid_plural "%d orders keep everything the old plugin saved on them (see \"From earlier plugins\" on the order)"
@@ -1747,72 +1747,72 @@ msgstr[0] "%d поръчка запазва всичко, което стари�
 msgstr[1] "%d поръчки запазват всичко, което старият плъгин е записал в тях (вижте „От предишни плъгини“ в поръчката)"
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:658
+#: app/Admin/class-import-sources.php:666
 #, php-format
 msgid "The import is done. Please deactivate %s: Nashenski Commerce does its work now."
 msgstr "Внасянето приключи. Моля, деактивирайте %s: Нашенски Комерс вече върши тази работа."
 
 #. translators: %s: document number
-#: app/Admin/class-import-sources.php:756
+#: app/Admin/class-import-sources.php:764
 #, php-format
 msgid "The old N-18 plugin gave this order document number %s, which clashes with a number Nashenski Commerce already gave out. Correct the documents of this order."
 msgstr "Старият плъгин за Н-18 е дал на тази поръчка номер на документ %s, който съвпада с номер, вече даден от Нашенски Комерс. Поправете документите на тази поръчка."
 
 #. translators: %s: order numbers
-#: app/Admin/class-import-sources.php:766
+#: app/Admin/class-import-sources.php:774
 #, php-format
 msgid "Orders whose N-18 number clashes; correct their documents: %s"
 msgstr "Поръчки, чийто номер от Н-18 съвпада с друг; поправете документите им: %s"
 
-#: app/Admin/class-import-sources.php:943
+#: app/Admin/class-import-sources.php:971
 msgid "Nashenski Commerce makes no invoices or other documents yet: the old N-18 plugin has its own document numbers. Deactivate it and run its import from the Help page first; numbering then continues after its numbers. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr "Нашенски Комерс още не създава фактури и други документи: старият плъгин за Н-18 има свои номера на документи. Първо го деактивирайте и пуснете внасянето му от страницата Помощ; номерацията ще продължи след неговите номера. После използвайте „Повторно създаване на PDF файловете“ за поръчките без документи."
 
-#: app/Admin/class-import-sources.php:944
+#: app/Admin/class-import-sources.php:972
 msgid "Nashenski Commerce makes no invoices or other documents yet: the old N-18 plugin left its document numbers on this site. Run its import from the Help page first; numbering then continues after its numbers. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr "Нашенски Комерс още не създава фактури и други документи: старият плъгин за Н-18 е оставил номерата на документите си на сайта. Първо пуснете внасянето му от страницата Помощ; номерацията ще продължи след неговите номера. После използвайте „Повторно създаване на PDF файловете“ за поръчките без документи."
 
-#: app/Admin/class-import-sources.php:948
+#: app/Admin/class-import-sources.php:976
 msgid "The old N-18 plugin is active again and can reuse numbers Nashenski Commerce already gave out, so invoices and other documents are paused. Deactivate it at once, run its import again from the Help page and correct the orders it lists. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr "Старият плъгин за Н-18 отново е активен и може да използва повторно номера, които Нашенски Комерс вече е дал, затова фактурите и другите документи са на пауза. Веднага го деактивирайте, пуснете отново внасянето му от страницата Помощ и поправете поръчките, които то изброи. После използвайте „Повторно създаване на PDF файловете“ за поръчките без документи."
 
-#: app/Admin/class-import-sources.php:949
+#: app/Admin/class-import-sources.php:977
 msgid "Invoices and other documents are paused until the import of the old N-18 plugin is run again from the Help page, because it was active again after its import. Then correct the orders the import lists and use \"Regenerate PDF's\" for orders without documents."
 msgstr "Фактурите и другите документи са на пауза, докато внасянето на стария плъгин за Н-18 не бъде пуснато отново от страницата Помощ, защото той беше активен отново след внасянето. После поправете поръчките, които внасянето изброи, и използвайте „Повторно създаване на PDF файловете“ за поръчките без документи."
 
-#: app/Admin/class-import-sources.php:1089
+#: app/Admin/class-import-sources.php:1117
 msgid "From earlier plugins"
 msgstr "От предишни плъгини"
 
-#: app/Admin/class-import-sources.php:1102
+#: app/Admin/class-import-sources.php:1130
 msgid "What the earlier plugins saved on this order, kept when their data was imported."
 msgstr "Това, което предишните плъгини са записали в тази поръчка, запазено при внасянето на данните им."
 
-#: app/Admin/class-import-sources.php:1145 app/Export/Builder/class-fields.php:338
+#: app/Admin/class-import-sources.php:1173 app/Export/Builder/class-fields.php:338
 msgid "Order document"
 msgstr "Документ за продажба"
 
-#: app/Admin/class-import-sources.php:1146 app/Admin/Order/class-documents.php:314 app/Export/Builder/class-fields.php:339
+#: app/Admin/class-import-sources.php:1174 app/Admin/Order/class-documents.php:314 app/Export/Builder/class-fields.php:339
 msgid "Invoice"
 msgstr "Фактура"
 
-#: app/Admin/class-import-sources.php:1147 app/Export/Builder/class-fields.php:340
+#: app/Admin/class-import-sources.php:1175 app/Export/Builder/class-fields.php:340
 msgid "Credit note"
 msgstr "Кредитно известие"
 
-#: app/Admin/class-import-sources.php:1148
+#: app/Admin/class-import-sources.php:1176
 msgid "Cancelled order document"
 msgstr "Документ за отказана поръчка"
 
-#: app/Admin/class-import-sources.php:1474 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:686 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
+#: app/Admin/class-import-sources.php:1502 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
 msgid "To an office"
 msgstr "До офис"
 
-#: app/Admin/class-import-sources.php:1475 app/Admin/class-import-sources.php:1476 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
+#: app/Admin/class-import-sources.php:1503 app/Admin/class-import-sources.php:1504 app/Admin/class-setup-wizard.php:688 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
 msgid "To a parcel locker"
 msgstr "До автомат за пратки"
 
-#: app/Admin/class-import-sources.php:1477 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:688 app/Admin/Order/class-courier-info.php:46
+#: app/Admin/class-import-sources.php:1505 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:689 app/Admin/Order/class-courier-info.php:46
 msgid "To an address"
 msgstr "До адрес"
 
@@ -3110,7 +3110,7 @@ msgid_plural "%d recommended settings applied"
 msgstr[0] "%d препоръчителна настройка е приложена"
 msgstr[1] "%d препоръчителни настройки са приложени"
 
-#: app/Admin/class-setup-wizard.php:295 app/Admin/class-setup-wizard.php:744
+#: app/Admin/class-setup-wizard.php:295 app/Admin/class-setup-wizard.php:745
 msgid "Reduced rate"
 msgstr "Намалена ставка"
 
@@ -3124,7 +3124,7 @@ msgstr "Добавен данъчен клас: %s"
 msgid "Invoices and N-18 documents turned on."
 msgstr "Фактурите и документите по Н-18 са включени."
 
-#: app/Admin/class-setup-wizard.php:334 app/Admin/class-setup-wizard.php:694 app/Admin/Tabs/class-boxnow-tab.php:185 app/Shipping/Econt/class-method.php:394 app/Shipping/Pigeon/class-method.php:347 app/Shipping/Speedy/class-method.php:376
+#: app/Admin/class-setup-wizard.php:334 app/Admin/class-setup-wizard.php:695 app/Admin/Tabs/class-boxnow-tab.php:185 app/Shipping/Econt/class-method.php:394 app/Shipping/Pigeon/class-method.php:347 app/Shipping/Speedy/class-method.php:376
 msgid "Free shipping over"
 msgstr "Безплатна доставка над"
 
@@ -3224,135 +3224,135 @@ msgstr "Попълнете каквото знаете; всичко може д
 msgid "Moving from another plugin (%s)? Import first. It brings your courier logins, shipping methods and company details."
 msgstr "Минавате от друг плъгин (%s)? Първо импортирайте. Така идват входовете за куриерите, методите за доставка и данните на фирмата."
 
-#: app/Admin/class-setup-wizard.php:601 app/Front_End/Checkout/class-company.php:138
+#: app/Admin/class-setup-wizard.php:602 app/Front_End/Checkout/class-company.php:138
 msgid "Company"
 msgstr "Фирма"
 
-#: app/Admin/class-setup-wizard.php:602 app/Admin/Tabs/class-nra-tab.php:307
+#: app/Admin/class-setup-wizard.php:603 app/Admin/Tabs/class-nra-tab.php:307
 msgid "Printed on invoices and used in the NRA audit file."
 msgstr "Отпечатват се във фактурите и се използват в одиторския файл за НАП."
 
-#: app/Admin/class-setup-wizard.php:620 app/Admin/class-setup-wizard.php:623
+#: app/Admin/class-setup-wizard.php:621 app/Admin/class-setup-wizard.php:624
 msgid "VAT registration"
 msgstr "Регистрация по ДДС"
 
-#: app/Admin/class-setup-wizard.php:624
+#: app/Admin/class-setup-wizard.php:625
 msgid "Registered for VAT, 20%"
 msgstr "Регистрирани по ДДС, 20%"
 
-#: app/Admin/class-setup-wizard.php:625
+#: app/Admin/class-setup-wizard.php:626
 msgid "Registered for VAT, some goods at 9%"
 msgstr "Регистрирани по ДДС, някои стоки с 9%"
 
-#: app/Admin/class-setup-wizard.php:626
+#: app/Admin/class-setup-wizard.php:627
 msgid "Not registered for VAT"
 msgstr "Без регистрация по ДДС"
 
-#: app/Admin/class-setup-wizard.php:627
+#: app/Admin/class-setup-wizard.php:628
 msgid "Registered: WooCommerce taxes are turned on, prices are shown with VAT and a 20% rate for Bulgaria is added. With 9%, the tax class \"Reduced rate\" also gets a 9% rate. Not registered: taxes are turned off and your tax rates are kept."
 msgstr "Регистрирани: данъците в WooCommerce се включват, цените се показват с ДДС и се добавя ставка 20% за България. При 9% данъчният клас „Намалена ставка“ получава и ставка 9%. Без регистрация: данъците се изключват, а данъчните ви ставки се запазват."
 
-#: app/Admin/class-setup-wizard.php:632
+#: app/Admin/class-setup-wizard.php:633
 msgid "Prices"
 msgstr "Цени"
 
-#: app/Admin/class-setup-wizard.php:633
+#: app/Admin/class-setup-wizard.php:634
 msgid "Prices are entered with VAT"
 msgstr "Цените се въвеждат с ДДС"
 
-#: app/Admin/class-setup-wizard.php:639
+#: app/Admin/class-setup-wizard.php:640
 msgid "Only when registered for VAT, for example BG123456789."
 msgstr "Само при регистрация по ДДС, например BG123456789."
 
-#: app/Admin/class-setup-wizard.php:643 app/Admin/class-setup-wizard.php:646
+#: app/Admin/class-setup-wizard.php:644 app/Admin/class-setup-wizard.php:647
 msgid "Invoices"
 msgstr "Фактури"
 
-#: app/Admin/class-setup-wizard.php:647 app/Admin/Tabs/class-nra-tab.php:65
+#: app/Admin/class-setup-wizard.php:648 app/Admin/Tabs/class-nra-tab.php:65
 msgid "Always"
 msgstr "Винаги"
 
-#: app/Admin/class-setup-wizard.php:648 app/Admin/Tabs/class-nra-tab.php:61
+#: app/Admin/class-setup-wizard.php:649 app/Admin/Tabs/class-nra-tab.php:61
 msgid "Only for companies"
 msgstr "Само за фирми"
 
-#: app/Admin/class-setup-wizard.php:649
+#: app/Admin/class-setup-wizard.php:650
 msgid "No invoices"
 msgstr "Без фактури"
 
-#: app/Admin/class-setup-wizard.php:655 app/Admin/Tabs/class-shipping-tab.php:21 app/Export/Builder/class-fields.php:125 app/Shipping/class-checkoutlayout.php:29
+#: app/Admin/class-setup-wizard.php:656 app/Admin/Tabs/class-shipping-tab.php:21 app/Export/Builder/class-fields.php:125 app/Shipping/class-checkoutlayout.php:29
 msgid "Shipping"
 msgstr "Доставка"
 
-#: app/Admin/class-setup-wizard.php:659
+#: app/Admin/class-setup-wizard.php:660
 msgid "No shipping zone covers Bulgaria yet. A zone \"Bulgaria\" will be added."
 msgstr "Още няма зона за доставка, която да покрива България. Ще бъде добавена зона „България“."
 
 #. translators: 1: zone name, 2: shipping method titles
-#: app/Admin/class-setup-wizard.php:662
+#: app/Admin/class-setup-wizard.php:663
 #, php-format
 msgid "Already in the zone %1$s: %2$s. These are not added again."
 msgstr "Вече са в зоната %1$s: %2$s. Те не се добавят отново."
 
 #. translators: %s: zone name
-#: app/Admin/class-setup-wizard.php:665
+#: app/Admin/class-setup-wizard.php:666
 #, php-format
 msgid "The methods are added to the zone %s."
 msgstr "Методите се добавят в зоната %s."
 
-#: app/Admin/class-setup-wizard.php:682 app/Admin/class-setup-wizard.php:685
+#: app/Admin/class-setup-wizard.php:683 app/Admin/class-setup-wizard.php:686
 msgid "Delivery types"
 msgstr "Видове доставка"
 
-#: app/Admin/class-setup-wizard.php:689
+#: app/Admin/class-setup-wizard.php:690
 msgid "One shipping method per courier and type. BOX NOW delivers to parcel lockers only."
 msgstr "По един метод за доставка за всеки куриер и вид. BOX NOW доставя само до автомати."
 
-#: app/Admin/class-setup-wizard.php:697
+#: app/Admin/class-setup-wizard.php:698
 msgid "Optional. Orders at or above this total ship for free with the new methods. Leave empty for no free shipping."
 msgstr "По избор. Поръчките на тази стойност или повече се доставят безплатно с новите методи. Оставете празно за без безплатна доставка."
 
-#: app/Admin/class-setup-wizard.php:702
+#: app/Admin/class-setup-wizard.php:703
 msgid "Checkout look"
 msgstr "Изглед на поръчката"
 
-#: app/Admin/class-setup-wizard.php:705
+#: app/Admin/class-setup-wizard.php:706
 msgid "Shipping options"
 msgstr "Опции за доставка"
 
-#: app/Admin/class-setup-wizard.php:708 app/Front_End/Checkout/class-appearance.php:205
+#: app/Admin/class-setup-wizard.php:709 app/Front_End/Checkout/class-appearance.php:205
 msgid "Plain: keep the look of the theme or builder"
 msgstr "Обикновено: запазва вида на темата или конструктора"
 
-#: app/Admin/class-setup-wizard.php:709 app/Front_End/Checkout/class-appearance.php:203
+#: app/Admin/class-setup-wizard.php:710 app/Front_End/Checkout/class-appearance.php:203
 msgid "Cards: each option in its own box, the chosen one opens its office or address fields"
 msgstr "Карти: всяка опция в отделна рамка, избраната отваря полетата за офис или адрес"
 
-#: app/Admin/class-setup-wizard.php:710 app/Front_End/Checkout/class-appearance.php:204
+#: app/Admin/class-setup-wizard.php:711 app/Front_End/Checkout/class-appearance.php:204
 msgid "Side by side: the options as buttons in a row, the fields of the chosen one below them"
 msgstr "Една до друга: опциите като бутони в ред, полетата на избраната под тях"
 
-#: app/Admin/class-setup-wizard.php:715 app/Admin/class-setup-wizard.php:718 app/Front_End/Checkout/class-pickers.php:310
+#: app/Admin/class-setup-wizard.php:716 app/Admin/class-setup-wizard.php:719 app/Front_End/Checkout/class-pickers.php:310
 msgid "Free shipping"
 msgstr "Безплатна доставка"
 
-#: app/Admin/class-setup-wizard.php:719
+#: app/Admin/class-setup-wizard.php:720
 msgid "Show \"Free shipping over\" under each option"
 msgstr "Показвай „Безплатна доставка над“ под всяка опция"
 
-#: app/Admin/class-setup-wizard.php:720
+#: app/Admin/class-setup-wizard.php:721
 msgid "Show a free shipping progress bar"
 msgstr "Показвай лента до безплатна доставка"
 
-#: app/Admin/class-setup-wizard.php:728
+#: app/Admin/class-setup-wizard.php:729
 msgid "Apply the recommended WooCommerce settings"
 msgstr "Приложи препоръчителните настройки на WooCommerce"
 
-#: app/Admin/class-setup-wizard.php:729
+#: app/Admin/class-setup-wizard.php:730
 msgid "See the list"
 msgstr "Виж списъка"
 
-#: app/Admin/class-setup-wizard.php:732
+#: app/Admin/class-setup-wizard.php:733
 msgid "Save and finish"
 msgstr "Запази и завърши"
 

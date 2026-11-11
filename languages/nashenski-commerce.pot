@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 17:10+0000\n"
-"PO-Revision-Date: 2026-11-11 17:10+0000\n"
+"POT-Creation-Date: 2026-11-11 17:19+0000\n"
+"PO-Revision-Date: 2026-11-11 17:19+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -130,7 +130,7 @@ msgstr ""
 msgid "Emptied"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:298 app/Admin/class-import-sources.php:295 app/Admin/class-migration.php:126
+#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:298 app/Admin/class-import-sources.php:302 app/Admin/class-migration.php:126
 msgid "You do not have permission to perform this action."
 msgstr ""
 
@@ -1048,7 +1048,7 @@ msgstr ""
 msgid "In %s, enter the login or API keys the courier gave you for online shops."
 msgstr ""
 
-#: app/Admin/class-help-page.php:92 app/Admin/class-help-page.php:109 app/Admin/class-settings-page.php:137 app/Admin/class-settings-page.php:658 app/Admin/class-setup-wizard.php:671 app/Admin/class-setup-wizard.php:674
+#: app/Admin/class-help-page.php:92 app/Admin/class-help-page.php:109 app/Admin/class-settings-page.php:137 app/Admin/class-settings-page.php:658 app/Admin/class-setup-wizard.php:672 app/Admin/class-setup-wizard.php:675
 msgid "Couriers"
 msgstr ""
 
@@ -1206,7 +1206,7 @@ msgstr ""
 msgid "\"Free shipping hint\" shows \"Free shipping over\" and the total under each option that is not free yet. \"Free shipping progress bar\" shows above the options how much more the customer needs to buy. Both use the \"Free shipping over\" total of the shipping methods."
 msgstr ""
 
-#: app/Admin/class-help-page.php:153 app/Admin/class-setup-wizard.php:386 app/Admin/class-setup-wizard.php:617 app/Export/Builder/class-fields.php:122
+#: app/Admin/class-help-page.php:153 app/Admin/class-setup-wizard.php:386 app/Admin/class-setup-wizard.php:618 app/Export/Builder/class-fields.php:122
 msgid "VAT"
 msgstr ""
 
@@ -1481,7 +1481,7 @@ msgid "While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Com
 msgstr ""
 
 #: app/Admin/class-help-page.php:236
-msgid "Import the mreja.net Ordinance N-18 plugin while it is off. Until its data is imported, Nashenski Commerce makes no invoices or other documents, because both would give out the same document numbers. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already gave out: documents pause until it is off and its import is run again. Correct the orders that import lists, then use \"Regenerate PDF's\" for orders without documents."
+msgid "Import the mreja.net Ordinance N-18 plugin while it is off. Until its documents are imported, Nashenski Commerce makes no invoices or other documents while a new number could clash with one of them. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already gave out: documents pause until it is off and its import is run again. Correct the orders that import lists, then use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
 #: app/Admin/class-help-page.php:237
@@ -1540,7 +1540,7 @@ msgstr ""
 msgid "The order note \"Some documents were not generated\" means a document failed (the note gives the reason). The refund, renewal or checkout still went through. Fix the cause and make the document again from the order."
 msgstr ""
 
-#: app/Admin/class-help-page.php:266 app/Admin/class-import-sources.php:256
+#: app/Admin/class-help-page.php:266 app/Admin/class-import-sources.php:263
 msgid "Bulgarisation for WooCommerce"
 msgstr ""
 
@@ -1566,7 +1566,7 @@ msgid_plural "%d settings changed."
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Admin/class-help-page.php:337 app/Admin/class-setup-wizard.php:726
+#: app/Admin/class-help-page.php:337 app/Admin/class-setup-wizard.php:727
 msgid "Recommended settings"
 msgstr ""
 
@@ -1602,92 +1602,92 @@ msgstr ""
 msgid "All recommended settings are in place."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:103
+#: app/Admin/class-import-sources.php:102
 msgid "Econt Express shipping method (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:104
+#: app/Admin/class-import-sources.php:103
 msgid "BOX NOW Delivery (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:105
+#: app/Admin/class-import-sources.php:104
 msgid "Ordinance N-18 light regime (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:106
+#: app/Admin/class-import-sources.php:105
 msgid "Speedy shipping method (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:107
+#: app/Admin/class-import-sources.php:106
 msgid "Pigeon Express shipping (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:108
+#: app/Admin/class-import-sources.php:107
 msgid "Change Speedy and Econt Shipping Methods (mreja.net)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:109
+#: app/Admin/class-import-sources.php:108
 msgid "Drusoft Shipping for Econt"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:110
+#: app/Admin/class-import-sources.php:109
 msgid "Drusoft Shipping for Speedy"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:111
+#: app/Admin/class-import-sources.php:110
 msgid "Econt Delivery (Econt)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:112
+#: app/Admin/class-import-sources.php:111
 msgid "Speedy Shipping (Speedy)"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:113
+#: app/Admin/class-import-sources.php:112
 msgid "WooCommerce Speedy Offices"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:178
+#: app/Admin/class-import-sources.php:183
 msgid "Go to the import"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:180 app/Admin/class-import-sources.php:663 app/Admin/class-import-sources.php:965
+#: app/Admin/class-import-sources.php:185 app/Admin/class-import-sources.php:671 app/Admin/class-import-sources.php:993
 msgid "Go to Plugins"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:182 app/Admin/class-import-sources.php:962
+#: app/Admin/class-import-sources.php:187 app/Admin/class-import-sources.php:990
 msgid "Ask an administrator to deactivate it."
 msgstr ""
 
 #. translators: %s: plugin name
-#: app/Admin/class-import-sources.php:203
+#: app/Admin/class-import-sources.php:210
 #, php-format
 msgid "Imported from %s:"
 msgstr ""
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:233
+#: app/Admin/class-import-sources.php:240
 #, php-format
 msgid "Nashenski Commerce can take over the data of %s."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:241 app/Admin/class-setup-wizard.php:588
+#: app/Admin/class-import-sources.php:248 app/Admin/class-setup-wizard.php:588
 msgid "Review and import"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:243 app/Admin/class-settings-page.php:809 app/Admin/class-setup-wizard.php:166
+#: app/Admin/class-import-sources.php:250 app/Admin/class-settings-page.php:809 app/Admin/class-setup-wizard.php:166
 msgid "Dismiss"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:331 app/Admin/class-import-sources.php:959
+#: app/Admin/class-import-sources.php:338 app/Admin/class-import-sources.php:987
 msgid "Deactivate the N-18 plugin first, then import."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:524 app/Admin/class-import-sources.php:553
+#: app/Admin/class-import-sources.php:532 app/Admin/class-import-sources.php:561
 msgid "The Econt key of that plugin works only with Econt's \"Deliver with Econt\" service. Enter your Econt username and password in Couriers > Econt."
 msgstr ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:579
+#: app/Admin/class-import-sources.php:587
 #, php-format
 msgid "%d setting"
 msgid_plural "%d settings"
@@ -1695,7 +1695,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:581
+#: app/Admin/class-import-sources.php:589
 #, php-format
 msgid "%d order waybill"
 msgid_plural "%d order waybills"
@@ -1703,7 +1703,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:583
+#: app/Admin/class-import-sources.php:591
 #, php-format
 msgid "%d shipping zone method"
 msgid_plural "%d shipping zone methods"
@@ -1711,7 +1711,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:588
+#: app/Admin/class-import-sources.php:596
 #, php-format
 msgid "%d document number"
 msgid_plural "%d document numbers"
@@ -1720,7 +1720,7 @@ msgstr[1] ""
 
 #. translators: %d: number
 #. translators: %d: number of document numbers
-#: app/Admin/class-import-sources.php:593 app/Admin/class-migration.php:106
+#: app/Admin/class-import-sources.php:601 app/Admin/class-migration.php:106
 #, php-format
 msgid "%d document number skipped (conflict)"
 msgid_plural "%d document numbers skipped (conflict)"
@@ -1728,13 +1728,13 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of settings
-#: app/Admin/class-import-sources.php:598
+#: app/Admin/class-import-sources.php:606
 #, php-format
 msgid "Already set, kept as it is: %d"
 msgstr ""
 
 #. translators: %d: number of orders
-#: app/Admin/class-import-sources.php:605
+#: app/Admin/class-import-sources.php:613
 #, php-format
 msgid "%d order keeps everything the old plugin saved on it (see \"From earlier plugins\" on the order)"
 msgid_plural "%d orders keep everything the old plugin saved on them (see \"From earlier plugins\" on the order)"
@@ -1742,72 +1742,72 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:658
+#: app/Admin/class-import-sources.php:666
 #, php-format
 msgid "The import is done. Please deactivate %s: Nashenski Commerce does its work now."
 msgstr ""
 
 #. translators: %s: document number
-#: app/Admin/class-import-sources.php:756
+#: app/Admin/class-import-sources.php:764
 #, php-format
 msgid "The old N-18 plugin gave this order document number %s, which clashes with a number Nashenski Commerce already gave out. Correct the documents of this order."
 msgstr ""
 
 #. translators: %s: order numbers
-#: app/Admin/class-import-sources.php:766
+#: app/Admin/class-import-sources.php:774
 #, php-format
 msgid "Orders whose N-18 number clashes; correct their documents: %s"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:943
+#: app/Admin/class-import-sources.php:971
 msgid "Nashenski Commerce makes no invoices or other documents yet: the old N-18 plugin has its own document numbers. Deactivate it and run its import from the Help page first; numbering then continues after its numbers. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:944
+#: app/Admin/class-import-sources.php:972
 msgid "Nashenski Commerce makes no invoices or other documents yet: the old N-18 plugin left its document numbers on this site. Run its import from the Help page first; numbering then continues after its numbers. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:948
+#: app/Admin/class-import-sources.php:976
 msgid "The old N-18 plugin is active again and can reuse numbers Nashenski Commerce already gave out, so invoices and other documents are paused. Deactivate it at once, run its import again from the Help page and correct the orders it lists. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:949
+#: app/Admin/class-import-sources.php:977
 msgid "Invoices and other documents are paused until the import of the old N-18 plugin is run again from the Help page, because it was active again after its import. Then correct the orders the import lists and use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1089
+#: app/Admin/class-import-sources.php:1117
 msgid "From earlier plugins"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1102
+#: app/Admin/class-import-sources.php:1130
 msgid "What the earlier plugins saved on this order, kept when their data was imported."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1145 app/Export/Builder/class-fields.php:338
+#: app/Admin/class-import-sources.php:1173 app/Export/Builder/class-fields.php:338
 msgid "Order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1146 app/Admin/Order/class-documents.php:314 app/Export/Builder/class-fields.php:339
+#: app/Admin/class-import-sources.php:1174 app/Admin/Order/class-documents.php:314 app/Export/Builder/class-fields.php:339
 msgid "Invoice"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1147 app/Export/Builder/class-fields.php:340
+#: app/Admin/class-import-sources.php:1175 app/Export/Builder/class-fields.php:340
 msgid "Credit note"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1148
+#: app/Admin/class-import-sources.php:1176
 msgid "Cancelled order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1474 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:686 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
+#: app/Admin/class-import-sources.php:1502 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
 msgid "To an office"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1475 app/Admin/class-import-sources.php:1476 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
+#: app/Admin/class-import-sources.php:1503 app/Admin/class-import-sources.php:1504 app/Admin/class-setup-wizard.php:688 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
 msgid "To a parcel locker"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1477 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:688 app/Admin/Order/class-courier-info.php:46
+#: app/Admin/class-import-sources.php:1505 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:689 app/Admin/Order/class-courier-info.php:46
 msgid "To an address"
 msgstr ""
 
@@ -3105,7 +3105,7 @@ msgid_plural "%d recommended settings applied"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Admin/class-setup-wizard.php:295 app/Admin/class-setup-wizard.php:744
+#: app/Admin/class-setup-wizard.php:295 app/Admin/class-setup-wizard.php:745
 msgid "Reduced rate"
 msgstr ""
 
@@ -3119,7 +3119,7 @@ msgstr ""
 msgid "Invoices and N-18 documents turned on."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:334 app/Admin/class-setup-wizard.php:694 app/Admin/Tabs/class-boxnow-tab.php:185 app/Shipping/Econt/class-method.php:394 app/Shipping/Pigeon/class-method.php:347 app/Shipping/Speedy/class-method.php:376
+#: app/Admin/class-setup-wizard.php:334 app/Admin/class-setup-wizard.php:695 app/Admin/Tabs/class-boxnow-tab.php:185 app/Shipping/Econt/class-method.php:394 app/Shipping/Pigeon/class-method.php:347 app/Shipping/Speedy/class-method.php:376
 msgid "Free shipping over"
 msgstr ""
 
@@ -3219,135 +3219,135 @@ msgstr ""
 msgid "Moving from another plugin (%s)? Import first. It brings your courier logins, shipping methods and company details."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:601 app/Front_End/Checkout/class-company.php:138
+#: app/Admin/class-setup-wizard.php:602 app/Front_End/Checkout/class-company.php:138
 msgid "Company"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:602 app/Admin/Tabs/class-nra-tab.php:307
+#: app/Admin/class-setup-wizard.php:603 app/Admin/Tabs/class-nra-tab.php:307
 msgid "Printed on invoices and used in the NRA audit file."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:620 app/Admin/class-setup-wizard.php:623
+#: app/Admin/class-setup-wizard.php:621 app/Admin/class-setup-wizard.php:624
 msgid "VAT registration"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:624
+#: app/Admin/class-setup-wizard.php:625
 msgid "Registered for VAT, 20%"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:625
+#: app/Admin/class-setup-wizard.php:626
 msgid "Registered for VAT, some goods at 9%"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:626
+#: app/Admin/class-setup-wizard.php:627
 msgid "Not registered for VAT"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:627
+#: app/Admin/class-setup-wizard.php:628
 msgid "Registered: WooCommerce taxes are turned on, prices are shown with VAT and a 20% rate for Bulgaria is added. With 9%, the tax class \"Reduced rate\" also gets a 9% rate. Not registered: taxes are turned off and your tax rates are kept."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:632
+#: app/Admin/class-setup-wizard.php:633
 msgid "Prices"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:633
+#: app/Admin/class-setup-wizard.php:634
 msgid "Prices are entered with VAT"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:639
+#: app/Admin/class-setup-wizard.php:640
 msgid "Only when registered for VAT, for example BG123456789."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:643 app/Admin/class-setup-wizard.php:646
+#: app/Admin/class-setup-wizard.php:644 app/Admin/class-setup-wizard.php:647
 msgid "Invoices"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:647 app/Admin/Tabs/class-nra-tab.php:65
+#: app/Admin/class-setup-wizard.php:648 app/Admin/Tabs/class-nra-tab.php:65
 msgid "Always"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:648 app/Admin/Tabs/class-nra-tab.php:61
+#: app/Admin/class-setup-wizard.php:649 app/Admin/Tabs/class-nra-tab.php:61
 msgid "Only for companies"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:649
+#: app/Admin/class-setup-wizard.php:650
 msgid "No invoices"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:655 app/Admin/Tabs/class-shipping-tab.php:21 app/Export/Builder/class-fields.php:125 app/Shipping/class-checkoutlayout.php:29
+#: app/Admin/class-setup-wizard.php:656 app/Admin/Tabs/class-shipping-tab.php:21 app/Export/Builder/class-fields.php:125 app/Shipping/class-checkoutlayout.php:29
 msgid "Shipping"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:659
+#: app/Admin/class-setup-wizard.php:660
 msgid "No shipping zone covers Bulgaria yet. A zone \"Bulgaria\" will be added."
 msgstr ""
 
 #. translators: 1: zone name, 2: shipping method titles
-#: app/Admin/class-setup-wizard.php:662
+#: app/Admin/class-setup-wizard.php:663
 #, php-format
 msgid "Already in the zone %1$s: %2$s. These are not added again."
 msgstr ""
 
 #. translators: %s: zone name
-#: app/Admin/class-setup-wizard.php:665
+#: app/Admin/class-setup-wizard.php:666
 #, php-format
 msgid "The methods are added to the zone %s."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:682 app/Admin/class-setup-wizard.php:685
+#: app/Admin/class-setup-wizard.php:683 app/Admin/class-setup-wizard.php:686
 msgid "Delivery types"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:689
+#: app/Admin/class-setup-wizard.php:690
 msgid "One shipping method per courier and type. BOX NOW delivers to parcel lockers only."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:697
+#: app/Admin/class-setup-wizard.php:698
 msgid "Optional. Orders at or above this total ship for free with the new methods. Leave empty for no free shipping."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:702
+#: app/Admin/class-setup-wizard.php:703
 msgid "Checkout look"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:705
+#: app/Admin/class-setup-wizard.php:706
 msgid "Shipping options"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:708 app/Front_End/Checkout/class-appearance.php:205
+#: app/Admin/class-setup-wizard.php:709 app/Front_End/Checkout/class-appearance.php:205
 msgid "Plain: keep the look of the theme or builder"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:709 app/Front_End/Checkout/class-appearance.php:203
+#: app/Admin/class-setup-wizard.php:710 app/Front_End/Checkout/class-appearance.php:203
 msgid "Cards: each option in its own box, the chosen one opens its office or address fields"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:710 app/Front_End/Checkout/class-appearance.php:204
+#: app/Admin/class-setup-wizard.php:711 app/Front_End/Checkout/class-appearance.php:204
 msgid "Side by side: the options as buttons in a row, the fields of the chosen one below them"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:715 app/Admin/class-setup-wizard.php:718 app/Front_End/Checkout/class-pickers.php:310
+#: app/Admin/class-setup-wizard.php:716 app/Admin/class-setup-wizard.php:719 app/Front_End/Checkout/class-pickers.php:310
 msgid "Free shipping"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:719
+#: app/Admin/class-setup-wizard.php:720
 msgid "Show \"Free shipping over\" under each option"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:720
+#: app/Admin/class-setup-wizard.php:721
 msgid "Show a free shipping progress bar"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:728
+#: app/Admin/class-setup-wizard.php:729
 msgid "Apply the recommended WooCommerce settings"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:729
+#: app/Admin/class-setup-wizard.php:730
 msgid "See the list"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:732
+#: app/Admin/class-setup-wizard.php:733
 msgid "Save and finish"
 msgstr ""
 
