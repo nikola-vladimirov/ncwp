@@ -130,6 +130,8 @@ class Help_Page {
 				esc_html__( 'Each shipping method in a zone can have a free shipping amount and a fixed price.', 'nashenski-commerce' ),
 				esc_html__( '"Customer pays the courier" on an Econt, Speedy or Pigeon Express method in a zone lists the payment methods for which the customer pays the delivery to the courier on delivery. The checkout then shows the price for information, not in the total, and the waybill says the receiver pays. With any other payment method you collect the delivery in the total and the sender pays. BOX NOW cannot charge the customer, so you always collect it there.', 'nashenski-commerce' ),
 				esc_html__( 'The total follows the payment method the customer picks at checkout. The courier box on the order screen can still change who pays for one waybill.', 'nashenski-commerce' ),
+				esc_html__( 'New Econt, Speedy and Pigeon Express methods start with cash on delivery in "Customer pays the courier". A cart whose goods cost nothing is always yours to collect.', 'nashenski-commerce' ),
+				esc_html__( 'In the courier box of an order, a waybill where you collect the delivery makes the order one you collected, while it has no documents; once it has documents, such a waybill is refused. Choosing the receiver as payer on an order you collected shows a warning.', 'nashenski-commerce' ),
 				esc_html__( 'Review or test before payment is set on the courier method in the shipping zone and goes on every label. For Pigeon Express choose review or test; the order screen can change it for one label.', 'nashenski-commerce' ),
 				esc_html__( 'When a courier publishes new prices, a notice says so. Save that courier\'s prices or press Dismiss.', 'nashenski-commerce' ),
 			),
@@ -199,6 +201,8 @@ class Help_Page {
 				esc_html__( 'A delivery with no VAT, on an order with no VAT at all, is printed at 0% with its full price.', 'nashenski-commerce' ),
 				esc_html__( 'A delivery the customer paid to the courier is not on the documents or in the NRA audit file, because you did not collect it. Credit notes follow their order. Each order keeps what was decided at checkout; orders from before version 0.21.8 keep the old "Remove delivery from documents" rule.', 'nashenski-commerce' ),
 				esc_html__( 'Quick orders and orders made on the order screen are decided the same way once they have a shipping method and a payment method, and again when either changes, until the order has documents. A waybill made there for an order whose customer pays the courier shows its price for information only.', 'nashenski-commerce' ),
+				esc_html__( 'Shipping methods of other plugins keep "Is ... courier?" in Documents > Shipping on documents: with cash on delivery, their delivery is left out of documents and the NRA audit file.', 'nashenski-commerce' ),
+				esc_html__( 'When the payment method of a checkout order is changed on the order screen, who pays the courier stays as decided at checkout, and a notice asks you to check the delivery line and the waybill by hand.', 'nashenski-commerce' ),
 			),
 			__( 'NRA audit file and exports', 'nashenski-commerce' ) => array(
 				/* translators: %s: link to the Exports section */

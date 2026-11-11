@@ -265,7 +265,7 @@ class Method extends \WC_Shipping_Method {
 		}
 
 		// Bulgaria only: abroad the label is always paid by the sender.
-		if ( 'BG' === $this->label_country() && Courier_Fee::customer_pays( $this->customer_pays, $this->cookie_data['payment'] ?? '' ) ) {
+		if ( 'BG' === $this->label_country() && Courier_Fee::customer_pays_cart( $this->customer_pays, $this->cookie_data['payment'] ?? '' ) ) {
 			$rate = Courier_Fee::rate( $rate );
 		}
 

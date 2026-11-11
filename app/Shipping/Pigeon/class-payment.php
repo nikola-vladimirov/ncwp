@@ -218,18 +218,13 @@ class Payment {
 		}
 		$price = null;
 		if ( 'fixed' === $mode ) {
-			if ( isset( $_REQUEST['fixedPrice'] ) && ( is_bool( $_REQUEST['fixedPrice'] ) || is_array( $_REQUEST['fixedPrice'] ) || is_object( $_REQUEST['fixedPrice'] ) ) ) {
-				throw new \InvalidArgumentException( esc_html__( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
-			}
+			// amount() refuses anything but a number, an array from the request too.
 			$price = self::amount( nashenski_label_request( 'fixedPrice', null ) );
 			if ( ! self::shipping_item( $order ) ) {
 				throw new \InvalidArgumentException( esc_html__( 'This order has no Pigeon shipping charge.', 'nashenski-commerce' ) ); }
 		}
 		$override = nashenski_label_request( 'codOverride', null );
 		if ( null !== $override ) {
-			if ( isset( $_REQUEST['codOverride'] ) && ( is_bool( $_REQUEST['codOverride'] ) || is_array( $_REQUEST['codOverride'] ) || is_object( $_REQUEST['codOverride'] ) ) ) {
-				throw new \InvalidArgumentException( esc_html__( 'Enter a finite, nonnegative shipping or COD amount.', 'nashenski-commerce' ) );
-			}
 			$override = self::amount( $override );
 			if ( $order->get_payment_method() !== 'cod' ) {
 				throw new \InvalidArgumentException( esc_html__( 'COD is available only for cash-on-delivery orders.', 'nashenski-commerce' ) ); }

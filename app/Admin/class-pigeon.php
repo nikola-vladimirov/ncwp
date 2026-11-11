@@ -123,6 +123,7 @@ class Pigeon {
 								'orderId'           => $theorder->get_id(),
 								'testOption'        => self::get_test_option( $label_data ),
 								'i18n'              => self::get_i18n(),
+								'feeNotice'         => \Nashenski\Shipping\Courier_Fee::receiver_notice( $theorder ),
 								'nonce'             => wp_create_nonce( 'nashenski_admin_label' ),
 							)
 						);
@@ -381,9 +382,17 @@ class Pigeon {
 
 		$order = wc_get_order( nashenski_label_request( 'orderId' ) );
 		try {
-			$payment = Payment::request( $order ); } catch ( \InvalidArgumentException $error ) {
+			$payment = Payment::request( $order );
+		} catch ( \InvalidArgumentException $error ) {
 			wp_send_json_error( array( 'message' => $error->getMessage() ) );
 			return; }
+
+		$refusal = \Nashenski\Shipping\Courier_Fee::staff_payer( $order, in_array( $payment['mode'], array( 'fixed', 'sender' ), true ) );
+
+		if ( '' !== $refusal ) {
+			wp_send_json_error( array( 'message' => $refusal ) );
+			return;
+		}
 			$label = nashenski_label_request( 'label_data', array() );
 
 			$label = self::update_sender( $label );
@@ -394,10 +403,10 @@ class Pigeon {
 			$label = self::update_customer_note( $label, $order );
 
 			$data = self::send_label_to_pigeon( $label, $order );
-			if ( isset( $data['shipmentStatus'] ) && null !== $payment['override'] ) {
-				$order->update_meta_data( Payment::COD_OVERRIDE_META, $payment['override'] );
-				$order->save();
-			}
+		if ( isset( $data['shipmentStatus'] ) && null !== $payment['override'] ) {
+			$order->update_meta_data( Payment::COD_OVERRIDE_META, $payment['override'] );
+			$order->save();
+		}
 
 			wp_send_json_success( $data );
 			wp_die();

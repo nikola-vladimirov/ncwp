@@ -137,6 +137,7 @@ class Speedy {
 							'testOption'     => self::get_test_option( $label_data ),
 							'maxParcels'     => \Nashenski\Shipping\Speedy\Method::MAX_PARCELS,
 							'i18n'           => self::get_i18n(),
+							'feeNotice'      => Courier_Fee::receiver_notice( $theorder ),
 							'nonce'          => wp_create_nonce( 'nashenski_admin_label' ),
 						)
 					);
@@ -155,15 +156,17 @@ class Speedy {
 	 */
 	public static function fix_cod_data( $label_data, $order ) {
 		$service_id = $label_data['service']['serviceId'] ?? null;
+		// A delivery the customer pays the courier is not collected for the shop.
+		$amount = wc_format_decimal( $order->get_total() - ( 'customer' === Courier_Fee::payer( $order ) ? (float) $order->get_shipping_total() + (float) $order->get_shipping_tax() : 0 ), wc_get_price_decimals() );
 
 		if ( '505' === $service_id ) {
 			$cod_data = array(
-				'amount'         => $order->get_total(),
+				'amount'         => $amount,
 				'processingType' => ( wc_string_to_bool( nashenski_get_option( 'speedy', 'ppp' ) ) ) ? 'POSTAL_MONEY_TRANSFER' : 'CASH',
 			);
 		} else {
 			$cod_data = array(
-				'amount' => $order->get_total(),
+				'amount' => $amount,
 			);
 		}
 
@@ -433,8 +436,13 @@ class Speedy {
 	public static function generate_label() {
 		nashenski_check_admin_label_actions();
 
-		$order = wc_get_order( nashenski_label_request( 'orderId' ) );
-		$label = nashenski_label_request( 'label_data', array() );
+		$order   = wc_get_order( nashenski_label_request( 'orderId' ) );
+		$label   = nashenski_label_request( 'label_data', array() );
+		$refusal = Courier_Fee::staff_payer( $order, in_array( nashenski_label_request( 'paymentBy', array() )['id'] ?? '', array( 'SENDER', 'fixed' ), true ) );
+
+		if ( '' !== $refusal ) {
+			wp_send_json_success( array( 'message' => $refusal ) );
+		}
 
 		$label = self::update_sender( $label );
 		$label = self::update_customer_note( $label, $order );

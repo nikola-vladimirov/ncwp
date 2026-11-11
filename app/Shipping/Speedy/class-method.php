@@ -1202,7 +1202,7 @@ class Method extends \WC_Shipping_Method {
 		);
 
 		// The shop collects the delivery for payment methods not in the method's list.
-		if ( ! Courier_Fee::customer_pays( $this->customer_pays, $this->cookie_data['payment'] ?? '' ) ) {
+		if ( ! Courier_Fee::customer_pays_cart( $this->customer_pays, $this->cookie_data['payment'] ?? '' ) ) {
 			$payment['courierServicePayer'] = 'SENDER';
 			$payment['declaredValuePayer']  = 'SENDER';
 			$payment['packagePayer']        = 'SENDER';

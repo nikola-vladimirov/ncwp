@@ -456,6 +456,8 @@
 			cell( 'ref 1', L.input( label, 'ref1', { class: 'input-text' } ), 'form-field', 'clear: none' ),
 			cell( 'ref 2', L.input( label, 'ref2', { class: 'input-text' } ), 'form-field', 'float: right; clear: none' ),
 			L.field( i18n.deliveryPayedBy, L.select( payers, state.paymentBy, choose( 'paymentBy' ), { placeholder: i18n.choose } ) ),
+			// The shop collected the delivery: with the receiver paying too, the customer would pay it twice.
+			data.feeNotice && 'RECIPIENT' === state.paymentBy.id ? L.errorNotice( data.feeNotice ) : null,
 			'fixed' === state.paymentBy.id ? L.field( i18n.fixedPrice, numberInput( cookie, 'fixed_price' ) ) : null,
 			L.field( i18n.reviewAndTest, L.select( tests, state.testOption, choose( 'testOption' ), { placeholder: i18n.choose } ) ),
 			L.el( 'p', { class: 'form-field form-field-wide' }, buttons ),

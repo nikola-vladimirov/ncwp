@@ -122,7 +122,7 @@ class Register {
 			$priced = (string) ( $meta['cookie_data']['payment'] ?? '' );
 			$listed = Courier_Fee::listed( $rate->get_method_id(), $rate->get_instance_id() );
 
-			if ( ( 'cod' === $priced ) !== $cod || Courier_Fee::customer_pays( $listed, $priced ) !== Courier_Fee::customer_pays( $listed, $payment ) ) {
+			if ( ( 'cod' === $priced ) !== $cod || Courier_Fee::customer_pays_cart( $listed, $priced ) !== Courier_Fee::customer_pays_cart( $listed, $payment ) ) {
 				$mismatch = true;
 				WC()->session->__unset( 'shipping_for_package_' . $key );
 			}
@@ -281,7 +281,7 @@ class Register {
 		}
 		// phpcs:enable
 
-		return self::normalize_checkout_post_data( array_replace_recursive( nashenski_order_review_data(), $posted ) );
+		return self::normalize_checkout_post_data( array_replace_recursive( nashenski_order_review_data( array_merge( $keys, array( 'shipping_method' ) ) ), $posted ) );
 	}
 
 	/**

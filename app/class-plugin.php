@@ -117,16 +117,14 @@ class Plugin {
 		$methods = $wpdb->get_results( $wpdb->prepare( "SELECT method_id, instance_id FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE method_id IN (%s, %s, %s)", 'nashenski_econt', 'nashenski_speedy', 'nashenski_pigeon' ) );
 
 		foreach ( (array) $methods as $method ) {
-			if ( 'nashenski_pigeon' !== $method->method_id && 'yes' !== nashenski_get_option( 'shippings', $method->method_id . '_is_courier' ) ) {
-				continue;
-			}
-
 			$key      = 'woocommerce_' . $method->method_id . '_' . $method->instance_id . '_settings';
 			$settings = get_option( $key, array() );
 			$settings = is_array( $settings ) ? $settings : array();
 			$listed   = (array) ( $settings[ Shipping\Courier_Fee::FIELD ] ?? array() );
+			$courier  = 'nashenski_pigeon' === $method->method_id || 'yes' === nashenski_get_option( 'shippings', $method->method_id . '_is_courier' );
 
-			$settings[ Shipping\Courier_Fee::FIELD ] = array_values( array_unique( array_merge( $listed, array( 'cod' ) ) ) );
+			// Written for every method: a method left out keeps an empty list, not the new methods' default.
+			$settings[ Shipping\Courier_Fee::FIELD ] = $courier ? array_values( array_unique( array_merge( $listed, array( 'cod' ) ) ) ) : $listed;
 			update_option( $key, $settings );
 		}
 	}
@@ -164,12 +162,6 @@ class Plugin {
 
 		if ( nashenski_get_option( 'reports', 'enable_nepostop' ) && ! nashenski_get_option( 'nepostop', 'level_of_warning' ) ) {
 			nashenski_set_option( 'nepostop', 'level_of_warning', '20' );
-		}
-
-		if ( ! nashenski_get_option( 'shippings', 'nashenski_econt_is_courier' ) ) {
-			nashenski_set_option( 'shippings', 'nashenski_econt_is_courier', 'yes' );
-			nashenski_set_option( 'shippings', 'nashenski_speedy_is_courier', 'yes' );
-			nashenski_set_option( 'shippings', 'nashenski_boxnow_is_courier', 'yes' );
 		}
 	}
 

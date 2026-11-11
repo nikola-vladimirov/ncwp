@@ -341,6 +341,10 @@ class Number_Allocator {
 	 */
 	public static function allocate( $order, $meta, $option, $replace = false ) {
 		self::not_paused();
+		// Who pays the courier is settled before the first document number (quick, admin and REST orders).
+		if ( $order instanceof \WC_Order && class_exists( '\Nashenski\Shipping\Courier_Fee' ) ) {
+			\Nashenski\Shipping\Courier_Fee::decide( $order );
+		}
 		return self::locked(
 			function () use ( $order, $meta, $option, $replace ) {
 				if ( ! $order->get_id() || ! in_array( $option, array( 'next_invoice_number', 'next_invoice_separate_number' ), true ) || ! in_array( $meta, self::keys( $option ), true ) ) {

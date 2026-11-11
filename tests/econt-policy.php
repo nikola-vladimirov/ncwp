@@ -525,4 +525,64 @@ $label = $draft->invoke( null, new EcontDraftOrder( 'shop' ), array() );
 expect( 'cash' === $label['paymentSenderMethod'] && ! isset( $label['paymentReceiverMethod'] ), 'Econt box, quick or admin order the shop collects: the sender pays by default' );
 $label = $draft->invoke( null, new EcontDraftOrder( 'customer' ), array() );
 expect( 'cash' === $label['paymentReceiverMethod'] && ! isset( $label['paymentSenderMethod'] ) && '100.00' === $label['services']['cdAmount'], 'Econt box, customer pays: the receiver pays by default' );
+// M6: goods that cost nothing (a free sample, a 100% coupon): the shop collects, the rate keeps its price.
+fixture();
+$cookie['payment']     = 'cod';
+$package_total         = 0;
+$method                = new EcontMethod();
+$method->customer_pays = array( 'cod' );
+$method->calculate_shipping( package( 1 ) );
+expect( 12 === $method->rates[0]['cost'] && ! isset( $method->rates[0]['meta_data']['nashenski_courier_fee'] ), 'Econt: a cart whose goods cost nothing is not turned into "paid to the courier"' );
+unset( $package_total );
+
+/**
+ * Quick or admin COD order whose delivery of 5 + 1 VAT is in the total, for the packing list.
+ */
+class EcontPackingOrder extends EcontDraftOrder {
+	/**
+	 * Meta: the checkout choice says cash on delivery.
+	 *
+	 * @param string $key Key.
+	 * @return mixed
+	 */
+	public function get_meta( $key ) {
+		return 'nashenski_econt_cookie_data' === $key ? array( 'payment' => 'cod' ) : ''; }
+	/**
+	 * Shipping total.
+	 *
+	 * @return float
+	 */
+	public function get_shipping_total() {
+		return 5.0; }
+	/**
+	 * Shipping tax.
+	 *
+	 * @return float
+	 */
+	public function get_shipping_tax() {
+		return 1.0; }
+}
+if ( ! function_exists( 'wc_get_order' ) ) {
+	/**
+	 * Order lookup stub.
+	 *
+	 * @param mixed $id Order ID.
+	 * @return object
+	 */
+	function wc_get_order( $id ) {
+		return $GLOBALS['econt_order']; }
+}
+$options['econt/pay_options']             = '7';
+$options['econt/invoice_or_packing_list'] = 'packing_list';
+$pay_options                              = new ReflectionMethod( '\Nashenski\Admin\Econt', 'update_label_pay_options' );
+if ( PHP_VERSION_ID < 80100 ) {
+	$pay_options->setAccessible( true );
+}
+$econt_order = new EcontPackingOrder( 'shop' );
+$label       = $pay_options->invoke( null, array( 'services' => array() ), 1 );
+$delivery    = end( $label['packingList'] );
+expect( 'Доставка' === $delivery['description'] && '6.00' === $delivery['price'], 'Econt packing list: the delivery the shop collects (in the cash on delivery amount) is a row of the list' );
+$econt_order = new EcontPackingOrder( 'customer' );
+$label       = $pay_options->invoke( null, array( 'services' => array() ), 1 );
+expect( array() === $label['packingList'], 'Econt packing list: a delivery the customer pays the courier is not on it' );
 echo 'PASS: ' . (int) ( $checks - $policy_start ) . " Econt service-policy assertions\n";

@@ -1053,6 +1053,13 @@ namespace {
 		public function get_created_via() {
 			return $this->via; }
 		/**
+		 * Currency.
+		 *
+		 * @return string
+		 */
+		public function get_currency() {
+			return 'EUR'; }
+		/**
 		 * Calculate totals.
 		 */
 		public function calculate_totals() {}
@@ -1122,7 +1129,9 @@ namespace {
 	$order              = new SpeedyRequestOrder();
 	$order->via         = 'admin';
 	$order->item->payer = 'shop';
-	$out                = $services->invoke( null, $label, $order );
+	// Decided on the order screen: it records the payment method it was decided for.
+	$order->item->fee['_nashenski_fee_basis'] = 'cod';
+	$out                                      = $services->invoke( null, $label, $order );
 	expect( '19.00' === (string) $out['service']['additionalServices']['cod']['amount'], 'Speedy: a quick order with a staff fixed price gets it added to the cash on delivery amount, as before' );
 	$GLOBALS['label_order'] = $order;
 	$shipping->invoke( null, array(), 5 );
@@ -1133,6 +1142,40 @@ namespace {
 	$shipping->invoke( null, array(), 5 );
 	expect( 'untouched' === $order->item->total && '4.50' === $order->item->get_meta( 'nashenski_courier_fee' ), 'Speedy: a quick order whose customer pays the courier keeps the price as information, not in the total' );
 	$GLOBALS['label_request'] = array();
+
+	/**
+	 * Quick order of 25 with a typed delivery of 5.
+	 */
+	class SpeedyTypedDeliveryOrder extends SpeedyRequestOrder {
+		/**
+		 * Total.
+		 *
+		 * @return float
+		 */
+		public function get_total() {
+			return 25.0; }
+		/**
+		 * Shipping total.
+		 *
+		 * @return float
+		 */
+		public function get_shipping_total() {
+			return 5.0; }
+		/**
+		 * Shipping tax.
+		 *
+		 * @return float
+		 */
+		public function get_shipping_tax() {
+			return 0.0; }
+	}
+	$order              = new SpeedyTypedDeliveryOrder();
+	$order->item->payer = 'customer';
+	$out                = \Nashenski\Admin\Speedy::fix_cod_data( array( 'service' => array( 'serviceId' => '505' ) ), $order );
+	expect( '20.00' === (string) $out['service']['additionalServices']['cod']['amount'], 'Speedy box: a delivery the customer pays the courier is left out of the cash on delivery amount (L3)' );
+	$order->item->payer = 'shop';
+	$out                = \Nashenski\Admin\Speedy::fix_cod_data( array( 'service' => array( 'serviceId' => '505' ) ), $order );
+	expect( '25.00' === (string) $out['service']['additionalServices']['cod']['amount'], 'Speedy box: a delivery the shop collects stays in the cash on delivery amount' );
 
 	// Who pays the courier at checkout: the method's list and the payment method in the cookie.
 	foreach ( array(

@@ -1535,19 +1535,23 @@ class Import_Sources {
 				continue;
 			}
 
-			update_option(
-				"woocommerce_nashenski_{$courier}_{$instance}_settings",
-				array_filter(
-					array_merge(
-						array(
-							'title'         => $titles[ $type ],
-							'delivery_type' => $type,
-						),
-						$settings[ $type ] ?? array()
+			$values = array_filter(
+				array_merge(
+					array(
+						'title'         => $titles[ $type ],
+						'delivery_type' => $type,
 					),
-					'strlen'
-				)
+					$settings[ $type ] ?? array()
+				),
+				'strlen'
 			);
+
+			// Cash on delivery customers pay the courier, as on any new method (BOX NOW cannot charge them).
+			if ( 'boxnow' !== $courier ) {
+				$values[ \Nashenski\Shipping\Courier_Fee::FIELD ] = array( 'cod' );
+			}
+
+			update_option( "woocommerce_nashenski_{$courier}_{$instance}_settings", $values );
 			$added[] = $type;
 		}
 

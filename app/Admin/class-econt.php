@@ -107,6 +107,7 @@ class Econt {
 							'testsOptions'     => nashenski_return_array_for_select( nashenski_get_shipping_tests_options() ),
 							'testOption'       => self::get_test_option( $label_data['label'] ?? array() ),
 							'i18n'             => self::get_i18n(),
+							'feeNotice'        => Courier_Fee::receiver_notice( $theorder ),
 							'nonce'            => wp_create_nonce( 'nashenski_admin_label' ),
 						)
 					);
@@ -454,6 +455,11 @@ class Econt {
 
 		$order_id = nashenski_label_request( 'orderId' );
 		$label    = nashenski_label_request( 'label_data', array() );
+		$refusal  = Courier_Fee::staff_payer( wc_get_order( $order_id ), 'sender' === ( nashenski_label_request( 'paymentBy', array() )['id'] ?? '' ) );
+
+		if ( '' !== $refusal ) {
+			wp_send_json_success( array( 'message' => $refusal ) );
+		}
 
 		$label = self::update_sender( $label );
 		$label = self::update_receiver_address( $label );
@@ -858,6 +864,19 @@ class Econt {
 							);
 						}
 					}
+
+					// The shop collects the delivery: it is in the cash on delivery amount, so it is on the list too.
+					$delivery = (float) $order->get_shipping_total() + (float) $order->get_shipping_tax();
+
+					if ( 'shop' === Courier_Fee::payer( $order ) && $delivery > 0 ) {
+						$label['packingList'][] = array(
+							'inventoryNum' => 'delivery',
+							'description'  => 'Доставка',
+							'weight'       => 0.05,
+							'count'        => 1,
+							'price'        => number_format( $delivery, 2, '.', '' ),
+						);
+					}
 				} elseif ( ( empty( $packing_list_or_invoice ) || 'invoice' === $packing_list_or_invoice ) && empty( $label['services']['invoiceNum'] ) ) {
 					$label['services']['invoiceNum'] = self::get_invoice_number( $order_id );
 				}
@@ -1120,7 +1139,7 @@ class Econt {
 			return;
 		}
 
-		$price = \Nashenski\Hooks::filter( 'nashenski_admin_econt_price_for_update', 'nashenski/admin/econt/price_for_update', $price, $order, nashenski_label_request(), $response, $request_body );
+		$price = \Nashenski\Hooks::filter( 'nashenski_admin_econt_price_for_update', 'nashenski/admin/econt/price_for_update', $price, $order, array( 'paymentBy' => nashenski_label_request( 'paymentBy', array() ) ), $response, $request_body );
 
 		foreach ( $order->get_items( 'shipping' ) as $item_id => $item ) {
 			$item->set_total( $price );

@@ -349,6 +349,8 @@
 			codes && undefined !== codes.cod_amount && 'cod' === data.paymentType ? L.field( i18n.cd, L.input( codes, 'cod_amount', { type: 'number', onInput: function () { state.codEdited = true; } } ) ) : null,
 			L.field( i18n.declaredValue, L.input( state, 'declaredValue', { type: 'number' } ) ),
 			L.field( i18n.deliveryPayedBy, L.select( payers, state.paymentBy, choose( 'paymentBy' ), { placeholder: i18n.choose } ) ),
+			// The shop collected the delivery: with the receiver paying too, the customer would pay it twice.
+			data.feeNotice && 'receiver' === state.paymentBy.id ? L.errorNotice( data.feeNotice ) : null,
 			'fixed' === state.paymentBy.id ? L.field( i18n.fixedPrice, L.input( state, 'fixedPrice', { type: 'number' } ) ) : null,
 			L.field( i18n.note, L.input( label, 'note' ) ),
 			L.field( i18n.reviewOrTest, L.select( views, state.testOption, choose( 'testOption' ) ) ),

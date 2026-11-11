@@ -138,6 +138,13 @@ class FakeShipping {
 	public function update_meta_data( $key, $value ) {
 		$this->meta[ $key ] = $value; }
 	/**
+	 * Delete meta.
+	 *
+	 * @param string $key Key.
+	 */
+	public function delete_meta_data( $key ) {
+		unset( $this->meta[ $key ] ); }
+	/**
 	 * Instance ID.
 	 *
 	 * @return int
@@ -235,7 +242,7 @@ class FakeOrder extends WC_Order {
 	 * @return array
 	 */
 	public function get_items( $type ) {
-		return 'shipping' === $type ? $this->lines : array(); }
+		return 'shipping' === $type ? $this->lines : ( is_array( $type ) ? $this->goods : array() ); }
 	/**
 	 * Currency.
 	 *
@@ -243,6 +250,107 @@ class FakeOrder extends WC_Order {
 	 */
 	public function get_currency() {
 		return 'EUR'; }
+	/**
+	 * Product and fee lines (goods with tax).
+	 *
+	 * @var array
+	 */
+	public $goods = array();
+	/**
+	 * Coupon codes.
+	 *
+	 * @var array
+	 */
+	public $coupons = array();
+	/**
+	 * Coupon codes.
+	 *
+	 * @return array
+	 */
+	public function get_coupon_codes() {
+		return $this->coupons; }
+	/**
+	 * Order meta write.
+	 *
+	 * @param string $key   Key.
+	 * @param mixed  $value Value.
+	 */
+	public function update_meta_data( $key, $value ) {
+		$this->meta[ $key ] = $value; }
+	/**
+	 * Save meta.
+	 */
+	public function save_meta_data() {}
+	/**
+	 * Shipping total.
+	 *
+	 * @var float
+	 */
+	public $shipping_total = 0.0;
+	/**
+	 * Shipping total.
+	 *
+	 * @return float
+	 */
+	public function get_shipping_total() {
+		return $this->shipping_total; }
+}
+/**
+ * Product line stub: a total with tax.
+ */
+class FakeGoods {
+	/**
+	 * Constructor.
+	 *
+	 * @param float $total Total.
+	 */
+	public function __construct( $total ) {
+		$this->total = $total; }
+	/**
+	 * Total.
+	 *
+	 * @var float
+	 */
+	public $total;
+	/**
+	 * Total.
+	 *
+	 * @return float
+	 */
+	public function get_total() {
+		return $this->total; }
+	/**
+	 * Tax.
+	 *
+	 * @return float
+	 */
+	public function get_total_tax() {
+		return 0; }
+}
+/**
+ * Coupon stub: FREE gives free shipping.
+ */
+class WC_Coupon {
+	/**
+	 * Constructor.
+	 *
+	 * @param string $code Code.
+	 */
+	public function __construct( $code ) {
+		$this->code = $code; }
+	/**
+	 * Code.
+	 *
+	 * @var string
+	 */
+	public $code;
+	/**
+	 * Free shipping.
+	 *
+	 * @return bool
+	 */
+	public function get_free_shipping() {
+		return 'FREE' === $this->code; }
 }
 /**
  * WooCommerce order class stub.
@@ -313,7 +421,10 @@ expect( Courier_Fee::customer_pays( array( 'cod', 'bacs' ), 'cod' ) && Courier_F
 expect( ! Courier_Fee::customer_pays( array( 'cod' ), 'stripe' ) && ! Courier_Fee::customer_pays( array(), 'cod' ) && ! Courier_Fee::customer_pays( '', 'cod' ), 'Other payment methods and an empty list: the shop collects' );
 expect( ! Courier_Fee::customer_pays( array( '' ), '' ), 'No payment method chosen yet: the shop collects' );
 $options['woocommerce_nashenski_speedy_4_settings'] = array( 'customer_pays' => array( 'cod' ) );
-expect( array( 'cod' ) === Courier_Fee::listed( 'nashenski_speedy', 4 ) && array() === Courier_Fee::listed( 'nashenski_speedy', 9 ), 'listed() reads the saved list of a method instance' );
+expect( array( 'cod' ) === Courier_Fee::listed( 'nashenski_speedy', 4 ), 'listed() reads the saved list of a method instance' );
+expect( array( 'cod' ) === Courier_Fee::listed( 'nashenski_speedy', 9 ), 'A method never saved has the default list: cash on delivery (M1)' );
+$options['woocommerce_nashenski_speedy_8_settings'] = array( 'customer_pays' => '' );
+expect( array( '' ) === Courier_Fee::listed( 'nashenski_speedy', 8 ) && ! Courier_Fee::customer_pays( Courier_Fee::listed( 'nashenski_speedy', 8 ), 'cod' ), 'A list saved empty stays empty' );
 
 // The rate: the fee leaves the total and stays for information; free or unpriced rates stay as they are.
 $rate = Courier_Fee::rate(
@@ -334,9 +445,15 @@ $unpriced = array( 'meta_data' => array() );
 expect( Courier_Fee::rate( $unpriced ) === $unpriced, 'Not priced yet: unchanged' );
 
 // Checkout stamp: anything without a decision was collected by the shop.
+$line = new FakeShipping( 'nashenski_boxnow' );
+Courier_Fee::stamp( $line );
+expect( 'shop' === $line->get_meta( Courier_Fee::PAYER_META ), 'A BOX NOW line is stamped "shop"' );
 $line = new FakeShipping( 'flat_rate' );
 Courier_Fee::stamp( $line );
-expect( 'shop' === $line->get_meta( Courier_Fee::PAYER_META ), 'A line without a decision is stamped "shop"' );
+expect( '' === $line->get_meta( Courier_Fee::PAYER_META ), 'A method of another plugin is not stamped: it keeps the "Is ... courier?" rule (H1)' );
+$options['nashenski_settings_shippings_flat_rate_is_courier'] = 'yes';
+$options['nashenski_settings_invoice_remove_shipping']        = 'no';
+expect( false === Courier_Fee::shop_collects( new FakeOrder( 'cod', array( $line ) ) ) && true === Courier_Fee::shop_collects( new FakeOrder( 'bacs', array( $line ) ) ), 'Another plugin\'s method marked as a courier: cash on delivery leaves the delivery out, other payments keep it' );
 $line = new FakeShipping( 'nashenski_econt', $customer );
 Courier_Fee::stamp( $line );
 expect( 'customer' === $line->get_meta( Courier_Fee::PAYER_META ), 'A courier line keeps "customer"' );
@@ -412,7 +529,7 @@ expect( array( 'customer_pays' => array( 'cod' ) ) === $options['woocommerce_nas
 $options['nashenski_settings_shippings_nashenski_speedy_is_courier'] = 'no';
 unset( $options['woocommerce_nashenski_speedy_4_settings'] );
 Nashenski\Plugin::upgrade_fee_payer();
-expect( ! isset( $options['woocommerce_nashenski_speedy_4_settings'] ), 'An Econt or Speedy method not marked as a courier is left alone' );
+expect( array( 'customer_pays' => array() ) === $options['woocommerce_nashenski_speedy_4_settings'], 'An Econt or Speedy method not marked as a courier gets an empty list written, not the new methods\' default' );
 
 // Quick and admin orders (D10): decided on the order screen from the method's list and the payment method.
 $options = array(
@@ -427,7 +544,9 @@ expect( 'shop' === Courier_Fee::decision( 'nashenski_econt', 3, 'cod', 'RO' ), '
 expect( 'shop' === Courier_Fee::decision( 'nashenski_speedy', 3, 'cod', 'BG' ), 'decision(): Speedy with a fixed price, the shop collects' );
 expect( 'shop' === Courier_Fee::decision( 'nashenski_boxnow', 3, 'cod', 'BG' ) && 'shop' === Courier_Fee::decision( 'flat_rate', 3, 'cod', 'BG' ), 'decision(): BOX NOW and other methods, the shop collects' );
 
-$fee_order = new FakeOrder( '', $econt() );
+$admin            = fn( $meta = array() ) => $econt( $meta );
+$fee_order        = new FakeOrder( '', $admin() );
+$fee_order->goods = array( new FakeGoods( 20 ) );
 Courier_Fee::decide( $fee_order );
 expect( '' === $fee_order->lines[0]->get_meta( Courier_Fee::PAYER_META ), 'No payment method yet: nothing is decided (the old rule applies meanwhile)' );
 $fee_order->payment = 'cod';
@@ -443,18 +562,67 @@ $fee_order->payment = 'cod';
 $fee_order->meta    = array( 'nashenski_order_number' => '0000000007' );
 Courier_Fee::decide( $fee_order );
 expect( 'shop' === Courier_Fee::payer( $fee_order ), 'The order has documents: its decision stays' );
-$fee_order      = new FakeOrder( 'cod', $econt( $customer + array( 'cookie_data' => array( 'payment' => 'cod' ) ) ) );
-$fee_order->via = 'checkout';
-$options['woocommerce_nashenski_econt_3_settings'] = array( 'customer_pays' => array() );
-Courier_Fee::decide( $fee_order );
-expect( 'customer' === Courier_Fee::payer( $fee_order ), 'A checkout order saved on the order screen with the same payment method keeps its checkout decision' );
 
-// A waybill made on the order screen brings the delivery price.
-expect( true === Courier_Fee::keep_total( $fee_order, '7.20' ) && '7.20' === $fee_order->lines[0]->get_meta( Courier_Fee::FEE_META ), 'Customer pays: the waybill price is kept as information, the total stays' );
+// The checkout rules apply on the order screen too (L1, M6).
+$options['woocommerce_nashenski_econt_3_settings'] = array(
+	'customer_pays'      => array( 'cod' ),
+	'free_shipping_over' => '50',
+);
+expect( 'shop' === Courier_Fee::decision( 'nashenski_econt', 3, 'cod', 'BG', 60.0 ) && 'customer' === Courier_Fee::decision( 'nashenski_econt', 3, 'cod', 'BG', 40.0 ), 'decision(): free shipping over a total is the shop\'s' );
+expect( 'shop' === Courier_Fee::decision( 'nashenski_econt', 3, 'cod', 'BG', 40.0, true ), 'decision(): a free shipping coupon makes it the shop\'s' );
+expect( 'shop' === Courier_Fee::decision( 'nashenski_econt', 3, 'cod', 'BG', 0.0 ), 'decision(): goods that cost nothing, the shop collects (nothing to pay)' );
+$fee_order          = new FakeOrder( 'cod', $admin() );
+$fee_order->goods   = array( new FakeGoods( 40 ) );
+$fee_order->coupons = array( 'FREE' );
+Courier_Fee::decide( $fee_order );
+expect( 'shop' === Courier_Fee::payer( $fee_order ), 'decide(): the order\'s free shipping coupon counts' );
+
+// Methods of other plugins are left to the "Is ... courier?" rule.
+$fee_order        = new FakeOrder( 'cod', array( new FakeShipping( 'flat_rate' ) ) );
+$fee_order->goods = array( new FakeGoods( 20 ) );
+Courier_Fee::decide( $fee_order );
+expect( '' === Courier_Fee::payer( $fee_order ), 'decide(): another plugin\'s line is not stamped (H1)' );
+
+// Checkout orders keep their checkout decision; staff are told once when the payment method changed it (M3).
+$options['woocommerce_nashenski_econt_3_settings'] = array( 'customer_pays' => array( 'cod' ) );
+$fee_order        = new FakeOrder( 'cod', $econt( $customer + array( 'cookie_data' => array( 'payment' => 'cod' ) ) ) );
+$fee_order->goods = array( new FakeGoods( 20 ) );
+expect( '' === Courier_Fee::decide( $fee_order ) && 'customer' === Courier_Fee::payer( $fee_order ), 'A checkout order saved with the same payment method keeps its decision, no notice' );
+$fee_order->payment = 'bacs';
+$notice             = Courier_Fee::decide( $fee_order );
+expect( 'customer' === Courier_Fee::payer( $fee_order ) && false !== strpos( $notice, 'check the delivery line and the waybill by hand' ), 'A checkout order whose payment method changed keeps its decision and staff get the notice' );
+expect( '' === Courier_Fee::decide( $fee_order ), 'The notice is shown once for that payment method' );
+
+// A waybill made on the order screen brings the delivery price (M4).
+$fee_order = new FakeOrder( 'cod', $econt( $customer ) );
+expect( true === Courier_Fee::keep_total( $fee_order, '7.20' ) && '7.20' === $fee_order->lines[0]->get_meta( Courier_Fee::FEE_META ) && 'EUR' === $fee_order->lines[0]->get_meta( Courier_Fee::CURRENCY_META ), 'Customer pays: the waybill price is kept as information in the order currency, the total stays' );
+$fee_order = new FakeOrder( 'cod', $econt( $customer ) );
+expect( true === Courier_Fee::keep_total( $fee_order, '0' ) && '' === $fee_order->lines[0]->get_meta( Courier_Fee::FEE_META ), 'A 0.00 price is never stored as paid to the courier' );
+$fee_order = new FakeOrder( 'cod', $admin( $shop + array( Courier_Fee::BASIS_META => 'cod' ) ) );
+expect( false === Courier_Fee::keep_total( $fee_order, '7.20' ) && false === Courier_Fee::from_checkout( $fee_order ), 'Quick or admin order the shop collects: the waybill price goes into the total, as before' );
 $fee_order = new FakeOrder( 'cod', $econt( $shop ) );
-expect( false === Courier_Fee::keep_total( $fee_order, '7.20' ), 'Quick or admin order the shop collects: the waybill price goes into the total, as before' );
-$fee_order->via = 'store-api';
-expect( true === Courier_Fee::keep_total( $fee_order, '7.20' ) && Courier_Fee::from_checkout( $fee_order ), 'Block checkout order the shop collected: its total stays' );
+expect( true === Courier_Fee::keep_total( $fee_order, '7.20' ) && Courier_Fee::from_checkout( $fee_order ), 'Checkout order the shop collected: its total stays' );
 expect( false === Courier_Fee::keep_total( new FakeOrder( 'cod', $econt() ), '7.20' ), 'Order without a decision: the old behaviour' );
+
+$fee_order = new FakeOrder( 'cod', $econt( $customer + array( Courier_Fee::FEE_META => '6.50' ) ) );
+expect( '' === Courier_Fee::staff_payer( $fee_order, false ) && 'customer' === Courier_Fee::payer( $fee_order ), 'Label with the receiver paying on a customer-pays order: nothing changes' );
+expect( '' === Courier_Fee::staff_payer( $fee_order, true ) && 'shop' === Courier_Fee::payer( $fee_order ) && '' === $fee_order->lines[0]->get_meta( Courier_Fee::FEE_META ), 'Label where the shop collects, no documents yet: the order follows, the fee text goes' );
+$fee_order       = new FakeOrder( 'cod', $econt( $customer ) );
+$fee_order->meta = array( 'nashenski_order_number' => '0000000008' );
+expect( false !== strpos( Courier_Fee::staff_payer( $fee_order, true ), 'already has documents' ) && 'customer' === Courier_Fee::payer( $fee_order ), 'Label where the shop collects, documents made: refused, the order keeps its decision' );
+
+// L6: the warning for a receiver-pays label on an order whose delivery the shop collected.
+$fee_order                 = new FakeOrder( 'cod', $econt( $shop ) );
+$fee_order->shipping_total = 5.0;
+expect( false !== strpos( Courier_Fee::receiver_notice( $fee_order ), 'pays the delivery twice' ) && '' === Courier_Fee::receiver_notice( new FakeOrder( 'cod', $econt( $customer ) ) ), 'Label boxes warn about the receiver paying only when the shop collected a delivery price' );
+
+// L2: only a customer-pays line says "paid to the courier"; L4: printed in the fee's currency.
+$meta = (object) array(
+	'key'   => Courier_Fee::FEE_META,
+	'value' => '6.50',
+);
+expect( '6.50' === Courier_Fee::meta_value( '6.50', $meta, new FakeShipping( 'nashenski_econt', $shop ) ), 'The order screen shows a fee on a shop line as a plain value' );
+expect( '6,50 BGN, paid to the courier on delivery, not included in the total' === Courier_Fee::meta_value( '6.50', $meta, new FakeShipping( 'nashenski_econt', $customer + array( Courier_Fee::CURRENCY_META => 'BGN' ) ) ), 'The order screen prints the fee in the currency it was stored in' );
+
 
 echo 'PASS: ' . $checks . " who pays the courier assertions\n";

@@ -29,6 +29,12 @@ class Courier_Fee {
 	/** Couriers that can charge the customer. BOX NOW cannot. */
 	const METHODS = array( 'nashenski_econt', 'nashenski_speedy', 'nashenski_pigeon' );
 
+	/** Rate and shipping line meta: the currency the fee was calculated in. */
+	const CURRENCY_META = '_nashenski_fee_currency';
+
+	/** Order meta: the payment method a "check the delivery by hand" notice was shown for. */
+	const WARNED_META = '_nashenski_fee_warned';
+
 	/** Rate and shipping line meta: the fee the customer pays the courier, with VAT. */
 	const FEE_META = 'nashenski_courier_fee';
 
@@ -91,7 +97,8 @@ class Courier_Fee {
 			'type'    => 'multiselect',
 			'class'   => 'wc-enhanced-select',
 			'css'     => 'width: 400px;',
-			'default' => array(),
+			// New methods: cash on delivery customers pay the courier, as they always did.
+			'default' => array( 'cod' ),
 			'options' => $options,
 		);
 	}
@@ -117,7 +124,20 @@ class Courier_Fee {
 	public static function listed( $method_id, $instance_id ) {
 		$settings = get_option( 'woocommerce_' . $method_id . '_' . $instance_id . '_settings', array() );
 
-		return is_array( $settings ) ? (array) ( $settings[ self::FIELD ] ?? array() ) : array();
+		// A method never saved since 0.21.8 has the setting's default, as WooCommerce reads it.
+		return is_array( $settings ) && array_key_exists( self::FIELD, $settings ) ? (array) $settings[ self::FIELD ] : array( 'cod' );
+	}
+
+	/**
+	 * Checkout: whether the customer pays the courier for this cart. A cart whose goods cost nothing
+	 * (a free sample, a 100% coupon) cannot be paid, so the shop collects the delivery there.
+	 *
+	 * @param mixed  $listed  The method's saved list.
+	 * @param string $payment Payment method ID.
+	 * @return bool
+	 */
+	public static function customer_pays_cart( $listed, $payment ) {
+		return self::customer_pays( $listed, $payment ) && (float) nashenski_get_package_total() > 0;
 	}
 
 	/**
@@ -136,43 +156,64 @@ class Courier_Fee {
 
 		$rate['meta_data'][ self::PAYER_META ] = 'customer';
 		$rate['meta_data'][ self::FEE_META ]   = wc_format_decimal( $fee, wc_get_price_decimals() );
-		$rate['cost']                          = 0;
+		// The courier priced it in the store currency; a currency switcher may show the order in another.
+		$rate['meta_data'][ self::CURRENCY_META ] = get_option( 'woocommerce_currency' );
+		$rate['cost']                             = 0;
 		unset( $rate['taxes'] );
 
 		return $rate;
 	}
 
 	/**
-	 * Checkout: every shipping line keeps who collects the delivery. Courier rates say "customer"
-	 * themselves; anything else is collected by the shop.
+	 * Checkout: every Nashenski Commerce shipping line keeps who collects the delivery. Courier rates
+	 * say "customer" themselves; BOX NOW and the rest are collected by the shop. Methods of other
+	 * plugins are not stamped: they keep the "Is ... courier?" rule (owner decision H1).
 	 *
 	 * @param \WC_Order_Item_Shipping $item Order shipping line.
 	 */
 	public static function stamp( $item ) {
-		if ( ! $item->get_meta( self::PAYER_META ) ) {
+		if ( self::ours( $item ) && ! $item->get_meta( self::PAYER_META ) ) {
 			$item->add_meta_data( self::PAYER_META, 'shop', true );
 		}
 	}
 
 	/**
-	 * Who collects the delivery of a shipping line, for an order made outside the checkout. Bulgaria
-	 * only; Speedy and Pigeon Express with a fixed price carry it in the cash on delivery amount, so
-	 * the shop collects it (as at checkout).
+	 * Whether a shipping line is one of this plugin's methods.
+	 *
+	 * @param \WC_Order_Item_Shipping $item Shipping line.
+	 * @return bool
+	 */
+	private static function ours( $item ) {
+		return 0 === strpos( (string) $item->get_method_id(), 'nashenski_' );
+	}
+
+	/**
+	 * Who collects the delivery of a shipping line, for an order made outside the checkout, by the
+	 * checkout's rules: Bulgaria only; free shipping (free over a total, a free shipping coupon) and
+	 * goods that cost nothing are the shop's; Speedy and Pigeon Express with a fixed price carry it
+	 * in the cash on delivery amount, so the shop collects it.
 	 *
 	 * @param string $method_id   Method ID.
 	 * @param int    $instance_id Instance ID.
 	 * @param string $payment     Payment method ID.
 	 * @param string $country     Delivery country.
+	 * @param float  $goods       Goods and fees with tax.
+	 * @param bool   $free_coupon Whether the order has a free shipping coupon.
 	 * @return string "customer" or "shop".
 	 */
-	public static function decision( $method_id, $instance_id, $payment, $country ) {
-		if ( 'BG' !== $country || ! in_array( $method_id, self::METHODS, true ) ) {
+	public static function decision( $method_id, $instance_id, $payment, $country, $goods = 1.0, $free_coupon = false ) {
+		if ( 'BG' !== $country || ! in_array( $method_id, self::METHODS, true ) || (float) $goods <= 0 || $free_coupon ) {
 			return 'shop';
 		}
 
 		$settings = get_option( 'woocommerce_' . $method_id . '_' . $instance_id . '_settings', array() );
+		$settings = is_array( $settings ) ? $settings : array();
 
-		if ( 'nashenski_econt' !== $method_id && is_array( $settings ) && (float) ( $settings['fixed_price'] ?? 0 ) > 0 ) {
+		if ( 'nashenski_econt' !== $method_id && (float) ( $settings['fixed_price'] ?? 0 ) > 0 ) {
+			return 'shop';
+		}
+
+		if ( (float) ( $settings['free_shipping_over'] ?? 0 ) > 0 && (float) $goods >= (float) $settings['free_shipping_over'] ) {
 			return 'shop';
 		}
 
@@ -180,47 +221,146 @@ class Courier_Fee {
 	}
 
 	/**
-	 * Order screen (and the quick order delivery box): store who collects the delivery once the order
-	 * has a shipping line and a payment method, and again when either changed. An order with
-	 * documents keeps its decision. Amounts are not changed.
+	 * Quick and admin orders (D10): store who collects the delivery of this plugin's shipping lines
+	 * once the order has a shipping line and a payment method, and again when the payment method
+	 * changed. Checkout orders keep their checkout decision (their amounts and waybill were made for
+	 * it); when staff change their payment method so that the decision would differ, the "check by
+	 * hand" text is returned once. An order with documents keeps its decision. Amounts are not
+	 * changed. Runs on saving the order and before its first document number.
 	 *
 	 * @param \WC_Order|false $order Order.
+	 * @return string The notice for staff, or ''.
 	 */
 	public static function decide( $order ) {
 		if ( ! $order instanceof \WC_Order || $order->get_meta( 'nashenski_order_number' ) ) {
-			return;
+			return '';
 		}
 
 		$payment = (string) $order->get_payment_method();
 		$country = $order->get_shipping_country() ? $order->get_shipping_country() : $order->get_billing_country();
+		$notice  = '';
 
 		if ( '' === $payment ) {
-			return;
+			return '';
 		}
 
 		foreach ( $order->get_items( 'shipping' ) as $item ) {
-			$cookie = $item->get_meta( 'cookie_data' );
-			$basis  = (string) $item->get_meta( self::BASIS_META );
-			// A checkout line was decided for the payment method in its courier cookie.
-			$basis = '' !== $basis ? $basis : (string) ( is_array( $cookie ) ? ( $cookie['payment'] ?? '' ) : '' );
-
-			if ( $item->get_meta( self::PAYER_META ) && $basis === $payment ) {
+			if ( ! self::ours( $item ) ) {
 				continue;
 			}
 
-			$item->update_meta_data( self::PAYER_META, self::decision( $item->get_method_id(), $item->get_instance_id(), $payment, $country ) );
+			$stamped  = (string) $item->get_meta( self::PAYER_META );
+			$basis    = (string) $item->get_meta( self::BASIS_META );
+			$decision = self::decision( $item->get_method_id(), $item->get_instance_id(), $payment, $country, self::goods( $order ), self::free_coupon( $order ) );
+
+			// A checkout stamp has no basis: never decided again here.
+			if ( '' !== $stamped && '' === $basis ) {
+				if ( $decision !== $stamped && $payment !== (string) $order->get_meta( self::WARNED_META ) ) {
+					$order->update_meta_data( self::WARNED_META, $payment );
+					$order->save_meta_data();
+					$notice = __( 'The payment method changed after checkout. Who pays the courier stays as decided at checkout: check the delivery line and the waybill by hand.', 'nashenski-commerce' );
+				}
+
+				continue;
+			}
+
+			if ( '' !== $stamped && $basis === $payment ) {
+				continue;
+			}
+
+			$item->update_meta_data( self::PAYER_META, $decision );
 			$item->update_meta_data( self::BASIS_META, $payment );
 			$item->save();
 		}
+
+		return $notice;
 	}
 
 	/**
-	 * Hook wrapper of decide().
+	 * Goods and fees of an order, with tax: what free shipping over a total compares.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return float
+	 */
+	private static function goods( $order ) {
+		$total = 0;
+
+		foreach ( $order->get_items( array( 'line_item', 'fee' ) ) as $item ) {
+			$total += (float) $item->get_total() + (float) $item->get_total_tax();
+		}
+
+		return $total;
+	}
+
+	/**
+	 * Whether an order has a free shipping coupon.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return bool
+	 */
+	private static function free_coupon( $order ) {
+		foreach ( $order->get_coupon_codes() as $code ) {
+			if ( ( new \WC_Coupon( $code ) )->get_free_shipping() ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Hook wrapper of decide(): the notice goes to the order screen.
 	 *
 	 * @param int $order_id Order ID.
 	 */
 	public static function decide_order( $order_id ) {
-		self::decide( wc_get_order( $order_id ) );
+		$notice = self::decide( wc_get_order( $order_id ) );
+
+		if ( '' !== $notice && class_exists( '\WC_Admin_Meta_Boxes' ) ) {
+			\WC_Admin_Meta_Boxes::add_error( $notice );
+		}
+	}
+
+	/**
+	 * Label boxes: the warning shown when staff choose the receiver as payer on an order whose
+	 * delivery the shop collected, or ''.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @return string
+	 */
+	public static function receiver_notice( $order ) {
+		return 'shop' === self::payer( $order ) && (float) $order->get_shipping_total() > 0
+			? __( 'You collected the delivery on this order. If the receiver pays the courier too, the customer pays the delivery twice.', 'nashenski-commerce' )
+			: '';
+	}
+
+	/**
+	 * A label box on the order screen chose who pays the courier. When it makes the shop collect the
+	 * delivery on an order where the customer paid the courier, the order follows (no documents yet)
+	 * or the label is refused (documents already leave the delivery out). Returns the refusal, or ''.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @param bool      $shop  Whether the label makes the shop collect the delivery.
+	 * @return string
+	 */
+	public static function staff_payer( $order, $shop ) {
+		if ( ! $shop || 'customer' !== self::payer( $order ) ) {
+			return '';
+		}
+
+		if ( $order->get_meta( 'nashenski_order_number' ) ) {
+			return __( 'This order already has documents without the delivery, because the customer pays the courier. A waybill where you collect the delivery would not match them.', 'nashenski-commerce' );
+		}
+
+		foreach ( $order->get_items( 'shipping' ) as $item ) {
+			if ( self::ours( $item ) ) {
+				$item->update_meta_data( self::PAYER_META, 'shop' );
+				$item->delete_meta_data( self::FEE_META );
+				$item->save();
+			}
+		}
+
+		return '';
 	}
 
 	/**
@@ -236,8 +376,10 @@ class Courier_Fee {
 		$payer = self::payer( $order );
 
 		if ( 'customer' === $payer ) {
-			foreach ( $order->get_items( 'shipping' ) as $item ) {
+			// Never a 0.00 fee "paid to the courier".
+			foreach ( (float) $fee > 0 ? $order->get_items( 'shipping' ) : array() as $item ) {
 				$item->update_meta_data( self::FEE_META, wc_format_decimal( $fee, wc_get_price_decimals() ) );
+				$item->update_meta_data( self::CURRENCY_META, $order->get_currency() );
 				$item->save();
 				break;
 			}
@@ -255,7 +397,14 @@ class Courier_Fee {
 	 * @return bool
 	 */
 	public static function from_checkout( $order ) {
-		return '' !== self::payer( $order ) && in_array( $order->get_created_via(), array( 'checkout', 'store-api' ), true );
+		// The checkout stamps without a basis; the order screen always records one.
+		foreach ( $order->get_items( 'shipping' ) as $item ) {
+			if ( '' !== (string) $item->get_meta( self::PAYER_META ) ) {
+				return '' === (string) $item->get_meta( self::BASIS_META );
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -335,12 +484,25 @@ class Courier_Fee {
 	 */
 	private static function order_fee( $order ) {
 		foreach ( $order->get_items( 'shipping' ) as $item ) {
-			if ( 'customer' === $item->get_meta( self::PAYER_META ) ) {
+			if ( 'customer' === $item->get_meta( self::PAYER_META ) && (float) $item->get_meta( self::FEE_META ) > 0 ) {
 				return (string) $item->get_meta( self::FEE_META );
 			}
 		}
 
 		return '';
+	}
+
+	/**
+	 * The currency of a line's fee: the one stored with it, else the order's.
+	 *
+	 * @param \WC_Order_Item_Shipping $item  Shipping line.
+	 * @param \WC_Order|null          $order Order.
+	 * @return string
+	 */
+	private static function fee_currency( $item, $order ) {
+		$currency = (string) $item->get_meta( self::CURRENCY_META );
+
+		return '' !== $currency ? $currency : ( $order ? $order->get_currency() : '' );
 	}
 
 	/**
@@ -353,7 +515,13 @@ class Courier_Fee {
 	public static function order_shipping( $shipping, $order ) {
 		$fee = $order instanceof \WC_Order ? self::order_fee( $order ) : '';
 
-		return '' === $fee ? $shipping : $shipping . ': ' . self::text( $fee, $order->get_currency() );
+		if ( '' === $fee ) {
+			return $shipping;
+		}
+
+		$items = $order->get_items( 'shipping' );
+
+		return $shipping . ': ' . self::text( $fee, self::fee_currency( reset( $items ), $order ) );
 	}
 
 	/**
@@ -380,8 +548,13 @@ class Courier_Fee {
 			return $value;
 		}
 
-		$order = is_object( $item ) && method_exists( $item, 'get_order' ) ? $item->get_order() : null;
+		// Only a line whose customer pays the courier says "paid to the courier".
+		if ( ! is_object( $item ) || ! method_exists( $item, 'get_meta' ) || 'customer' !== $item->get_meta( self::PAYER_META ) ) {
+			return $value;
+		}
 
-		return self::text( $meta->value, $order ? $order->get_currency() : '' );
+		$order = method_exists( $item, 'get_order' ) ? $item->get_order() : null;
+
+		return self::text( $meta->value, self::fee_currency( $item, $order ? $order : null ) );
 	}
 }
