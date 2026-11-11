@@ -1,12 +1,12 @@
 {
     "type": "project",
     "require": {
-        "pimple/pimple": "^3.3.1",
+        "pimple/pimple": "^3.6",
         "ext-mbstring": "*",
         "ext-soap": "*",
-        "chillerlan/php-qrcode": "^4.3",
-        "ddeboer/vatin": "^2.2",
-        "dompdf/dompdf": "3.0.*",
+        "chillerlan/php-qrcode": "^6.0",
+        "ddeboer/vatin": "^3.1",
+        "dompdf/dompdf": "^3.1",
         "clegginabox/pdf-merger": "dev-master"
     },
     "extra": {

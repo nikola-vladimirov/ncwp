@@ -833,10 +833,10 @@ function nashenski_courier_cookie( $name ) {
 	}
 
 	// Decode first, then sanitize every value: sanitizing the raw JSON would corrupt it.
-	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- every decoded value is sanitized below.
-	$data = json_decode( urldecode( wp_unslash( $_COOKIE[ $name ] ) ), true );
+	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized by map_deep() after decoding.
+	$data = map_deep( json_decode( urldecode( wp_unslash( $_COOKIE[ $name ] ) ), true ), 'sanitize_text_field' );
 
-	return is_array( $data ) ? map_deep( $data, 'sanitize_text_field' ) : '';
+	return is_array( $data ) ? $data : '';
 }
 
 /**

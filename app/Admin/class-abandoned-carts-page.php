@@ -413,17 +413,22 @@ class Abandoned_Carts_Page {
 				<?php endif; ?>
 			</form>
 		</div>
-		<script>
-		( function () {
-			var all = document.getElementById( 'nashenski-select-all' );
-			if ( all ) {
-				all.addEventListener( 'change', function () {
-					document.querySelectorAll( 'input[name="carts[]"]' ).forEach( function ( box ) { box.checked = all.checked; } );
-				} );
-			}
-		}() );
-		</script>
 		<?php
+		wp_register_script( 'nashenski-abandoned-carts', false, array(), \Nashenski\Plugin::VERSION, true );
+		wp_enqueue_script( 'nashenski-abandoned-carts' );
+		wp_add_inline_script(
+			'nashenski-abandoned-carts',
+			<<<'JS'
+			( function () {
+				var all = document.getElementById( 'nashenski-select-all' );
+				if ( all ) {
+					all.addEventListener( 'change', function () {
+						document.querySelectorAll( 'input[name="carts[]"]' ).forEach( function ( box ) { box.checked = all.checked; } );
+					} );
+				}
+			}() );
+			JS
+		);
 	}
 
 	/**

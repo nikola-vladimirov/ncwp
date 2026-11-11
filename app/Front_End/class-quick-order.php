@@ -333,13 +333,6 @@ class Quick_Order {
 			return;
 		}
 
-		// Space it away from the add-to-cart button and quantity above it, so it does not look stuck.
-		static $styled = false;
-		if ( ! $styled ) {
-			$styled = true;
-			echo '<style>.nashenski-quick-order-open{display:inline-block;margin-top:12px}</style>';
-		}
-
 		printf(
 			'<button type="button" class="button nashenski-quick-order-open" data-context="%1$s" data-product-id="%2$d">%3$s</button>',
 			esc_attr( $context ),
@@ -361,6 +354,11 @@ class Quick_Order {
 		wp_register_script( 'nashenski-quick-order', false, array(), \Nashenski\Plugin::VERSION, true );
 		wp_enqueue_script( 'nashenski-quick-order' );
 		wp_add_inline_script( 'nashenski-quick-order', self::script() );
+
+		// Space the button away from the add-to-cart button and quantity above it, so it does not look stuck.
+		wp_register_style( 'nashenski-quick-order', false, array(), \Nashenski\Plugin::VERSION );
+		wp_enqueue_style( 'nashenski-quick-order' );
+		wp_add_inline_style( 'nashenski-quick-order', '.nashenski-quick-order-open{display:inline-block;margin-top:12px}' );
 	}
 
 	/**
@@ -561,11 +559,14 @@ document.addEventListener("submit",function(e){
 			wp_send_json_error( array( 'message' => __( 'Quick orders are turned off.', 'nashenski-commerce' ) ) );
 		}
 
-		$post = wp_unslash( $_POST );
+		$nonce = isset( $_POST['_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_nonce'] ) ) : '';
 
-		if ( ! wp_verify_nonce( isset( $post['_nonce'] ) ? $post['_nonce'] : '', self::NONCE ) ) {
+		if ( ! wp_verify_nonce( $nonce, self::NONCE ) ) {
 			wp_send_json_error( array( 'message' => __( 'The form has expired. Reload the page and try again.', 'nashenski-commerce' ) ) );
 		}
+
+		// Textarea sanitizing keeps the line breaks of note fields; single-line fields are sanitized again where used.
+		$post = map_deep( wp_unslash( $_POST ), 'sanitize_textarea_field' );
 
 		// A filled-in honeypot means a bot. It gets the same answer as a person, and no order.
 		if ( ! empty( $post['website'] ) ) {

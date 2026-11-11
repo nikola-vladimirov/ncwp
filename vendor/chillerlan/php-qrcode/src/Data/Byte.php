@@ -2,43 +2,73 @@
 /**
  * Class Byte
  *
- * @filesource   Byte.php
  * @created      25.11.2015
- * @package      chillerlan\QRCode\Data
  * @author       Smiley <smiley@chillerlan.net>
  * @copyright    2015 Smiley
  * @license      MIT
  */
+declare(strict_types=1);
 
 namespace chillerlan\QRCode\Data;
 
-use chillerlan\QRCode\QRCode;
-
-use function ord;
+use chillerlan\QRCode\Common\{BitBuffer, Mode};
+use function chr, ord;
 
 /**
- * Byte mode, ISO-8859-1 or UTF-8
+ * 8-bit Byte mode, ISO-8859-1 or UTF-8
  *
  * ISO/IEC 18004:2000 Section 8.3.4
  * ISO/IEC 18004:2000 Section 8.4.4
  */
-final class Byte extends QRDataAbstract{
+final class Byte extends QRDataModeAbstract{
 
-	protected int $datamode = QRCode::DATA_BYTE;
+	public const DATAMODE = Mode::BYTE;
 
-	protected array $lengthBits = [8, 16, 16];
+	public function getLengthInBits():int{
+		return ($this->getCharCount() * 8);
+	}
 
-	/**
-	 * @inheritdoc
-	 */
-	protected function write(string $data):void{
+	public static function validateString(string $string):bool{
+		return $string !== '';
+	}
+
+	public function write(BitBuffer $bitBuffer, int $versionNumber):static{
+		$len = $this->getCharCount();
+
+		$bitBuffer
+			->put(self::DATAMODE, 4)
+			->put($len, $this->getLengthBits($versionNumber))
+		;
+
 		$i = 0;
 
-		while($i < $this->strlen){
-			$this->bitBuffer->put(ord($data[$i]), 8);
+		while($i < $len){
+			$bitBuffer->put(ord($this->data[$i]), 8);
 			$i++;
 		}
 
+		return $this;
+	}
+
+	/**
+	 * @inheritDoc
+	 *
+	 * @throws \chillerlan\QRCode\Data\QRCodeDataException
+	 */
+	public function decodeSegment(BitBuffer $bitBuffer, int $versionNumber):string{
+		$length = $bitBuffer->read($this->getLengthBits($versionNumber));
+
+		if($bitBuffer->available() < (8 * $length)){
+			throw new QRCodeDataException('not enough bits available'); // @codeCoverageIgnore
+		}
+
+		$readBytes = '';
+
+		for($i = 0; $i < $length; $i++){
+			$readBytes .= chr($bitBuffer->read(8));
+		}
+
+		return $readBytes;
 	}
 
 }

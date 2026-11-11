@@ -2,19 +2,17 @@
 /**
  * Class Number
  *
- * @filesource   Number.php
  * @created      26.11.2015
- * @package      chillerlan\QRCode\Data
  * @author       Smiley <smiley@chillerlan.net>
  * @copyright    2015 Smiley
  * @license      MIT
  */
+declare(strict_types=1);
 
 namespace chillerlan\QRCode\Data;
 
-use chillerlan\QRCode\QRCode;
-
-use function ord, sprintf, str_split, substr;
+use chillerlan\QRCode\Common\{BitBuffer, Mode};
+use function ceil, intdiv, preg_match, substr, unpack;
 
 /**
  * Numeric mode: decimal digits 0 to 9
@@ -22,56 +20,130 @@ use function ord, sprintf, str_split, substr;
  * ISO/IEC 18004:2000 Section 8.3.2
  * ISO/IEC 18004:2000 Section 8.4.2
  */
-final class Number extends QRDataAbstract{
+final class Number extends QRDataModeAbstract{
 
-	protected int $datamode = QRCode::DATA_NUMBER;
+	public const DATAMODE = Mode::NUMBER;
 
-	protected array $lengthBits = [10, 12, 14];
+	public function getLengthInBits():int{
+		return (int)ceil($this->getCharCount() * (10 / 3));
+	}
 
-	/**
-	 * @inheritdoc
-	 */
-	protected function write(string $data):void{
+	public static function validateString(string $string):bool{
+		return (bool)preg_match('/^\d+$/', $string);
+	}
+
+	public function write(BitBuffer $bitBuffer, int $versionNumber):static{
+		$len = $this->getCharCount();
+
+		$bitBuffer
+			->put(self::DATAMODE, 4)
+			->put($len, $this->getLengthBits($versionNumber))
+		;
+
 		$i = 0;
 
-		while($i + 2 < $this->strlen){
-			$this->bitBuffer->put($this->parseInt(substr($data, $i, 3)), 10);
+		// encode numeric triplets in 10 bits
+		while(($i + 2) < $len){
+			$bitBuffer->put($this->parseInt(substr($this->data, $i, 3)), 10);
 			$i += 3;
 		}
 
-		if($i < $this->strlen){
+		if($i < $len){
 
-			if($this->strlen - $i === 1){
-				$this->bitBuffer->put($this->parseInt(substr($data, $i, $i + 1)), 4);
+			// encode 2 remaining numbers in 7 bits
+			if(($len - $i) === 2){
+				$bitBuffer->put($this->parseInt(substr($this->data, $i, 2)), 7);
 			}
-			elseif($this->strlen - $i === 2){
-				$this->bitBuffer->put($this->parseInt(substr($data, $i, $i + 2)), 7);
+			// encode one remaining number in 4 bits
+			elseif(($len - $i) === 1){
+				$bitBuffer->put($this->parseInt(substr($this->data, $i, 1)), 4);
 			}
 
 		}
 
+		return $this;
 	}
 
 	/**
 	 * get the code for the given numeric string
 	 *
-	 * @throws \chillerlan\QRCode\Data\QRCodeDataException on an illegal character occurence
+	 * @throws \chillerlan\QRCode\Data\QRCodeDataException
 	 */
-	protected function parseInt(string $string):int{
+	private function parseInt(string $string):int{
 		$num = 0;
 
-		foreach(str_split($string) as $chr){
-			$c = ord($chr);
+		$ords = unpack('C*', $string);
 
-			if(!isset($this::CHAR_MAP_NUMBER[$chr])){
-				throw new QRCodeDataException(sprintf('illegal char: "%s" [%d]', $chr, $c));
-			}
+		if($ords === false){
+			throw new QRCodeDataException('unpack() error');
+		}
 
-			$c   = $c - 48; // ord('0')
-			$num = $num * 10 + $c;
+		foreach($ords as $ord){
+			$num = ($num * 10 + $ord - 48);
 		}
 
 		return $num;
+	}
+
+	/**
+	 * @inheritDoc
+	 *
+	 * @throws \chillerlan\QRCode\Data\QRCodeDataException
+	 */
+	public function decodeSegment(BitBuffer $bitBuffer, int $versionNumber):string{
+		$length = $bitBuffer->read($this->getLengthBits($versionNumber));
+		$result = '';
+		// Read three digits at a time
+		while($length >= 3){
+			// Each 10 bits encodes three digits
+			if($bitBuffer->available() < 10){
+				throw new QRCodeDataException('not enough bits available'); // @codeCoverageIgnore
+			}
+
+			$threeDigitsBits = $bitBuffer->read(10);
+
+			if($threeDigitsBits >= 1000){
+				throw new QRCodeDataException('error decoding numeric value');
+			}
+
+			$result .= intdiv($threeDigitsBits, 100);
+			$result .= (intdiv($threeDigitsBits, 10) % 10);
+			$result .= ($threeDigitsBits % 10);
+
+			$length -= 3;
+		}
+
+		if($length === 2){
+			// Two digits left over to read, encoded in 7 bits
+			if($bitBuffer->available() < 7){
+				throw new QRCodeDataException('not enough bits available'); // @codeCoverageIgnore
+			}
+
+			$twoDigitsBits = $bitBuffer->read(7);
+
+			if($twoDigitsBits >= 100){
+				throw new QRCodeDataException('error decoding numeric value');
+			}
+
+			$result .= intdiv($twoDigitsBits, 10);
+			$result .= ($twoDigitsBits % 10);
+		}
+		elseif($length === 1){
+			// One digit left over to read
+			if($bitBuffer->available() < 4){
+				throw new QRCodeDataException('not enough bits available'); // @codeCoverageIgnore
+			}
+
+			$digitBits = $bitBuffer->read(4);
+
+			if($digitBits >= 10){
+				throw new QRCodeDataException('error decoding numeric value');
+			}
+
+			$result .= $digitBits;
+		}
+
+		return $result;
 	}
 
 }

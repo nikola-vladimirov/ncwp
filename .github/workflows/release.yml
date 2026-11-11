@@ -1,5 +1,8 @@
-# A push to main whose plugin Version has no release yet publishes release vX.Y.Z with one zip:
-# nashenski-commerce-X.Y.Z.zip (the plugin).
+# A push to main whose plugin Version has no release yet publishes release vX.Y.Z with two zips:
+# nashenski-commerce-X.Y.Z.zip (the plugin), nashenski-commerce-wporg-X.Y.Z.zip (the same without the bundled
+# Bulgarian .po/.mo/.l10n.php, for WordPress.org, which serves translations as language packs).
+# The wporg name does not match the updater's
+# nashenski-commerce-<version>.zip pattern, so sites never update from it.
 # A version with a dash (0.16.0-beta1) is published as a pre-release.
 name: Release
 
@@ -22,6 +25,8 @@ jobs:
           v=$(sed -n 's/^Version:[[:space:]]*//p' nashenski-commerce.php | tr -d '\r')
           if gh release view "v$v" > /dev/null 2>&1; then echo "v$v is already released"; exit 0; fi
           git archive --format=zip --prefix=nashenski-commerce/ -o "nashenski-commerce-$v.zip" HEAD
+          cp "nashenski-commerce-$v.zip" "nashenski-commerce-wporg-$v.zip"
+          zip -dq "nashenski-commerce-wporg-$v.zip" 'nashenski-commerce/languages/*.po' 'nashenski-commerce/languages/*.mo' 'nashenski-commerce/languages/*.l10n.php'
           awk -v h="## $v " 'index($0, h) == 1 { on = 1; next } /^## / { on = 0 } on' CHANGELOG.md > notes.md
           pre=""; case "$v" in *-*) pre="--prerelease";; esac
-          gh release create "v$v" "nashenski-commerce-$v.zip" $pre --title "Nashenski Commerce $v" --notes-file notes.md --target "$GITHUB_SHA"
+          gh release create "v$v" "nashenski-commerce-$v.zip" "nashenski-commerce-wporg-$v.zip" $pre --title "Nashenski Commerce $v" --notes-file notes.md --target "$GITHUB_SHA"
