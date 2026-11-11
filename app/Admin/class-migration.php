@@ -112,7 +112,6 @@ class Migration {
 				</p>
 			</div>
 			<?php
-			Import_Sources::ask_to_deactivate( self::plugin_files() );
 			return;
 		}
 
@@ -150,21 +149,24 @@ class Migration {
 	}
 
 	/**
-	 * Bulgarisation for WooCommerce and its Pro add-on, wherever they are installed.
+	 * Bulgarisation for WooCommerce and its Pro add-on, wherever they are installed: file => name.
+	 *
+	 * @return array
 	 */
-	private static function plugin_files() {
+	public static function plugin_files() {
 		if ( ! function_exists( 'get_plugins' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		return array_keys(
-			array_filter(
-				get_plugins(),
-				function ( $plugin ) {
-					return in_array( $plugin['Name'], array( 'Bulgarisation for WooCommerce', 'Bulgarisation for WooCommerce - Pro' ), true );
-				}
-			)
-		);
+		$plugins = array();
+
+		foreach ( get_plugins() as $file => $plugin ) {
+			if ( in_array( $plugin['Name'], array( 'Bulgarisation for WooCommerce', 'Bulgarisation for WooCommerce - Pro' ), true ) ) {
+				$plugins[ $file ] = $plugin['Name'];
+			}
+		}
+
+		return $plugins;
 	}
 
 	/**

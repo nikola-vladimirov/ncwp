@@ -306,6 +306,29 @@ namespace {
 	function sanitize_key( $value ) {
 		return $value; }
 	/**
+	 * Multisite stub: set $GLOBALS['network'] to a network-activated plugin file.
+	 *
+	 * @return bool
+	 */
+	function is_multisite() {
+		return ! empty( $GLOBALS['network'] ); }
+	/**
+	 * Network activation stub.
+	 *
+	 * @param string $file Plugin file.
+	 * @return bool
+	 */
+	function is_plugin_active_for_network( $file ) {
+		return ( $GLOBALS['network'] ?? '' ) === $file; }
+	/**
+	 * Network admin URL stub.
+	 *
+	 * @param string $path Path.
+	 * @return string
+	 */
+	function network_admin_url( $path = '' ) {
+		return '/network/' . $path; }
+	/**
 	 * Wp date.
 	 *
 	 * @param string $format    Format (ignored).
@@ -375,7 +398,7 @@ namespace {
 	foreach ( array( false, true ) as $authorized ) {
 		reset_fixture( $authorized ? array( 'manage_woocommerce', 'activate_plugins' ) : array( 'manage_woocommerce' ) );
 		ob_start();
-		\Nashenski\Admin\Import_Sources::ask_to_deactivate( array( 'woo-bg/main.php' ) );
+		\Nashenski\Admin\Import_Sources::ask_to_deactivate( array( 'woo-bg/main.php' => 'Bulgarisation for WooCommerce' ) );
 		$html = ob_get_clean();
 		expect( ( false !== strpos( $html, '/admin/plugins.php' ) ) === $authorized, 'Only users who manage plugins are asked to deactivate the old one' );
 		expect( ! $GLOBALS['deactivated'], 'Asking never deactivates a plugin' );
@@ -412,5 +435,24 @@ namespace {
 	$html = ob_get_clean();
 	expect( false !== strpos( $html, 'Imported on 2024-01-01' ), 'Restricted viewers must retain completed-import status' );
 	expect( ! $GLOBALS['nonce_urls'], 'Reading completion status must not issue import nonce URLs' );
+
+	// After the Bulgarisation import, every later screen keeps asking until it is deactivated (not only the redirect).
+	reset_fixture( array( 'manage_woocommerce', 'activate_plugins' ) );
+	$GLOBALS['options'][ \Nashenski\Admin\Migration::DONE_OPTION ] = array( 'time' => 1704067200 );
+	ob_start();
+	\Nashenski\Admin\Import_Sources::render();
+	$html = ob_get_clean();
+	expect( false !== strpos( $html, 'Bulgarisation for WooCommerce, Bulgarisation for WooCommerce - Pro' ) && false !== strpos( $html, '/admin/plugins.php' ), 'The Bulgarisation reminder persists after the import' );
+	$GLOBALS['network'] = 'woo-bg/main.php';
+	ob_start();
+	\Nashenski\Admin\Import_Sources::render();
+	$html = ob_get_clean();
+	unset( $GLOBALS['network'] );
+	expect( false !== strpos( $html, '/network/plugins.php' ), 'A network-activated plugin links to the network Plugins screen' );
+	$GLOBALS['deactivated'] = array( 'woo-bg/main.php', 'woo-bg-pro/main.php' );
+	ob_start();
+	\Nashenski\Admin\Import_Sources::render();
+	$html = ob_get_clean();
+	expect( false === strpos( $html, 'plugins.php' ), 'No reminder once the old plugins are deactivated' );
 	echo 'PASS: ' . (int) $checks . " import permission assertions\n";
 }

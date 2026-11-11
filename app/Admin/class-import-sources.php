@@ -167,13 +167,14 @@ class Import_Sources {
 			) . '</strong><br>' . wp_kses_post( implode( '<br>', array_map( 'esc_html', $sources[ $imported ]['done']['report'] ) ) ) . '</p></div>';
 		}
 
-		$imported_files = array();
+		// Until the owner deactivates them, the imported plugins would number documents beside this one.
+		$old_plugins = get_option( Migration::DONE_OPTION ) ? Migration::plugin_files() : array();
 		foreach ( $sources as $source ) {
 			if ( $source['done'] ) {
-				$imported_files = array_merge( $imported_files, array_keys( $source['plugins'] ) );
+				$old_plugins += $source['plugins'];
 			}
 		}
-		self::ask_to_deactivate( $imported_files );
+		self::ask_to_deactivate( $old_plugins );
 
 		$open = self::open_names();
 
@@ -559,19 +560,21 @@ class Import_Sources {
 	 * After an import, asks the owner to deactivate the old plugins that are still active, with a
 	 * link to the Plugins screen. A plugin must not change the state of other plugins.
 	 *
-	 * @param array $files Plugin files.
+	 * @param array $plugins Plugin file => name.
 	 */
-	public static function ask_to_deactivate( $files ) {
+	public static function ask_to_deactivate( $plugins ) {
 		if ( ! function_exists( 'is_plugin_active' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		$names = array();
+		$names   = array();
+		$network = false;
 
-		foreach ( $files as $file ) {
+		foreach ( $plugins as $file => $name ) {
 			if ( is_plugin_active( $file ) ) {
-				$plugin  = get_plugin_data( WP_PLUGIN_DIR . '/' . $file, false, false );
-				$names[] = ! empty( $plugin['Name'] ) ? $plugin['Name'] : $file;
+				$names[] = $name;
+				// A network-activated plugin is deactivated on the network Plugins screen.
+				$network = $network || ( is_multisite() && is_plugin_active_for_network( $file ) );
 			}
 		}
 
@@ -588,7 +591,7 @@ class Import_Sources {
 					implode( ', ', $names )
 				)
 			),
-			esc_url( admin_url( 'plugins.php' ) ),
+			esc_url( $network ? network_admin_url( 'plugins.php' ) : admin_url( 'plugins.php' ) ),
 			esc_html__( 'Go to Plugins', 'nashenski-commerce' )
 		);
 	}

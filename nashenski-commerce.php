@@ -135,8 +135,9 @@ function nashenski_init() {
 		return;
 	}
 
-	// The plugin we forked registers the same checkout fields and shipping methods; never run both.
-	if ( function_exists( 'woo_bg_init' ) ) {
+	// The plugin we forked (woo_bg_init up to 4.x, bulgarisation_init from 5.0) registers the same checkout fields and
+	// shipping methods and numbers the same documents; never run both.
+	if ( function_exists( 'woo_bg_init' ) || function_exists( 'bulgarisation_init' ) ) {
 		add_action(
 			'admin_notices',
 			function () {
