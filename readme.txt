@@ -90,7 +90,7 @@ Yes. It works with the classic checkout, the block checkout and checkout pages b
 
 = Can I move from Bulgarisation? =
 
-Yes. Deactivate Bulgarisation, activate Nashenski Commerce and press "Import" on its Help tab. Your settings, shipping zones and order data come along. After an import from the mreja.net N-18 plugin, documents pause until you deactivate it; orders it documented keep its numbers.
+Yes. Deactivate Bulgarisation, activate Nashenski Commerce and press "Import" on its Help tab. Your settings, shipping zones and order data come along. Import the mreja.net N-18 plugin while it is off; if it is turned on again, documents pause until it is off and imported again.
 
 == Screenshots ==
 

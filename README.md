@@ -157,15 +157,14 @@ Only users who can manage plugins see the import button. If an old document numb
 number already in use, it is skipped and the summary says "N document numbers skipped (conflict)".
 
 While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused; deactivate
-it before the import. After the import of the mreja.net Ordinance N-18 plugin, invoices and other
-documents are paused while that plugin stays active, because both would give out the same document
-numbers: an error notice says so on the Dashboard, the Plugins screen, the orders and the Nashenski
-settings, the PDF Files box of an order explains it, and orders made meanwhile get a note. Once it is
-deactivated, the next request that makes a document (any request) gives the orders it documented meanwhile
-its numbers and documents, and numbering carries on after its last number in both sequences (once). Use
-"Regenerate PDF's" only on orders it did not document; an order whose N-18 number could not be taken
-over gets a note. If the numbering lock times out, the order gets the note "Document numbering was busy"
-and its documents are made again automatically a few minutes later.
+it before the import. Deactivate the mreja.net Ordinance N-18 plugin before you import it: both would
+give out the same document numbers, so its import is refused while it is active. If it is turned on
+again after the import, Nashenski Commerce makes no invoices or other documents and takes no numbers
+until it is off and its import is run again from the Help page; that run takes over the numbers it gave
+out meanwhile and the counters continue after its highest number (order documents and cancellations;
+invoices, credit and debit notes). An error notice on the Dashboard, the Plugins screen, the orders and
+the Nashenski settings says so, the PDF Files box of an order explains it, and orders whose documents
+were skipped get a note. Then use "Regenerate PDF's" for orders it did not document.
 
 If a document cannot be made, the refund, subscription renewal or checkout still goes through and the
 order gets the note "Some documents were not generated" with the reason. Fix the cause and make the
