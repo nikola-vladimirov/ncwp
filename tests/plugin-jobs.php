@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:disable Generic.Files.OneObjectStructurePerFile -- offline test: WordPress fixtures beside the test.
 /**
  * Offline: deactivation stops the plugin's Action Scheduler jobs and resets the flags that bring them back; the receipt cleanup returns when missing. Run: php tests/plugin-jobs.php
  *
@@ -42,6 +42,8 @@ namespace {
 		}
 	);
 	define( 'WP_CONTENT_DIR', $GLOBALS['scratch'] . 'wp-content' );
+	define( 'FS_CHMOD_DIR', 0755 );
+	define( 'FS_CHMOD_FILE', 0644 );
 	define( 'HOUR_IN_SECONDS', 3600 );
 	define( 'DAY_IN_SECONDS', 86400 );
 
@@ -219,7 +221,7 @@ namespace {
 	check( true === $GLOBALS['autoload'][ Nashenski\Document_Storage::MIGRATE_VERSION_OPTION ] && Nashenski\Document_Storage::MIGRATE_VERSION === get_option( Nashenski\Document_Storage::MIGRATE_VERSION_OPTION ), 'the migration flag is saved with autoload on' );
 
 	// The upgrade step puts the documents migration flag in the autoload set, for sites that saved it outside it.
-	$wpdb                     = new class() {
+	$wpdb            = new class() {
 		/**
 		 * Options table name.
 		 *
@@ -247,8 +249,11 @@ namespace {
 		 */
 		public function query() {}
 	};
-	$GLOBALS['wpdb']          = $wpdb;
-	$wp_filesystem            = new class() {
+	$GLOBALS['wpdb'] = $wpdb;
+	/**
+	 * Filesystem fixture: File::filesystem() makes WordPress's direct filesystem class; this one records removed folders.
+	 */
+	class WP_Filesystem_Direct {
 		/**
 		 * Rmdir: records the folder.
 		 *
@@ -256,13 +261,12 @@ namespace {
 		 */
 		public function rmdir( $path ) {
 			$GLOBALS['removed_dirs'][] = $path; }
-	};
-	$GLOBALS['wp_filesystem'] = $wp_filesystem;
-	$plugin                   = ( new ReflectionClass( Nashenski\Plugin::class ) )->newInstanceWithoutConstructor();
+	}
+	$plugin = ( new ReflectionClass( Nashenski\Plugin::class ) )->newInstanceWithoutConstructor();
 	( new ReflectionMethod( $plugin, 'maybe_upgrade' ) )->invoke( $plugin );
 	check( array( array( 'nashenski_documents_migration_version', true ) ) === $GLOBALS['autoload_set'], 'the upgrade step switches the documents migration flag to autoload' );
 	check( Nashenski\Plugin::VERSION === get_option( 'nashenski_version' ), 'the upgrade step saves the new version' );
-	check( in_array( WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski', $GLOBALS['removed_dirs'], true ), 'the upgrade step removes the cache folder used before 0.21.7' );
+	check( array( WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski' ) === $GLOBALS['removed_dirs'], 'the upgrade step removes the cache folder used before 0.21.7, and nothing else' );
 
 	// The receipt cleanup is checked again in the admin, so a site that lost the job gets it back.
 	new Nashenski\Document_Storage();

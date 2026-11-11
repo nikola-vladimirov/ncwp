@@ -61,17 +61,14 @@ trait Courier_Client {
 	 * @param bool $skip_cached_files Skip cached files.
 	 */
 	public static function clear_cache_folder( $skip_cached_files = false ) {
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		WP_Filesystem();
-		global $wp_filesystem;
-
-		$keep = $skip_cached_files && isset( static::$skip_cached_files ) ? static::$skip_cached_files : array();
+		$filesystem = File::filesystem();
+		$keep       = $skip_cached_files && isset( static::$skip_cached_files ) ? static::$skip_cached_files : array();
 
 		// dirlist() is false when the folder was never made (no data loaded yet).
-		$listing = $wp_filesystem->dirlist( static::cache_folder() );
+		$listing = $filesystem->dirlist( static::cache_folder() );
 		foreach ( $listing ? $listing : array() as $file ) {
 			if ( ! in_array( $file['name'], $keep, true ) ) {
-				$wp_filesystem->delete( static::cache_folder() . $file['name'] );
+				$filesystem->delete( static::cache_folder() . $file['name'] );
 			}
 		}
 	}

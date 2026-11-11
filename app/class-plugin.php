@@ -90,10 +90,7 @@ class Plugin {
 		wp_clear_scheduled_hook( 'nashenski/cvc/clear_cache_folder' );
 
 		// 0.21.7: the courier cache moved to File::cache_folder() in uploads. The old folder is only a cache (CVC files too), shared by all sites of a network.
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		WP_Filesystem();
-		global $wp_filesystem;
-		$wp_filesystem->rmdir( WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski', true ); // A missing folder is fine.
+		File::filesystem()->rmdir( WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski', true ); // A missing folder is fine.
 
 		// After 0.19.9: the documents migration flag is read on every request; sites that saved it outside the autoload set load it with the other options now.
 		wp_set_option_autoload( 'nashenski_documents_migration_version', true );

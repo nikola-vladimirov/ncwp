@@ -5,6 +5,7 @@ namespace {
 	mkdir( $root . '/uploads', 0777, true );
 	define( 'ABSPATH', $root . '/' );
 	define( 'FS_CHMOD_FILE', 0644 );
+	define( 'FS_CHMOD_DIR', 0755 );
 	const MINUTE_IN_SECONDS = 60;
 
 	$GLOBALS['root'] = $root;
@@ -104,7 +105,16 @@ namespace {
 	 * @return void
 	 */
 	function set_transient( $k, $v, $t ) {}
-	$GLOBALS['wp_filesystem'] = new class() { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- the test installs its own filesystem stub.
+	/**
+	 * Filesystem fixture: File::filesystem() makes WordPress's direct filesystem class; this one writes plain files.
+	 */
+	class WP_Filesystem_Direct {
+		/**
+		 * Constructor.
+		 *
+		 * @param mixed $a Unused.
+		 */
+		public function __construct( $a = null ) {}
 		/**
 		 * Writes a file.
 		 *
@@ -145,7 +155,7 @@ namespace {
 		 */
 		public function delete( $f ) {
 			return unlink( $f ); }
-	};
+	}
 }
 
 namespace Nashenski\Container {
