@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 14:11+0000\n"
-"PO-Revision-Date: 2026-11-11 14:11+0000\n"
+"POT-Creation-Date: 2026-11-11 14:15+0000\n"
+"PO-Revision-Date: 2026-11-11 14:15+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1740,43 +1740,43 @@ msgstr[1] "%d поръчки запазват всичко, което стар�
 msgid "The import is done. Please deactivate %s: Nashenski Commerce does its work now."
 msgstr "Внасянето приключи. Моля, деактивирайте %s: Нашенски Комерс вече върши тази работа."
 
-#: app/Admin/class-import-sources.php:750
+#: app/Admin/class-import-sources.php:754
 msgid "Nashenski Commerce has paused invoices and other documents because the old N-18 plugin is still active. Both would give out the same document numbers. Deactivate it to continue; numbering then carries on after its last number."
 msgstr "Нашенски Комерс спря фактурите и другите документи, защото старият плъгин за Н-18 все още е активен. Двата биха дали едни и същи номера на документи. Деактивирайте го, за да продължите; номерацията ще продължи след последния му номер."
 
-#: app/Admin/class-import-sources.php:854
+#: app/Admin/class-import-sources.php:858
 msgid "From earlier plugins"
 msgstr "От предишни плъгини"
 
-#: app/Admin/class-import-sources.php:867
+#: app/Admin/class-import-sources.php:871
 msgid "What the earlier plugins saved on this order, kept when their data was imported."
 msgstr "Това, което предишните плъгини са записали в тази поръчка, запазено при внасянето на данните им."
 
-#: app/Admin/class-import-sources.php:910 app/Export/Builder/class-fields.php:338
+#: app/Admin/class-import-sources.php:914 app/Export/Builder/class-fields.php:338
 msgid "Order document"
 msgstr "Документ за продажба"
 
-#: app/Admin/class-import-sources.php:911 app/Admin/Order/class-documents.php:313 app/Export/Builder/class-fields.php:339
+#: app/Admin/class-import-sources.php:915 app/Admin/Order/class-documents.php:313 app/Export/Builder/class-fields.php:339
 msgid "Invoice"
 msgstr "Фактура"
 
-#: app/Admin/class-import-sources.php:912 app/Export/Builder/class-fields.php:340
+#: app/Admin/class-import-sources.php:916 app/Export/Builder/class-fields.php:340
 msgid "Credit note"
 msgstr "Кредитно известие"
 
-#: app/Admin/class-import-sources.php:913
+#: app/Admin/class-import-sources.php:917
 msgid "Cancelled order document"
 msgstr "Документ за отказана поръчка"
 
-#: app/Admin/class-import-sources.php:1239 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:682 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
+#: app/Admin/class-import-sources.php:1243 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:682 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:491
 msgid "To an office"
 msgstr "До офис"
 
-#: app/Admin/class-import-sources.php:1240 app/Admin/class-import-sources.php:1241 app/Admin/class-setup-wizard.php:683 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
+#: app/Admin/class-import-sources.php:1244 app/Admin/class-import-sources.php:1245 app/Admin/class-setup-wizard.php:683 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
 msgid "To a parcel locker"
 msgstr "До автомат за пратки"
 
-#: app/Admin/class-import-sources.php:1242 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:684 app/Admin/Order/class-courier-info.php:46
+#: app/Admin/class-import-sources.php:1246 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:684 app/Admin/Order/class-courier-info.php:46
 msgid "To an address"
 msgstr "До адрес"
 
