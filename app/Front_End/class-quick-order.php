@@ -565,13 +565,13 @@ document.addEventListener("submit",function(e){
 			wp_send_json_error( array( 'message' => __( 'The form has expired. Reload the page and try again.', 'nashenski-commerce' ) ) );
 		}
 
-		// Textarea sanitizing keeps the line breaks of note fields; single-line fields are sanitized again where used.
-		$post = map_deep( wp_unslash( $_POST ), 'sanitize_textarea_field' );
-
-		// A filled-in honeypot means a bot. It gets the same answer as a person, and no order.
-		if ( ! empty( $post['website'] ) ) {
+		// A filled-in honeypot means a bot. It gets the same answer as a person, and no order. Checked raw: sanitizing could empty it.
+		if ( ! empty( $_POST['website'] ) ) {
 			wp_send_json_success( array( 'message' => self::thanks_text() ) );
 		}
+
+		// Textarea sanitizing keeps the line breaks of note fields; single-line fields are sanitized again where used.
+		$post = map_deep( wp_unslash( $_POST ), 'sanitize_textarea_field' );
 
 		if ( self::too_many_requests() ) {
 			wp_send_json_error( array( 'message' => __( 'Too many requests. Try again in a few minutes.', 'nashenski-commerce' ) ) );

@@ -20,6 +20,10 @@ return array(
 		'translations' => array( 'Цена' ),
 	),
 	array(
+		'singular'     => 'Other',
+		'translations' => array( 'Друго' ),
+	),
+	array(
 		'singular'     => 'Payment method',
 		'translations' => array( 'Начин на плащане' ),
 	),
@@ -30,6 +34,10 @@ return array(
 	array(
 		'singular'     => 'Pro forma',
 		'translations' => array( 'Проформа' ),
+	),
+	array(
+		'singular'     => 'Cash',
+		'translations' => array( 'В брой' ),
 	),
 	array(
 		'singular'     => 'Order date',
@@ -46,6 +54,14 @@ return array(
 	array(
 		'singular'     => 'Shipping: %s',
 		'translations' => array( 'Доставка: %s' ),
+	),
+	array(
+		'singular'     => 'On a payment account',
+		'translations' => array( 'По платежна сметка' ),
+	),
+	array(
+		'singular'     => 'Card',
+		'translations' => array( 'С карта' ),
 	),
 	array(
 		'singular'     => 'Date of tax. event',

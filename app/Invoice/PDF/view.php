@@ -55,7 +55,7 @@ $nashenski_wrap = \Nashenski\Hooks::filter( 'nashenski_invoice_pdf_default_templ
 	table tr td { font-size:10px; }
 	table { border-collapse:collapse; }
 	.float-left { float:left; }
-	footer { font-size: 12px; position: fixed; bottom: -40px; left: 0px; right: 0px; height: 50px; }
+	footer { font-size: 12px; position: fixed; bottom: -40px; left: 0px; right: 0px; height: 50px; padding-right: 150px; }
 	footer p { display: inline-block; }
 	.page-number:before { content: counter(page); }
 	/* Not a float: Dompdf 3.1 clears the header against a float in the fixed footer and starts a new page. */
