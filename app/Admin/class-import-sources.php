@@ -25,6 +25,9 @@ class Import_Sources {
 	const DISMISS        = 'nashenski_import_dismiss';
 	const DISMISS_OPTION = 'nashenski_import_notice_dismissed';
 
+	/** Set once the counters continued after the N-18 plugin's numbers, when it was no longer active. */
+	const N18_CONTINUED = 'nashenski_n18_numbers_continued';
+
 	/** Order data of the old plugin kept on each order, shown in "From earlier plugins". */
 	const LEGACY_META = '_nashenski_legacy';
 
@@ -138,12 +141,41 @@ class Import_Sources {
 	 * The notice on the dashboard and Plugins screens.
 	 */
 	public static function notice() {
-		// Only where you look after plugins; the settings pages and Help show it themselves.
+		// Only where you look after plugins and orders; the settings pages and Help show it themselves.
 		$screen = get_current_screen();
 
 		if ( $screen && in_array( $screen->id, array( 'dashboard', 'plugins' ), true ) ) {
 			self::render();
+		} elseif ( $screen && in_array( $screen->id, array( 'woocommerce_page_wc-orders', 'edit-shop_order', 'shop_order' ), true ) ) {
+			// The orders list and the order screen: where documents would be made.
+			self::n18_notice();
 		}
+	}
+
+	/**
+	 * The error while documents are paused for the N-18 plugin (n18_paused()), with a link to the Plugins screen.
+	 */
+	public static function n18_notice() {
+		if ( ! current_user_can( 'manage_woocommerce' ) || ! self::n18_paused() ) {
+			return;
+		}
+
+		$network = false;
+		if ( is_multisite() ) {
+			if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/plugin.php';
+			}
+			foreach ( array_keys( self::sources()['mreja_n18']['plugins'] ?? array() ) as $file ) {
+				$network = $network || is_plugin_active_for_network( $file );
+			}
+		}
+
+		printf(
+			'<div class="notice notice-error"><p>%s <a href="%s">%s</a></p></div>',
+			esc_html( self::paused_reason() ),
+			esc_url( $network ? network_admin_url( 'plugins.php' ) : admin_url( 'plugins.php' ) ),
+			esc_html__( 'Go to Plugins', 'nashenski-commerce' )
+		);
 	}
 
 	/**
@@ -167,13 +199,15 @@ class Import_Sources {
 			) . '</strong><br>' . wp_kses_post( implode( '<br>', array_map( 'esc_html', $sources[ $imported ]['done']['report'] ) ) ) . '</p></div>';
 		}
 
-		// Until the owner deactivates them, the imported plugins would number documents beside this one.
+		// Until the owner deactivates them, the imported plugins would run beside this one. The N-18 plugin
+		// would give out the same document numbers, so documents are paused (n18_paused()); n18_notice() says so.
 		$old_plugins = get_option( Migration::DONE_OPTION ) ? Migration::plugin_files() : array();
-		foreach ( $sources as $source ) {
-			if ( $source['done'] ) {
+		foreach ( $sources as $slug => $source ) {
+			if ( $source['done'] && 'mreja_n18' !== $slug ) {
 				$old_plugins += $source['plugins'];
 			}
 		}
+		self::n18_notice();
 		self::ask_to_deactivate( $old_plugins );
 
 		$open = self::open_names();
@@ -630,23 +664,13 @@ class Import_Sources {
 		}
 
 		// Order documents keep their numbers; the next numbers continue after the highest one.
-		$keys    = array(
+		$keys = array(
 			'purchase_order' => 'nashenski_order_number',
 			'invoice'        => 'nashenski_order_invoice_number',
 		);
-		$highest = array(
-			'purchase_order' => 0,
-			'invoice'        => 0,
-		);
 
 		foreach ( self::table_rows( 'notasupto_documents' ) as $row ) {
-			if ( ! in_array( $row['type'], array( 'purchase_order', 'invoice', 'credit_note' ), true ) ) {
-				continue;
-			}
-
-			$type             = 'credit_note' === $row['type'] ? 'invoice' : $row['type'];
-			$highest[ $type ] = max( $highest[ $type ], (int) $row['num'] );
-			$order            = isset( $keys[ $row['type'] ] ) ? wc_get_order( $row['order_id'] ) : null;
+			$order = isset( $keys[ $row['type'] ] ) ? wc_get_order( $row['order_id'] ) : null;
 
 			$option = 'purchase_order' === $row['type'] ? 'next_invoice_number' : 'next_invoice_separate_number';
 			try {
@@ -659,25 +683,75 @@ class Import_Sources {
 			}
 		}
 
-		// An empty separate counter means shared numbering: setting it would switch the shop to separate numbering,
-		// so the shared counter has to move past the imported invoice numbers instead.
-		$shared = ! nashenski_get_option( 'invoice', 'next_invoice_separate_number' );
-		if ( $shared ) {
-			$highest['purchase_order'] = max( $highest['purchase_order'], $highest['invoice'] );
+		$count['settings'] += (int) \Nashenski\Invoice\Number_Allocator::continue_after( self::n18_highest() );
+	}
+
+	/**
+	 * The highest numbers the N-18 plugin gave out, by the sequence setting that continues them.
+	 *
+	 * @return array Sequence setting => highest number.
+	 */
+	private static function n18_highest() {
+		$highest = array(
+			'purchase_order' => 0,
+			'invoice'        => 0,
+		);
+
+		foreach ( self::table_rows( 'notasupto_documents' ) as $row ) {
+			if ( in_array( $row['type'], array( 'purchase_order', 'invoice', 'credit_note' ), true ) ) {
+				$type             = 'credit_note' === $row['type'] ? 'invoice' : $row['type'];
+				$highest[ $type ] = max( $highest[ $type ], (int) $row['num'] );
+			}
 		}
 
-		foreach ( array(
-			'purchase_order' => 'next_invoice_number',
-			'invoice'        => 'next_invoice_separate_number',
-		) as $type => $option ) {
-			if ( 'invoice' === $type && $shared ) {
-				continue;
-			}
-			if ( $highest[ $type ] && $highest[ $type ] + 1 > (int) nashenski_get_option( 'invoice', $option ) ) {
-				nashenski_set_option( 'invoice', $option, str_pad( $highest[ $type ] + 1, 10, '0', STR_PAD_LEFT ) );
-				++$count['settings'];
+		// An empty separate counter means shared numbering: setting it would switch the shop to separate numbering,
+		// so the shared counter has to move past the imported invoice numbers instead.
+		if ( ! nashenski_get_option( 'invoice', 'next_invoice_separate_number' ) ) {
+			return array( 'next_invoice_number' => max( $highest ) );
+		}
+
+		return array(
+			'next_invoice_number'          => $highest['purchase_order'],
+			'next_invoice_separate_number' => $highest['invoice'],
+		);
+	}
+
+	/**
+	 * After the import of the mreja.net N-18 plugin, while that plugin is still active, both would give
+	 * out the same document numbers: Nashenski Commerce then makes no documents and takes no numbers.
+	 * Once it is off, the counters first continue after its highest numbers (once, see N18_CONTINUED).
+	 *
+	 * @return bool Whether documents and numbering are paused.
+	 */
+	public static function n18_paused() {
+		$done = (array) get_option( self::DONE_OPTION, array() );
+
+		if ( empty( $done['mreja_n18'] ) ) {
+			return false;
+		}
+
+		if ( defined( 'NOTASUPTO_VERSION_NUM' ) ) {
+			return true;
+		}
+
+		if ( ! get_option( self::N18_CONTINUED ) ) {
+			try {
+				\Nashenski\Invoice\Number_Allocator::continue_after( self::n18_highest(), self::N18_CONTINUED );
+			} catch ( \RuntimeException $e ) {
+				return true; // The numbering lock was busy: no numbers until the counters have continued.
 			}
 		}
+
+		return false;
+	}
+
+	/**
+	 * Why documents are paused, for notices and the order screen.
+	 *
+	 * @return string
+	 */
+	public static function paused_reason() {
+		return __( 'Nashenski Commerce has paused invoices and other documents because the old N-18 plugin is still active. Both would give out the same document numbers. Deactivate it to continue; numbering then carries on after its last number.', 'nashenski-commerce' );
 	}
 
 	/* ---------- everything the old plugin saved on orders ---------- */

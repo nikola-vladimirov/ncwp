@@ -15,6 +15,31 @@ defined( 'ABSPATH' ) || exit;
  * Documents.
  */
 class Documents {
+	/** Set when an order got the note that its documents were paused, so it gets one note. */
+	const PAUSED_META = '_nashenski_documents_paused';
+
+	/**
+	 * Whether documents are paused for the old N-18 plugin (Import_Sources::n18_paused()). The order then
+	 * gets a note, once, so the owner can find it and make its documents later.
+	 *
+	 * @param \WC_Order|false $order Order whose automatic documents are skipped.
+	 * @return bool
+	 */
+	public static function paused( $order ) {
+		if ( ! \Nashenski\Admin\Import_Sources::n18_paused() ) {
+			return false;
+		}
+
+		// shortcut: one note per order; a later pause on an order that got documents in between adds none, add a reset when that matters.
+		if ( $order && ! $order->get_meta( self::PAUSED_META ) ) {
+			$order->add_order_note( __( 'No documents were made: Nashenski Commerce paused them while the old N-18 plugin was active. Once it is deactivated, make them here with "Regenerate PDF\'s".', 'nashenski-commerce' ) );
+			$order->update_meta_data( self::PAUSED_META, 'yes' );
+			$order->save();
+		}
+
+		return true;
+	}
+
 	/**
 	 * Invoices and the other documents (Overview > Invoices and N-18). The order document is made
 	 * for every order either way.
@@ -59,6 +84,10 @@ class Documents {
 		// A numbering failure (lock timeout, database error) must not break checkout or the order status change.
 		// The order stays without that document; "Regenerate PDF's" tries again.
 		try {
+			if ( self::paused( $order ) ) {
+				return;
+			}
+
 			( new Document\NRA( $order ) )->generate_file();
 
 			if ( self::documents_on() && self::maybe_generate_invoice( $order ) ) {
@@ -110,6 +139,10 @@ class Documents {
 		}
 
 		try {
+			if ( self::paused( $order ) ) {
+				return;
+			}
+
 			( new Document\Invoice( $order ) )->generate_file();
 			self::maybe_generate_invoice_copy( $order );
 
@@ -138,7 +171,7 @@ class Documents {
 
 		// A numbering failure must not break checkout; the order stays without the proforma.
 		try {
-			if ( self::documents_on() && self::maybe_generate_proforma( $order ) && $order->get_payment_method() === 'bacs' ) {
+			if ( self::documents_on() && self::maybe_generate_proforma( $order ) && $order->get_payment_method() === 'bacs' && ! self::paused( $order ) ) {
 				( new Document\Proforma( $order ) )->generate_file();
 			}
 		} catch ( \Exception $e ) {
@@ -191,6 +224,10 @@ class Documents {
 	 */
 	public static function generate_refunded_documents( $refund_id, $order_id ) {
 		$order = wc_get_order( $order_id );
+
+		if ( self::paused( $order ) ) {
+			return;
+		}
 
 		( new Document\NRARefunded( $refund_id ) )->generate_file();
 

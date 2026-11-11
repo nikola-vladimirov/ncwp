@@ -9,6 +9,7 @@ namespace Nashenski\Admin\Order;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
 use Nashenski\Invoice\Document;
+use Nashenski\Admin\Import_Sources;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -63,6 +64,11 @@ class Actions {
 	 * @return mixed Result.
 	 */
 	public static function add_selections_to_bulk_action( $actions ) {
+		// Paused for the old N-18 plugin: the orders list shows why (Import_Sources::n18_notice()).
+		if ( Import_Sources::n18_paused() ) {
+			return $actions;
+		}
+
 		$actions['nashenski_regenerate_pdfs'] = __( 'Regenerate PDF\'s', 'nashenski-commerce' );
 
 		return $actions;
@@ -77,7 +83,7 @@ class Actions {
 	 * @return mixed Result.
 	 */
 	public static function regenerate_order_pdfs_bulk_action_process( $redirect_to, $action, $ids ) {
-		if ( 'nashenski_regenerate_pdfs' === $action ) {
+		if ( 'nashenski_regenerate_pdfs' === $action && ! Import_Sources::n18_paused() ) {
 			foreach ( $ids as $order_id ) {
 				Documents::generate_documents( $order_id );
 			}
@@ -175,7 +181,23 @@ class Actions {
 	 * @param mixed $order Order.
 	 */
 	public static function process_order_meta_box_actions( $order ) {
-		Documents::generate_documents( $order->get_id() );
+		if ( ! self::paused_error() ) {
+			Documents::generate_documents( $order->get_id() );
+		}
+	}
+
+	/**
+	 * On the order screen, says why the document buttons do nothing while documents are paused.
+	 *
+	 * @return bool Whether they are paused.
+	 */
+	private static function paused_error() {
+		if ( ! Import_Sources::n18_paused() ) {
+			return false;
+		}
+
+		\WC_Admin_Meta_Boxes::add_error( Import_Sources::paused_reason() );
+		return true;
 	}
 
 	/**
@@ -184,7 +206,9 @@ class Actions {
 	 * @param mixed $order Order.
 	 */
 	public static function generate_invoice_action( $order ) {
-		( new Document\Invoice( $order ) )->generate_file();
+		if ( ! self::paused_error() ) {
+			( new Document\Invoice( $order ) )->generate_file();
+		}
 	}
 
 	/**
@@ -197,6 +221,10 @@ class Actions {
 		$request = nashenski_verified_request( null, array(), 'nashenski_make_invoice_nonce', 'nashenski_make_invoice' );
 
 		if ( empty( $request['nashenski_make_invoice'] ) || ! current_user_can( 'edit_shop_orders' ) ) {
+			return;
+		}
+
+		if ( self::paused_error() ) {
 			return;
 		}
 

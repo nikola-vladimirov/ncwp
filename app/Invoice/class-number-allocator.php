@@ -298,6 +298,49 @@ class Number_Allocator {
 	}
 
 	/**
+	 * No numbers while another plugin gives out the same ones (Import_Sources::n18_paused()).
+	 *
+	 * @throws \RuntimeException While numbering is paused.
+	 */
+	private static function not_paused() {
+		if ( class_exists( \Nashenski\Admin\Import_Sources::class ) && \Nashenski\Admin\Import_Sources::n18_paused() ) {
+			throw new \RuntimeException( esc_html( \Nashenski\Admin\Import_Sources::paused_reason() ) );
+		}
+	}
+
+	/**
+	 * Continue the sequences after numbers another plugin gave out: each counter lower than the
+	 * highest number moves to the number after it. With $flag, only once: the first request records
+	 * $flag under the numbering lock, so a request running at the same time finds it and does nothing.
+	 *
+	 * @param array  $highest Sequence setting => highest number used elsewhere.
+	 * @param string $flag    Option that records it was done, or ''.
+	 * @return int|false Counters moved, or false when $flag was already set.
+	 */
+	public static function continue_after( $highest, $flag = '' ) {
+		return self::locked(
+			function () use ( $highest, $flag ) {
+				global $wpdb;
+				// Read past every cache: the other request may have set it a moment ago.
+				if ( $flag && null !== $wpdb->get_var( $wpdb->prepare( 'SELECT option_value FROM %i WHERE option_name = %s', $wpdb->options, $flag ) ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching -- see above.
+					return false;
+				}
+				$moved = 0;
+				foreach ( $highest as $option => $number ) {
+					if ( (int) $number && (int) $number + 1 > (int) self::option( $option ) ) {
+						self::advance( $option, (int) $number + 1 );
+						++$moved;
+					}
+				}
+				if ( $flag ) {
+					update_option( $flag, time(), false );
+				}
+				return $moved;
+			}
+		);
+	}
+
+	/**
 	 * The order's document number: the saved one, or the next one of the sequence.
 	 *
 	 * @param \WC_Order $order   Order.
@@ -307,6 +350,7 @@ class Number_Allocator {
 	 * @return mixed
 	 */
 	public static function allocate( $order, $meta, $option, $replace = false ) {
+		self::not_paused();
 		return self::locked(
 			function () use ( $order, $meta, $option, $replace ) {
 				if ( ! $order->get_id() || ! in_array( $option, array( 'next_invoice_number', 'next_invoice_separate_number' ), true ) || ! in_array( $meta, self::keys( $option ), true ) ) {
@@ -349,6 +393,7 @@ class Number_Allocator {
 	 * @return string Error message, or ''.
 	 */
 	public static function manual( $order, $number, $own_program = false ) {
+		self::not_paused();
 		return self::locked(
 			function () use ( $order, $number, $own_program ) {
 				$option = self::option( 'next_invoice_separate_number' ) ? 'next_invoice_separate_number' : 'next_invoice_number';

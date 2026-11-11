@@ -286,6 +286,17 @@ namespace {
 		return $GLOBALS['logger']; }
 
 	/**
+	 * Option stub: nothing was imported, so documents are not paused.
+	 *
+	 * @param string $name    Option name.
+	 * @param mixed  $fallback Default.
+	 * @return mixed
+	 */
+	function get_option( $name, $fallback = false ) {
+		return $fallback;
+	}
+
+	/**
 	 * Options stub: documents on while $docs_on is set.
 	 *
 	 * @param string $group Option group.
