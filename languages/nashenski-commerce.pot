@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 18:43+0000\n"
-"PO-Revision-Date: 2026-11-11 18:43+0000\n"
+"POT-Creation-Date: 2026-11-11 19:11+0000\n"
+"PO-Revision-Date: 2026-11-11 19:11+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -130,7 +130,7 @@ msgstr ""
 msgid "Emptied"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:301 app/Admin/class-import-sources.php:302 app/Admin/class-migration.php:126
+#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:302 app/Admin/class-import-sources.php:302 app/Admin/class-migration.php:126
 msgid "You do not have permission to perform this action."
 msgstr ""
 
@@ -160,7 +160,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:303 app/Admin/class-help-page.php:345
+#: app/Admin/class-abandoned-carts-page.php:303 app/Admin/class-help-page.php:346
 msgid "Apply"
 msgstr ""
 
@@ -314,7 +314,7 @@ msgstr ""
 msgid "Send to"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:125 app/Admin/class-econt.php:168 app/Admin/class-pigeon.php:310 app/Admin/class-speedy.php:230 app/Admin/Tabs/class-econt-tab.php:164 app/Admin/Tabs/class-pigeon-tab.php:107
+#: app/Admin/class-boxnow.php:125 app/Admin/class-econt.php:168 app/Admin/class-pigeon.php:310 app/Admin/class-speedy.php:235 app/Admin/Tabs/class-econt-tab.php:164 app/Admin/Tabs/class-pigeon-tab.php:107
 msgid "Send From"
 msgstr ""
 
@@ -322,7 +322,7 @@ msgstr ""
 msgid "Warehouse/Automat"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:127 app/Admin/class-econt.php:149 app/Admin/class-speedy.php:208 app/Shipping/Econt/class-method.php:373 app/Shipping/Speedy/class-method.php:366
+#: app/Admin/class-boxnow.php:127 app/Admin/class-econt.php:149 app/Admin/class-speedy.php:213 app/Shipping/Econt/class-method.php:373 app/Shipping/Speedy/class-method.php:366
 msgid "Automat"
 msgstr ""
 
@@ -334,35 +334,35 @@ msgstr ""
 msgid "Allow returns"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:130 app/Admin/class-econt.php:126 app/Admin/class-pigeon.php:270 app/Admin/class-speedy.php:186
+#: app/Admin/class-boxnow.php:130 app/Admin/class-econt.php:126 app/Admin/class-pigeon.php:270 app/Admin/class-speedy.php:191
 msgid "Update shipment status"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:131 app/Admin/class-econt.php:128 app/Admin/class-pigeon.php:272 app/Admin/class-speedy.php:188 app/Admin/fragments/label-column.php:29
+#: app/Admin/class-boxnow.php:131 app/Admin/class-econt.php:128 app/Admin/class-pigeon.php:272 app/Admin/class-speedy.php:193 app/Admin/fragments/label-column.php:29
 msgid "Generate label"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:132 app/Admin/class-econt.php:129 app/Admin/class-pigeon.php:273 app/Admin/class-speedy.php:189
+#: app/Admin/class-boxnow.php:132 app/Admin/class-econt.php:129 app/Admin/class-pigeon.php:273 app/Admin/class-speedy.php:194
 msgid "Delete label"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:133 app/Admin/class-econt.php:130 app/Admin/class-pigeon.php:274 app/Admin/class-speedy.php:190 app/Admin/Order/class-columns.php:45 app/Front_End/Checkout/class-field-editor.php:878
+#: app/Admin/class-boxnow.php:133 app/Admin/class-econt.php:130 app/Admin/class-pigeon.php:274 app/Admin/class-speedy.php:195 app/Admin/Order/class-columns.php:45 app/Front_End/Checkout/class-field-editor.php:878
 msgid "Label"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:134 app/Admin/class-econt.php:132 app/Admin/class-pigeon.php:276 app/Admin/class-speedy.php:192
+#: app/Admin/class-boxnow.php:134 app/Admin/class-econt.php:132 app/Admin/class-pigeon.php:276 app/Admin/class-speedy.php:197
 msgid "Selected"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:133 app/Admin/class-pigeon.php:277 app/Admin/class-speedy.php:193 app/Admin/Order/class-delivery-box.php:206 app/Front_End/Checkout/class-pickers.php:549
+#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:133 app/Admin/class-pigeon.php:277 app/Admin/class-speedy.php:198 app/Admin/Order/class-delivery-box.php:206 app/Front_End/Checkout/class-pickers.php:549
 msgid "Choose"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:136 app/Admin/class-econt.php:152 app/Admin/class-pigeon.php:290 app/Admin/class-speedy.php:211
+#: app/Admin/class-boxnow.php:136 app/Admin/class-econt.php:152 app/Admin/class-pigeon.php:290 app/Admin/class-speedy.php:216
 msgid "Label data"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:137 app/Admin/class-econt.php:159 app/Admin/class-pigeon.php:297 app/Admin/class-speedy.php:220
+#: app/Admin/class-boxnow.php:137 app/Admin/class-econt.php:159 app/Admin/class-pigeon.php:297 app/Admin/class-speedy.php:225
 msgid "Shipment status"
 msgstr ""
 
@@ -386,15 +386,15 @@ msgstr ""
 msgid "Large Box"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:143 app/Admin/class-econt.php:172 app/Admin/class-econt.php:248 app/Admin/class-pigeon.php:314 app/Admin/class-speedy.php:234
+#: app/Admin/class-boxnow.php:143 app/Admin/class-econt.php:172 app/Admin/class-econt.php:254 app/Admin/class-pigeon.php:314 app/Admin/class-speedy.php:239
 msgid "Pack"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:144 app/Admin/class-econt.php:173 app/Admin/class-pigeon.php:315 app/Admin/class-speedy.php:235
+#: app/Admin/class-boxnow.php:144 app/Admin/class-econt.php:173 app/Admin/class-pigeon.php:315 app/Admin/class-speedy.php:240
 msgid "Add Pack"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:145 app/Admin/class-econt.php:174 app/Admin/class-pigeon.php:316 app/Admin/class-speedy.php:236
+#: app/Admin/class-boxnow.php:145 app/Admin/class-econt.php:174 app/Admin/class-pigeon.php:316 app/Admin/class-speedy.php:241
 msgid "Remove Pack"
 msgstr ""
 
@@ -424,11 +424,11 @@ msgstr ""
 msgid "BOX NOW did not answer. Check the connection settings and try again."
 msgstr ""
 
-#: app/Admin/class-boxnow.php:716 app/Admin/class-pigeon.php:771 app/Admin/class-speedy.php:1123
+#: app/Admin/class-boxnow.php:716 app/Admin/class-pigeon.php:771 app/Admin/class-speedy.php:1135
 msgid "This link has expired. Reload the order page and try again."
 msgstr ""
 
-#: app/Admin/class-boxnow.php:723 app/Admin/class-speedy.php:406 app/Admin/class-speedy.php:1145
+#: app/Admin/class-boxnow.php:723 app/Admin/class-speedy.php:411 app/Admin/class-speedy.php:1157
 msgid "Invalid parcel number."
 msgstr ""
 
@@ -488,55 +488,55 @@ msgstr ""
 msgid "Econt Delivery"
 msgstr ""
 
-#: app/Admin/class-econt.php:127 app/Admin/class-pigeon.php:271 app/Admin/class-speedy.php:187
+#: app/Admin/class-econt.php:127 app/Admin/class-pigeon.php:271 app/Admin/class-speedy.php:192
 msgid "Update label"
 msgstr ""
 
-#: app/Admin/class-econt.php:131 app/Admin/class-pigeon.php:275 app/Admin/class-recommended-settings.php:89 app/Admin/class-speedy.php:191
+#: app/Admin/class-econt.php:131 app/Admin/class-pigeon.php:275 app/Admin/class-recommended-settings.php:89 app/Admin/class-speedy.php:196
 msgid "Default"
 msgstr ""
 
-#: app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:194
+#: app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:199
 msgid "Delivery is payed by"
 msgstr ""
 
-#: app/Admin/class-econt.php:135 app/Admin/class-pigeon.php:279 app/Admin/class-speedy.php:195 app/Admin/Tabs/class-settings-tab.php:49
+#: app/Admin/class-econt.php:135 app/Admin/class-pigeon.php:279 app/Admin/class-speedy.php:200 app/Admin/Tabs/class-settings-tab.php:49
 msgid "Cash on delivery"
 msgstr ""
 
-#: app/Admin/class-econt.php:136 app/Admin/class-pigeon.php:280 app/Admin/class-speedy.php:196
+#: app/Admin/class-econt.php:136 app/Admin/class-pigeon.php:280 app/Admin/class-speedy.php:201
 msgid "Pack count"
 msgstr ""
 
-#: app/Admin/class-econt.php:137 app/Admin/class-pigeon.php:281 app/Admin/class-speedy.php:197
+#: app/Admin/class-econt.php:137 app/Admin/class-pigeon.php:281 app/Admin/class-speedy.php:202
 msgid "Shipment type"
 msgstr ""
 
-#: app/Admin/class-econt.php:138 app/Admin/class-pigeon.php:282 app/Admin/class-speedy.php:198 app/functions.php:129 app/functions.php:159
+#: app/Admin/class-econt.php:138 app/Admin/class-pigeon.php:282 app/Admin/class-speedy.php:203 app/functions.php:129 app/functions.php:159
 msgid "Other"
 msgstr ""
 
-#: app/Admin/class-econt.php:139 app/Admin/class-pigeon.php:283 app/Admin/class-speedy.php:199
+#: app/Admin/class-econt.php:139 app/Admin/class-pigeon.php:283 app/Admin/class-speedy.php:204
 msgid "bl. vh. et."
 msgstr ""
 
-#: app/Admin/class-econt.php:140 app/Admin/class-pigeon.php:284 app/Admin/class-speedy.php:200
+#: app/Admin/class-econt.php:140 app/Admin/class-pigeon.php:284 app/Admin/class-speedy.php:205
 msgid "Street number"
 msgstr ""
 
-#: app/Admin/class-econt.php:141 app/Admin/class-speedy.php:201 app/Front_End/Checkout/class-pickers.php:542 app/Shipping/Econt/class-address.php:47
+#: app/Admin/class-econt.php:141 app/Admin/class-speedy.php:206 app/Front_End/Checkout/class-pickers.php:542 app/Shipping/Econt/class-address.php:47
 msgid "Block"
 msgstr ""
 
-#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:202 app/Front_End/Checkout/class-pickers.php:543 app/Shipping/Econt/class-address.php:48
+#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:207 app/Front_End/Checkout/class-pickers.php:543 app/Shipping/Econt/class-address.php:48
 msgid "Entrance"
 msgstr ""
 
-#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:203 app/Front_End/Checkout/class-pickers.php:544 app/Shipping/Econt/class-address.php:49
+#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:208 app/Front_End/Checkout/class-pickers.php:544 app/Shipping/Econt/class-address.php:49
 msgid "Floor"
 msgstr ""
 
-#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:204 app/Front_End/Checkout/class-pickers.php:545 app/Shipping/Econt/class-address.php:50
+#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:545 app/Shipping/Econt/class-address.php:50
 msgid "Apartment"
 msgstr ""
 
@@ -548,35 +548,35 @@ msgstr ""
 msgid "Fill in at least one of block, entrance, floor or apartment."
 msgstr ""
 
-#: app/Admin/class-econt.php:147 app/Admin/class-pigeon.php:285 app/Admin/class-speedy.php:206
+#: app/Admin/class-econt.php:147 app/Admin/class-pigeon.php:285 app/Admin/class-speedy.php:211
 msgid "Street/Quarter"
 msgstr ""
 
-#: app/Admin/class-econt.php:148 app/Admin/class-pigeon.php:286 app/Admin/class-speedy.php:207 app/Admin/Tabs/class-econt-tab.php:156 app/Admin/Tabs/class-econt-tab.php:199 app/Admin/Tabs/class-pigeon-tab.php:99
+#: app/Admin/class-econt.php:148 app/Admin/class-pigeon.php:286 app/Admin/class-speedy.php:212 app/Admin/Tabs/class-econt-tab.php:156 app/Admin/Tabs/class-econt-tab.php:199 app/Admin/Tabs/class-pigeon-tab.php:99
 msgid "Office"
 msgstr ""
 
-#: app/Admin/class-econt.php:150 app/Admin/class-pigeon.php:287 app/Admin/class-speedy.php:209 app/Admin/Tabs/class-econt-tab.php:160 app/Admin/Tabs/class-pigeon-tab.php:103 app/Admin/Tabs/class-pigeon-tab.php:138
+#: app/Admin/class-econt.php:150 app/Admin/class-pigeon.php:287 app/Admin/class-speedy.php:214 app/Admin/Tabs/class-econt-tab.php:160 app/Admin/Tabs/class-pigeon-tab.php:103 app/Admin/Tabs/class-pigeon-tab.php:138
 msgid "Address"
 msgstr ""
 
-#: app/Admin/class-econt.php:151 app/Admin/class-pigeon.php:289 app/Admin/class-speedy.php:210 app/Export/Builder/class-fields.php:102 app/Front_End/Checkout/class-appearance.php:211
+#: app/Admin/class-econt.php:151 app/Admin/class-pigeon.php:289 app/Admin/class-speedy.php:215 app/Export/Builder/class-fields.php:102 app/Front_End/Checkout/class-appearance.php:211
 msgid "Delivery type"
 msgstr ""
 
-#: app/Admin/class-econt.php:153 app/Admin/class-pigeon.php:291 app/Admin/class-speedy.php:212
+#: app/Admin/class-econt.php:153 app/Admin/class-pigeon.php:291 app/Admin/class-speedy.php:217
 msgid "Buyer"
 msgstr ""
 
-#: app/Admin/class-econt.php:154 app/Admin/class-pigeon.php:292 app/Admin/class-speedy.php:213
+#: app/Admin/class-econt.php:154 app/Admin/class-pigeon.php:292 app/Admin/class-speedy.php:218
 msgid "Sender"
 msgstr ""
 
-#: app/Admin/class-econt.php:156 app/Admin/class-pigeon.php:294 app/Admin/class-speedy.php:217 app/Shipping/Pigeon/class-method.php:369 app/Shipping/Speedy/class-method.php:406
+#: app/Admin/class-econt.php:156 app/Admin/class-pigeon.php:294 app/Admin/class-speedy.php:222 app/Shipping/Pigeon/class-method.php:369 app/Shipping/Speedy/class-method.php:406
 msgid "Fixed price"
 msgstr ""
 
-#: app/Admin/class-econt.php:157 app/Admin/class-pigeon.php:295 app/Admin/class-speedy.php:218
+#: app/Admin/class-econt.php:157 app/Admin/class-pigeon.php:295 app/Admin/class-speedy.php:223
 msgid "Copy Label Data"
 msgstr ""
 
@@ -584,27 +584,27 @@ msgstr ""
 msgid "You just copied the label data used for the Econt API."
 msgstr ""
 
-#: app/Admin/class-econt.php:160 app/Admin/class-pigeon.php:300 app/Admin/class-speedy.php:221
+#: app/Admin/class-econt.php:160 app/Admin/class-pigeon.php:300 app/Admin/class-speedy.php:226
 msgid "Time:"
 msgstr ""
 
-#: app/Admin/class-econt.php:161 app/Admin/class-pigeon.php:301 app/Admin/class-speedy.php:222
+#: app/Admin/class-econt.php:161 app/Admin/class-pigeon.php:301 app/Admin/class-speedy.php:227
 msgid "Event:"
 msgstr ""
 
-#: app/Admin/class-econt.php:162 app/Admin/class-pigeon.php:302 app/Admin/class-speedy.php:223
+#: app/Admin/class-econt.php:162 app/Admin/class-pigeon.php:302 app/Admin/class-speedy.php:228
 msgid "Details:"
 msgstr ""
 
-#: app/Admin/class-econt.php:163 app/Admin/class-speedy.php:224 app/functions.php:314 app/Shipping/Econt/class-method.php:378 app/Shipping/Speedy/class-method.php:383
+#: app/Admin/class-econt.php:163 app/Admin/class-speedy.php:229 app/functions.php:314 app/Shipping/Econt/class-method.php:378 app/Shipping/Speedy/class-method.php:383
 msgid "Review and test"
 msgstr ""
 
-#: app/Admin/class-econt.php:164 app/Admin/class-pigeon.php:307 app/Admin/class-speedy.php:225 app/Admin/Tabs/class-econt-tab.php:110 app/Admin/Tabs/class-pigeon-tab.php:114 app/Admin/Tabs/class-speedy-tab.php:93
+#: app/Admin/class-econt.php:164 app/Admin/class-pigeon.php:307 app/Admin/class-speedy.php:230 app/Admin/Tabs/class-econt-tab.php:110 app/Admin/Tabs/class-pigeon-tab.php:114 app/Admin/Tabs/class-speedy-tab.php:93
 msgid "Declared value"
 msgstr ""
 
-#: app/Admin/class-econt.php:165 app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:227
+#: app/Admin/class-econt.php:165 app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:232
 msgid "Description"
 msgstr ""
 
@@ -616,31 +616,31 @@ msgstr ""
 msgid "Partial delivery"
 msgstr ""
 
-#: app/Admin/class-econt.php:169 app/Admin/class-pigeon.php:311 app/Admin/class-speedy.php:231
+#: app/Admin/class-econt.php:169 app/Admin/class-pigeon.php:311 app/Admin/class-speedy.php:236
 msgid "Length"
 msgstr ""
 
-#: app/Admin/class-econt.php:170 app/Admin/class-pigeon.php:312 app/Admin/class-speedy.php:232 app/Front_End/Checkout/class-field-editor.php:938
+#: app/Admin/class-econt.php:170 app/Admin/class-pigeon.php:312 app/Admin/class-speedy.php:237 app/Front_End/Checkout/class-field-editor.php:938
 msgid "Width"
 msgstr ""
 
-#: app/Admin/class-econt.php:171 app/Admin/class-pigeon.php:313 app/Admin/class-speedy.php:233
+#: app/Admin/class-econt.php:171 app/Admin/class-pigeon.php:313 app/Admin/class-speedy.php:238
 msgid "Height"
 msgstr ""
 
-#: app/Admin/class-econt.php:249
+#: app/Admin/class-econt.php:255
 msgid "Document"
 msgstr ""
 
-#: app/Admin/class-econt.php:250
+#: app/Admin/class-econt.php:256
 msgid "Pallet"
 msgstr ""
 
-#: app/Admin/class-econt.php:251
+#: app/Admin/class-econt.php:257
 msgid "Cargo"
 msgstr ""
 
-#: app/Admin/class-econt.php:252
+#: app/Admin/class-econt.php:258
 msgid "Document-Pallet"
 msgstr ""
 
@@ -770,7 +770,7 @@ msgstr ""
 msgid "Nothing matches these filters."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:217 app/class-plugin.php:372 app/Front_End/class-quick-order.php:375
+#: app/Admin/class-export-builder.php:217 app/class-plugin.php:369 app/Front_End/class-quick-order.php:375
 msgid "Something went wrong. Please try again."
 msgstr ""
 
@@ -1368,249 +1368,253 @@ msgstr ""
 msgid "A delivery the customer paid to the courier is not on the documents or in the NRA audit file, because you did not collect it. Credit notes follow their order. Each order keeps what was decided at checkout; orders from before version 0.21.8 keep the old \"Remove delivery from documents\" rule."
 msgstr ""
 
-#: app/Admin/class-help-page.php:202
+#: app/Admin/class-help-page.php:201
+msgid "Quick orders and orders made on the order screen are decided the same way once they have a shipping method and a payment method, and again when either changes, until the order has documents. A waybill made there for an order whose customer pays the courier shows its price for information only."
+msgstr ""
+
+#: app/Admin/class-help-page.php:203
 msgid "NRA audit file and exports"
 msgstr ""
 
 #. translators: %s: link to the Exports section
-#: app/Admin/class-help-page.php:204
+#: app/Admin/class-help-page.php:205
 #, php-format
 msgid "%s has the NRA audit file (Ordinance N-18), the invoice archive and the Microinvest Delta file for a chosen month. The audit file is checked against the NRA schema and has no order limit."
 msgstr ""
 
-#: app/Admin/class-help-page.php:205
+#: app/Admin/class-help-page.php:206
 msgid "Choose the month and press \"Create XML file\" for the NRA, \"Download archive\" for the invoices or \"Create file\" for Delta."
 msgstr ""
 
-#: app/Admin/class-help-page.php:206
+#: app/Admin/class-help-page.php:207
 msgid "The created files are kept for 7 days, then deleted. Download them when you create them."
 msgstr ""
 
-#: app/Admin/class-help-page.php:207
+#: app/Admin/class-help-page.php:208
 msgid "The custom export takes orders, products sold or documents, with your filters, columns and order, as CSV, Excel, JSON or XML. Save an export to run it again next month."
 msgstr ""
 
-#: app/Admin/class-help-page.php:209
+#: app/Admin/class-help-page.php:210
 msgid "EU VAT number check"
 msgstr ""
 
-#: app/Admin/class-help-page.php:210
+#: app/Admin/class-help-page.php:211
 msgid "Turn on \"Enable VIES validation\" in Documents > Invoices and documents. A company customer's VAT number is then checked with the European VIES system when the order is placed."
 msgstr ""
 
-#: app/Admin/class-help-page.php:211
+#: app/Admin/class-help-page.php:212
 msgid "An error shows only when the number is not valid or when the check itself fails. The option needs the PHP SOAP extension on your server."
 msgstr ""
 
-#: app/Admin/class-help-page.php:212
+#: app/Admin/class-help-page.php:213
 msgid "The VAT number is optional at checkout. Tick \"VAT number required on checkout?\" in Documents to make company customers enter it."
 msgstr ""
 
-#: app/Admin/class-help-page.php:214 app/Front_End/class-withdrawal.php:550 app/Front_End/class-withdrawal.php:564
+#: app/Admin/class-help-page.php:215 app/Front_End/class-withdrawal.php:550 app/Front_End/class-withdrawal.php:564
 msgid "EU withdrawal function"
 msgstr ""
 
 #. translators: %s: link to the Checkout section
-#: app/Admin/class-help-page.php:216
+#: app/Admin/class-help-page.php:217
 #, php-format
 msgid "Turn it on in %s > EU withdrawal function. A \"Withdraw from contract here\" link appears at the bottom of every page, on each order in My Account and in the order emails."
 msgstr ""
 
-#: app/Admin/class-help-page.php:217
+#: app/Admin/class-help-page.php:218
 msgid "Place the link yourself with the shortcode [nashenski_withdrawal_link] (button=\"yes\" makes it a button)."
 msgstr ""
 
-#: app/Admin/class-help-page.php:218
+#: app/Admin/class-help-page.php:219
 msgid "The links are not shown inside page-builder editors (Bricks, Oxygen, Breakdance, Elementor, Etch and others), only on the live site. A shortcode you place yourself still shows there."
 msgstr ""
 
-#: app/Admin/class-help-page.php:219
+#: app/Admin/class-help-page.php:220
 msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
 msgstr ""
 
-#: app/Admin/class-help-page.php:221 app/Admin/class-settings-page.php:159 app/Admin/Tabs/class-settings-tab.php:72 app/Reports/class-reports.php:174
+#: app/Admin/class-help-page.php:222 app/Admin/class-settings-page.php:159 app/Admin/Tabs/class-settings-tab.php:72 app/Reports/class-reports.php:174
 msgid "Customer checks"
 msgstr ""
 
-#: app/Admin/class-help-page.php:222
+#: app/Admin/class-help-page.php:223
 msgid "nekorekten.com, Connectix and NepoStop tell you whether a phone number has a history of refused parcels. Nashenski Commerce can show a warning on the order and hide cash on delivery for such customers."
 msgstr ""
 
-#: app/Admin/class-help-page.php:223
+#: app/Admin/class-help-page.php:224
 msgid "In NepoStop and nekorekten.com you can also tick the payment methods to hide under \"Hide these payment methods\". When the service flags the customer at its level of warning, those payment methods are not offered at checkout."
 msgstr ""
 
-#: app/Admin/class-help-page.php:224
+#: app/Admin/class-help-page.php:225
 msgid "Each visitor address gets at most 20 phone checks an hour. Over that, the check is skipped and the checkout goes on."
 msgstr ""
 
-#: app/Admin/class-help-page.php:225
+#: app/Admin/class-help-page.php:226
 msgid "Turn a service on in Overview, save, then enter its API key or token in Customer checks. A service without a key is not asked."
 msgstr ""
 
-#: app/Admin/class-help-page.php:226
+#: app/Admin/class-help-page.php:227
 msgid "On the order, the Reports box shows the answers. Press \"Refresh data\" to ask again."
 msgstr ""
 
-#: app/Admin/class-help-page.php:227
+#: app/Admin/class-help-page.php:228
 msgid "For nekorekten.com you can report a customer yourself: write what happened and press \"Send report\". The report carries the name, phone and email of the order. Change the text and press \"Save report\", or press \"Delete report\" to remove it from nekorekten.com."
 msgstr ""
 
-#: app/Admin/class-help-page.php:228
+#: app/Admin/class-help-page.php:229
 msgid "Connectix and NepoStop can also get tracking information or labels from your orders. Both are optional."
 msgstr ""
 
-#: app/Admin/class-help-page.php:230 app/Admin/class-impossiblevatprice.php:46 app/Admin/class-impossiblevatprice.php:47 app/Admin/class-impossiblevatprice.php:128
+#: app/Admin/class-help-page.php:231 app/Admin/class-impossiblevatprice.php:46 app/Admin/class-impossiblevatprice.php:47 app/Admin/class-impossiblevatprice.php:128
 msgid "Mathematically impossible prices"
 msgstr ""
 
-#: app/Admin/class-help-page.php:231
+#: app/Admin/class-help-page.php:232
 msgid "Open Products > Mathematically impossible prices and press \"Scan products\". It lists the prices that cannot be split into a price without VAT and the VAT without rounding."
 msgstr ""
 
-#: app/Admin/class-help-page.php:232
+#: app/Admin/class-help-page.php:233
 msgid "Press \"Fix all\" to correct them. The check matters most when your prices are entered including tax."
 msgstr ""
 
-#: app/Admin/class-help-page.php:234 app/Admin/class-help-page.php:283
+#: app/Admin/class-help-page.php:235 app/Admin/class-help-page.php:284
 msgid "Moving from another plugin"
 msgstr ""
 
-#: app/Admin/class-help-page.php:235
+#: app/Admin/class-help-page.php:236
 msgid "Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping."
 msgstr ""
 
-#: app/Admin/class-help-page.php:236
+#: app/Admin/class-help-page.php:237
 msgid "The order documents and invoices of Bulgarisation for WooCommerce move into the private documents folder and open from the order as before."
 msgstr ""
 
-#: app/Admin/class-help-page.php:237
+#: app/Admin/class-help-page.php:238
 msgid "It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database."
 msgstr ""
 
-#: app/Admin/class-help-page.php:238
+#: app/Admin/class-help-page.php:239
 msgid "While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused. Deactivate it before the import."
 msgstr ""
 
-#: app/Admin/class-help-page.php:239
+#: app/Admin/class-help-page.php:240
 msgid "Import the mreja.net Ordinance N-18 plugin while it is off. Until its documents are imported, Nashenski Commerce makes no invoices or other documents while a new number could clash with one of them. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already gave out: documents pause until it is off and its import is run again. Correct the orders that import lists, then use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-help-page.php:240
+#: app/Admin/class-help-page.php:241
 msgid "Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import."
 msgstr ""
 
-#: app/Admin/class-help-page.php:241
+#: app/Admin/class-help-page.php:242
 msgid "Only users who can manage plugins see the import button. If an old document number clashes with a number already in use, that number is skipped and the summary says \"N document numbers skipped (conflict)\"."
 msgstr ""
 
-#: app/Admin/class-help-page.php:243
+#: app/Admin/class-help-page.php:244
 msgid "Command line (WP-CLI)"
 msgstr ""
 
-#: app/Admin/class-help-page.php:244
+#: app/Admin/class-help-page.php:245
 msgid "Settings can be read and changed with WP-CLI: wp nashenski setting list, get, set and reset. The names are the option names without \"nashenski_settings_\", for example apis_enable_econt."
 msgstr ""
 
-#: app/Admin/class-help-page.php:245
+#: app/Admin/class-help-page.php:246
 msgid "Save a password from standard input so it stays out of the shell history: echo \"$PASSWORD\" | wp nashenski setting set econt_password -"
 msgstr ""
 
-#: app/Admin/class-help-page.php:246
+#: app/Admin/class-help-page.php:247
 msgid "wp nashenski courier reload and check do the \"Reload offices and cities\" button and the login check of a courier."
 msgstr ""
 
-#: app/Admin/class-help-page.php:248
+#: app/Admin/class-help-page.php:249
 msgid "Updates"
 msgstr ""
 
-#: app/Admin/class-help-page.php:249
+#: app/Admin/class-help-page.php:250
 msgid "New versions show up in Dashboard > Updates and on the Plugins screen, like any other plugin update. Automatic updates can be turned on there too."
 msgstr ""
 
-#: app/Admin/class-help-page.php:251
+#: app/Admin/class-help-page.php:252
 msgid "When something does not work"
 msgstr ""
 
-#: app/Admin/class-help-page.php:252
+#: app/Admin/class-help-page.php:253
 msgid "\"Nothing found\" under a courier: check the login on the courier page. In BOX NOW demo mode there are only two test lockers, both in Sofia."
 msgstr ""
 
-#: app/Admin/class-help-page.php:253
+#: app/Admin/class-help-page.php:254
 msgid "No courier options at checkout: add the methods to the shipping zone of the customer's address and give your products a weight."
 msgstr ""
 
-#: app/Admin/class-help-page.php:254
+#: app/Admin/class-help-page.php:255
 msgid "\"Complete the fields to calculate\" does not go away: the customer has not chosen an office, a locker or an address yet."
 msgstr ""
 
-#: app/Admin/class-help-page.php:255
+#: app/Admin/class-help-page.php:256
 msgid "No documents: turn on \"Invoices and N-18\" in Overview and check \"When to generate documents?\" in Documents."
 msgstr ""
 
-#: app/Admin/class-help-page.php:256
+#: app/Admin/class-help-page.php:257
 msgid "The order note \"Some documents were not generated\" means a document failed (the note gives the reason). The refund, renewal or checkout still went through. Fix the cause and make the document again from the order."
 msgstr ""
 
-#: app/Admin/class-help-page.php:269 app/Admin/class-import-sources.php:263
+#: app/Admin/class-help-page.php:270 app/Admin/class-import-sources.php:263
 msgid "Bulgarisation for WooCommerce"
 msgstr ""
 
-#: app/Admin/class-help-page.php:284
+#: app/Admin/class-help-page.php:285
 msgid "These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use. Then deactivate the old plugin."
 msgstr ""
 
 #. translators: %s: date
-#: app/Admin/class-help-page.php:296
+#: app/Admin/class-help-page.php:297
 #, php-format
 msgid "Imported on %s"
 msgstr ""
 
-#: app/Admin/class-help-page.php:299
+#: app/Admin/class-help-page.php:300
 msgid "Import"
 msgstr ""
 
 #. translators: %d: number of settings
-#: app/Admin/class-help-page.php:326
+#: app/Admin/class-help-page.php:327
 #, php-format
 msgid "%d setting changed."
 msgid_plural "%d settings changed."
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Admin/class-help-page.php:340 app/Admin/class-setup-wizard.php:727
+#: app/Admin/class-help-page.php:341 app/Admin/class-setup-wizard.php:727
 msgid "Recommended settings"
 msgstr ""
 
-#: app/Admin/class-help-page.php:341
+#: app/Admin/class-help-page.php:342
 msgid "Settings that suit most Bulgarian stores. Tick the ones you want and apply them; nothing else changes."
 msgstr ""
 
-#: app/Admin/class-help-page.php:346
+#: app/Admin/class-help-page.php:347
 msgid "Setting"
 msgstr ""
 
-#: app/Admin/class-help-page.php:347 app/class-plugin.php:377
+#: app/Admin/class-help-page.php:348 app/class-plugin.php:374
 msgid "Now"
 msgstr ""
 
-#: app/Admin/class-help-page.php:348
+#: app/Admin/class-help-page.php:349
 msgid "Recommended"
 msgstr ""
 
-#: app/Admin/class-help-page.php:349
+#: app/Admin/class-help-page.php:350
 msgid "Why"
 msgstr ""
 
-#: app/Admin/class-help-page.php:362
+#: app/Admin/class-help-page.php:363
 msgid "Already set"
 msgstr ""
 
-#: app/Admin/class-help-page.php:379
+#: app/Admin/class-help-page.php:380
 msgid "Apply recommended settings"
 msgstr ""
 
-#: app/Admin/class-help-page.php:381
+#: app/Admin/class-help-page.php:382
 msgid "All recommended settings are in place."
 msgstr ""
 
@@ -2087,7 +2091,7 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: app/Admin/class-pigeon.php:308 app/Admin/class-speedy.php:226 app/Front_End/Checkout/class-pickers.php:538
+#: app/Admin/class-pigeon.php:308 app/Admin/class-speedy.php:231 app/Front_End/Checkout/class-pickers.php:538
 msgid "Street or quarter"
 msgstr ""
 
@@ -2909,7 +2913,7 @@ msgstr ""
 msgid "Up to (kg)"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:373
+#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:370
 msgid "Remove row"
 msgstr ""
 
@@ -3371,31 +3375,31 @@ msgstr ""
 msgid "Speedy Delivery"
 msgstr ""
 
-#: app/Admin/class-speedy.php:205
+#: app/Admin/class-speedy.php:210
 msgid "Fill in at least one of street number, block, entrance, floor or apartment."
 msgstr ""
 
-#: app/Admin/class-speedy.php:214
+#: app/Admin/class-speedy.php:219
 msgid "Physical Weight"
 msgstr ""
 
-#: app/Admin/class-speedy.php:215
+#: app/Admin/class-speedy.php:220
 msgid "Volumetric weight"
 msgstr ""
 
-#: app/Admin/class-speedy.php:216
+#: app/Admin/class-speedy.php:221
 msgid "Chargeable weight"
 msgstr ""
 
-#: app/Admin/class-speedy.php:219
+#: app/Admin/class-speedy.php:224
 msgid "You just copied the label data used for the Speedy API."
 msgstr ""
 
-#: app/Admin/class-speedy.php:228
+#: app/Admin/class-speedy.php:233
 msgid "A4 with copy on same page"
 msgstr ""
 
-#: app/Admin/class-speedy.php:229
+#: app/Admin/class-speedy.php:234
 msgid "A4 with copy on single page"
 msgstr ""
 
@@ -3485,7 +3489,7 @@ msgstr ""
 msgid "Delivery price %1$s and the new total %2$s emailed to the customer."
 msgstr ""
 
-#: app/Admin/Order/class-delivery-box.php:158 app/Export/Builder/class-fields.php:90 app/Shipping/class-courier-fee.php:253
+#: app/Admin/Order/class-delivery-box.php:158 app/Export/Builder/class-fields.php:90 app/Shipping/class-courier-fee.php:367
 msgid "Delivery"
 msgstr ""
 
@@ -4605,7 +4609,7 @@ msgstr ""
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr ""
 
-#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:156 app/class-plugin.php:315
+#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:153 app/class-plugin.php:312
 msgid "Settings"
 msgstr ""
 
@@ -4774,40 +4778,40 @@ msgid "The document was not found or you do not have access to it."
 msgstr ""
 
 #. translators: %s: link to the settings
-#: app/class-plugin.php:156
+#: app/class-plugin.php:153
 #, php-format
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr ""
 
-#: app/class-plugin.php:371
+#: app/class-plugin.php:368
 msgid "The file was downloaded."
 msgstr ""
 
-#: app/class-plugin.php:374
+#: app/class-plugin.php:371
 msgid "Built-in prices restored. Save to keep them."
 msgstr ""
 
-#: app/class-plugin.php:375
+#: app/class-plugin.php:372
 msgid "Your prices match the courier website."
 msgstr ""
 
-#: app/class-plugin.php:376
+#: app/class-plugin.php:373
 msgid "The courier website has different prices:"
 msgstr ""
 
-#: app/class-plugin.php:378 app/Front_End/class-quick-order.php:500
+#: app/class-plugin.php:375 app/Front_End/class-quick-order.php:500
 msgid "Website"
 msgstr ""
 
-#: app/class-plugin.php:379
+#: app/class-plugin.php:376
 msgid "Use these prices"
 msgstr ""
 
-#: app/class-plugin.php:380
+#: app/class-plugin.php:377
 msgid "New prices filled in. Check them and save."
 msgstr ""
 
-#: app/class-plugin.php:414
+#: app/class-plugin.php:411
 msgid "The request failed. Reload the page and try again."
 msgstr ""
 
@@ -5526,7 +5530,7 @@ msgid "Complete the fields to calculate"
 msgstr ""
 
 #. translators: %s: delivery price, for example 6,50 €
-#: app/Front_End/Checkout/class-pickers.php:503 app/Shipping/class-courier-fee.php:213
+#: app/Front_End/Checkout/class-pickers.php:503 app/Shipping/class-courier-fee.php:327
 #, php-format
 msgid "%s, paid to the courier on delivery, not included in the total"
 msgstr ""
@@ -5952,7 +5956,7 @@ msgstr ""
 msgid "Review only"
 msgstr ""
 
-#: app/functions.php:580 app/functions.php:619 app/Shipping/Pigeon/class-payment.php:208
+#: app/functions.php:580 app/functions.php:619 app/Shipping/Pigeon/class-payment.php:209
 msgid "This page has expired. Reload it and try again."
 msgstr ""
 
@@ -6548,7 +6552,7 @@ msgstr ""
 msgid "Speedy did not accept the request."
 msgstr ""
 
-#: app/Shipping/class-courier-fee.php:80
+#: app/Shipping/class-courier-fee.php:90
 msgid "Customer pays the courier"
 msgstr ""
 
@@ -6709,23 +6713,23 @@ msgstr ""
 msgid "Please choose an address."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:42 app/Shipping/Pigeon/class-payment.php:47 app/Shipping/Pigeon/class-payment.php:221 app/Shipping/Pigeon/class-payment.php:230
+#: app/Shipping/Pigeon/class-payment.php:42 app/Shipping/Pigeon/class-payment.php:47 app/Shipping/Pigeon/class-payment.php:222 app/Shipping/Pigeon/class-payment.php:231
 msgid "Enter a finite, nonnegative shipping or COD amount."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:120 app/Shipping/Pigeon/class-payment.php:216
+#: app/Shipping/Pigeon/class-payment.php:121 app/Shipping/Pigeon/class-payment.php:217
 msgid "Choose a valid shipping payer."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:211
+#: app/Shipping/Pigeon/class-payment.php:212
 msgid "Reload this order before generating a Pigeon label."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:225
+#: app/Shipping/Pigeon/class-payment.php:226
 msgid "This order has no Pigeon shipping charge."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:234
+#: app/Shipping/Pigeon/class-payment.php:235
 msgid "COD is available only for cash-on-delivery orders."
 msgstr ""
 

@@ -86,7 +86,10 @@ plugin's own scheduled jobs (documents, abandoned cart reminders, shipment statu
   price is then shown for information only, not in the order total, on the documents or in the NRA
   file, and the waybill is paid by the receiver. Any other payment method: you collect the delivery
   and the sender pays. The total follows the payment method chosen at checkout. Free shipping,
-  deliveries abroad, a Speedy or Pigeon Express fixed price and BOX NOW are always yours.
+  deliveries abroad, a Speedy or Pigeon Express fixed price and BOX NOW are always yours. Quick and
+  admin orders are decided on the order screen once they have a shipping method and a payment
+  method, and again when either changes, until they have documents. On update to 0.21.8 every
+  method marked as a courier gets cash on delivery in its list, so cash on delivery works as before.
 - Each order screen shows the courier, the delivery type and the chosen office, locker or address.
 - Ship abroad (off by default): Econt to Romania and Greece, Speedy to nine countries on its price
   list. Prices abroad come only from the courier. Free shipping over a total can be set per country,
@@ -112,7 +115,7 @@ order open the courier box, check the details and press "Generate label".
 - A delivery with no VAT, on an order with no VAT at all, prints at 0% with its full price (invoices,
   credit notes and the NRA audit file).
 - A delivery the customer paid to the courier is not on the documents or in the NRA audit file. Each
-  order keeps what was decided at checkout; credit notes follow their order.
+  order keeps what was decided at checkout or on the order screen; credit notes follow their order.
 - Import the checkout fields and rules of WooCommerce Checkout Field Editor (free or Pro) in one click.
 - Optional clean-up of order documents (not invoices) of older orders.
 
