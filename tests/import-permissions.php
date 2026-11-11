@@ -436,14 +436,16 @@ namespace {
 	expect( false !== strpos( $html, 'Imported on 2024-01-01' ), 'Restricted viewers must retain completed-import status' );
 	expect( ! $GLOBALS['nonce_urls'], 'Reading completion status must not issue import nonce URLs' );
 
-	// After the Bulgarisation import, every later screen keeps asking until it is deactivated (not only the redirect).
+	// After the Bulgarisation import, only its Pro add-on can still be active: with the base plugin active, the
+	// guard in nashenski-commerce.php stops Nashenski Commerce before this code loads. The reminder for Pro stays.
 	reset_fixture( array( 'manage_woocommerce', 'activate_plugins' ) );
+	$GLOBALS['deactivated']                                        = array( 'woo-bg/main.php' );
 	$GLOBALS['options'][ \Nashenski\Admin\Migration::DONE_OPTION ] = array( 'time' => 1704067200 );
 	ob_start();
 	\Nashenski\Admin\Import_Sources::render();
 	$html = ob_get_clean();
-	expect( false !== strpos( $html, 'Bulgarisation for WooCommerce, Bulgarisation for WooCommerce - Pro' ) && false !== strpos( $html, '/admin/plugins.php' ), 'The Bulgarisation reminder persists after the import' );
-	$GLOBALS['network'] = 'woo-bg/main.php';
+	expect( false !== strpos( $html, 'deactivate Bulgarisation for WooCommerce - Pro:' ) && false !== strpos( $html, '/admin/plugins.php' ), 'The reminder for the Bulgarisation Pro add-on persists after the import' );
+	$GLOBALS['network'] = 'woo-bg-pro/main.php';
 	ob_start();
 	\Nashenski\Admin\Import_Sources::render();
 	$html = ob_get_clean();

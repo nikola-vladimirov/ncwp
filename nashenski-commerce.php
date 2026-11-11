@@ -113,6 +113,18 @@ function nashenski_document_text_bg( $translation, $text ) {
 }
 
 /**
+ * Whether a notice about why the plugin did not start belongs here: for users who manage plugins, on
+ * the Dashboard, the Plugins screen and the WooCommerce screens only.
+ *
+ * @return bool
+ */
+function nashenski_start_notice_here() {
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+
+	return current_user_can( 'activate_plugins' ) && $screen && ( in_array( $screen->id, array( 'dashboard', 'plugins', 'edit-shop_order', 'shop_order' ), true ) || false !== strpos( $screen->id, 'woocommerce' ) );
+}
+
+/**
  * Start the plugin and return its instance.
  *
  * @return \Nashenski\Plugin
@@ -126,6 +138,9 @@ function nashenski_init() {
 		add_action(
 			'admin_notices',
 			function () {
+				if ( ! nashenski_start_notice_here() ) {
+					return;
+				}
 				/* translators: %1$s is minimum php version and %2$s is minimum WP version*/
 				$message = sprintf( esc_html__( 'Nashenski Commerce requires PHP version %1$s+ and WP version %2$s+, plugin is currently NOT RUNNING.', 'nashenski-commerce' ), NASHENSKI_PHP_MINIMUM_VERSION, NASHENSKI_WP_MINIMUM_VERSION );
 				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
@@ -141,6 +156,9 @@ function nashenski_init() {
 		add_action(
 			'admin_notices',
 			function () {
+				if ( ! nashenski_start_notice_here() ) {
+					return;
+				}
 				$message = esc_html__( 'Nashenski Commerce is paused: please deactivate Bulgarisation for WooCommerce first. Your settings and orders can be imported afterwards.', 'nashenski-commerce' );
 				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
 			}
@@ -153,6 +171,9 @@ function nashenski_init() {
 		add_action(
 			'admin_notices',
 			function () {
+				if ( ! nashenski_start_notice_here() ) {
+					return;
+				}
 				$message = sprintf( esc_html__( 'Nashenski Commerce - Please enable WooCommerce first.', 'nashenski-commerce' ) );
 				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
 			}
@@ -168,6 +189,9 @@ function nashenski_init() {
 		add_action(
 			'admin_notices',
 			function () {
+				if ( ! nashenski_start_notice_here() ) {
+					return;
+				}
 				$message = sprintf( esc_html__( 'Please run `composer install` in the plugin folder `nashenski-commerce`', 'nashenski-commerce' ) );
 				echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
 			}
