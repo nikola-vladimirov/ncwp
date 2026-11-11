@@ -18,16 +18,9 @@ class Documents {
 	/** Set when an order got the note that its documents were paused, so it gets one note. */
 	const PAUSED_META = '_nashenski_documents_paused';
 
-	/** Set on an order whose documents wait for a busy numbering; retry() makes them. */
-	const RETRY_META = '_nashenski_documents_retry';
-
-	/** The scheduled event that makes the documents of the waiting orders. */
-	const RETRY_HOOK = 'nashenski_documents_retry';
-
 	/**
 	 * Whether documents are paused for the old N-18 plugin (Import_Sources::n18_paused()). The order then
-	 * gets a note, once, so the owner can find it and make its documents later. When numbering was only
-	 * busy, the order waits for retry() instead, with one note.
+	 * gets a note, once, so the owner can find it and make its documents later.
 	 *
 	 * @param \WC_Order|false $order Order whose automatic documents are skipped.
 	 * @return bool
@@ -37,66 +30,14 @@ class Documents {
 			return false;
 		}
 
-		if ( \Nashenski\Admin\Import_Sources::$busy ) {
-			if ( $order && ! $order->get_meta( self::RETRY_META ) ) {
-				$order->add_order_note( __( 'Document numbering was busy, so the documents were not made yet. They are made again automatically in a few minutes.', 'nashenski-commerce' ) );
-				$order->update_meta_data( self::RETRY_META, 'yes' );
-				$order->save();
-			}
-			if ( ! wp_next_scheduled( self::RETRY_HOOK ) ) {
-				wp_schedule_single_event( time() + 2 * MINUTE_IN_SECONDS, self::RETRY_HOOK );
-			}
-			return true;
-		}
-
 		// shortcut: one note per order; a later pause on an order that got documents in between adds none, add a reset when that matters.
 		if ( $order && ! $order->get_meta( self::PAUSED_META ) ) {
-			$order->add_order_note( __( 'No documents were made: Nashenski Commerce paused them while the old N-18 plugin was active. If that plugin made documents for this order, the order keeps its numbers. If not, make them here with "Regenerate PDF\'s" once it is deactivated.', 'nashenski-commerce' ) );
+			$order->add_order_note( __( 'No documents were made: the old N-18 plugin is active again. Deactivate it, then run its import again from the Help page, which takes over the numbers it gave out meanwhile. Then use "Regenerate PDF\'s" for orders it did not document.', 'nashenski-commerce' ) );
 			$order->update_meta_data( self::PAUSED_META, 'yes' );
 			$order->save();
 		}
 
 		return true;
-	}
-
-	/**
-	 * The scheduled retry: makes the documents of the orders that waited for a busy numbering, a batch
-	 * at a time. While numbering is still busy it tries again a few minutes later. If documents are
-	 * paused for the N-18 plugin by then, generate_documents() notes that on each order instead.
-	 */
-	public static function retry() {
-		$batch = 20;
-
-		if ( \Nashenski\Admin\Import_Sources::n18_paused() && \Nashenski\Admin\Import_Sources::$busy ) {
-			wp_schedule_single_event( time() + 5 * MINUTE_IN_SECONDS, self::RETRY_HOOK );
-			return;
-		}
-
-		$ids = wc_get_orders(
-			array(
-				'limit'        => $batch,
-				'return'       => 'ids',
-				'meta_key'     => self::RETRY_META, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- only the few orders that waited.
-				'meta_compare' => 'EXISTS',
-			)
-		);
-
-		foreach ( $ids as $id ) {
-			self::generate_documents( $id );
-
-			// Busy again: paused() kept the order waiting and scheduled the next try.
-			if ( \Nashenski\Admin\Import_Sources::$busy ) {
-				return;
-			}
-
-			$order = wc_get_order( $id );
-			$order->delete_meta_data( self::RETRY_META );
-			$order->save();
-		}
-
-		if ( count( $ids ) === $batch ) {
-			wp_schedule_single_event( time() + MINUTE_IN_SECONDS, self::RETRY_HOOK );
-		}
 	}
 
 	/**

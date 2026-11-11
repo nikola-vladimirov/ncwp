@@ -31,7 +31,6 @@ foreach ( $nashenski_sites as $nashenski_site ) {
 		'nashenski/pigeon/clear_cache_folder',
 		'nashenski/speedy/clear_cache_folder',
 		'nashenski/prices/check',
-		'nashenski_documents_retry',
 	) as $nashenski_hook ) {
 		wp_clear_scheduled_hook( $nashenski_hook );
 	}

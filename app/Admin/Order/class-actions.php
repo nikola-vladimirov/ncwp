@@ -24,7 +24,6 @@ class Actions {
 		$order_documents_trigger = nashenski_get_option( 'invoice', 'trigger' );
 
 		add_action( 'woocommerce_checkout_order_processed', array( '\Nashenski\Admin\Order\Documents', 'generate_proforma' ), 100 );
-		add_action( Documents::RETRY_HOOK, array( '\Nashenski\Admin\Order\Documents', 'retry' ) );
 
 		if ( ! $order_documents_trigger || 'order_created' === $order_documents_trigger ) {
 			add_action( 'woocommerce_checkout_order_processed', array( '\Nashenski\Admin\Order\Documents', 'generate_documents' ), 100 );
@@ -88,9 +87,9 @@ class Actions {
 			return $redirect_to;
 		}
 
-		// Paused or busy numbering: nothing is made, and the orders list says why.
+		// Documents paused for the old N-18 plugin: nothing is made, and the orders list says why.
 		if ( Import_Sources::n18_paused() ) {
-			return add_query_arg( 'nashenski_regenerate_paused', Import_Sources::$busy ? 'busy' : 'paused', $redirect_to );
+			return add_query_arg( 'nashenski_regenerate_paused', 1, $redirect_to );
 		}
 
 		foreach ( $ids as $order_id ) {
@@ -110,9 +109,8 @@ class Actions {
 			return;
 		}
 
-		$paused = nashenski_query_arg( 'nashenski_regenerate_paused' );
-		if ( '' !== $paused ) {
-			printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html( Import_Sources::paused_reason( 'busy' === $paused ) ) );
+		if ( '' !== nashenski_query_arg( 'nashenski_regenerate_paused' ) ) {
+			printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html( Import_Sources::paused_reason() ) );
 			return;
 		}
 

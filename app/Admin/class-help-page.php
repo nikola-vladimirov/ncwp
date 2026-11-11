@@ -233,7 +233,7 @@ class Help_Page {
 				esc_html__( 'The order documents and invoices of Bulgarisation for WooCommerce move into the private documents folder and open from the order as before.', 'nashenski-commerce' ),
 				esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database.', 'nashenski-commerce' ),
 				esc_html__( 'While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused. Deactivate it before the import.', 'nashenski-commerce' ),
-				esc_html__( 'After the import of the mreja.net Ordinance N-18 plugin, invoices and other documents are paused while that plugin is still active, because both would give out the same document numbers. Orders made meanwhile get a note. Deactivate it: numbering carries on after its last number, and orders that plugin documented keep its numbers. Use "Regenerate PDF\'s" only on orders it did not document.', 'nashenski-commerce' ),
+				esc_html__( 'Deactivate the mreja.net Ordinance N-18 plugin before you import it: both would give out the same document numbers. If it is turned on again after the import, invoices and other documents pause until it is off and its import is run again; that run takes over the numbers it gave out meanwhile. Then use "Regenerate PDF\'s" for orders it did not document.', 'nashenski-commerce' ),
 				esc_html__( 'Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import.', 'nashenski-commerce' ),
 				esc_html__( 'Only users who can manage plugins see the import button. If an old document number clashes with a number already in use, that number is skipped and the summary says "N document numbers skipped (conflict)".', 'nashenski-commerce' ),
 			),
@@ -263,11 +263,14 @@ class Help_Page {
 		$can_import = current_user_can( 'manage_woocommerce' ) && current_user_can( 'activate_plugins' );
 
 		if ( Migration::has_old_data() ) {
-			$rows[] = array( __( 'Bulgarisation for WooCommerce', 'nashenski-commerce' ), get_option( Migration::DONE_OPTION ), $can_import ? wp_nonce_url( admin_url( 'admin-post.php?action=' . Migration::ACTION ), Migration::ACTION ) : '' );
+			$rows[] = array( __( 'Bulgarisation for WooCommerce', 'nashenski-commerce' ), get_option( Migration::DONE_OPTION ), $can_import ? wp_nonce_url( admin_url( 'admin-post.php?action=' . Migration::ACTION ), Migration::ACTION ) : '', false );
 		}
 
 		foreach ( Import_Sources::sources() as $slug => $source ) {
-			$rows[] = array( $source['name'], $source['done'], $can_import ? Import_Sources::url( $slug ) : '' );
+			// The N-18 plugin is imported only while it is off; active again after its import, it is imported again.
+			$wait   = 'mreja_n18' === $slug && Import_Sources::n18_active();
+			$done   = empty( $source['done']['again'] ) ? $source['done'] : null;
+			$rows[] = array( $source['name'], $done, $can_import ? Import_Sources::url( $slug ) : '', $wait );
 		}
 
 		if ( ! $rows ) {
@@ -278,11 +281,13 @@ class Help_Page {
 		<p><?php esc_html_e( 'These plugins are installed or left data on your site. Import takes over what Nashenski Commerce can use. Then deactivate the old plugin.', 'nashenski-commerce' ); ?></p>
 		<table class="widefat striped nashenski-import">
 			<tbody>
-				<?php foreach ( $rows as list( $name, $done, $url ) ) : ?>
+				<?php foreach ( $rows as list( $name, $done, $url, $wait ) ) : ?>
 					<tr>
 						<td><?php echo esc_html( $name ); ?></td>
 						<td>
-							<?php if ( $done ) : ?>
+							<?php if ( $wait ) : ?>
+								<?php echo wp_kses_post( Import_Sources::n18_first_html() ); ?>
+							<?php elseif ( $done ) : ?>
 								<?php
 								/* translators: %s: date */
 								echo esc_html( sprintf( __( 'Imported on %s', 'nashenski-commerce' ), wp_date( get_option( 'date_format' ), (int) ( $done['time'] ?? 0 ) ) ) );

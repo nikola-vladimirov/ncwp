@@ -43,7 +43,6 @@ register_deactivation_hook(
 			'nashenski/pigeon/clear_cache_folder',
 			'nashenski/speedy/clear_cache_folder',
 			'nashenski/prices/check',
-			'nashenski_documents_retry',
 		) as $hook ) {
 			wp_clear_scheduled_hook( $hook );
 		}

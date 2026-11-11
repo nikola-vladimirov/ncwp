@@ -1,9 +1,9 @@
 <?php // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter, Generic.Files.OneObjectStructurePerFile, Universal.Files.SeparateFunctionsFromOO, WordPress.Security.EscapeOutput, WordPress.NamingConventions.PrefixAllGlobals, WordPress.WP.GlobalVariablesOverride, Universal.Namespaces, WordPress.WP.AlternativeFunctions, WordPress.DB.SlowDBQuery -- offline CLI test script: no WordPress, so stubs, unused stub parameters and plain-text output are on purpose.
 /**
- * Offline check (0.21.7): after the import of the mreja.net N-18 plugin, while it is active, Nashenski
- * Commerce makes no documents and takes no numbers, says so, and notes the orders it skipped. Once the
- * plugin is off, the orders it documented meanwhile get its numbers and the counters continue after its
- * highest number in both sequences (all five of its document types), once, also when requests race.
+ * Offline check (0.21.7): the mreja.net N-18 plugin is imported only while it is off. Active again after
+ * its import, Nashenski Commerce makes no documents and takes no numbers, says so per capability and
+ * notes the orders it skipped; once it is off, its import runs again and takes over the numbers it gave
+ * out meanwhile, continuing both sequences after all five of its document types (shared and separate).
  *
  * Run: php tests/n18-pause.php (it runs itself again with "active" for the plugin-active cases, because
  * the plugin's constant cannot be undefined).
@@ -27,11 +27,28 @@ namespace Automattic\WooCommerce\Utilities {
 	}
 }
 
+namespace Nashenski\Admin {
+	/**
+	 * Settings page URL stub.
+	 */
+	class Settings {
+		/**
+		 * URL of a settings section.
+		 *
+		 * @param string $section Section.
+		 * @return string
+		 */
+		public static function url( $section = '' ) {
+			return '/settings/' . $section;
+		}
+	}
+}
+
 namespace {
 	define( 'ABSPATH', __DIR__ . '/' );
 	define( 'DB_NAME', 'test' );
 	define( 'MINUTE_IN_SECONDS', 60 );
-	define( 'DAY_IN_SECONDS', 86400 );
+	define( 'HOUR_IN_SECONDS', 3600 );
 	define( 'ARRAY_A', 'ARRAY_A' );
 	$active = 'active' === ( $argv[1] ?? '' );
 	if ( $active ) {
@@ -39,98 +56,28 @@ namespace {
 	}
 
 	/**
-	 * A fresh site: N-18 imported (rows up to id 4), its documents table, our counters.
+	 * A fresh site with the N-18 plugin's documents table and our counters.
 	 *
-	 * @param array $options Options added.
+	 * @param array $options Options.
 	 * @param array $rows    N-18 documents: id, type, num, order_id.
 	 */
 	function fresh( $options, $rows ) {
-		$GLOBALS['options']    = $options + array(
-			'nashenski_imported_sources' => array(
-				'mreja_n18' => array(
-					'time'        => 1,
-					'n18_last_id' => 4,
-				),
-			),
-			'nashenski_settings_invoice_next_invoice_number' => '0000000101',
-		);
-		$GLOBALS['rows']       = $rows;
-		$GLOBALS['meta']       = array();
-		$GLOBALS['orders']     = array();
-		$GLOBALS['locks']      = 0;
-		$GLOBALS['lock_busy']  = false;
-		$GLOBALS['stale']      = false;
-		$GLOBALS['admin']      = true;
-		$GLOBALS['caps']       = array( 'manage_woocommerce', 'activate_plugins' );
-		$GLOBALS['n18_reads']  = 0;
-		$GLOBALS['scheduled']  = array();
-		$GLOBALS['logged']     = array();
-		$GLOBALS['nra']        = 0;
-		$GLOBALS['save_fails'] = false;
+		$GLOBALS['options'] = $options + array( 'nashenski_settings_invoice_next_invoice_number' => '0000000101' );
+		$GLOBALS['rows']    = $rows;
+		$GLOBALS['meta']    = array();
+		$GLOBALS['orders']  = array();
+		$GLOBALS['locks']   = 0;
+		$GLOBALS['caps']    = array( 'manage_woocommerce', 'activate_plugins' );
 	}
 
 	/**
-	 * Logger stub: keeps the errors.
-	 *
-	 * @return object
-	 */
-	function wc_get_logger() {
-		return new class() {
-			/**
-			 * Error.
-			 *
-			 * @param string $message Message.
-			 */
-			public function error( $message ) {
-				$GLOBALS['logged'][] = $message;
-			}
-		};
-	}
-	/**
-	 * Cron stub: the next run of an event.
-	 *
-	 * @param string $hook Event.
-	 * @return int|false
-	 */
-	function wp_next_scheduled( $hook ) {
-		return in_array( $hook, $GLOBALS['scheduled'], true ) ? time() : false;
-	}
-	/**
-	 * Cron stub: schedules one run.
-	 *
-	 * @param int    $time Time.
-	 * @param string $hook Event.
-	 */
-	function wp_schedule_single_event( $time, $hook ) {
-		$GLOBALS['scheduled'][] = $hook;
-	}
-	/**
-	 * Order query stub: the orders that carry a meta key.
-	 *
-	 * @param array $args Query.
-	 * @return array
-	 */
-	function wc_get_orders( $args ) {
-		$ids = array();
-		foreach ( $GLOBALS['orders'] as $id => $order ) {
-			if ( $order->get_meta( $args['meta_key'] ) ) {
-				$ids[] = $id;
-			}
-		}
-		return array_slice( $ids, 0, $args['limit'] );
-	}
-
-	/**
-	 * Option stub. With $GLOBALS['stale'], the flag reads as missing, like a request that read it before another set it.
+	 * Option stub.
 	 *
 	 * @param string $name     Option.
 	 * @param mixed  $fallback Default.
 	 * @return mixed
 	 */
 	function get_option( $name, $fallback = false ) {
-		if ( $GLOBALS['stale'] && 'nashenski_n18_numbers_continued' === $name ) {
-			return $fallback;
-		}
 		return $GLOBALS['options'][ $name ] ?? $fallback;
 	}
 	/**
@@ -143,14 +90,6 @@ namespace {
 		$GLOBALS['options'][ $name ] = $value;
 	}
 	/**
-	 * Option delete stub.
-	 *
-	 * @param string $name Option.
-	 */
-	function delete_option( $name ) {
-		unset( $GLOBALS['options'][ $name ] );
-	}
-	/**
 	 * Plugin setting stub.
 	 *
 	 * @param string $group Group.
@@ -159,6 +98,16 @@ namespace {
 	 */
 	function nashenski_get_option( $group, $name ) {
 		return get_option( 'nashenski_settings_' . $group . '_' . $name );
+	}
+	/**
+	 * Plugin setting write stub.
+	 *
+	 * @param string $group Group.
+	 * @param string $name  Name.
+	 * @param mixed  $value Value.
+	 */
+	function nashenski_set_option( $group, $name, $value ) {
+		update_option( 'nashenski_settings_' . $group . '_' . $name, $value );
 	}
 	/**
 	 * Cache stub.
@@ -180,6 +129,10 @@ namespace {
 	 * Cache delete stub.
 	 */
 	function wp_cache_delete() {}
+	/**
+	 * Cache flush stub.
+	 */
+	function wp_cache_flush() {}
 	/**
 	 * UUID stub.
 	 *
@@ -207,6 +160,17 @@ namespace {
 		return $text;
 	}
 	/**
+	 * Plural translation stub.
+	 *
+	 * @param string $single Singular.
+	 * @param string $plural Plural.
+	 * @param int    $count  Count.
+	 * @return string
+	 */
+	function _n( $single, $plural, $count ) {
+		return 1 === $count ? $single : $plural;
+	}
+	/**
 	 * Escaping stub.
 	 *
 	 * @param string $text Text.
@@ -227,6 +191,14 @@ namespace {
 	/**
 	 * Escaping stub.
 	 *
+	 * @param string $text Text.
+	 */
+	function esc_html_e( $text ) {
+		echo $text;
+	}
+	/**
+	 * Escaping stub.
+	 *
 	 * @param string $url URL.
 	 * @return string
 	 */
@@ -234,13 +206,65 @@ namespace {
 		return $url;
 	}
 	/**
+	 * Kses stub.
+	 *
+	 * @param string $html HTML.
+	 * @return string
+	 */
+	function wp_kses_post( $html ) {
+		return $html;
+	}
+	/**
+	 * Key stub.
+	 *
+	 * @param string $key Key.
+	 * @return string
+	 */
+	function sanitize_key( $key ) {
+		return $key;
+	}
+	/**
 	 * Admin URL stub.
 	 *
 	 * @param string $path Path.
 	 * @return string
 	 */
-	function admin_url( $path ) {
+	function admin_url( $path = '' ) {
 		return '/admin/' . $path;
+	}
+	/**
+	 * Nonce URL stub.
+	 *
+	 * @param string $url URL.
+	 * @return string
+	 */
+	function wp_nonce_url( $url ) {
+		return $url . '&_wpnonce=1';
+	}
+	/**
+	 * Nonce check stub.
+	 *
+	 * @return bool
+	 */
+	function check_admin_referer() {
+		return true;
+	}
+	/**
+	 * Request value stub: set $GLOBALS['query'].
+	 *
+	 * @param string $key Key.
+	 * @return string
+	 */
+	function nashenski_query_arg( $key ) {
+		return $GLOBALS['query'][ $key ] ?? '';
+	}
+	/**
+	 * Date stub.
+	 *
+	 * @return string
+	 */
+	function wp_date() {
+		return '2026-11-11';
 	}
 	/**
 	 * Single site.
@@ -248,30 +272,6 @@ namespace {
 	 * @return bool
 	 */
 	function is_multisite() {
-		return false;
-	}
-	/**
-	 * Admin request stub: set $GLOBALS['admin'].
-	 *
-	 * @return bool
-	 */
-	function is_admin() {
-		return $GLOBALS['admin'];
-	}
-	/**
-	 * Not an AJAX request.
-	 *
-	 * @return bool
-	 */
-	function wp_doing_ajax() {
-		return false;
-	}
-	/**
-	 * Not a cron request.
-	 *
-	 * @return bool
-	 */
-	function wp_doing_cron() {
 		return false;
 	}
 	/**
@@ -292,6 +292,14 @@ namespace {
 		return array( 'woocommerce-notasupto/index.php' => array( 'Name' => 'WooCommerce Наредба Н-18 облекчен режим плъгин' ) );
 	}
 	/**
+	 * Active plugins: the N-18 plugin while its constant is defined.
+	 *
+	 * @return bool
+	 */
+	function is_plugin_active() {
+		return defined( 'NOTASUPTO_VERSION_NUM' );
+	}
+	/**
 	 * Uploads stub: no saved PDF files.
 	 *
 	 * @return array
@@ -301,6 +309,15 @@ namespace {
 			'basedir' => __DIR__ . '/no-uploads',
 			'baseurl' => '/uploads',
 		);
+	}
+	/**
+	 * Stops the request.
+	 *
+	 * @param string $message Message.
+	 * @throws RuntimeException Always.
+	 */
+	function wp_die( $message ) {
+		throw new RuntimeException( 'died: ' . $message );
 	}
 	/**
 	 * Order lookup: one order object per id.
@@ -428,30 +445,10 @@ namespace {
 		 * Save: into the fake meta table.
 		 *
 		 * @return int
-		 * @throws \Exception With $GLOBALS['save_fails'], as a failed HPOS write.
 		 */
 		public function save() {
-			if ( $GLOBALS['save_fails'] ) {
-				throw new \Exception( 'Database write failed.' ); // As an HPOS save does.
-			}
 			$GLOBALS['meta'][ $this->id ] = $this->meta;
 			return $this->id;
-		}
-		/**
-		 * Meta delete.
-		 *
-		 * @param string $key Key.
-		 */
-		public function delete_meta_data( $key ) {
-			unset( $this->meta[ $key ] );
-		}
-		/**
-		 * Refunds: none.
-		 *
-		 * @return array
-		 */
-		public function get_refunds() {
-			return array();
 		}
 		/**
 		 * Note.
@@ -496,22 +493,13 @@ namespace {
 			return array( $query, ( 1 === count( $args ) && is_array( $args[0] ) ) ? $args[0] : $args );
 		}
 		/**
-		 * Orders whose meta $keys hold $number, leaving out $except.
+		 * Like escape stub.
 		 *
-		 * @param array $keys   Meta keys.
-		 * @param int   $number Number.
-		 * @param int   $except Order id.
-		 * @return int|null
+		 * @param string $text Text.
+		 * @return string
 		 */
-		private function meta_with( $keys, $number, $except ) {
-			foreach ( $GLOBALS['meta'] as $id => $meta ) {
-				foreach ( $keys as $key ) {
-					if ( $id !== $except && isset( $meta[ $key ] ) && (int) $meta[ $key ] === $number ) {
-						return $id;
-					}
-				}
-			}
-			return null;
+		public function esc_like( $text ) {
+			return $text;
 		}
 		/**
 		 * One value.
@@ -523,28 +511,16 @@ namespace {
 			list( $q, $a ) = $p;
 			if ( 0 === strpos( $q, 'SELECT GET_LOCK' ) ) {
 				++$GLOBALS['locks'];
-				return $GLOBALS['lock_busy'] ? '0' : '1';
+				return '1';
+			}
+			if ( 0 === strpos( $q, 'SELECT RELEASE_LOCK' ) ) {
+				return '1';
 			}
 			if ( 0 === strpos( $q, 'SHOW TABLES' ) ) {
 				return $a[0];
 			}
 			if ( 0 === strpos( $q, 'SELECT option_value' ) ) {
 				return $GLOBALS['options'][ $a[1] ] ?? null;
-			}
-			if ( 0 === strpos( $q, 'SELECT MAX(id)' ) ) {
-				return max( array_column( $GLOBALS['rows'], 'id' ) );
-			}
-			if ( 0 === strpos( $q, 'SELECT order_id FROM' ) ) {
-				++$GLOBALS['n18_reads'];
-				$except = array_pop( $a );
-				$number = array_pop( $a );
-				$types  = array_slice( $a, 1 );
-				foreach ( $GLOBALS['rows'] as $row ) {
-					if ( in_array( $row['type'], $types, true ) && (int) $row['num'] === (int) $number && (int) $row['order_id'] !== (int) $except ) {
-						return (string) $row['order_id'];
-					}
-				}
-				return null;
 			}
 			if ( false !== strpos( $q, 'MAX(CAST(meta_value' ) ) {
 				$high = 0;
@@ -556,10 +532,18 @@ namespace {
 				return (string) $high;
 			}
 			if ( false !== strpos( $q, 'WHERE meta_key IN' ) ) {
-				$keys = array_slice( $a, 2, count( $a ) - 5 );
-				return $this->meta_with( $keys, (int) $a[ count( $a ) - 3 ], (int) $a[ count( $a ) - 1 ] );
+				$keys   = array_slice( $a, 2, count( $a ) - 5 );
+				$number = (int) $a[ count( $a ) - 3 ];
+				$except = (int) $a[ count( $a ) - 1 ];
+				foreach ( $GLOBALS['meta'] as $id => $meta ) {
+					foreach ( $keys as $key ) {
+						if ( $id !== $except && isset( $meta[ $key ] ) && (int) $meta[ $key ] === $number ) {
+							return $id;
+						}
+					}
+				}
 			}
-			return '1';
+			return null;
 		}
 		/**
 		 * Rows.
@@ -595,15 +579,7 @@ namespace {
 				}
 				return $out;
 			}
-			$after = $a[2] ?? 0;
-			return array_values(
-				array_filter(
-					$GLOBALS['rows'],
-					function ( $row ) use ( $after ) {
-						return $row['id'] > $after;
-					}
-				)
-			);
+			return $GLOBALS['rows'];
 		}
 		/**
 		 * Write: the counter upsert.
@@ -618,20 +594,9 @@ namespace {
 	}
 	$GLOBALS['wpdb'] = new FakeDb();
 
-	/**
-	 * The order document class: counts the documents made.
-	 */
-	class Fake_NRA {
-		/**
-		 * Makes the document.
-		 */
-		public function generate_file() {
-			++$GLOBALS['nra'];
-		}
-	}
-	class_alias( 'Fake_NRA', 'Nashenski\Invoice\Document\NRA' );
-
+	require __DIR__ . '/../app/Admin/class-migration.php';
 	require __DIR__ . '/../app/Admin/class-import-sources.php';
+	require __DIR__ . '/../app/Admin/class-help-page.php';
 	require __DIR__ . '/../app/Invoice/class-number-allocator.php';
 	require __DIR__ . '/../app/Admin/Order/class-documents.php';
 }
@@ -681,107 +646,96 @@ namespace Nashenski {
 	function counter( $name ) {
 		return $GLOBALS['options'][ 'nashenski_settings_invoice_' . $name ] ?? '';
 	}
+	/**
+	 * The Help page's import table.
+	 *
+	 * @return string
+	 */
+	function help_import() {
+		ob_start();
+		( new \ReflectionMethod( Admin\Help_Page::class, 'output_import' ) )->invoke( null );
+		return ob_get_clean();
+	}
+	/**
+	 * The import entry of the N-18 plugin.
+	 *
+	 * @return array
+	 */
+	function n18_done() {
+		return $GLOBALS['options'][ Import_Sources::DONE_OPTION ]['mreja_n18'] ?? array();
+	}
 
-	$before = array( row( 1, 'purchase_order', 150, 1 ), row( 2, 'credit_note', 155, 1 ), row( 3, 'purchase_order_cancel', 160, 1 ), row( 4, 'debit_note', 158, 2 ) );
+	// All five types: order documents with cancellations, invoices with credit and debit notes.
+	$five = array( row( 1, 'purchase_order', 150, 1 ), row( 2, 'credit_note', 155, 1 ), row( 3, 'purchase_order_cancel', 160, 1 ), row( 4, 'debit_note', 158, 2 ), row( 5, 'invoice', 120, 2 ) );
 
 	if ( ! $GLOBALS['active'] ) {
-		// An import before 0.21.7 (no row id), on a storefront request: not busy, numbering continues inline.
-		fresh( array(), $before );
-		unset( $GLOBALS['options']['nashenski_imported_sources']['mreja_n18']['n18_last_id'] );
-		$GLOBALS['admin'] = false;
-		check( false === Import_Sources::n18_paused() && ! Import_Sources::$busy, 'an old import on a storefront request is not busy' );
-		check( '0000000161' === counter( 'next_invoice_number' ) && 4 === $GLOBALS['options']['nashenski_imported_sources']['mreja_n18']['n18_last_id'], 'its numbering continues after all five types and starts the catch-up from here' );
-
-		// Shared numbering, storefront request. During the pause the N-18 plugin documented order 900 (purchase
-		// order 170) and order 901 (invoice 170): both hold 170 in its two sequences, ours has one.
-		fresh( array(), array_merge( $before, array( row( 5, 'purchase_order', 170, 900 ), row( 6, 'invoice', 170, 901 ) ) ) );
-		$GLOBALS['admin'] = false;
-		check( false === Import_Sources::n18_paused(), 'not paused once the plugin is off, on any request' );
-		check( '0000000170' === wc_get_order( 900 )->get_meta( 'nashenski_order_number' ), 'an order the N-18 plugin documented during the pause keeps its number' );
-		check( array( 5 ) === array_column( wc_get_order( 900 )->get_meta( Import_Sources::LEGACY_META )['mreja_n18']['notasupto_documents'] ?? array(), 'id' ), 'and keeps its N-18 document rows' );
-		check( ! wc_get_order( 901 )->get_meta( 'nashenski_order_invoice_number' ) && 1 === count( wc_get_order( 901 )->notes ) && false !== strpos( wc_get_order( 901 )->notes[0], 'could not take it over' ), 'the other order with 170 is not numbered twice and gets a note' );
-		check( ! wc_get_order( 900 )->notes, 'an order taken over gets no note' );
-		check( '0000000171' === counter( 'next_invoice_number' ), 'shared numbering continues after the highest N-18 number: ' . counter( 'next_invoice_number' ) );
-		check( 6 === $GLOBALS['options']['nashenski_imported_sources']['mreja_n18']['n18_last_id'], 'the catch-up remembers its last row' );
-		$locks = $GLOBALS['locks'];
-		Import_Sources::n18_paused();
-		check( $locks === $GLOBALS['locks'], 'a second request does not read again' );
-
-		// A request that read the flag before the first one set it waits for the lock, then finds the flag.
-		$GLOBALS['stale'] = true;
-		Import_Sources::n18_paused();
-		$GLOBALS['stale'] = false;
-		check( '0000000171' === counter( 'next_invoice_number' ), 'a racing request changes nothing' );
-
-		// Within a day of the continue, a request that still had the N-18 plugin loaded gave out 171: skipped.
-		$GLOBALS['rows'][] = row( 7, 'purchase_order', 171, 902 );
-		check( 172 === Number_Allocator::allocate( wc_get_order( 903 ), 'nashenski_order_number', 'next_invoice_number' ), 'a number the N-18 plugin gave out is not given again' );
-
-		// A day later automatic numbers no longer read its table; a typed number still does.
-		$GLOBALS['options'][ Import_Sources::N18_CONTINUED ] = time() - 2 * DAY_IN_SECONDS;
-		$GLOBALS['rows'][]                                   = row( 8, 'purchase_order', 173, 904 );
-		$GLOBALS['n18_reads']                                = 0;
-		check( 173 === Number_Allocator::allocate( wc_get_order( 905 ), 'nashenski_order_number', 'next_invoice_number' ) && 0 === $GLOBALS['n18_reads'], 'after a day, automatic numbers skip the N-18 table' );
-		$GLOBALS['rows'][] = row( 9, 'purchase_order', 180, 907 );
-		check( '' !== Number_Allocator::manual( wc_get_order( 906 ), 180 ) && 1 === $GLOBALS['n18_reads'], 'a typed number is still checked against it' );
-
-		// Only a counter below the other plugin's number moves.
-		check(
-			0 === Number_Allocator::continue_after(
-				function () {
-					return array( 'next_invoice_number' => 100 );
-				}
-			),
-			'a higher counter stays'
-		);
-
-		// Separate counters: order documents and cancellations, invoices with credit and debit notes.
-		fresh( array( 'nashenski_settings_invoice_next_invoice_separate_number' => '0000000050' ), array_merge( $before, array( row( 5, 'invoice', 130, 3 ) ) ) );
-		Import_Sources::n18_paused();
+		// The plugin is off: the import runs, each sequence continues after its own types.
+		fresh( array( 'nashenski_settings_invoice_next_invoice_separate_number' => '0000000050' ), $five );
+		check( false !== strpos( help_import(), 'Import</a>' ), 'the Help page offers the import while the plugin is off' );
+		Import_Sources::import( 'mreja_n18' );
+		check( '0000000150' === wc_get_order( 1 )->get_meta( 'nashenski_order_number' ) && '0000000120' === wc_get_order( 2 )->get_meta( 'nashenski_order_invoice_number' ), 'the import takes over the numbers' );
 		check( '0000000161' === counter( 'next_invoice_number' ) && '0000000159' === counter( 'next_invoice_separate_number' ), 'separate counters continue after their own types: ' . counter( 'next_invoice_number' ) . ', ' . counter( 'next_invoice_separate_number' ) );
+		check( false === Import_Sources::n18_paused(), 'not paused while the plugin is off' );
 
-		// The lock times out: the order waits with one note, and a scheduled retry makes its documents.
-		fresh( array(), $before );
-		$GLOBALS['lock_busy'] = true;
-		check( Documents::paused( wc_get_order( 7 ) ) && Import_Sources::$busy && false !== strpos( Import_Sources::paused_reason(), 'busy' ), 'a lock timeout skips the documents with its own reason' );
-		Documents::paused( wc_get_order( 7 ) ); // The proforma and the other documents of the same checkout.
-		check( 1 === count( wc_get_order( 7 )->notes ) && 'yes' === wc_get_order( 7 )->get_meta( Documents::RETRY_META ) && in_array( Documents::RETRY_HOOK, $GLOBALS['scheduled'], true ), 'the order waits, with one note, and a retry is scheduled' );
-		$GLOBALS['scheduled'] = array();
-		Documents::retry();
-		check( array( Documents::RETRY_HOOK ) === $GLOBALS['scheduled'] && 0 === $GLOBALS['nra'] && wc_get_order( 7 )->get_meta( Documents::RETRY_META ), 'still busy: the retry tries again later' );
-		$GLOBALS['lock_busy'] = false;
-		Documents::retry();
-		check( 1 === $GLOBALS['nra'] && ! wc_get_order( 7 )->get_meta( Documents::RETRY_META ) && 1 === count( wc_get_order( 7 )->notes ), 'free again: the retry makes the documents' );
+		// It was active again for a while (the pause marked it): its import runs again and takes over its new numbers.
+		$done                       = $GLOBALS['options'][ Import_Sources::DONE_OPTION ];
+		$done['mreja_n18']['again'] = true;
+		$GLOBALS['options'][ Import_Sources::DONE_OPTION ] = $done;
+		$GLOBALS['rows']                                   = array_merge( $five, array( row( 6, 'purchase_order', 170, 3 ), row( 7, 'invoice', 165, 3 ), row( 8, 'purchase_order_cancel', 175, 1 ) ) );
+		check( false !== strpos( help_import(), 'Import</a>' ) && isset( Import_Sources::open_names()['mreja_n18'] ), 'after a reactivation the Help page and the notice offer the import again' );
+		$report = Import_Sources::import( 'mreja_n18' );
+		check( '0000000170' === wc_get_order( 3 )->get_meta( 'nashenski_order_number' ) && '0000000165' === wc_get_order( 3 )->get_meta( 'nashenski_order_invoice_number' ), 'the rerun takes over the numbers it gave out meanwhile' );
+		check( '0000000150' === wc_get_order( 1 )->get_meta( 'nashenski_order_number' ) && in_array( '2 document numbers', $report, true ), 'orders that already had a number keep it: ' . implode( ' / ', $report ) );
+		check( '0000000176' === counter( 'next_invoice_number' ) && '0000000166' === counter( 'next_invoice_separate_number' ), 'the counters continue after its new highest numbers: ' . counter( 'next_invoice_number' ) . ', ' . counter( 'next_invoice_separate_number' ) );
+		check( n18_done() && empty( n18_done()['again'] ) && false !== strpos( help_import(), 'Imported on' ), 'the rerun is recorded as done' );
 
-		// An order that cannot be saved during the catch-up: busy, logged, no fatal error on admin screens.
-		fresh( array(), array_merge( $before, array( row( 5, 'purchase_order', 170, 900 ) ) ) );
-		$GLOBALS['save_fails'] = true;
-		ob_start();
-		Import_Sources::n18_notice();
-		$html = ob_get_clean();
-		check( Import_Sources::$busy && '' === $html && $GLOBALS['logged'] && ! isset( $GLOBALS['options'][ Import_Sources::N18_CONTINUED ] ), 'a failed save during the catch-up is busy and logged, not fatal' );
+		// Shared numbering (empty separate counter): all five types continue the one counter.
+		fresh( array(), $five );
+		Import_Sources::import( 'mreja_n18' );
+		check( '0000000161' === counter( 'next_invoice_number' ) && '' === counter( 'next_invoice_separate_number' ), 'shared numbering continues after all five types and stays shared: ' . counter( 'next_invoice_number' ) );
 
 		// The cases with the N-18 plugin active run in a second process.
 		exec( escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( __FILE__ ) . ' active 2>&1', $output, $code ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec -- the plugin-active cases.
 		check( 0 === $code, 'plugin active: ' . implode( ' / ', $output ) );
 	} else {
-		// Reactivated after the counters continued: paused again, and they continue again next time.
-		fresh( array( Import_Sources::N18_CONTINUED => 1 ), $before );
-		check( true === Import_Sources::n18_paused() && ! isset( $GLOBALS['options'][ Import_Sources::N18_CONTINUED ] ), 'a reactivated plugin pauses again and clears the flag' );
+		// Active and not imported yet: the import is refused in the Help page, the notice and the handler.
+		fresh( array(), $five );
+		check( false === Import_Sources::n18_paused(), 'an active plugin that was never imported pauses nothing' );
+		$html = help_import();
+		check( false !== strpos( $html, 'Deactivate the N-18 plugin first, then import.' ) && false !== strpos( $html, '/admin/plugins.php' ) && false === strpos( $html, 'Import</a>' ), 'the Help page asks to deactivate it first, with the Plugins link' );
+		$GLOBALS['caps'] = array( 'manage_woocommerce' );
+		check( false !== strpos( help_import(), 'Ask an administrator' ), 'a shop manager is asked to get an administrator' );
+		$GLOBALS['caps'] = array( 'manage_woocommerce', 'activate_plugins' );
+		ob_start();
+		Import_Sources::render();
+		check( false !== strpos( ob_get_clean(), 'Deactivate the N-18 plugin first, then import.' ), 'the import notice says the same' );
+		$GLOBALS['query'] = array( 'source' => 'mreja_n18' );
+		try {
+			Import_Sources::handle();
+			check( false, 'the import handler refuses' );
+		} catch ( \RuntimeException $e ) {
+			check( false !== strpos( $e->getMessage(), 'died: Deactivate the N-18 plugin first' ), 'the import handler refuses' );
+		}
+		check( array( 'Deactivate the N-18 plugin first, then import.' ) === Import_Sources::import( 'mreja_n18' ) && ! n18_done() && ! wc_get_order( 1 )->get_meta( 'nashenski_order_number' ), 'the import itself refuses and changes nothing' );
 
-		// An import before 0.21.7 (no row id): the pause starts the catch-up from its last row.
-		fresh( array(), $before );
-		unset( $GLOBALS['options']['nashenski_imported_sources']['mreja_n18']['n18_last_id'] );
-		Import_Sources::n18_paused();
-		check( 4 === ( $GLOBALS['options']['nashenski_imported_sources']['mreja_n18']['n18_last_id'] ?? null ), 'an old import gets its catch-up start while paused' );
-
-		// No numbers, automatic or typed, and the reason is given; no lock is taken.
-		fresh( array(), $before );
+		// Active again after its import: no documents and no numbers, and it is marked for a new import.
+		fresh(
+			array(
+				Import_Sources::DONE_OPTION => array(
+					'mreja_n18' => array(
+						'time'   => 1,
+						'report' => array(),
+					),
+				),
+			),
+			$five
+		);
+		check( true === Import_Sources::n18_paused() && ! empty( n18_done()['again'] ), 'active again after its import: paused, and marked for a new import' );
 		try {
 			Number_Allocator::allocate( wc_get_order( 7 ), 'nashenski_order_number', 'next_invoice_number' );
 			check( false, 'an automatic number is refused while paused' );
 		} catch ( \RuntimeException $e ) {
-			check( Import_Sources::paused_reason() === $e->getMessage() && 0 === $GLOBALS['locks'], 'an automatic number is refused, with the reason' );
+			check( Import_Sources::paused_reason() === $e->getMessage() && 0 === $GLOBALS['locks'], 'an automatic number is refused before the lock, with the reason' );
 		}
 		try {
 			Number_Allocator::manual( wc_get_order( 7 ), 500 );
@@ -789,12 +743,10 @@ namespace Nashenski {
 		} catch ( \RuntimeException $e ) {
 			check( 0 === $GLOBALS['locks'], 'a typed number is refused' );
 		}
-
-		// Skipped automatic documents leave one note that says what to do.
-		Documents::generate_documents( 7 );
+		Documents::generate_documents( 7 ); // Would need the document classes if it went on.
 		Documents::generate_refunded_documents( 8, 7 );
 		$notes = wc_get_order( 7 )->notes;
-		check( 1 === count( $notes ) && false !== strpos( $notes[0], 'keeps its numbers' ) && 0 === $GLOBALS['nra'], 'skipped documents leave one note' );
+		check( 1 === count( $notes ) && false !== strpos( $notes[0], 'run its import again' ), 'skipped documents leave one note that says what to do' );
 
 		// The error notice: for shop managers, with the link only for those who can deactivate plugins.
 		$GLOBALS['caps'] = array();
@@ -817,5 +769,5 @@ namespace Nashenski {
 		fwrite( STDERR, 'FAIL: ' . implode( "\nFAIL: ", $fail ) . "\n" );
 		exit( 1 );
 	}
-	echo 'PASS: ' . $checks . ' N-18 pause checks' . ( $GLOBALS['active'] ? ' (plugin active)' : '' ) . "\n";
+	echo 'PASS: ' . $checks . ' N-18 checks' . ( $GLOBALS['active'] ? ' (plugin active)' : '' ) . "\n";
 }
