@@ -2,6 +2,18 @@
 
 Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 
+## 0.21.10 (2026-11-13)
+
+### Changes
+- Security Audit: every function that reads a form, a link or an AJAX request checks its nonce first, on its own, and only then reads the fields; actions that change data also check the user's rights. This covers the checkout update, the checkout field rules, the Pigeon Express label payment, the order withdrawal form, the quick order, the abandoned carts screen and the export, report and price screens.
+- Security Audit: notices after an action (carts reminded or deleted, documents regenerated, import or setup done) show only when the link carries its nonce. The filter, page and edit links of the abandoned carts screen and the courier links in the settings carry one too; an old bookmark opens the default view.
+- Security Audit: CSS and scripts are escaped where they are printed. The quick order, withdrawal form and email settings scripts are now files in assets/js. The quick order button asks for a fresh security token on each click, so it also works on cached product pages.
+- Security Audit: the plugin no longer defines WordPress's FS_CHMOD_DIR and FS_CHMOD_FILE. Its own files get the permissions of their folder, as uploads do.
+- Security Audit: document and export download links carry a nonce besides their signature. A link on a page left open for more than a day needs a reload.
+- Security Audit: only standard file types in the plugin. Library licence files end in .txt, the NRA audit schema is dex-audit-schema.xml, and unused PDF library files (encoding maps, the PDF/A colour profile) are left out. The WordPress.org zip has no .pot file.
+- The withdrawal link in emails now carries the order number as nashenski_order. Links in emails sent before this version still open the form, without the order number filled in.
+- Old settings links (admin.php?page=nashenski&tab=...) open the Nashenski Commerce settings at the start.
+
 ## 0.21.9 (2026-11-12)
 
 ### Changes
