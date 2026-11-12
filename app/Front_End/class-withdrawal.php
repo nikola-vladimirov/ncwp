@@ -31,6 +31,9 @@ class Withdrawal {
 	/** What the customer submitted, kept on the order. */
 	const META = '_nashenski_withdrawal';
 
+	/** Query var of the links to the form: the order number to fill in. */
+	const ORDER_VAR = 'nashenski_order';
+
 	/**
 	 * Registers the hooks.
 	 */
@@ -55,6 +58,7 @@ class Withdrawal {
 		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( __CLASS__, 'column' ), 10, 2 );
 		add_action( 'manage_shop_order_posts_custom_column', array( __CLASS__, 'column' ), 10, 2 );
 
+		add_filter( 'query_vars', array( __CLASS__, 'query_vars' ) );
 		add_shortcode( 'nashenski_withdrawal_link', array( __CLASS__, 'shortcode' ) );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'footer_link' ) );
@@ -88,7 +92,19 @@ class Withdrawal {
 	public static function url( $order = null ) {
 		$url = wc_get_endpoint_url( 'order-withdrawal', '', wc_get_page_permalink( 'myaccount' ) );
 
-		return $order ? add_query_arg( 'order', rawurlencode( $order->get_order_number() ), $url ) : $url;
+		return $order ? add_query_arg( self::ORDER_VAR, rawurlencode( $order->get_order_number() ), $url ) : $url;
+	}
+
+	/**
+	 * Lets WordPress read the order number from the link.
+	 *
+	 * @param string[] $vars Public query vars.
+	 * @return string[]
+	 */
+	public static function query_vars( $vars ) {
+		$vars[] = self::ORDER_VAR;
+
+		return $vars;
 	}
 
 	/**
@@ -131,10 +147,10 @@ class Withdrawal {
 			|| is_customize_preview()
 			|| ( class_exists( '\Elementor\Plugin' ) && isset( \Elementor\Plugin::$instance->editor, \Elementor\Plugin::$instance->preview ) && ( \Elementor\Plugin::$instance->editor->is_edit_mode() || \Elementor\Plugin::$instance->preview->is_preview_mode() ) );
 
-		// Each builder opens its editor and canvas with one of these addresses.
-		foreach ( array( 'bricks', 'brickspreview', 'ct_builder', 'oxygen_iframe', 'breakdance', 'breakdance_iframe', 'elementor-preview', 'fl_builder', 'et_fb', 'vc_editable', 'brizy-edit', 'brizy-edit-iframe', 'tve', 'etch' ) as $key ) {
-			$in = $in || null !== nashenski_query_arg( $key, null );
-		}
+		// Each builder opens its editor and canvas with one of these in the address of the page (add_query_arg() gives that address).
+		$args = array();
+		wp_parse_str( (string) wp_parse_url( add_query_arg( array() ), PHP_URL_QUERY ), $args );
+		$in = $in || array_intersect_key( $args, array_flip( array( 'bricks', 'brickspreview', 'ct_builder', 'oxygen_iframe', 'breakdance', 'breakdance_iframe', 'elementor-preview', 'fl_builder', 'et_fb', 'vc_editable', 'brizy-edit', 'brizy-edit-iframe', 'tve', 'etch' ) ) );
 
 		return (bool) \Nashenski\Hooks::filter( 'nashenski_withdrawal_in_builder', 'nashenski/withdrawal/in_builder', $in );
 	}
@@ -232,7 +248,8 @@ class Withdrawal {
 		}
 
 		if ( $plain_text ) {
-			echo "\n" . esc_html( self::label() ) . ': ' . esc_url_raw( self::url( $order ) ) . "\n";
+			// Plain text has no HTML entities: this context keeps "&" as it is, so the link still works.
+			echo "\n" . esc_html( self::label() ) . ': ' . esc_url( self::url( $order ), null, 'plain_text' ) . "\n";
 		} else {
 			echo wp_kses_post( '<p style="margin:16px 0">' . self::link( self::url( $order ) ) . '</p>' );
 		}
@@ -247,7 +264,7 @@ class Withdrawal {
 		}
 
 		wp_enqueue_style( 'nashenski-withdrawal', nashenski()->plugin_dir_url() . 'assets/css/withdrawal.css', array(), \Nashenski\Plugin::VERSION );
-		wp_add_inline_style( 'nashenski-withdrawal', Checkout\Appearance::css() );
+		wp_add_inline_style( 'nashenski-withdrawal', wp_strip_all_tags( Checkout\Appearance::css() ) );
 	}
 
 	/**
@@ -264,7 +281,8 @@ class Withdrawal {
 		$customer = is_user_logged_in() && WC()->customer ? WC()->customer : null;
 		$fill     = array_filter(
 			array(
-				'order_number'       => nashenski_query_arg( 'order' ),
+				// A link in an email cannot carry a nonce (guests, days later); the number only prefills the form, which WooCommerce checks on submit.
+				'order_number'       => sanitize_text_field( (string) get_query_var( self::ORDER_VAR ) ),
 				'first_name'         => $customer ? $customer->get_billing_first_name() : '',
 				'last_name'          => $customer ? $customer->get_billing_last_name() : '',
 				'email'              => $customer ? $customer->get_billing_email() : '',
@@ -272,10 +290,9 @@ class Withdrawal {
 			)
 		);
 
-		wp_register_script( 'nashenski-withdrawal', false, array(), \Nashenski\Plugin::VERSION, true );
-		wp_enqueue_script( 'nashenski-withdrawal' );
 		// Printed in the footer, after the form, so it runs at once.
-		wp_add_inline_script( 'nashenski-withdrawal', '(function(d){Object.keys(d).forEach(function(k){var i=document.getElementById("order_withdrawal_"+k);if(i&&!i.value){i.value=d[k];}});})(' . wp_json_encode( $fill ) . ');' );
+		wp_enqueue_script( 'nashenski-withdrawal', nashenski()->plugin_dir_url() . 'assets/js/withdrawal.js', array(), \Nashenski\Plugin::VERSION, true );
+		wp_localize_script( 'nashenski-withdrawal', 'nashenskiWithdrawal', $fill );
 	}
 
 	/**
@@ -286,9 +303,11 @@ class Withdrawal {
 	 * @param \WC_Order $order   Order.
 	 */
 	public static function record( $note_id, $order ) {
-		$nonce = isset( $_POST['woocommerce-order-withdrawal-nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['woocommerce-order-withdrawal-nonce'] ) ) : '';
+		if ( ! isset( $_POST['woocommerce-order-withdrawal-nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woocommerce-order-withdrawal-nonce'] ) ), 'woocommerce_order_withdrawal' ) ) {
+			return;
+		}
 
-		if ( ! wp_verify_nonce( $nonce, 'woocommerce_order_withdrawal' ) || ! $order instanceof \WC_Order || 'yes' !== $order->get_meta( '_order_withdrawal_requested' ) || $order->get_meta( self::META ) ) {
+		if ( ! $order instanceof \WC_Order || 'yes' !== $order->get_meta( '_order_withdrawal_requested' ) || $order->get_meta( self::META ) ) {
 			return;
 		}
 

@@ -14,8 +14,6 @@ namespace {
 	mkdir( $root . 'wp-admin/includes', 0777, true );
 	file_put_contents( $root . 'wp-admin/includes/file.php', '<?php function wp_tempnam( $name ) { $GLOBALS["temp_files"][] = $f = tempnam( sys_get_temp_dir(), "nsk" ); return $f; }' );
 	define( 'ABSPATH', $root );
-	define( 'FS_CHMOD_FILE', 0644 );
-	define( 'FS_CHMOD_DIR', 0755 );
 	error_reporting( E_ALL & ~E_DEPRECATED ); // dompdf 3.0 deprecations on PHP 8.4+.
 	require __DIR__ . '/../vendor/autoload.php';
 	require_once __DIR__ . '/../app/autoload.php';

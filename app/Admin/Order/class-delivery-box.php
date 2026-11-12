@@ -225,7 +225,11 @@ class Delivery_Box {
 	 * @return void
 	 */
 	public static function save( $order_id ) {
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_nonce'] ?? '' ) ), self::NONCE ) || ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( ! isset( $_POST['nashenski_delivery_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_nonce'] ) ), self::NONCE ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_shop_orders' ) ) {
 			return;
 		}
 

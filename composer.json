@@ -10,6 +10,9 @@
         "setasign/fpdi": "^2.6",
         "setasign/fpdf": "^1.9"
     },
+    "scripts": {
+        "post-autoload-dump": "@php bin/vendor-licenses.php"
+    },
     "extra": {
         "installer-paths": {
             "vendor/{$vendor}/{$name}/": ["type:wordpress-plugin"]

@@ -42,8 +42,6 @@ namespace {
 		}
 	);
 	define( 'WP_CONTENT_DIR', $GLOBALS['scratch'] . 'wp-content' );
-	define( 'FS_CHMOD_DIR', 0755 );
-	define( 'FS_CHMOD_FILE', 0644 );
 	define( 'HOUR_IN_SECONDS', 3600 );
 	define( 'DAY_IN_SECONDS', 86400 );
 

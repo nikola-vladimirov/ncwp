@@ -67,6 +67,8 @@ function wp_safe_redirect( $url ) {
 	throw new Redirected( $url ); }
 function add_query_arg( $key, $value, $url ) {
 	return $url . '&' . $key . '=' . $value; }
+function nashenski_notice_url( $url ) {
+	return $url; }
 function admin_url( $path = '' ) {
 	return '/wp-admin/' . $path; }
 function add_action() {}

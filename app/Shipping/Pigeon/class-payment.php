@@ -199,19 +199,22 @@ class Payment {
 	/**
 	 * A staff request field, sanitized where it is read. Text is sanitized; any other type (a
 	 * true, an array) is kept as it is, so amount() refuses it instead of reading "1".
-	 * request() checks the nonce before it reads any field.
+	 * The order screen nonce is checked here, before the field is read.
 	 *
 	 * @param string $key Field name.
-	 * @return mixed Null when missing.
+	 * @return mixed Null when missing or not verified.
 	 */
 	private static function typed( $key ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- request() verified the label nonce first.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			return null;
+		}
+
 		if ( ! isset( $_REQUEST[ $key ] ) ) {
 			return null;
 		}
 
 		return map_deep(
-			wp_unslash( $_REQUEST[ $key ] ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- request() verified the nonce; map_deep() sanitizes every text value.
+			wp_unslash( $_REQUEST[ $key ] ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- map_deep() sanitizes every text value.
 			function ( $value ) {
 				return is_string( $value ) ? sanitize_text_field( $value ) : $value;
 			}
@@ -227,7 +230,7 @@ class Payment {
 	 */
 	public static function request( $order ) {
 		// Staff label requests carry the order screen nonce; it is checked here, where the raw request is read.
-		if ( ! wp_verify_nonce( isset( $_REQUEST['nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) : '', 'nashenski_admin_label' ) ) {
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
 			throw new \InvalidArgumentException( esc_html__( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) );
 		}
 		if ( (string) nashenski_label_request( 'paymentVersion', null ) !== '1' ) {

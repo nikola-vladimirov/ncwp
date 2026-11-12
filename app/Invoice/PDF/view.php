@@ -64,7 +64,7 @@ $nashenski_wrap = \Nashenski\Hooks::filter( 'nashenski_invoice_pdf_default_templ
 	thead { display: table-header-group; }
 	tr { page-break-inside: avoid; }
 
-	<?php echo \Nashenski\Invoice\PDF\Style::css(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- validated hex colours and a fixed font list. ?>
+	<?php echo esc_html( \Nashenski\Invoice\PDF\Style::css() ); ?>
 
 	<?php \Nashenski\Hooks::action( 'nashenski_invoice_pdf_default_template_additional_css', 'nashenski/invoice/pdf/default_template/additional_css', $this ); ?>
 </style>

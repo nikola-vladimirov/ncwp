@@ -187,7 +187,7 @@ class Import_Sources {
 			$action = esc_html__( 'Ask an administrator to deactivate it.', 'nashenski-commerce' );
 		}
 
-		printf( '<div class="notice notice-error"><p>%s %s</p></div>', esc_html( self::paused_reason() ), $action ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $action is built from escaped parts above.
+		printf( '<div class="notice notice-error"><p>%s %s</p></div>', esc_html( self::paused_reason() ), wp_kses( $action, array( 'a' => array( 'href' => array() ) ) ) );
 	}
 
 	/**
@@ -277,7 +277,9 @@ class Import_Sources {
 	 * Dismiss.
 	 */
 	public static function dismiss() {
-		if ( current_user_can( 'manage_woocommerce' ) && check_admin_referer( self::DISMISS ) ) {
+		check_admin_referer( self::DISMISS );
+
+		if ( current_user_can( 'manage_woocommerce' ) ) {
 			update_option( self::DISMISS_OPTION, array_keys( self::open_names() ), false );
 		}
 
@@ -303,7 +305,8 @@ class Import_Sources {
 		}
 
 		check_admin_referer( self::ACTION );
-		$slug = sanitize_key( (string) nashenski_query_arg( 'source' ) );
+		// The import link carries this nonce (url()), checked on the line above.
+		$slug = isset( $_GET['source'] ) ? sanitize_key( wp_unslash( $_GET['source'] ) ) : '';
 
 		// While the N-18 plugin is active, both would give out the same numbers after the import.
 		if ( 'mreja_n18' === $slug && self::n18_active() ) {
@@ -322,7 +325,7 @@ class Import_Sources {
 		}
 
 		$back = wp_get_referer() ? wp_get_referer() : Settings::url();
-		wp_safe_redirect( add_query_arg( 'nashenski_source_imported', $slug, $back ) );
+		wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_source_imported', $slug, $back ) ) );
 		exit;
 	}
 

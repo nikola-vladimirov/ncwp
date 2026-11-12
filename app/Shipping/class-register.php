@@ -256,9 +256,14 @@ class Register {
 
 	/**
 	 * The checkout form sent with "update order review" plus the fields WooCommerce posts beside it
-	 * (country, s_country, shipping_method and so on). WooCommerce checked its nonce before.
+	 * (country, s_country, shipping_method and so on). WooCommerce checked its nonce before; it is
+	 * checked again here.
 	 */
 	private static function get_checkout_post_data() {
+		if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'update-order-review' ) ) {
+			return self::normalize_checkout_post_data( array() );
+		}
+
 		$posted = array();
 		$keys   = array( 'payment_method', 'ship_to_different_address', 'has_full_address', 'country', 'state', 'postcode', 'city', 'address', 'address_2', 's_country', 's_state', 's_postcode', 's_city', 's_address', 's_address_2' );
 
@@ -268,7 +273,6 @@ class Register {
 			}
 		}
 
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- WooCommerce checked its nonce.
 		foreach ( $keys as $key ) {
 			if ( isset( $_POST[ $key ] ) && is_scalar( $_POST[ $key ] ) ) {
 				$posted[ $key ] = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
@@ -279,7 +283,6 @@ class Register {
 		if ( isset( $_POST['shipping_method'] ) ) {
 			$posted['shipping_method'] = map_deep( wp_unslash( $_POST['shipping_method'] ), 'sanitize_text_field' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- map_deep() sanitizes each value.
 		}
-		// phpcs:enable
 
 		return self::normalize_checkout_post_data( array_replace_recursive( nashenski_order_review_data( array_merge( $keys, array( 'shipping_method' ) ) ), $posted ) );
 	}

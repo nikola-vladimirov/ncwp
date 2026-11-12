@@ -128,16 +128,13 @@ class Field_Editor {
 		$file = nashenski()->plugin_dir_path() . 'assets/js/checkout-conditions.js';
 
 		wp_enqueue_script( 'nashenski-checkout-conditions', $url . 'js/checkout-conditions.js', array( 'jquery' ), \Nashenski\Plugin::VERSION . '-' . filemtime( $file ), true );
-		wp_add_inline_script(
+		wp_localize_script(
 			'nashenski-checkout-conditions',
-			'window.nashenskiConditions = ' . wp_json_encode(
-				array(
-					'names'   => $names,
-					'targets' => $targets,
-				),
-				JSON_HEX_TAG | JSON_HEX_AMP
-			) . ';',
-			'before'
+			'nashenskiConditions',
+			array(
+				'names'   => $names,
+				'targets' => $targets,
+			)
 		);
 	}
 
@@ -469,13 +466,14 @@ class Field_Editor {
 	 */
 	private static function remove_unshown( $section, $type ) {
 		// Only the checkout submit removes fields. Another POST (a failed login, a cart update) keeps the form as it is.
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only tells which request this is; WooCommerce checks the nonce.
-		$ajax = isset( $_GET['wc-ajax'] ) ? sanitize_key( wp_unslash( $_GET['wc-ajax'] ) ) : '';
+		if ( ! isset( $_POST['woocommerce-process-checkout-nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woocommerce-process-checkout-nonce'] ) ), 'woocommerce-process_checkout' ) ) {
+			return $section;
+		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- the nonce is verified on the next line.
-		$nonce = sanitize_text_field( wp_unslash( $_POST['woocommerce-process-checkout-nonce'] ?? '' ) );
+		// WooCommerce keeps the name of its AJAX request in this query var; empty on a submit without JavaScript.
+		$ajax = (string) get_query_var( 'wc-ajax' );
 
-		if ( ! wp_verify_nonce( $nonce, 'woocommerce-process_checkout' ) || ( '' !== $ajax && 'checkout' !== $ajax ) ) {
+		if ( '' !== $ajax && 'checkout' !== $ajax ) {
 			return $section;
 		}
 

@@ -186,6 +186,8 @@ class ImpossibleVatPrice {
 	 * Ajax scan batch.
 	 */
 	public static function ajax_scan_batch() {
+		check_ajax_referer( self::SCAN_NONCE, 'nonce' );
+
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_send_json_error(
 				array(
@@ -195,10 +197,8 @@ class ImpossibleVatPrice {
 			);
 		}
 
-		check_ajax_referer( self::SCAN_NONCE, 'nonce' );
-
-		$page     = isset( $_POST['page'] ) ? max( 1, absint( $_POST['page'] ) ) : 1;
-		$per_page = isset( $_POST['per_page'] ) ? max( 1, min( 250, absint( $_POST['per_page'] ) ) ) : 100;
+		$page     = isset( $_POST['page'] ) ? max( 1, absint( wp_unslash( $_POST['page'] ) ) ) : 1;
+		$per_page = isset( $_POST['per_page'] ) ? max( 1, min( 250, absint( wp_unslash( $_POST['per_page'] ) ) ) ) : 100;
 
 		$query = new \WP_Query(
 			array(
@@ -252,6 +252,8 @@ class ImpossibleVatPrice {
 	 * Ajax fix price.
 	 */
 	public static function ajax_fix_price() {
+		check_ajax_referer( self::FIX_NONCE, 'nonce' );
+
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_send_json_error(
 				array(
@@ -261,9 +263,7 @@ class ImpossibleVatPrice {
 			);
 		}
 
-		check_ajax_referer( self::FIX_NONCE, 'nonce' );
-
-		$product_id   = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
+		$product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
 		$price_key    = isset( $_POST['price_key'] ) ? sanitize_key( wp_unslash( $_POST['price_key'] ) ) : '';
 		$target_price = isset( $_POST['target_price'] ) ? wc_format_decimal( sanitize_text_field( wp_unslash( $_POST['target_price'] ) ), 2 ) : '';
 

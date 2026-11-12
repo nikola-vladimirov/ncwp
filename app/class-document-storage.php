@@ -20,7 +20,6 @@ defined( 'ABSPATH' ) || exit;
  */
 class Document_Storage {
 	const DIR_OPTION           = 'nashenski_documents_dir';
-	const ACTION               = 'nashenski_document';
 	const MIGRATE_HOOK         = 'nashenski/documents/migrate';
 	const MIGRATE_BATCH        = 50;
 	const MIGRATE_OPTION       = 'nashenski_documents_migration';
@@ -31,6 +30,9 @@ class Document_Storage {
 	const EXPORT_UNTIL_META    = '_nashenski_export_until';
 	const EXPORT_CLEANUP_HOOK  = 'nashenski_delete_export_files';
 	const EXPORT_DAYS          = 7;
+
+	/** The admin-post action of the download links, and their nonce action. */
+	const ACTION = 'nashenski_document';
 
 	/**
 	 * The folder documents were public in before 0.11.1.
@@ -257,11 +259,11 @@ class Document_Storage {
 	 * The "Delete all now" button of the documents settings.
 	 */
 	public static function delete_receipts_now() {
+		check_admin_referer( self::CLEANUP_HOOK );
+
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You cannot do this.', 'nashenski-commerce' ), 403 );
 		}
-
-		check_admin_referer( self::CLEANUP_HOOK );
 
 		// Batches run in the background, so a large store does not time out the click.
 		if ( function_exists( 'as_enqueue_async_action' ) ) {
@@ -270,7 +272,7 @@ class Document_Storage {
 			self::delete_receipts( true );
 		}
 
-		wp_safe_redirect( add_query_arg( 'nashenski-receipts-deleted', 1, wp_get_referer() ? wp_get_referer() : admin_url() ) );
+		wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski-receipts-deleted', 1, wp_get_referer() ? wp_get_referer() : admin_url() ) ) );
 		exit;
 	}
 
@@ -278,8 +280,8 @@ class Document_Storage {
 	 * Receipts deleted notice.
 	 */
 	public static function receipts_deleted_notice() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only shows a notice.
-		if ( empty( $_GET['nashenski-receipts-deleted'] ) || ! current_user_can( 'manage_woocommerce' ) ) {
+		// nashenski_query_arg() reads the flag only with the nonce of our redirect.
+		if ( ! nashenski_query_arg( 'nashenski-receipts-deleted' ) || ! current_user_can( 'manage_woocommerce' ) ) {
 			return;
 		}
 
@@ -383,7 +385,8 @@ class Document_Storage {
 	 *
 	 * The link carries a signature that expires, used only for guest orders: the page showing it
 	 * (WooCommerce's order-received page) has already checked the order key and, after its grace
-	 * period, the email, so a copied link cannot be reused for long.
+	 * period, the email, so a copied link cannot be reused for long. Links are printed on fresh pages
+	 * only (never stored or emailed), so they also carry a nonce.
 	 *
 	 * @param mixed $order Order.
 	 * @param mixed $meta Meta.
@@ -393,11 +396,12 @@ class Document_Storage {
 
 		return add_query_arg(
 			array(
-				'action'  => self::ACTION,
-				'order'   => $order->get_id(),
-				'doc'     => $meta,
-				'expires' => $expires,
-				'token'   => self::sign( $order->get_id(), $meta, $expires ),
+				'action'   => self::ACTION,
+				'order'    => $order->get_id(),
+				'doc'      => $meta,
+				'expires'  => $expires,
+				'token'    => self::sign( $order->get_id(), $meta, $expires ),
+				'_wpnonce' => wp_create_nonce( self::ACTION ),
 			),
 			admin_url( 'admin-post.php' )
 		);
@@ -423,24 +427,28 @@ class Document_Storage {
 	public static function export_url( $attach_id ) {
 		return add_query_arg(
 			array(
-				'action' => self::ACTION,
-				'file'   => absint( $attach_id ),
+				'action'   => self::ACTION,
+				'file'     => absint( $attach_id ),
+				'_wpnonce' => wp_create_nonce( self::ACTION ),
 			),
 			admin_url( 'admin-post.php' )
 		);
 	}
 
 	/**
-	 * Handle admin-post for both kinds of links.
+	 * Handle admin-post for both kinds of links. The nonce shows the link came from a page of this
+	 * site; the signature, or the capability of the logged-in user, decides who gets the file.
 	 */
 	public static function download() {
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- a read-only download; access is checked below.
-		$order_id = absint( $_GET['order'] ?? 0 );
-		$meta     = sanitize_key( wp_unslash( $_GET['doc'] ?? '' ) );
-		$expires  = absint( $_GET['expires'] ?? 0 );
-		$token    = sanitize_text_field( wp_unslash( $_GET['token'] ?? '' ) );
-		$file_id  = absint( $_GET['file'] ?? 0 );
-		// phpcs:enable
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), self::ACTION ) ) {
+			wp_die( esc_html__( 'The document was not found or you do not have access to it.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
+		}
+
+		$order_id = isset( $_GET['order'] ) ? absint( wp_unslash( $_GET['order'] ) ) : 0;
+		$meta     = isset( $_GET['doc'] ) ? sanitize_key( wp_unslash( $_GET['doc'] ) ) : '';
+		$expires  = isset( $_GET['expires'] ) ? absint( wp_unslash( $_GET['expires'] ) ) : 0;
+		$token    = isset( $_GET['token'] ) ? sanitize_text_field( wp_unslash( $_GET['token'] ) ) : '';
+		$file_id  = isset( $_GET['file'] ) ? absint( wp_unslash( $_GET['file'] ) ) : 0;
 
 		$attach_id = 0;
 

@@ -49,7 +49,8 @@ class Tracker {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'init', array( __CLASS__, 'unsubscribe' ) );
+		add_filter( 'query_vars', array( __CLASS__, 'query_vars' ) );
+		add_action( 'template_redirect', array( __CLASS__, 'unsubscribe' ) );
 		add_action( 'template_redirect', array( __CLASS__, 'resume' ) );
 		add_action( self::SEND_HOOK, array( __CLASS__, 'send_due' ) );
 		add_action( self::CLEAN_HOOK, array( __CLASS__, 'clean_old' ) );
@@ -675,18 +676,31 @@ class Tracker {
 	}
 
 	/**
+	 * Registers the two links of a reminder email as public query vars, so WordPress parses them.
+	 *
+	 * @param array $vars Public query vars.
+	 * @return array
+	 */
+	public static function query_vars( $vars ) {
+		$vars[] = self::RESUME_VAR;
+		$vars[] = self::UNSUBSCRIBE_VAR;
+
+		return $vars;
+	}
+
+	/**
 	 * The link in a reminder that refills the cart from the row and applies its coupon.
 	 */
 	public static function resume() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the token is the check; a link in an email cannot carry a nonce.
-		if ( empty( $_GET[ self::RESUME_VAR ] ) || ! get_option( self::DB_OPTION ) ) {
+		// A link in an email cannot carry a nonce (guests, days later): the cart's secret token is the check.
+		$token = get_query_var( self::RESUME_VAR );
+		$token = is_scalar( $token ) ? sanitize_text_field( (string) $token ) : '';
+
+		if ( '' === $token || ! get_option( self::DB_OPTION ) ) {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- see above.
-		$token = sanitize_text_field( wp_unslash( $_GET[ self::RESUME_VAR ] ) );
-
-		if ( '' === $token || ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->session ) {
+		if ( ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->session ) {
 			return;
 		}
 
@@ -737,13 +751,13 @@ class Tracker {
 	 * The one-click link in a reminder. Stops all reminders to that email.
 	 */
 	public static function unsubscribe() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the token is the check; a link in an email cannot carry a nonce.
-		if ( empty( $_GET[ self::UNSUBSCRIBE_VAR ] ) || ! get_option( self::DB_OPTION ) ) {
+		// A link in an email cannot carry a nonce (guests, days later): the cart's secret token is the check.
+		$token = get_query_var( self::UNSUBSCRIBE_VAR );
+		$token = is_scalar( $token ) ? sanitize_text_field( (string) $token ) : '';
+
+		if ( '' === $token || ! get_option( self::DB_OPTION ) ) {
 			return;
 		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- see above.
-		$token = sanitize_text_field( wp_unslash( $_GET[ self::UNSUBSCRIBE_VAR ] ) );
 
 		global $wpdb;
 		$table = self::table();

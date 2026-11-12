@@ -173,7 +173,9 @@ class Setup_Wizard {
 	 * Dismiss.
 	 */
 	public static function dismiss() {
-		if ( current_user_can( 'manage_woocommerce' ) && check_admin_referer( self::DISMISS ) ) {
+		check_admin_referer( self::DISMISS );
+
+		if ( current_user_can( 'manage_woocommerce' ) ) {
 			update_option( self::DISMISS_OPTION, 1, false );
 		}
 
@@ -198,7 +200,7 @@ class Setup_Wizard {
 
 		update_option( self::DONE_OPTION, self::save( $input ), false );
 
-		wp_safe_redirect( add_query_arg( 'nashenski_setup_saved', 1, self::url() ) );
+		wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_setup_saved', 1, self::url() ) ) );
 		exit;
 	}
 
@@ -508,7 +510,7 @@ class Setup_Wizard {
 			<?php foreach ( (array) ( $done['couriers'] ?? array() ) as $courier ) : ?>
 				<?php if ( isset( $names[ $courier ], self::LOGIN[ $courier ] ) && '' === trim( (string) nashenski_get_option( $courier, self::LOGIN[ $courier ] ) ) ) : ?>
 					<li>
-						<a href="<?php echo esc_url( add_query_arg( 'courier', $courier, Settings::url( 'couriers' ) ) ); ?>">
+						<a href="<?php echo esc_url( Settings::courier_url( $courier ) ); ?>">
 							<?php
 							/* translators: %s: courier name */
 							echo esc_html( sprintf( __( 'Enter your %s login.', 'nashenski-commerce' ), $names[ $courier ] ) );

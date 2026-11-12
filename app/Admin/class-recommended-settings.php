@@ -188,7 +188,7 @@ class Recommended_Settings {
 		$chosen  = isset( $_POST['nashenski_recommended'] ) ? array_map( 'sanitize_key', (array) wp_unslash( $_POST['nashenski_recommended'] ) ) : array();
 		$applied = self::apply( $chosen );
 
-		wp_safe_redirect( add_query_arg( 'nashenski_recommended_applied', $applied, Settings::url( 'help' ) ) );
+		wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_recommended_applied', $applied, Settings::url( 'help' ) ) ) );
 		exit;
 	}
 

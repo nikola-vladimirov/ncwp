@@ -28,12 +28,31 @@ class Settings {
 	}
 
 	/**
-	 * Whether the current request is the Nashenski settings tab.
+	 * Link to one courier of the Couriers section. Its nonce lets the settings page take the courier
+	 * from the address.
+	 *
+	 * @param string $courier Courier slug.
+	 * @return string
+	 */
+	public static function courier_url( $courier ) {
+		return add_query_arg(
+			array(
+				'courier'            => $courier,
+				'_nashenski_courier' => wp_create_nonce( 'nashenski_courier' ),
+			),
+			self::url( 'couriers' )
+		);
+	}
+
+	/**
+	 * Whether the current request is the Nashenski settings tab. WordPress sets $plugin_page before
+	 * admin_init and WooCommerce sets $current_tab on wp_loaded, so this works from admin_init on.
 	 *
 	 * @return bool
 	 */
 	public static function is_current() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- screen detection only.
-		return is_admin() && isset( $_GET['page'], $_GET['tab'] ) && 'wc-settings' === $_GET['page'] && self::TAB === $_GET['tab'];
+		global $plugin_page, $current_tab;
+
+		return is_admin() && 'wc-settings' === $plugin_page && self::TAB === $current_tab;
 	}
 }

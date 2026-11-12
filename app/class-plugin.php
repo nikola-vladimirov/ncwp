@@ -344,34 +344,15 @@ class Plugin {
 	 * per-email settings page instead, which still renders and saves our form the normal way.
 	 */
 	private static function maybe_redirect_email_edit() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- screen detection only.
-		if ( ! isset( $_GET['page'], $_GET['tab'] ) || 'wc-settings' !== $_GET['page'] || 'email' !== $_GET['tab'] ) {
+		// WordPress's page and WooCommerce's settings tab of this screen.
+		global $plugin_page, $current_tab;
+
+		if ( 'wc-settings' !== $plugin_page || 'email' !== $current_tab ) {
 			return;
 		}
 
-		if ( ! function_exists( 'wp_add_inline_script' ) ) {
-			return;
-		}
-
-		$classic_url = admin_url( 'admin.php?page=wc-settings&tab=email&section=nashenski_abandoned_cart' );
-
-		wp_register_script( 'nashenski-email-edit', false, array( 'wp-api-fetch' ), self::VERSION, true );
-		wp_enqueue_script( 'nashenski-email-edit' );
-		wp_add_inline_script(
-			'nashenski-email-edit',
-			'(function(){
-			if(!window.wp||!wp.apiFetch||!wp.apiFetch.use){return;}
-			var url=' . wp_json_encode( $classic_url ) . ';
-			wp.apiFetch.use(function(options,next){
-				var path=options&&options.path?String(options.path):"";
-				if(path.indexOf("recreate-email-post")!==-1&&options.data&&options.data.email_id==="nashenski_abandoned_cart"){
-					window.location.href=url;
-					return new Promise(function(){});
-				}
-				return next(options);
-			});
-		})();'
-		);
+		wp_enqueue_script( 'nashenski-email-edit', nashenski()->plugin_dir_url() . 'assets/js/email-edit.js', array( 'wp-api-fetch' ), self::VERSION, true );
+		wp_localize_script( 'nashenski-email-edit', 'nashenskiEmailEdit', array( 'url' => admin_url( 'admin.php?page=wc-settings&tab=email&section=nashenski_abandoned_cart' ) ) );
 	}
 
 	/**
@@ -402,8 +383,8 @@ class Plugin {
 				)
 			);
 
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- screen detection only.
-			if ( isset( $_GET['section'] ) && 'exports' === $_GET['section'] ) {
+			// WooCommerce's section of the settings screen.
+			if ( 'exports' === $GLOBALS['current_section'] ) {
 				wp_enqueue_script( 'nashenski-export-builder', nashenski()->plugin_dir_url() . 'assets/js/export-builder.js', array(), self::VERSION, true );
 				wp_localize_script( 'nashenski-export-builder', 'nashenskiExportBuilder', Admin\Export_Builder::script_data() );
 			}

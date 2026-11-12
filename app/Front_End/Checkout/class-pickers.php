@@ -494,7 +494,7 @@ class Pickers {
 		};
 
 		wp_enqueue_style( 'nashenski-checkout', $url . 'css/checkout.css', array(), $ver( 'css/checkout.css' ) );
-		wp_add_inline_style( 'nashenski-checkout', Appearance::css() );
+		wp_add_inline_style( 'nashenski-checkout', wp_strip_all_tags( Appearance::css() ) );
 
 		// The block checkout ignores the "hidden" rule for the country, so hide it here when only Bulgaria is allowed.
 		if ( array( 'BG' ) === Countries::countries() ) {
@@ -505,7 +505,7 @@ class Pickers {
 		wp_localize_script( 'nashenski-pickers', 'nashenskiPickers', self::config() );
 
 		if ( self::is_block_checkout() ) {
-			wp_add_inline_style( 'nashenski-checkout', Field_Editor::block_css() );
+			wp_add_inline_style( 'nashenski-checkout', wp_strip_all_tags( Field_Editor::block_css() ) );
 			wp_enqueue_script( 'nashenski-pickers-block', $url . 'js/pickers-block.js', array( 'nashenski-pickers', 'wp-data', 'wp-plugins', 'wc-blocks-checkout', 'wc-blocks-data-store' ), $ver( 'js/pickers-block.js' ), true );
 		} else {
 			wp_enqueue_script( 'nashenski-pickers-classic', $url . 'js/pickers-classic.js', array( 'nashenski-pickers', 'jquery' ), $ver( 'js/pickers-classic.js' ), true );

@@ -216,6 +216,15 @@ namespace {
 		return $html;
 	}
 	/**
+	 * Kses stub.
+	 *
+	 * @param string $html HTML.
+	 * @return string
+	 */
+	function wp_kses( $html ) {
+		return $html;
+	}
+	/**
 	 * Key stub.
 	 *
 	 * @param string $key Key.
@@ -258,6 +267,15 @@ namespace {
 	 */
 	function nashenski_query_arg( $key ) {
 		return $GLOBALS['query'][ $key ] ?? '';
+	}
+	/**
+	 * Unslash stub.
+	 *
+	 * @param mixed $value Value.
+	 * @return mixed
+	 */
+	function wp_unslash( $value ) {
+		return $value;
 	}
 	/**
 	 * Date stub.
@@ -798,7 +816,7 @@ namespace Nashenski {
 		ob_start();
 		Import_Sources::render();
 		check( false !== strpos( ob_get_clean(), 'Deactivate the N-18 plugin first, then import.' ), 'the import notice says the same' );
-		$GLOBALS['query'] = array( 'source' => 'mreja_n18' );
+		$_GET['source'] = 'mreja_n18';
 		try {
 			Import_Sources::handle();
 			check( false, 'the import handler refuses' );

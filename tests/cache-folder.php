@@ -13,8 +13,6 @@ namespace {
 	define( 'ABSPATH', __DIR__ . '/' );
 	define( 'WP_CONTENT_DIR', '/site/wp-content' );
 	define( 'WP_UNINSTALL_PLUGIN', 'nashenski-commerce/nashenski-commerce.php' );
-	define( 'FS_CHMOD_DIR', 0755 );
-	define( 'FS_CHMOD_FILE', 0644 );
 	$GLOBALS['basedir'] = '/site/wp-content/uploads';
 	$GLOBALS['log']     = array();
 	/**

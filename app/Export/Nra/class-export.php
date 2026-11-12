@@ -375,12 +375,17 @@ class Export {
 	 */
 	protected function get_file_errors( $attach_id ) {
 		if ( ! empty( $this->completed_orders_ids ) || ! empty( $this->refunded_orders_ids ) ) {
-			libxml_use_internal_errors( true );
-			$doc = new \DOMDocument();
+			$previous = libxml_use_internal_errors( true );
+			$doc      = new \DOMDocument();
 			$doc->load( get_attached_file( $attach_id ) );
 
-			if ( ! $doc->schemaValidate( __DIR__ . '/dex_audit.xsd' ) ) {
-				return wp_list_pluck( libxml_get_errors(), 'message' );
+			$valid  = $doc->schemaValidate( __DIR__ . '/dex-audit-schema.xml' );
+			$errors = wp_list_pluck( libxml_get_errors(), 'message' );
+			libxml_clear_errors();
+			libxml_use_internal_errors( $previous );
+
+			if ( ! $valid ) {
+				return $errors;
 			}
 		}
 	}

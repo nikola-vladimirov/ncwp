@@ -564,11 +564,15 @@ function nashenski_format_phone( $phone, $country = 'BG' ) {
  * @return mixed
  */
 function nashenski_verified_request( $key, $fallback, $field, $actions ) {
-	$nonce    = isset( $_REQUEST[ $field ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ $field ] ) ) : '';
+	// No nonce, no read.
+	if ( ! isset( $_REQUEST[ $field ] ) ) {
+		return $fallback;
+	}
+
 	$verified = false;
 
 	foreach ( (array) $actions as $action ) {
-		$verified = $verified || wp_verify_nonce( $nonce, $action );
+		$verified = $verified || wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST[ $field ] ) ), $action );
 	}
 
 	if ( ! $verified ) {
@@ -646,15 +650,30 @@ function nashenski_picker_request( $key, $fallback = '' ) {
 }
 
 /**
- * A read-only value from the address bar: which screen or notice to show. Never used to change data.
+ * Adds the notice nonce to a URL we redirect to after an action, so the next screen may read the
+ * notice values in it.
+ *
+ * @param string $url URL.
+ * @return string
+ */
+function nashenski_notice_url( $url ) {
+	return add_query_arg( '_nashenski_notice', wp_create_nonce( 'nashenski_notice' ), $url );
+}
+
+/**
+ * A notice value from the address bar after our own redirect, read only when the notice nonce is
+ * valid. Never used to change data.
  *
  * @param string $key      Query key.
- * @param string $fallback Value when missing.
+ * @param string $fallback Value when missing or not verified.
  * @return string
  */
 function nashenski_query_arg( $key, $fallback = '' ) {
-	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only: chooses the screen or notice to show.
-	return isset( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : $fallback;
+	if ( ! isset( $_GET['_nashenski_notice'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_nashenski_notice'] ) ), 'nashenski_notice' ) ) {
+		return $fallback;
+	}
+
+	return isset( $_GET[ $key ] ) && is_scalar( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : $fallback;
 }
 
 /**
@@ -679,7 +698,11 @@ function nashenski_checkout_posted( $key, $fallback = '' ) {
  * @return array
  */
 function nashenski_order_review_data( array $keys ) {
-	if ( ! isset( $_POST['post_data'], $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'update-order-review' ) ) {
+	if ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'update-order-review' ) ) {
+		return array();
+	}
+
+	if ( ! isset( $_POST['post_data'] ) ) {
 		return array();
 	}
 
@@ -708,7 +731,9 @@ function nashenski_send_download( $path, $name, $type ) {
 	header( 'Content-Type: ' . $type );
 	header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $name ) . '"' );
 	header( 'Content-Length: ' . strlen( $contents ) );
-	echo $contents; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a file download (CSV, Excel, JSON, XML or ZIP), not HTML.
+	// The browser must keep the type we send: the bytes are a file, never a page.
+	header( 'X-Content-Type-Options: nosniff' );
+	echo $contents; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the bytes of a file download (CSV, Excel, JSON, XML or ZIP); escaping would corrupt the file.
 	exit;
 }
 

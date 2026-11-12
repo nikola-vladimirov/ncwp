@@ -45,55 +45,28 @@ class Admin_Menus {
 	 * WooCommerce prints a PHP warning for an unknown settings tab. Send the wrong slug to the real one before that.
 	 */
 	public static function redirect_wrong_tab() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only redirect.
-		if ( ! isset( $_GET['page'], $_GET['tab'] ) || 'wc-settings' !== $_GET['page'] || 'nashenski_commerce' !== $_GET['tab'] ) {
+		// WordPress set $plugin_page and WooCommerce the tab and section (on wp_loaded) before admin_init.
+		global $plugin_page, $current_tab, $current_section;
+
+		if ( 'wc-settings' !== $plugin_page || 'nashenski_commerce' !== $current_tab ) {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : '';
-
-		wp_safe_redirect( Settings::url( $section ) );
+		wp_safe_redirect( Settings::url( sanitize_key( (string) $current_section ) ) );
 		exit;
 	}
 
 	/**
-	 * The settings used to have their own page (admin.php?page=nashenski). Send old links to the new tab.
+	 * The settings used to have their own page (admin.php?page=nashenski). Send old links to the settings tab.
 	 */
 	public static function redirect_old_page() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only redirect.
-		if ( ! isset( $_GET['page'] ) || 'nashenski' !== $_GET['page'] ) {
+		global $plugin_page;
+
+		if ( 'nashenski' !== $plugin_page ) {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$section = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
-		$args    = array();
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( ! empty( $_GET['nashenski_imported'] ) ) {
-			$args['nashenski_imported'] = 1;
-		}
-
-		// Old tab slugs -> new sections.
-		$map = array(
-			'settings'   => '',
-			'shipping'   => 'checkout',
-			'fields'     => 'checkout',
-			'export'     => 'exports',
-			'connectix'  => 'checks',
-			'nepostop'   => 'checks',
-			'nekorekten' => 'checks',
-		);
-
-		if ( in_array( $section, \Nashenski\Plugin::COURIERS, true ) ) {
-			$args['courier'] = $section;
-			$section         = 'couriers';
-		} elseif ( isset( $map[ $section ] ) ) {
-			$section = $map[ $section ];
-		}
-
-		wp_safe_redirect( add_query_arg( $args, Settings::url( $section ) ) );
+		wp_safe_redirect( Settings::url() );
 		exit;
 	}
 

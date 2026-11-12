@@ -317,13 +317,13 @@ class Help_Page {
 	 * Output applied notice.
 	 */
 	private static function output_applied_notice() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display only.
-		if ( ! isset( $_GET['nashenski_recommended_applied'] ) ) {
+		$count = nashenski_query_arg( 'nashenski_recommended_applied', null );
+
+		if ( null === $count ) {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$count = absint( $_GET['nashenski_recommended_applied'] );
+		$count = absint( $count );
 
 		echo '<div class="notice notice-success inline"><p>' . esc_html(
 			sprintf(

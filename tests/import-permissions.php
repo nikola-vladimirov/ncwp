@@ -298,6 +298,14 @@ namespace {
 	function nashenski_query_arg() {
 		return ''; }
 	/**
+	 * Notice URL stub.
+	 *
+	 * @param string $url URL.
+	 * @return string
+	 */
+	function nashenski_notice_url( $url ) {
+		return $url; }
+	/**
 	 * Sanitize key.
 	 *
 	 * @param string $value Value.

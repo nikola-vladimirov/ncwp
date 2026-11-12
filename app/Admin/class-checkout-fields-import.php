@@ -100,7 +100,7 @@ class Checkout_Fields_Import {
 		$back = wp_get_referer() ? wp_get_referer() : Settings::url();
 
 		if ( is_array( $sections ) && ! self::readable( $sections ) ) {
-			wp_safe_redirect( add_query_arg( 'nashenski_import_failed', 1, $back ) );
+			wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_import_failed', 1, $back ) ) );
 			exit;
 		}
 
@@ -108,14 +108,14 @@ class Checkout_Fields_Import {
 			$report = self::run( $sections );
 
 			if ( null === $report ) {
-				wp_safe_redirect( add_query_arg( 'nashenski_import_not_saved', 1, $back ) );
+				wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_import_not_saved', 1, $back ) ) );
 				exit;
 			}
 
 			update_option( self::DONE_OPTION, $report, false );
 		}
 
-		wp_safe_redirect( add_query_arg( 'nashenski_imported_fields', 1, $back ) );
+		wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_imported_fields', 1, $back ) ) );
 		exit;
 	}
 

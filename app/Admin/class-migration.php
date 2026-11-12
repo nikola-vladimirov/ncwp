@@ -144,7 +144,7 @@ class Migration {
 		}
 
 		$back = wp_get_referer() ? wp_get_referer() : Settings::url();
-		wp_safe_redirect( add_query_arg( 'nashenski_imported', 1, $back ) );
+		wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_imported', 1, $back ) ) );
 		exit;
 	}
 

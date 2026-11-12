@@ -36,7 +36,7 @@ class Actions {
 			add_action( 'woocommerce_order_status_completed_notification', array( '\Nashenski\Admin\Order\Documents', 'generate_documents' ), 5 );
 		}
 
-		add_action( 'woocommerce_order_actions', array( __CLASS__, 'add_order_meta_box_actions' ) );
+		add_filter( 'woocommerce_order_actions', array( __CLASS__, 'add_order_meta_box_actions' ), 10, 2 );
 		add_action( 'woocommerce_order_action_nashenski_regenerate_pdfs', array( __CLASS__, 'process_order_meta_box_actions' ) );
 		add_action( 'woocommerce_order_action_nashenski_generate_invoice', array( __CLASS__, 'generate_invoice_action' ) );
 		add_action( 'woocommerce_process_shop_order_meta', array( __CLASS__, 'make_invoice' ), 60 );
@@ -89,14 +89,14 @@ class Actions {
 
 		// Documents paused for the old N-18 plugin: nothing is made, and the orders list says why.
 		if ( Import_Sources::n18_paused() ) {
-			return add_query_arg( 'nashenski_regenerate_paused', 1, $redirect_to );
+			return nashenski_notice_url( add_query_arg( 'nashenski_regenerate_paused', 1, $redirect_to ) );
 		}
 
 		foreach ( $ids as $order_id ) {
 			Documents::generate_documents( $order_id );
 		}
 
-		return add_query_arg( 'nashenski_regenerated', count( $ids ), $redirect_to );
+		return nashenski_notice_url( add_query_arg( 'nashenski_regenerated', count( $ids ), $redirect_to ) );
 	}
 
 	/**
@@ -163,16 +163,11 @@ class Actions {
 	 * Add order meta box actions.
 	 *
 	 * @param mixed $actions Actions.
+	 * @param mixed $order   The order of the screen, passed by WooCommerce.
 	 * @return mixed Result.
 	 */
-	public static function add_order_meta_box_actions( $actions ) {
-		if ( OrderUtil::custom_orders_table_usage_is_enabled() && nashenski_query_arg( 'id' ) ) {
-			$post = get_post( absint( nashenski_query_arg( 'id' ) ) );
-		} else {
-			global $post;
-		}
-
-		if ( get_post_type( $post ) !== 'shop_subscription' ) {
+	public static function add_order_meta_box_actions( $actions, $order = null ) {
+		if ( ! $order instanceof \WC_Order || 'shop_subscription' !== $order->get_type() ) {
 			if ( Documents::documents_on() ) {
 				$actions['nashenski_generate_invoice'] = __( 'Generate Invoice', 'nashenski-commerce' );
 			}
@@ -226,7 +221,11 @@ class Actions {
 	 * @param mixed $order_id Order id.
 	 */
 	public static function make_invoice( $order_id ) {
-		if ( empty( nashenski_verified_request( 'nashenski_make_invoice', '', 'nashenski_make_invoice_nonce', 'nashenski_make_invoice' ) ) || ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( empty( nashenski_verified_request( 'nashenski_make_invoice', '', 'nashenski_make_invoice_nonce', 'nashenski_make_invoice' ) ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_shop_orders' ) ) {
 			return;
 		}
 

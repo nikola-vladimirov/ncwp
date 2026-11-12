@@ -118,10 +118,28 @@ class Settings_Page extends \WC_Settings_Page {
 	 */
 	private function current_courier() {
 		$couriers = $this->couriers();
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- navigation only.
-		$courier = isset( $_GET['courier'] ) ? sanitize_key( wp_unslash( $_GET['courier'] ) ) : '';
+		$courier  = self::requested_courier();
 
 		return in_array( $courier, $couriers, true ) ? $courier : ( $couriers[0] ?? '' );
+	}
+
+	/**
+	 * The courier the request names: the form being saved names its own (WooCommerce's settings
+	 * nonce, checked again here), a link carries the nonce of Settings::courier_url(). Otherwise
+	 * none, and the first courier shows.
+	 *
+	 * @return string
+	 */
+	private static function requested_courier() {
+		if ( isset( $_POST['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'woocommerce-settings' ) ) {
+			return isset( $_POST['nashenski_courier'] ) ? sanitize_key( wp_unslash( $_POST['nashenski_courier'] ) ) : '';
+		}
+
+		if ( isset( $_GET['_nashenski_courier'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_nashenski_courier'] ) ), 'nashenski_courier' ) ) {
+			return isset( $_GET['courier'] ) ? sanitize_key( wp_unslash( $_GET['courier'] ) ) : '';
+		}
+
+		return '';
 	}
 
 	/**
@@ -629,6 +647,8 @@ class Settings_Page extends \WC_Settings_Page {
 		}
 
 		if ( 'couriers' === $id ) {
+			// The save reads the courier from the form, not from a link that may have expired.
+			echo '<input type="hidden" name="nashenski_courier" value="' . esc_attr( $this->current_courier() ) . '">';
 			$this->output_courier_nav();
 			$this->maybe_reload_courier_data( $this->current_courier() );
 		}
@@ -660,7 +680,7 @@ class Settings_Page extends \WC_Settings_Page {
 		foreach ( $couriers as $courier ) {
 			printf(
 				'<a href="%1$s" class="nashenski-courier-nav__item%2$s"%3$s>%4$s<span>%5$s</span></a>',
-				esc_url( add_query_arg( 'courier', $courier, Settings::url( 'couriers' ) ) ),
+				esc_url( Settings::courier_url( $courier ) ),
 				$courier === $current ? ' is-current' : '',
 				$courier === $current ? ' aria-current="page"' : '',
 				isset( $logos[ $courier ] ) ? '<img src="' . esc_url( $logos[ $courier ] ) . '" alt="">' : '',
@@ -701,16 +721,7 @@ class Settings_Page extends \WC_Settings_Page {
 		}
 
 		if ( $is_courier ) {
-			$url = wp_nonce_url(
-				add_query_arg(
-					array(
-						self::RELOAD => 1,
-						'courier'    => $slug,
-					),
-					Settings::url( 'couriers' )
-				),
-				self::RELOAD
-			);
+			$url = wp_nonce_url( add_query_arg( self::RELOAD, 1, Settings::courier_url( $slug ) ), self::RELOAD );
 
 			printf(
 				'<p class="nashenski-section-actions"><a class="button" href="%1$s">%2$s</a> <span class="description">%3$s</span></p>',
@@ -727,12 +738,14 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @param mixed $courier Courier.
 	 */
 	private function maybe_reload_courier_data( $courier ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the nonce is verified below.
-		if ( ! in_array( $courier, \Nashenski\Plugin::COURIERS, true ) || empty( $_GET[ self::RELOAD ] ) || ! current_user_can( 'manage_woocommerce' ) ) {
+		// Only the Reload link carries this nonce.
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), self::RELOAD ) ) {
 			return;
 		}
 
-		check_admin_referer( self::RELOAD );
+		if ( ! in_array( $courier, \Nashenski\Plugin::COURIERS, true ) || ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
 
 		$class = nashenski()->container()[ 'client.' . $courier ];
 		$class::clear_cache_folder();
@@ -780,8 +793,11 @@ class Settings_Page extends \WC_Settings_Page {
 	 * The weekly check found published prices that differ from the saved ones.
 	 */
 	private static function output_price_update_notice() {
-		if ( isset( $_GET['nashenski_dismiss_prices'] ) && check_admin_referer( 'nashenski_dismiss_prices' ) && current_user_can( 'manage_woocommerce' ) ) {
-			\Nashenski\Pricing\Updater::forget();
+		// Only the Dismiss link below carries this nonce.
+		if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'nashenski_dismiss_prices' ) ) {
+			if ( current_user_can( 'manage_woocommerce' ) ) {
+				\Nashenski\Pricing\Updater::forget();
+			}
 		}
 
 		$found = get_option( \Nashenski\Pricing\Updater::NOTICE_OPTION, array() );
@@ -795,7 +811,7 @@ class Settings_Page extends \WC_Settings_Page {
 
 		foreach ( $found as $courier => $date ) {
 			if ( isset( $names[ $courier ] ) ) {
-				$links[] = '<a href="' . esc_url( add_query_arg( 'courier', $courier, Settings::url( 'couriers' ) ) ) . '">' . esc_html( $names[ $courier ] ) . '</a>';
+				$links[] = '<a href="' . esc_url( Settings::courier_url( $courier ) ) . '">' . esc_html( $names[ $courier ] ) . '</a>';
 			}
 		}
 
