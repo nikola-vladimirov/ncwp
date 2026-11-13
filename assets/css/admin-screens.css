@@ -71,14 +71,22 @@
 }
 
 /* Customer reports box, PDF action buttons. */
-#order_data .nashenski--report-provider {
+.nashenski-reports-data {
+	padding: 24px;
+}
+
+.nashenski-reports-data p {
+	color: #767676;
+}
+
+.nashenski-reports-data .nashenski--report-provider {
 	border: 1px solid;
 	border-radius: 10px;
 	padding: 10px;
 	margin-top: 10px;
 }
 
-#order_data .nashenski--report-provider h3 {
+.nashenski-reports-data .nashenski--report-provider h3 {
 	margin: 0;
 	font-size: 18px;
 	font-weight: 600;

@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.2
 Requires Plugins: woocommerce
-Stable tag: 0.21.10
+Stable tag: 0.21.11
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -121,5 +121,5 @@ Vendor libraries: LGPL, MIT or Apache-2.0. DejaVu fonts: Bitstream Vera licence.
 
 All versions: CHANGELOG.md in the plugin folder (Plugins screen > Changelog).
 
-= 0.21.10 =
-* Changes: Security Audit: nonces checked first in every request, output escaped where printed, no global file permission settings, only standard file types. Invoice settings: one checkbox and one choice.
+= 0.21.11 =
+* Fixes: subscription renewals keep the earlier order documents, a courier reply without a price is never free shipping, cart reminders without shopper links, no outside IP lookup, batched exports.

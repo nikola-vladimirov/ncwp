@@ -823,7 +823,7 @@ class Quick_Order {
 			sprintf(
 				/* translators: %s: shopper name */
 				__( "Hello %s,\n\nThank you. We have your quick order and will contact you to confirm it.\n\nNo payment is needed now.", 'nashenski-commerce' ),
-				trim( preg_replace( '~(?:https?://|www\.)\S*~i', '', $order->get_billing_first_name() ) )
+				nashenski_strip_urls( $order->get_billing_first_name() )
 			)
 		);
 	}

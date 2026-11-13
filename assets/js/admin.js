@@ -4,6 +4,7 @@
  * 1. The "Generate label" link in the order list.
  * 2. Dismissing the BOX NOW and Pigeon notices.
  * 3. The "mathematically impossible price" notice on the product screen and the scan page.
+ * 4. Buttons that ask before they act (data-nashenski-confirm).
  *
  * The courier label boxes are separate scripts. This file is also the handle (nashenski-js-admin)
  * their PHP data (nashenski_<courier>) is printed on. No build step.
@@ -83,6 +84,16 @@
 
 	watchDismiss( 'notice-boxnow', 'nashenski_boxnow_message_dismiss' );
 	watchDismiss( 'notice-pigeon-express', 'nashenski_pigeon_express_message_dismiss' );
+
+	/* 4. Ask before acting (here, before section 3 returns early) ---------- */
+
+	document.addEventListener( 'click', function ( event ) {
+		var button = event.target.closest( '[data-nashenski-confirm]' );
+
+		if ( button && ! window.confirm( button.getAttribute( 'data-nashenski-confirm' ) ) ) {
+			event.preventDefault();
+		}
+	} );
 
 	/* 3. Impossible VAT prices --------------------------------------------- */
 

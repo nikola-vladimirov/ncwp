@@ -336,7 +336,7 @@ class Export {
 	 * Builds the XML, saves it and checks it against the schema.
 	 *
 	 * @param array $args Shop data, orders and refunded orders.
-	 * @return array|null
+	 * @return array An empty 'file' and the reason in 'errors' when it was not saved.
 	 */
 	protected function upload_xml( $args ) {
 		$data   = self::generate_xml_file( $args );
@@ -347,7 +347,11 @@ class Export {
 			$attach_id = \Nashenski\Document_Storage::save( uniqid( wp_rand(), true ), 'xml', $data['content'] );
 
 			if ( ! $attach_id ) {
-				return;
+				return array(
+					'file'          => '',
+					'attachment_id' => 0,
+					'errors'        => array( __( 'The file could not be saved.', 'nashenski-commerce' ) ),
+				);
 			}
 
 			if ( ! empty( $data['totals'] ) ) {

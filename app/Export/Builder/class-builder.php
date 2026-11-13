@@ -204,8 +204,14 @@ class Builder {
 		);
 
 		// Documents are filtered on their own date in rows(); a document is never dated before its order.
+		// With HPOS, saving a document also moves the order's last change, so older orders can be skipped;
+		// in the posts table a meta-only save keeps post_modified, so there every order up to $to is read.
 		if ( 'documents' === $config['source'] ) {
 			$args['date_created'] = '<=' . $to;
+
+			if ( \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ) {
+				$args['date_modified'] = '>=' . $from;
+			}
 		} else {
 			$args[ 'date_' . $config['date_field'] ] = $from . '...' . $to;
 		}
@@ -265,7 +271,15 @@ class Builder {
 		$from  = strtotime( $config['from'] . ' 00:00:00 ' . wp_timezone_string() );
 		$to    = strtotime( $config['to'] . ' 23:59:59 ' . wp_timezone_string() );
 
-		foreach ( self::query_ids( $config ) as $index => $id ) {
+		$ids = self::query_ids( $config );
+		// One row an order and every filter already in the query: the preview stops at the limit and counts the IDs.
+		$quick = $limit && 'orders' === $config['source'] && ! $config['company_only'] && ! $config['couriers'];
+
+		foreach ( $ids as $index => $id ) {
+			if ( $quick && count( $rows ) >= $limit ) {
+				break;
+			}
+
 			$object = wc_get_order( $id );
 
 			if ( ! $object ) {
@@ -338,7 +352,7 @@ class Builder {
 
 		return array(
 			'rows'  => $rows,
-			'total' => $count,
+			'total' => $quick ? count( $ids ) : $count,
 		);
 	}
 

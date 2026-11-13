@@ -62,6 +62,8 @@ foreach ( $nashenski_sites as $nashenski_site ) {
 		'nashenski_import_notice_dismissed',
 		'nashenski_boxnow_message_dismiss',
 		'nashenski_pigeon_express_message_dismiss',
+		// Hashes of unsubscribed reminder emails: they belong to the dropped carts table.
+		'nashenski_carts_unsubscribed',
 	) as $nashenski_option ) {
 		delete_option( $nashenski_option );
 	}

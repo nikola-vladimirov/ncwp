@@ -52,7 +52,8 @@ class Transliterate_Address {
 	 * @return array
 	 */
 	private static function fields() {
-		$fields = array( 'company', 'address_1', 'address_2', 'city' );
+		// Not the company: the invoice prints its name as the customer typed it.
+		$fields = array( 'address_1', 'address_2', 'city' );
 
 		if ( 'yes' === nashenski_get_option( 'checkout', 'transliterate_names' ) ) {
 			$fields = array_merge( array( 'first_name', 'last_name' ), $fields );

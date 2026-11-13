@@ -44,7 +44,7 @@ class Monthly {
 		$scheduled = as_has_scheduled_action( self::HOOK, array(), 'nashenski' );
 
 		if ( self::on() && ! $scheduled ) {
-			// 07:00 site time on the 1st.
+			// 07:00 UTC on the 1st (Action Scheduler reads cron times in UTC): 09:00 or 10:00 in Bulgaria.
 			as_schedule_cron_action( time(), '0 7 1 * *', self::HOOK, array(), 'nashenski' );
 		} elseif ( ! self::on() && $scheduled ) {
 			as_unschedule_all_actions( self::HOOK, array(), 'nashenski' );

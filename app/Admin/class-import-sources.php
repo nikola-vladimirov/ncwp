@@ -1344,31 +1344,41 @@ class Import_Sources {
 	}
 
 	/**
-	 * Orders with.
+	 * Orders with a meta key, one at a time, so a large store does not hold them all in memory.
 	 *
 	 * @param mixed $meta_key Meta key.
+	 * @return \Generator
 	 */
 	private static function orders_with( $meta_key ) {
-		$orders = array();
-		$page   = 0;
+		$page = 0;
 
-		// 500 orders a query, page after page, until a page comes back short: the import keeps the meta key, so the pages do not shift.
+		// 500 IDs a query, page after page, until a page comes back short: the import keeps the meta key, so the pages do not shift.
 		do {
-			$found  = wc_get_orders(
+			$found = wc_get_orders(
 				array(
 					'limit'        => 500,
 					'paged'        => ++$page,
 					'orderby'      => 'ID',
 					'order'        => 'ASC',
+					'return'       => 'ids',
 					'meta_key'     => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- the one-time import finds the old plugin's orders by the meta key it left; an admin starts it by hand.
 					'meta_compare' => 'EXISTS',
 				)
 			);
-			$orders = array_merge( $orders, $found );
-			$full   = 500 === count( $found );
-		} while ( $full );
 
-		return $orders;
+			foreach ( $found as $index => $id ) {
+				$order = wc_get_order( $id );
+
+				if ( $order ) {
+					yield $order;
+				}
+
+				if ( 99 === $index % 100 ) {
+					wp_cache_flush_runtime();
+				}
+			}
+			$full = 500 === count( $found );
+		} while ( $full );
 	}
 
 	/**

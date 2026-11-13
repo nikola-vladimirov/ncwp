@@ -92,6 +92,8 @@ class EU_Vat {
 		// Add VAT Number in order endpoint (REST API).
 		add_filter( 'woocommerce_api_order_response', array( __CLASS__, 'add_vat_number_to_order_response' ) );
 		add_filter( 'woocommerce_rest_prepare_shop_order', array( __CLASS__, 'add_vat_number_to_order_response' ) );
+		// The v2 and v3 routes.
+		add_filter( 'woocommerce_rest_prepare_shop_order_object', array( __CLASS__, 'add_vat_number_to_order_response' ), 10, 2 );
 	}
 
 	/**
@@ -190,7 +192,8 @@ class EU_Vat {
 	 */
 	public static function get_ip_country() {
 		if ( false === self::$ip_country ) {
-			$geoip            = \WC_Geolocation::geolocate_ip();
+			// No lookup through an outside service: only the local MaxMind database or the country header of the server.
+			$geoip            = \WC_Geolocation::geolocate_ip( '', false, false );
 			self::$ip_country = $geoip['country'];
 		}
 		return self::$ip_country;
@@ -224,11 +227,22 @@ class EU_Vat {
 			return 'yes' === $cached_result;
 		}
 
-		$vies = new Validator();
-
 		if ( ! isset( self::$country_codes_patterns[ $vat_prefix ] ) ) {
 			return new \WP_Error( 'api', __( 'Invalid country code', 'nashenski-commerce' ) );
 		}
+
+		$vies_error = new \WP_Error( 'api', __( 'Error communicating with the VAT validation server - please try again', 'nashenski-commerce' ) );
+
+		// VIES did not answer for this country a moment ago: the checkout does not wait for it again on every refresh.
+		$failed_key = 'nashenski_vies_failed_' . strtolower( $vat_prefix );
+
+		if ( $maybe_vies_validation && get_transient( $failed_key ) ) {
+			return $vies_error;
+		}
+
+		// The library's own VIES client: it names each fault (outage, busy node, bad number).
+		// shortcut: it has no connection timeout and a plugin must not change default_socket_timeout, so an unreachable VIES costs one slow request per country every 5 minutes; upgrade if the library gains client options.
+		$vies = new Validator();
 
 		try {
 			$is_valid = $vies->isValid( $vat_prefix . $vat_number, $maybe_vies_validation );
@@ -237,7 +251,12 @@ class EU_Vat {
 
 			return $is_valid;
 		} catch ( \Exception $e ) { // ViesException wraps \SoapFault; both extend \Exception.
-			return new \WP_Error( 'api', __( 'Error communicating with the VAT validation server - please try again', 'nashenski-commerce' ) );
+			// Only an outage waits: a busy node, a bad number or one request's fault is tried again on the next refresh.
+			if ( $e instanceof \Ddeboer\Vatin\Exception\ServiceUnreachableException || $e instanceof \Ddeboer\Vatin\Exception\ServiceUnavailableException || $e instanceof \Ddeboer\Vatin\Exception\StateServiceUnavailableException || $e instanceof \Ddeboer\Vatin\Exception\TimeoutException ) {
+				set_transient( $failed_key, 1, 5 * MINUTE_IN_SECONDS );
+			}
+
+			return $vies_error;
 		}
 
 		return false;
@@ -418,15 +437,25 @@ class EU_Vat {
 	 * Adds the VAT number to the order in the REST API.
 	 *
 	 * @param WP_REST_Response|array $response Order response.
+	 * @param mixed                  $order    The order on the v2 and v3 routes.
 	 *
 	 * @return WP_REST_Response|array
 	 */
-	public static function add_vat_number_to_order_response( $response ) {
-		if ( is_a( $response, 'WP_REST_Response' ) ) {
-			$response->data['vat_number'] = get_post_meta( $response->data['id'], '_billing_vat_number', true );
-		} elseif ( is_array( $response ) && ! empty( $response['id'] ) ) {
+	public static function add_vat_number_to_order_response( $response, $order = null ) {
+		$is_rest = is_a( $response, 'WP_REST_Response' );
+		$id      = $is_rest ? ( $response->data['id'] ?? 0 ) : ( is_array( $response ) && ! empty( $response['id'] ) ? $response['id'] : 0 );
+		// Read through the order, so it works with HPOS too.
+		$order = $order instanceof \WC_Order ? $order : ( $id ? wc_get_order( $id ) : null );
+
+		if ( ! $order instanceof \WC_Order ) {
+			return $response;
+		}
+
+		if ( $is_rest ) {
+			$response->data['vat_number'] = $order->get_meta( '_billing_vat_number' );
+		} else {
 			// Legacy endpoint.
-			$response['vat_number'] = get_post_meta( $response['id'], '_billing_vat_number', true );
+			$response['vat_number'] = $order->get_meta( '_billing_vat_number' );
 		}
 
 		return $response;

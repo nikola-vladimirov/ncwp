@@ -396,6 +396,20 @@ namespace {
 		),
 		'A renewal does not copy the number or the order document'
 	);
+	// H1: every document key is dropped (files in both languages, numbers, dates, marks); other meta stays.
+	$kept    = array(
+		'a'                              => 1,
+		'nashenski_eu_vat_number'        => 'BG123',
+		'_nashenski_vat_number_is_valid' => 'yes',
+		'_billing_phone_number'          => '0888',
+		'other_invoice_document'         => 7,
+	);
+	$dropped = array( 'nashenski_order_number', 'nashenski_order_invoice_number', 'nashenski_invoice_document_date', 'nashenski_credit_notice_document_date', 'nashenski_invoice_own_program', '_nashenski_documents_paused', 'nashenski_refunded_order_number' );
+	foreach ( array( 'order', 'invoice', 'invoice_copy', 'proform', 'refunded_order', 'refunded_invoice', 'refunded_invoice_copy' ) as $doc ) {
+		$dropped[] = "nashenski_{$doc}_document";
+		$dropped[] = "nashenski_{$doc}_document_en";
+	}
+	expect( \Nashenski\Admin\Order\Subscriptions::drop_document_data( $kept + array_fill_keys( $dropped, 5 ) ) === $kept, 'A renewal copies no document file, number, date or mark, and keeps unrelated meta' );
 	// L2: a non-array value passes through unchanged and does not fatal.
 	foreach ( array( null, 'text', 5, false ) as $value ) {
 		expect( \Nashenski\Admin\Order\Subscriptions::drop_document_data( $value ) === $value, 'A non-array value is returned unchanged' );

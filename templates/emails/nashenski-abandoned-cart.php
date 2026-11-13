@@ -19,7 +19,7 @@ $nashenski_email_improvements = class_exists( FeaturesUtil::class ) && FeaturesU
 do_action( 'woocommerce_email_header', $email_heading, $email ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own email hook. ?>
 
 <?php echo $nashenski_email_improvements ? '<div class="email-introduction">' : ''; ?>
-<?php echo wp_kses_post( wpautop( make_clickable( wptexturize( $message ) ) ) ); ?>
+<?php echo wp_kses_post( wpautop( $message ) ); // Links are made in Email::get_message_html(), before the shopper's name is filled in. ?>
 <?php echo $nashenski_email_improvements ? '</div>' : ''; ?>
 
 <?php

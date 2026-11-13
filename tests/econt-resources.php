@@ -454,6 +454,8 @@ namespace {
 			if ( ! $GLOBALS['connected'] ) {
 				return null; }
 			++$GLOBALS['api_calls'];
+			if ( 'no_price' === $GLOBALS['api_error'] ) {
+				return array( 'type' => 'ExAccessDenied' ); }
 			return $GLOBALS['api_error'] ? array(
 				'type'    => 'ExException',
 				'message' => 'Offline fixture',
@@ -555,6 +557,22 @@ namespace {
 		$m         = new EcontMethod();
 		$m->calculate_shipping( package( 1 ) );
 		expect( 1 === count( $m->rates ) && 9.0 === $m->rates[0]['cost'] && 1 === $public_quotes, 'Ordinary API/login failures must retain public-price fallback' );
+	}
+
+	// A reply without a price (an error type the code does not know) is an error: the public price in Bulgaria when the list is on, no valid rate otherwise. Never a free delivery.
+	foreach ( array( '', 'no' ) as $use_public ) {
+		fixture();
+		$options['prices/use_public_econt'] = $use_public;
+		$api_error                          = 'no_price';
+		$m                                  = new EcontMethod();
+		$m->calculate_shipping( package( 1 ) );
+		$econt_rate = $m->rates[0] ?? array();
+		expect( 1 === $api_calls && ! $m->free_shipping && empty( $econt_rate['meta_data']['free_shipping'] ), 'An Econt reply without a price must not become free shipping' );
+		if ( 'no' === $use_public ) {
+			expect( false === $econt_rate['meta_data']['validated'] && ! empty( $econt_rate['meta_data']['errors'] ), 'An Econt reply without a price must be an error when the public list is off' );
+		} else {
+			expect( 9.0 === $econt_rate['cost'] && true === $econt_rate['meta_data']['validated'], 'An Econt reply without a price must use the public price' );
+		}
 	}
 
 	foreach ( array( false, true ) as $auto ) {

@@ -25,15 +25,21 @@ class Subscriptions {
 	}
 
 	/**
-	 * A renewal and its subscription must not copy the earlier order's number or order document:
-	 * the renewal gets its own when its documents are made.
+	 * A renewal and its subscription must not copy the earlier order's numbers, document files (Bulgarian
+	 * and English), document dates or document marks: the renewal gets its own when its documents are made.
+	 * A copied file ID would make the renewal delete the earlier order's PDF when it saves its own.
 	 *
 	 * @param array $data Order or subscription data to copy.
 	 * @return array
 	 */
 	public static function drop_document_data( $data ) {
 		if ( is_array( $data ) ) {
-			unset( $data['nashenski_order_number'], $data['nashenski_order_document'] );
+			unset( $data[ \Nashenski\Invoice\Mode::OUT_OF_NRA ], $data[ Documents::PAUSED_META ] );
+			foreach ( array_keys( $data ) as $key ) {
+				if ( preg_match( '/^nashenski_((refunded_)?(order|invoice|invoice_copy|proform)_document(_en)?|(refunded_)?order_number|order_invoice_number|(invoice|credit_notice)_document_date)$/', (string) $key ) ) {
+					unset( $data[ $key ] );
+				}
+			}
 		}
 
 		return $data;

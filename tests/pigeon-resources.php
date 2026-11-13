@@ -428,6 +428,8 @@ namespace {
 		public function api_call( $endpoint, $body ) {
 			++$GLOBALS['api_calls'];
 			$GLOBALS['last_request'] = $body;
+			if ( 'no_price' === $GLOBALS['api_error'] ) {
+				return array( 'data' => array() ); }
 			return $GLOBALS['api_error'] ? array(
 				'success' => false,
 				'errors'  => array( array( 'Offline fixture' ) ),
@@ -524,6 +526,22 @@ namespace {
 		$pigeon_method = new PigeonMethod();
 		$pigeon_method->calculate_shipping( package( 1 ) );
 		expect( 1 === count( $pigeon_method->rates ) && 9.0 === $pigeon_method->rates[0]['cost'] && 1 === $public_quotes, 'Ordinary login/API errors must retain public-price fallback' );
+	}
+
+	// A reply without a price is an error: the public price when the list is on, no valid rate when it is off. Never a free delivery.
+	foreach ( array( '', 'no' ) as $use_public ) {
+		fixture();
+		$options['prices/use_public_pigeon'] = $use_public;
+		$api_error                           = 'no_price';
+		$pigeon_method                       = new PigeonMethod();
+		$pigeon_method->calculate_shipping( package( 1 ) );
+		$pigeon_rate = $pigeon_method->rates[0] ?? array();
+		expect( 1 === $api_calls && ! $pigeon_method->free_shipping && empty( $pigeon_rate['meta_data']['free_shipping'] ), 'A Pigeon reply without a price must not become free shipping' );
+		if ( 'no' === $use_public ) {
+			expect( false === $pigeon_rate['meta_data']['validated'] && ! empty( $pigeon_rate['meta_data']['errors'] ), 'A Pigeon reply without a price must be an error when the public list is off' );
+		} else {
+			expect( 9.0 === $pigeon_rate['cost'] && true === $pigeon_rate['meta_data']['validated'], 'A Pigeon reply without a price must use the public price' );
+		}
 	}
 
 	foreach ( array( false, true ) as $auto ) {

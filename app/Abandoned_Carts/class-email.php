@@ -120,6 +120,21 @@ class Email extends \WC_Email {
 	}
 
 	/**
+	 * The body for the HTML email. Web addresses become links before the shopper's name is filled in,
+	 * so text typed at checkout is never turned into a link.
+	 *
+	 * @return string
+	 */
+	private function get_message_html() {
+		$name                         = isset( $this->placeholders['{name}'] ) ? (string) $this->placeholders['{name}'] : '';
+		$this->placeholders['{name}'] = '{name}';
+		$message                      = make_clickable( wptexturize( $this->get_message() ) );
+		$this->placeholders['{name}'] = $name;
+
+		return str_replace( '{name}', esc_html( $name ), $message );
+	}
+
+	/**
 	 * Fills the placeholders and sends one reminder to one cart.
 	 *
 	 * @param object $row  The cart row.
@@ -161,6 +176,7 @@ class Email extends \WC_Email {
 			array_merge(
 				$this->template_args(),
 				array(
+					'message'            => $this->get_message_html(),
 					'email_heading'      => $this->get_heading(),
 					'additional_content' => $this->get_additional_content(),
 					'sent_to_admin'      => false,

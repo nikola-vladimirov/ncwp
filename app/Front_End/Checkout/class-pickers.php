@@ -86,6 +86,11 @@ class Pickers {
 			wp_send_json_error( array( 'error' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ), 403 );
 		}
 
+		// The towns come from Econt: the checkout does not contact it when the shop has not turned the town search on.
+		if ( 'nashenski_pickers' === $action && ! self::town_picker() ) {
+			wp_send_json_error( array(), 404 );
+		}
+
 		$text     = mb_strtolower( trim( nashenski_remove_city_prefix( nashenski_picker_request( 'query' ) ) ) );
 		$cyrillic = mb_strtolower( \Nashenski\Transliteration::latin2cyrillic( $text ) );
 		$found    = array();

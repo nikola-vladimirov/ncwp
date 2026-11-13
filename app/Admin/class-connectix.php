@@ -45,7 +45,7 @@ class Connectix {
 	 * @param array $data  Label data.
 	 */
 	public static function send_econt_tracking_code( $data ) {
-		$tracking_code = $data['label']['shipmentNumber'];
+		$tracking_code = $data['label']['shipmentNumber'] ?? ''; // A failed label has only a message.
 
 		if ( ! empty( $tracking_code ) ) {
 			self::send_tracking_code( $tracking_code );
@@ -58,7 +58,7 @@ class Connectix {
 	 * @param array $data  Label data.
 	 */
 	public static function send_speedy_tracking_code( $data ) {
-		$tracking_code = $data['shipmentStatus']['id'];
+		$tracking_code = $data['shipmentStatus']['id'] ?? ''; // A failed label has only a message.
 
 		if ( ! empty( $tracking_code ) ) {
 			self::send_tracking_code( $tracking_code );

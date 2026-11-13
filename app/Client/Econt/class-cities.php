@@ -49,6 +49,11 @@ class Cities {
 	 * @return array|null
 	 */
 	protected function load_cities( $country_code = 'BG' ) {
+		// Guests send the country: only a country code goes into a file name or to Econt.
+		if ( ! is_string( $country_code ) || ! preg_match( '/^[A-Z]{2}$/', $country_code ) ) {
+			return null;
+		}
+
 		if ( ! is_dir( $this->container[ Client::ECONT ]::cache_folder() ) ) {
 			wp_mkdir_p( $this->container[ Client::ECONT ]::cache_folder() );
 		}
@@ -57,6 +62,13 @@ class Cities {
 		$cities      = File::get_file( $cities_file );
 
 		if ( ! $cities ) {
+			$failed_key = 'nashenski_econt_cities_failed_' . $country_code;
+
+			// A recent failed fetch is not retried on every request.
+			if ( get_transient( $failed_key ) ) {
+				return null;
+			}
+
 			$api_call = $this->container[ Client::ECONT ]->api_call( self::CITIES_ENDPOINT, array( 'countryCode' => $country_code ) );
 
 			if ( is_array( $api_call ) ) {
@@ -73,6 +85,12 @@ class Cities {
 						unset( $api_call );
 					}
 				}
+			}
+
+			if ( ! $cities ) {
+				set_transient( $failed_key, 1, 5 * MINUTE_IN_SECONDS );
+
+				return null;
 			}
 		}
 
@@ -134,7 +152,7 @@ class Cities {
 			$this->load_cities( $country_code );
 		}
 
-		return $this->cities[ $country_code ];
+		return $this->cities[ $country_code ] ?? null;
 	}
 
 	/**

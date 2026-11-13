@@ -64,7 +64,8 @@ class BoxNow {
 		$this->load_client_secret();
 		$this->load_base_endpoint();
 
-		$this->load_access_token( true );
+		// Not forced: the login and secret are loaded just above, and a forced call would retry a refused login on every request.
+		$this->load_access_token();
 	}
 
 	/**
@@ -201,6 +202,19 @@ class BoxNow {
 			return;
 		}
 
+		// No login to try, or BOX NOW refused it a moment ago: no request on every use.
+		$failed_key = 'nashenski_boxnow_auth_failed_' . md5( $token_key );
+
+		// A forced login (the settings were saved) tries again at once.
+		if ( $forced ) {
+			delete_transient( $failed_key );
+		}
+
+		if ( '' === (string) $this->get_client_id() || '' === (string) $this->get_client_secret() || get_transient( $failed_key ) ) {
+			$this->set_access_token( null );
+			return;
+		}
+
 		$request = wp_remote_post(
 			$this->get_base_endpoint() . self::AUTH_ENDPOINT,
 			array(
@@ -219,6 +233,7 @@ class BoxNow {
 		);
 
 		if ( is_wp_error( $request ) || wp_remote_retrieve_response_code( $request ) !== 200 ) {
+			set_transient( $failed_key, 1, 5 * MINUTE_IN_SECONDS );
 			$this->set_access_token( null );
 			return;
 		}

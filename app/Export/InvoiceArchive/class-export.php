@@ -73,7 +73,7 @@ class Export {
 	 */
 	public function get_file() {
 		if ( ! class_exists( 'ZipArchive' ) ) {
-			return new \WP_Error( 'zip_missing', 'PHP ZipArchive extension is not available.' );
+			return new \WP_Error( 'zip_missing', __( 'The PHP ZipArchive extension is not available.', 'nashenski-commerce' ) );
 		}
 
 		foreach ( $this->order_ids as $key => $order_id ) {
@@ -128,7 +128,7 @@ class Export {
 		$opened        = $zip->open( $tmp_file, ZipArchive::CREATE | ZipArchive::OVERWRITE );
 
 		if ( true !== $opened ) {
-			return new \WP_Error( 'zip_open_failed', 'Could not create the invoice archive.' );
+			return new \WP_Error( 'zip_open_failed', __( 'Could not create the invoice archive.', 'nashenski-commerce' ) );
 		}
 
 		foreach ( $this->documents as $document ) {

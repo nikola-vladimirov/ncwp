@@ -89,7 +89,7 @@ class EU_Vat {
 		? array( wc_get_page_screen_id( 'shop-order' ), wc_get_page_screen_id( 'shop_subscription' ) )
 		: array( 'shop_order', 'shop_subscription' );
 
-		add_meta_box( 'nashenski_eu_vat', __( 'EU VAT', 'nashenski-commerce' ), array( __CLASS__, 'output_meta_box' ), array( 'shop_order', 'shop_subscription' ), 'side' );
+		add_meta_box( 'nashenski_eu_vat', __( 'EU VAT', 'nashenski-commerce' ), array( __CLASS__, 'output_meta_box' ), array_filter( $screen ), 'side' );
 	}
 
 	/**
@@ -131,7 +131,7 @@ class EU_Vat {
 						<td>
 						<?php
 						if ( ! $data->validated ) {
-							echo wp_kses_post( '<span class="tips" data-tip="' . wc_sanitize_tooltip( __( 'Validation was not possible', 'nashenski-commerce' ) ) . '">?<span>' );
+							echo wp_kses_post( '<span class="tips" data-tip="' . wc_sanitize_tooltip( __( 'Validation was not possible', 'nashenski-commerce' ) ) . '">?</span>' );
 						} else {
 							echo $data->valid ? '&#10004;' : '&#10008;';
 						}
@@ -162,11 +162,12 @@ class EU_Vat {
 							esc_html_e( 'Unknown', 'nashenski-commerce' );
 						}
 						?>
+						</td>
 						<td></td>
 					</tr>
 					<tr>
 						<th><?php esc_html_e( 'Billing Country', 'nashenski-commerce' ); ?></th>
-						<td><?php echo $data->billing_country ? esc_html( $countries[ $data->billing_country ] ) : esc_html__( 'Unknown', 'nashenski-commerce' ); ?></td>
+						<td><?php echo $data->billing_country ? esc_html( $countries[ $data->billing_country ] ?? $data->billing_country ) : esc_html__( 'Unknown', 'nashenski-commerce' ); ?></td>
 						<td></td>
 					</tr>
 				<?php endif; ?>
