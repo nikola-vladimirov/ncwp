@@ -1,5 +1,5 @@
 === Nashenski Commerce ===
-Contributors: pristadigital
+Contributors: pristadigital, milenfrom
 Tags: woocommerce, bulgaria, shipping, invoice, econt
 Requires at least: 6.5
 Tested up to: 7.1
@@ -93,7 +93,7 @@ Yes, see "Moving from another plugin". Import the mreja.net N-18 plugin while it
 
 1. Couriers: turn on the couriers you work with, each with its account and sender.
 2. Checkout: countries, courier logos, address transliteration and the company invoice fields.
-3. Invoice numbering: website invoices go into the NRA audit file. Your own invoicing program keeps its orders out of it.
+3. Invoices: on request for companies, in the NRA audit file or left out of it.
 4. Customer checks: nekorekten.com, Connectix and NepoStop, and when cash on delivery is held back.
 5. Quick order: a short form for shoppers who do not want to check out. The order waits for your confirmation.
 6. Order screen: the courier line on the order, with the customer's history and checks beside it.
@@ -122,4 +122,4 @@ Vendor libraries: LGPL, MIT or Apache-2.0. DejaVu fonts: Bitstream Vera licence.
 All versions: CHANGELOG.md in the plugin folder (Plugins screen > Changelog).
 
 = 0.21.10 =
-* Changes: Security Audit: nonces checked first in every request, output escaped where printed, no global file permission settings, only standard file types.
+* Changes: Security Audit: nonces checked first in every request, output escaped where printed, no global file permission settings, only standard file types. Invoice settings: one checkbox and one choice.

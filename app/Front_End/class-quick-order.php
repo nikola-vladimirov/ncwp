@@ -45,6 +45,8 @@ class Quick_Order {
 	public function __construct() {
 		add_action( 'init', array( __CLASS__, 'register_status' ) );
 		add_filter( 'wc_order_statuses', array( __CLASS__, 'add_status' ) );
+		// The posts-table orders list prints label_count as is; the HPOS list adds the grey count itself.
+		add_filter( 'views_edit-shop_order', array( __CLASS__, 'grey_count' ) );
 		// Quick orders wait for the owner, so they count in the Orders menu bubble with the processing ones.
 		add_filter( 'woocommerce_menu_order_count', array( __CLASS__, 'menu_count' ) );
 
@@ -307,6 +309,21 @@ class Quick_Order {
 		$statuses[ 'wc-' . self::STATUS ] = _x( 'Quick order', 'Order status', 'nashenski-commerce' );
 
 		return $statuses;
+	}
+
+	/**
+	 * Wraps the number of the status link in the grey count span, so the translatable text stays plain.
+	 *
+	 * @param mixed $views Status links of the orders list.
+	 * @return mixed Result.
+	 */
+	public static function grey_count( $views ) {
+		$key = 'wc-' . self::STATUS;
+		if ( is_array( $views ) && isset( $views[ $key ] ) && false === strpos( $views[ $key ], 'class="count"' ) ) {
+			$views[ $key ] = preg_replace( '/\(([^()<>]*)\)(\s*<\/a>)/', '<span class="count">($1)</span>$2', $views[ $key ] );
+		}
+
+		return $views;
 	}
 
 	/**
