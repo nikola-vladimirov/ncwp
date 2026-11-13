@@ -92,7 +92,7 @@ Yes, see "Moving from another plugin". Import the mreja.net N-18 plugin while it
 == Screenshots ==
 
 1. Couriers: turn on the couriers you work with, each with its account and sender.
-2. Checkout: countries, courier logos, address transliteration and the company invoice fields.
+2. Checkout: countries, courier logos and address transliteration.
 3. Invoices: on request for companies, in the NRA audit file or left out of it.
 4. Customer checks: nekorekten.com, Connectix and NepoStop, and when cash on delivery is held back.
 5. Quick order: a short form for shoppers who do not want to check out. The order waits for your confirmation.

@@ -186,7 +186,7 @@ class Help_Page {
 				esc_html__( 'See the carts in WooCommerce > Abandoned carts. Filter them by status, send a reminder by hand or delete carts. Old carts are deleted once the retention period ends.', 'nashenski-commerce' ),
 			),
 			__( 'Invoices and documents', 'nashenski-commerce' ) => array(
-				esc_html__( 'The order document is made for every order. Invoices are made as set in "When to generate invoices?", and credit notes for refunds.', 'nashenski-commerce' ),
+				esc_html__( 'The order document is made for every order. Invoices are made for customers who ask for one at checkout, when "Enable invoices" is on, and credit notes for refunds.', 'nashenski-commerce' ),
 				esc_html__( 'To make an invoice by hand, open the order and use "Make invoice" in the PDF Files box. You can change the number; the next automatic number continues after it.', 'nashenski-commerce' ),
 				/* translators: %s: link to the Documents section */
 				sprintf( esc_html__( 'The look of the PDF files (logo, colours, font, spacing) is in %s > PDF appearance. Every document is made in Bulgarian and in English.', 'nashenski-commerce' ), $documents ),
@@ -194,9 +194,9 @@ class Help_Page {
 				sprintf( esc_html__( 'Your company details, the numbering and when documents are made are in %s > Company details and Invoices and documents.', 'nashenski-commerce' ), $documents ),
 				esc_html__( 'To save disk space, set "Delete order documents after (days)" in Documents > Invoices and documents. Only the order document PDFs of older orders are deleted; invoices, credit notes and refund documents stay. "Delete all order documents now" does it at once, after a confirmation.', 'nashenski-commerce' ),
 				/* translators: %s: link to the Documents section */
-				sprintf( esc_html__( 'In %s > Company invoice, "Company invoice fields" adds "I want an invoice for a company" with company name, EIK, VAT number, MOL, town and address.', 'nashenski-commerce' ), $documents ),
+				sprintf( esc_html__( 'In %s > Invoices and documents, "Enable invoices" adds "I want an invoice for a company" to the checkout, with company name, EIK, VAT number, MOL, town and address. The website makes the invoice of every order where it is ticked.', 'nashenski-commerce' ), $documents ),
 				/* translators: %s: link to the Documents section */
-				sprintf( esc_html__( 'In %s > Invoices and documents, "Invoice numbering": "Website invoices" go into the NRA audit file. "Own invoicing program" keeps the invoice out of it; you type that program\'s number on the order.', 'nashenski-commerce' ), $documents ),
+				sprintf( esc_html__( 'In %s > Invoices and documents, "How to issue invoices" says whether orders with an invoice are in the NRA audit file. By default they are left out of it. "In the NRA audit file" keeps them in and needs "Enable N-18" on.', 'nashenski-commerce' ), $documents ),
 				esc_html__( 'Copies can go to your accountant by email, and the monthly NRA audit file too.', 'nashenski-commerce' ),
 				esc_html__( 'A delivery with no VAT, on an order with no VAT at all, is printed at 0% with its full price.', 'nashenski-commerce' ),
 				esc_html__( 'A delivery the customer paid to the courier is not on the documents or in the NRA audit file, because you did not collect it. Credit notes follow their order. Each order keeps what was decided at checkout; orders from before version 0.21.8 keep the old "Remove delivery from documents" rule.', 'nashenski-commerce' ),
@@ -239,7 +239,7 @@ class Help_Page {
 			__( 'Moving from another plugin', 'nashenski-commerce' ) => array(
 				esc_html__( 'Nashenski Commerce imports from Bulgarisation for WooCommerce, the mreja.net plugins (Econt Express, BOX NOW Delivery, Speedy shipping method, Pigeon Express shipping, Ordinance N-18), Drusoft Shipping for Econt and for Speedy, Econt Delivery and Speedy Shipping.', 'nashenski-commerce' ),
 				esc_html__( 'The order documents and invoices of Bulgarisation for WooCommerce move into the private documents folder and open from the order as before.', 'nashenski-commerce' ),
-				esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database.', 'nashenski-commerce' ),
+				esc_html__( 'It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details, whether invoices are on and the document numbers. Bulgarisation for WooCommerce passes its invoice settings on too. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database.', 'nashenski-commerce' ),
 				esc_html__( 'While Bulgarisation for WooCommerce (4.x or 5.x) is active, Nashenski Commerce is paused. Deactivate it before the import.', 'nashenski-commerce' ),
 				esc_html__( 'Import the mreja.net Ordinance N-18 plugin while it is off. Until its documents are imported, Nashenski Commerce makes no invoices or other documents while a new number could clash with one of them. If it is turned on again after the import, it can reuse numbers Nashenski Commerce already gave out: documents pause until it is off and its import is run again. Correct the orders that import lists, then use "Regenerate PDF\'s" for orders without documents.', 'nashenski-commerce' ),
 				esc_html__( 'Econt Delivery and Drusoft Shipping for Econt use a different Econt key: enter your Econt username and password after the import.', 'nashenski-commerce' ),

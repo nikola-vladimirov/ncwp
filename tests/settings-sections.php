@@ -16,15 +16,6 @@ namespace Nashenski {
 	}
 }
 
-namespace Nashenski\Front_End\Checkout {
-	/**
-	 * Company fields fixture.
-	 */
-	class Company_Fields {
-		const GROUP = 'company';
-	}
-}
-
 namespace {
 	define( 'ABSPATH', __DIR__ . '/fixtures/' );
 
@@ -145,15 +136,6 @@ namespace {
 	);
 	expect( ! isset( $layout->invoke( $settings_page )['documents'] ), 'the Documents section is not in the menu when documents are off' );
 	expect( isset( $layout->invoke( $settings_page )['checkout'] ), 'the Checkout section stays when documents are off' );
-	$excluded = function ( $page_layout ) {
-		foreach ( $page_layout['checkout']['parts'] as $part ) {
-			if ( 'fields' === $part[0] ) {
-				return $part[3] ?? array();
-			}
-		}
-		return null;
-	};
-	expect( array() === $excluded( $layout->invoke( $settings_page ) ), 'with documents off the company invoice switch stays in Checkout' );
 	$tabs_prop->setValue(
 		$settings_page,
 		array(
@@ -163,7 +145,8 @@ namespace {
 			'shipping'  => 1,
 		)
 	);
-	expect( array( 'company' ) === $excluded( $layout->invoke( $settings_page ) ), 'with documents on the company group moves to Documents' );
+	// 0.21.10: the company invoice group is gone; "Enable invoices" is a Documents setting.
+	expect( array( array( 'documents', null ) ) === $layout->invoke( $settings_page )['documents']['parts'] && array( array( 'shipping', null ), array( 'fields', null ) ) === $layout->invoke( $settings_page )['checkout']['parts'], 'Documents shows only the documents tab, Checkout all of the fields tab' );
 
 	// The Help page links to the Documents section only while it is in the menu.
 	$help_link = new ReflectionMethod( 'Nashenski\Admin\Help_Page', 'link' );

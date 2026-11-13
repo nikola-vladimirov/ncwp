@@ -53,7 +53,10 @@ class Plugin {
 		require_once __DIR__ . '/functions.php';
 		add_action( 'woocommerce_checkout_update_order_review', 'nashenski_keep_order_review_form', -1 );
 		add_action( self::REMOVE_SHIPPING_JOB, array( __CLASS__, 'upgrade_remove_shipping' ) );
+		$was = get_option( 'nashenski_version' );
 		$this->maybe_upgrade();
+		// 0.21.10, once. Not under the version check: sites that ran an earlier 0.21.10 build get it too.
+		Invoice\Mode::upgrade( $was );
 		$this->load_default_options();
 		$this->load_classes();
 		$this->container->register( new Container\Client() );
@@ -238,7 +241,7 @@ class Plugin {
 			}
 		}
 
-		if ( Front_End\Checkout\Company_Fields::enabled() ) {
+		if ( Invoice\Mode::enabled() ) {
 			new Front_End\Checkout\Company_Fields();
 
 			if ( ! class_exists( 'WC_EU_VAT_Number_Init' ) ) {

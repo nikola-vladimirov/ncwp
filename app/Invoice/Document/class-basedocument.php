@@ -763,9 +763,11 @@ class BaseDocument {
 		$details = $this->get_site_details();
 
 		if ( $logo ) {
+			// A file:// URL into the logo folder, which Dompdf may read (allow_folder): a bare file name through esc_url() would become http://<name>, a remote image Dompdf refuses.
+			// shortcut: esc_url() turns a space in the uploads path into %20 and Dompdf then misses the file, so no logo; upgrade if a store with such a path reports it.
 			printf(
 				'<img class="site-logo" src="%1$s"%2$s height="%3$d" alt="">',
-				esc_url( $logo['src'] ),
+				esc_url( 'file://' . wp_normalize_path( File::cache_folder( 'logo' ) . $logo['src'] ), array( 'file' ) ),
 				$logo['width'] ? ' width="' . absint( $logo['width'] ) . '"' : '',
 				absint( $logo['height'] )
 			);

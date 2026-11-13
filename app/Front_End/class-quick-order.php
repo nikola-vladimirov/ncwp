@@ -420,12 +420,10 @@ class Quick_Order {
 						'sanitize_callback' => 'absint',
 						'validate_callback' => 'rest_validate_request_arg',
 					),
+					// Whatever the quantity box holds (empty, 0, a decimal from another plugin): at least 1, as before the REST route.
 					'quantity'   => array(
-						'type'              => 'integer',
-						'minimum'           => 1,
 						'default'           => 1,
-						'sanitize_callback' => 'absint',
-						'validate_callback' => 'rest_validate_request_arg',
+						'sanitize_callback' => static fn( $value ) => max( 1, absint( $value ) ),
 					),
 				),
 			)

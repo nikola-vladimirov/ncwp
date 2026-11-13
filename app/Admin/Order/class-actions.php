@@ -256,7 +256,7 @@ class Actions {
 			return __( 'The invoice number must be 1 to 10 digits.', 'nashenski-commerce' );
 		}
 
-		return \Nashenski\Invoice\Number_Allocator::manual( $order, $number, Documents::own_numbering() );
+		return \Nashenski\Invoice\Number_Allocator::manual( $order, $number );
 	}
 
 	/**

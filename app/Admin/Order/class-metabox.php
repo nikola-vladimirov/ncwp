@@ -88,8 +88,7 @@ class MetaBox {
 		if ( ! $next ) {
 			$next = nashenski_get_option( 'invoice', 'next_invoice_number' );
 		}
-		// Own invoicing program: the number comes from that program, so no website number is suggested.
-		$value = Documents::own_numbering() ? '' : max( 1, (int) $next );
+		$value = max( 1, (int) $next );
 		?>
 		<p class="nashenski-make-invoice">
 			<label for="nashenski_invoice_number"><?php esc_html_e( 'Invoice number', 'nashenski-commerce' ); ?></label>

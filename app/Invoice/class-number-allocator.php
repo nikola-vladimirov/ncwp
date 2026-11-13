@@ -380,25 +380,22 @@ class Number_Allocator {
 	}
 
 	/**
-	 * $own_program: the number comes from the shop's own invoicing program, so the website sequence stays as it is.
+	 * An invoice number typed in on the order screen ("Make invoice"); the sequence continues after it.
 	 *
-	 * @param \WC_Order  $order       Order.
-	 * @param int|string $number      Invoice number.
-	 * @param bool       $own_program Whether the shop's own program issued it.
+	 * @param \WC_Order  $order  Order.
+	 * @param int|string $number Invoice number.
 	 * @return string Error message, or ''.
 	 */
-	public static function manual( $order, $number, $own_program = false ) {
+	public static function manual( $order, $number ) {
 		self::not_paused();
 		return self::locked(
-			function () use ( $order, $number, $own_program ) {
+			function () use ( $order, $number ) {
 				$option = self::option( 'next_invoice_separate_number' ) ? 'next_invoice_separate_number' : 'next_invoice_number';
 				if ( self::used( (int) $number, $option, $order->get_id() ) ) {
 						/* translators: %s: invoice number */
 						return sprintf( __( 'Number %s is already used by another order. Choose another invoice number.', 'nashenski-commerce' ), str_pad( (int) $number, 10, '0', STR_PAD_LEFT ) );
 				}
-				if ( $own_program ) {
-					$order->update_meta_data( 'nashenski_invoice_own_program', 'yes' );
-				} elseif ( (int) $number >= (int) self::option( $option ) ) {
+				if ( (int) $number >= (int) self::option( $option ) ) {
 					self::advance( $option, (int) $number + 1 );
 				}
 				self::persist( $order, 'nashenski_order_invoice_number', (int) $number, self::saved( $order, 'nashenski_order_invoice_number' ) );

@@ -49,24 +49,6 @@ class Documents {
 		return 'yes' === nashenski_get_option( 'apis', 'enable_documents' );
 	}
 
-	/**
-	 * Documents > Invoices and documents > Invoice numbering is "Own invoicing program": invoices get the
-	 * number typed in on the order screen and stay out of the NRA audit file.
-	 */
-	public static function own_numbering() {
-		return 'own' === nashenski_get_option( 'company', 'invoice_numbering' );
-	}
-
-	/**
-	 * Per order, so switching the setting later does not move invoices made before in or out of
-	 * the NRA audit file.
-	 *
-	 * @param mixed $order Order.
-	 */
-	public static function own_invoice( $order ) {
-		return 'yes' === $order->get_meta( 'nashenski_invoice_own_program' );
-	}
-
 	/** The documents are made at checkout (the default), not when the order is completed. */
 	public static function default_trigger() {
 		$trigger = nashenski_get_option( 'invoice', 'trigger' );
@@ -193,16 +175,8 @@ class Documents {
 	 * @return mixed Result.
 	 */
 	public static function maybe_generate_invoice( $order ) {
-		$invoice_generation = nashenski_get_option( 'invoice', 'invoices' );
-
-		$generate_invoice = (
-			$order->get_meta( 'nashenski_invoice_document' ) ||
-			// Own invoicing program: no automatic invoice, the shop makes it on the order screen with its own number.
-			( ! self::own_numbering() && (
-				'always' === $invoice_generation ||
-				( 'only_for_company' === $invoice_generation && $order->get_meta( '_billing_to_company' ) )
-			) )
-		);
+		// An order that has an invoice keeps getting it; a new one is for the customer who ticked "I want an invoice for a company".
+		$generate_invoice = $order->get_meta( 'nashenski_invoice_document' ) || ( \Nashenski\Invoice\Mode::enabled() && $order->get_meta( '_billing_to_company' ) );
 
 		return \Nashenski\Hooks::filter( 'nashenski_admin_order_maybe_generate_invoice', 'nashenski/admin/order/maybe_generate_invoice', $generate_invoice, $order );
 	}

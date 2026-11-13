@@ -11,7 +11,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Company invoice fields at checkout: "I want an invoice for a company", then company name, EIK,
- * VAT number, MOL, town and address. Turned on or off in Documents > Company invoice.
+ * VAT number, MOL, town and address. Loaded while "Enable invoices" is on (Invoice\Mode::enabled()).
+ * Other plugins' imports rely on the field keys and order meta keys: do not rename them.
  *
  * - Classic and page builder checkouts: the fields come from Company (billing fields). When a
  *   builder checkout is made of single field elements and the template has none of them, the
@@ -20,8 +21,6 @@ defined( 'ABSPATH' ) || exit;
  *   when the box is ticked, and saved into the same order data, so documents read them the same way.
  */
 class Company_Fields {
-	const GROUP = 'company';
-
 	/**
 	 * Block checkout field ID => order meta (or "company" for the billing company name).
 	 */
@@ -34,20 +33,6 @@ class Company_Fields {
 		'nashenski/company-settlement' => '_billing_company_settlement',
 		'nashenski/company-address'    => '_billing_company_address',
 	);
-
-	/**
-	 * On when the store turned it on. Stores that never chose keep the old behaviour: on while
-	 * documents are on and invoices are not switched off.
-	 */
-	public static function enabled() {
-		$saved = nashenski_get_option( self::GROUP, 'fields' );
-
-		if ( in_array( $saved, array( 'yes', 'no' ), true ) ) {
-			return 'yes' === $saved;
-		}
-
-		return 'yes' === nashenski_get_option( 'apis', 'enable_documents' ) && 'disable' !== nashenski_get_option( 'invoice', 'invoices' );
-	}
 
 	/**
 	 * Constructor.

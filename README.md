@@ -105,7 +105,9 @@ order open the courier box, check the details and press "Generate label".
 
 - Order documents, invoices and credit notes as PDF, in Bulgarian and English, attached to the order
   emails. The order document is made for every order.
-- Invoices automatically or by hand from the order screen, with your own number if needed.
+- Invoices for companies that ask for one at checkout ("Enable invoices"), or by hand from the order
+  screen, with your own number if needed. "How to issue invoices" keeps those orders in the NRA audit
+  file or out of it.
 - The NRA audit XML file (Annex 38) for any period, checked against the NRA schema, and optionally
   emailed to your accountant on the 1st of every month.
 - Invoice archive and Microinvest Delta exports, and an export builder for orders, products sold or

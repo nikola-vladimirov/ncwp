@@ -34,6 +34,14 @@ Manual: https://nashenski.com/manual/
 - The quick order form and the block checkout price texts are styled from CSS files; scripts no longer add style elements to the page.
 - The withdrawal link in emails now carries the order number as nashenski_order. Links in emails sent before this version still open the form, without the order number filled in.
 - Old settings links (admin.php?page=nashenski&tab=...) open the Nashenski Commerce settings at the start.
+- Invoice settings: Documents > Invoices and documents has one checkbox, "Enable invoices", and one choice, "How to issue invoices". They replace "When to generate invoices?", "Invoice numbering" and the "Company invoice fields" checkbox.
+- Invoice settings: with "Enable invoices" on, the checkout shows "I want an invoice for a company" with the company fields, and the website makes the invoice of every order where it is ticked. Invoices are for companies only; "Always" is gone.
+- Invoice settings: "How to issue invoices" is "On request, not in the NRA audit file" (the default: orders with an invoice are left out of the file and the monthly audit email) or "On request, in the NRA audit file", which needs "Enable N-18" on.
+- Invoice settings: the website makes and numbers every invoice. The "Own invoicing program" choice is gone. "Make invoice" on the order screen still takes a number you type, and the next number continues after it.
+- Invoice settings: your old choices are carried over once. "Disable invoice generation" becomes off. Any other choice becomes on: in the NRA audit file with "Website invoices", out of it with "Own invoicing program". Documents and numbers already made do not change, and orders kept out of the NRA audit file stay out. A store that never saved "When to generate invoices?" keeps the company box it had: on while documents are on, unless "Company invoice fields" was off.
+- Invoice settings: check after the update. If invoices were disabled and only "Company invoice fields" was on, the company fields are off now; turn on "Enable invoices" to get them back. Stores on "Add only fields on checkout" now get an invoice for each order where the box is ticked.
+- Invoice settings: the imports from Bulgarisation for WooCommerce and from the mreja.net N-18 plugin set the two new settings from those plugins' invoice settings. The company fields keep their names and order data.
+- Invoice settings: the setup wizard asks "Only for companies" or "No invoices".
 
 ## 0.21.9 (2026-11-12)
 

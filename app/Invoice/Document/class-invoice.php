@@ -39,6 +39,16 @@ class Invoice extends BaseDocument {
 	}
 
 	/**
+	 * The first invoice of the order decides whether the order stays out of the NRA audit file
+	 * ("How to issue invoices"); saved with the number or the file.
+	 */
+	public function generate_file() {
+		\Nashenski\Invoice\Mode::mark( $this->woo_order );
+
+		parent::generate_file();
+	}
+
+	/**
 	 * Builds the PDF with the original and the copy.
 	 */
 	protected function build_file() {

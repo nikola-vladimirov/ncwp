@@ -16,8 +16,8 @@ defined( 'ABSPATH' ) || exit;
  * Taken over: courier logins that work with Nashenski Commerce, sender name and phone, the
  * waybill numbers of old orders (so tracking, status checks and courier requests work),
  * shipping zone methods (one Nashenski method per delivery type, the old one is turned off),
- * the mreja.net free shipping totals, and from the N-18 plugin the company details and the
- * document numbers.
+ * the mreja.net free shipping totals, and from the N-18 plugin the company details, whether
+ * invoices are on and the document numbers.
  */
 class Import_Sources {
 	const ACTION         = 'nashenski_import_source';
@@ -680,7 +680,20 @@ class Import_Sources {
 	}
 
 	/**
-	 * Company details and document numbers of the N-18 plugin.
+	 * "Фактури?" of the N-18 plugin (notasuptooptions[document_type]: "invoice" or "purchase_order")
+	 * as "Enable invoices" and "How to issue invoices". Its invoiced orders were all in its NRA file.
+	 * "Издаване на фактури" (manual_invoice: every order, by hand, or orders with invoice details)
+	 * has no setting here: the invoice is made when the customer asks for one.
+	 *
+	 * @param array $o The plugin's options.
+	 * @return array enabled (yes or no) and mode.
+	 */
+	public static function n18_invoices( $o ) {
+		return \Nashenski\Invoice\Mode::from_old( 'invoice' === ( $o['document_type'] ?? '' ) ? 'only_for_company' : 'disable', true );
+	}
+
+	/**
+	 * Company details, invoice settings and document numbers of the N-18 plugin.
 	 *
 	 * @param mixed $o     O.
 	 * @param mixed $count Count.
@@ -712,6 +725,16 @@ class Import_Sources {
 			foreach ( $fields as $ours => $theirs ) {
 				self::fill( $group, $ours, is_string( $o[ $theirs ] ?? null ) ? $o[ $theirs ] : '', $count );
 			}
+		}
+
+		// Invoices are only turned on here, never off: a choice already made in Nashenski stays.
+		$pair = self::n18_invoices( $o );
+
+		if ( 'yes' === $pair['enabled'] && 'yes' === nashenski_get_option( 'invoice', 'enabled' ) ) {
+			++$count['kept'];
+		} elseif ( 'yes' === $pair['enabled'] ) {
+			\Nashenski\Invoice\Mode::save( $pair );
+			$count['settings'] += 2;
 		}
 
 		// Order documents keep their numbers; the next numbers continue after the highest one.

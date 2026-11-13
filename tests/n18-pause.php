@@ -631,6 +631,7 @@ namespace {
 	require __DIR__ . '/../app/Admin/class-import-sources.php';
 	require __DIR__ . '/../app/Admin/class-help-page.php';
 	require __DIR__ . '/../app/Invoice/class-number-allocator.php';
+	require __DIR__ . '/../app/Invoice/class-mode.php';
 	require __DIR__ . '/../app/Admin/Order/class-documents.php';
 }
 
@@ -740,6 +741,35 @@ namespace Nashenski {
 		check( isset( Import_Sources::sources()['mreja_n18'] ) && false !== strpos( help_import(), 'Import</a>' ), 'its documents alone are offered for import' );
 		Import_Sources::import( 'mreja_n18' );
 		check( '0000000150' === wc_get_order( 1 )->get_meta( 'nashenski_order_number' ) && 'done' === Import_Sources::n18_state() && false === Import_Sources::n18_paused(), 'the import works from its documents alone' );
+		check( false === get_option( 'nashenski_settings_invoice_enabled' ), 'without its settings the import leaves the invoice settings alone' );
+
+		// Its "Фактури?" set to "Да" (document_type = invoice) turns "Enable invoices" on, in the NRA audit file.
+		fresh(
+			array(
+				'notasuptooptions'                   => array(
+					'document_type'  => 'invoice',
+					'manual_invoice' => '2',
+				),
+				'nashenski_settings_invoice_enabled' => 'no',
+			),
+			$five
+		);
+		Import_Sources::import( 'mreja_n18' );
+		check( 'yes' === get_option( 'nashenski_settings_invoice_enabled' ) && 'request_nra' === get_option( 'nashenski_settings_invoice_mode' ), 'its invoices become Enable invoices on, in the NRA audit file' );
+
+		// Its "Не" (purchase_order) never turns off invoices chosen here, and its "Да" keeps the mode chosen here.
+		foreach ( array( 'purchase_order', 'invoice' ) as $document_type ) {
+			fresh(
+				array(
+					'notasuptooptions'                   => array( 'document_type' => $document_type ),
+					'nashenski_settings_invoice_enabled' => 'yes',
+					'nashenski_settings_invoice_mode'    => 'request',
+				),
+				$five
+			);
+			Import_Sources::import( 'mreja_n18' );
+			check( 'yes' === get_option( 'nashenski_settings_invoice_enabled' ) && 'request' === get_option( 'nashenski_settings_invoice_mode' ), "invoices chosen here stay as they are ($document_type)" );
+		}
 
 		// N-18 documents that are not imported yet: no documents and no numbers until the import, which the notice links to.
 		fresh( array( 'nashenski_settings_invoice_next_invoice_separate_number' => '0000000050' ), $five );

@@ -243,6 +243,11 @@ namespace {
 	$GLOBALS['logo'] = __DIR__ . '/no-such-logo.png';
 	check( array() === BaseDocument::get_logo_img(), 'a local logo that is not there gives no logo' );
 
+	// The src is a bare file name: esc_url() would make it http://<name>, a remote image Dompdf refuses (0.21.10 review).
+	$render = new ReflectionMethod( BaseDocument::class, 'render_pdf_logo' );
+	$body   = implode( '', array_slice( file( $render->getFileName() ), $render->getStartLine() - 1, $render->getEndLine() - $render->getStartLine() + 1 ) );
+	check( false !== strpos( $body, "esc_url( 'file://' . wp_normalize_path( File::cache_folder( 'logo' ) . \$logo['src'] ), array( 'file' ) )" ) && false === strpos( $body, "esc_url( \$logo['src'] )" ), 'the logo src is a file:// URL into the logo folder, not a bare name through esc_url()' );
+
 	// Dompdf keeps its font files open until it is freed (Windows cannot remove the folders before).
 	unset( $pdf );
 	gc_collect_cycles();

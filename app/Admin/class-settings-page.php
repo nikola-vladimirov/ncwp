@@ -143,7 +143,7 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 
 	/**
-	 * The sections and what each one shows. A part is array( tab slug, groups or null for all groups, optional field names, optional groups to leave out ).
+	 * The sections and what each one shows. A part is array( tab slug, groups or null for all groups, optional field names ).
 	 */
 	private function layout() {
 		$layout = array(
@@ -157,8 +157,7 @@ class Settings_Page extends \WC_Settings_Page {
 			),
 			'checkout'        => array(
 				'label' => __( 'Checkout', 'nashenski-commerce' ),
-				// The company group moves to Documents only while that section exists; with documents off its switch stays here.
-				'parts' => array( array( 'shipping', null ), array( 'fields', null, null, $this->tab( 'documents' ) ? array( \Nashenski\Front_End\Checkout\Company_Fields::GROUP ) : array() ) ),
+				'parts' => array( array( 'shipping', null ), array( 'fields', null ) ),
 			),
 			// Always in the menu: the on/off switch first, the settings once it is on.
 			'quick_order'     => array(
@@ -171,7 +170,7 @@ class Settings_Page extends \WC_Settings_Page {
 			),
 			'documents'       => array(
 				'label' => __( 'Documents', 'nashenski-commerce' ),
-				'parts' => array( array( 'documents', null ), array( 'fields', array( \Nashenski\Front_End\Checkout\Company_Fields::GROUP ) ) ),
+				'parts' => array( array( 'documents', null ) ),
 			),
 			'checks'          => array(
 				'label' => __( 'Customer checks', 'nashenski-commerce' ),
@@ -308,7 +307,7 @@ class Settings_Page extends \WC_Settings_Page {
 			$columns = 'couriers' === $section_id && ! empty( $groups[ $part[0] ] ) && ! empty( $groups[ $send_from ] );
 
 			foreach ( $groups as $group => $pairs ) {
-				if ( empty( $pairs ) || ( null !== $part[1] && ! in_array( $group, $part[1], true ) ) || in_array( $group, $part[3] ?? array(), true ) ) {
+				if ( empty( $pairs ) || ( null !== $part[1] && ! in_array( $group, $part[1], true ) ) ) {
 					continue;
 				}
 
@@ -412,35 +411,7 @@ class Settings_Page extends \WC_Settings_Page {
 			$settings = array_merge( $settings, $look, \Nashenski\Front_End\Withdrawal::settings() );
 		}
 
-		if ( 'documents' === $section_id ) {
-			$settings = self::invoice_rows( $settings );
-		}
-
 		return self::boxes( Setting_Help::apply( $settings ) );
-	}
-
-	/**
-	 * Documents: "Invoice numbering" (stored in the company group) moves under "When to generate invoices?".
-	 * Nothing hides while invoices are off: numbering, the next number, due days and separate copies all feed "Make invoice" on the order screen.
-	 *
-	 * @param array $settings Settings of the section.
-	 */
-	public static function invoice_rows( $settings ) {
-		$from = null;
-		$to   = null;
-
-		foreach ( $settings as $i => $setting ) {
-			$id   = $setting['id'] ?? '';
-			$from = 'nashenski_settings_company_invoice_numbering' === $id ? $i : $from;
-			$to   = 'nashenski_settings_invoice_invoices' === $id ? $i : $to;
-		}
-
-		if ( null !== $from && null !== $to ) {
-			$moved = array_splice( $settings, $from, 1 );
-			array_splice( $settings, $from > $to ? $to + 1 : $to, 0, $moved );
-		}
-
-		return $settings;
 	}
 
 	/**
