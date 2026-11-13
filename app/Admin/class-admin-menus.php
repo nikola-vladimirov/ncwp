@@ -25,7 +25,6 @@ class Admin_Menus {
 		// WordPress refuses unknown admin pages before admin_init, so redirect just before that.
 		add_action( 'admin_page_access_denied', array( __CLASS__, 'redirect_old_page' ) );
 		add_action( 'admin_init', array( __CLASS__, 'redirect_wrong_tab' ) );
-		add_filter( 'upload_mimes', array( __CLASS__, 'allow_upload_xml' ) );
 		add_filter( 'admin_footer_text', array( __CLASS__, 'admin_footer_text' ), 99 );
 	}
 
@@ -78,11 +77,17 @@ class Admin_Menus {
 	 */
 	public static function admin_footer_text( $footer_text ) {
 		if ( Settings::is_current() ) {
+			// WordPress prints the footer text as it is, so every part is escaped here: the sentence, the name and the link.
 			return sprintf(
 				/* translators: 1: Nashenski Commerce, 2: five stars. */
-				__( 'If you like %1$s please leave us a %2$s rating. A huge thanks in advance!', 'nashenski-commerce' ),
-				sprintf( '<strong>%s</strong>', esc_html__( 'Nashenski Commerce', 'nashenski-commerce' ) ),
-				'<a href="https://wordpress.org/support/plugin/nashenski-commerce/reviews?rate=5#new-post" target="_blank" rel="noopener noreferrer" class="nashenski-rating-link" aria-label="' . esc_attr__( 'five star', 'nashenski-commerce' ) . '">&#9733;&#9733;&#9733;&#9733;&#9733;</a>'
+				esc_html__( 'If you like %1$s please leave us a %2$s rating. A huge thanks in advance!', 'nashenski-commerce' ),
+				'<strong>' . esc_html__( 'Nashenski Commerce', 'nashenski-commerce' ) . '</strong>',
+				sprintf(
+					'<a href="%1$s" target="_blank" rel="noopener noreferrer" class="nashenski-rating-link" aria-label="%2$s">%3$s</a>',
+					esc_url( 'https://wordpress.org/support/plugin/nashenski-commerce/reviews?rate=5#new-post' ),
+					esc_attr__( 'five star', 'nashenski-commerce' ),
+					esc_html( '★★★★★' )
+				)
 			);
 		}
 
@@ -182,17 +187,5 @@ class Admin_Menus {
 		$order = $atts['order'] ?? null;
 
 		include $fragment_dir;
-	}
-
-	/**
-	 * Allows XML uploads.
-	 *
-	 * @param array $mimes Allowed mime types.
-	 * @return array
-	 */
-	public static function allow_upload_xml( $mimes ) {
-		$mimes = array_merge( $mimes, array( 'xml' => 'application/xml' ) );
-
-		return $mimes;
 	}
 }

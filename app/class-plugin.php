@@ -51,6 +51,7 @@ class Plugin {
 	 */
 	public function init() {
 		require_once __DIR__ . '/functions.php';
+		add_action( 'woocommerce_checkout_update_order_review', 'nashenski_keep_order_review_form', -1 );
 		add_action( self::REMOVE_SHIPPING_JOB, array( __CLASS__, 'upgrade_remove_shipping' ) );
 		$this->maybe_upgrade();
 		$this->load_default_options();
@@ -94,7 +95,7 @@ class Plugin {
 		wp_clear_scheduled_hook( 'nashenski/cvc/clear_cache_folder' );
 
 		// 0.21.7: the courier cache moved to File::cache_folder() in uploads. The old folder is only a cache (CVC files too), shared by all sites of a network.
-		File::filesystem()->rmdir( WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski', true ); // A missing folder is fine.
+		File::filesystem()->rmdir( File::filesystem()->wp_content_dir() . 'cache/nashenski', true ); // A missing folder is fine.
 
 		// After 0.19.9: the documents migration flag is read on every request; sites that saved it outside the autoload set load it with the other options now.
 		wp_set_option_autoload( 'nashenski_documents_migration_version', true );

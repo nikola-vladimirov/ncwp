@@ -1194,15 +1194,8 @@ class Speedy {
 			$request_body['additionalWaybillSenderCopy'] = $awbsc;
 		}
 
-		$pdf_escaped = $container[ Client::SPEEDY ]->api_call( $container[ Client::SPEEDY ]::PRINT_LABELS_ENDPOINT, $request_body, 1 );
+		$pdf = $container[ Client::SPEEDY ]->api_call( $container[ Client::SPEEDY ]::PRINT_LABELS_ENDPOINT, $request_body, 1 );
 
-		header( 'Content-Type: application/pdf' );
-		header( 'Content-Length: ' . strlen( $pdf_escaped ) );
-		header( 'X-Content-Type-Options: nosniff' );
-		header( 'Content-disposition: inline; filename="' . sanitize_file_name( (string) $parcels[0]['parcel']['id'] ) . '.pdf"' );
-
-		echo $pdf_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PDF file from the courier, sent as application/pdf.
-
-		wp_die();
+		nashenski_send_download( '', $parcels[0]['parcel']['id'] . '.pdf', 'application/pdf', true, (string) $pdf );
 	}
 }

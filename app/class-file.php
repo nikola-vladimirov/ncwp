@@ -72,6 +72,11 @@ class File {
 		$filesystem = self::filesystem();
 		$mode       = self::file_mode( $file );
 
+		// Windows refuses, with a warning, to rename over a file another request has open: there the file is written directly.
+		if ( '\\' === DIRECTORY_SEPARATOR ) {
+			return (bool) $filesystem->put_contents( $file, $data, $mode );
+		}
+
 		// Write beside the target, then rename, so a reader never sees a half-written file.
 		$tmp = $file . '.' . wp_generate_password( 8, false ) . '.tmp';
 
@@ -79,7 +84,7 @@ class File {
 			return false;
 		}
 
-		if ( ! @rename( $tmp, $file ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename -- the rename replaces the file in one step; WP_Filesystem::move() deletes the target first, so a reader could see no file. Windows may refuse; the fallback below writes it directly.
+		if ( ! rename( $tmp, $file ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- the rename replaces the file in one step; WP_Filesystem::move() deletes the target first, so a reader could see no file.
 			$filesystem->delete( $tmp );
 			return $filesystem->put_contents( $file, $data, $mode );
 		}

@@ -388,12 +388,23 @@
 		box.className = 'nashenski-builder__message' + ( text ? ( isError ? ' notice notice-error inline' : ' notice notice-success inline' ) : '' );
 	}
 
+	/*
+	 * The settings as JSON. The server sanitizes it as text before decoding it, which would cut
+	 * "<...>" and "%41" out of the middle of the JSON, so these three characters are written as
+	 * JSON escapes: the value decodes to the very same text.
+	 */
+	function safeJson( value ) {
+		return JSON.stringify( value ).replace( /[<>%]/g, function ( c ) {
+			return '\\u00' + c.charCodeAt( 0 ).toString( 16 );
+		} );
+	}
+
 	function post( action, extra ) {
 		var body = new FormData();
 
 		body.append( 'action', action );
 		body.append( 'nonce', data.nonce );
-		body.append( 'config', JSON.stringify( config ) );
+		body.append( 'config', safeJson( config ) );
 		Object.keys( extra || {} ).forEach( function ( key ) {
 			body.append( key, extra[ key ] );
 		} );
@@ -453,7 +464,7 @@
 		form.method = 'post';
 		form.action = data.postUrl;
 		form.style.display = 'none';
-		[ [ 'action', 'nashenski_export_download' ], [ 'nonce', data.nonce ], [ 'config', JSON.stringify( config ) ] ].forEach( function ( pair ) {
+		[ [ 'action', 'nashenski_export_download' ], [ 'nonce', data.nonce ], [ 'config', safeJson( config ) ] ].forEach( function ( pair ) {
 			var input = document.createElement( 'input' );
 
 			input.type = 'hidden';

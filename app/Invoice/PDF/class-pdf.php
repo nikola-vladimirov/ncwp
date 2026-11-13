@@ -71,6 +71,60 @@ class PDF {
 	}
 
 	/**
+	 * Dompdf's built-in font families and the bundled DejaVu family each one prints in. The
+	 * built-in ones (Helvetica, Times, Courier and the generic names) have no Cyrillic letters, and
+	 * their metric files are not shipped with the plugin.
+	 */
+	const FONT_ALIASES = array(
+		'sans-serif'   => 'dejavu sans',
+		'helvetica'    => 'dejavu sans',
+		'symbol'       => 'dejavu sans',
+		'zapfdingbats' => 'dejavu sans',
+		'serif'        => 'dejavu serif',
+		'times'        => 'dejavu serif',
+		'times-roman'  => 'dejavu serif',
+		'monospace'    => 'dejavu sans mono',
+		'fixed'        => 'dejavu sans mono',
+		'courier'      => 'dejavu sans mono',
+	);
+
+	/**
+	 * Folders Dompdf may open local files in, besides its own.
+	 *
+	 * @var string[]
+	 */
+	private static $folders = array();
+
+	/**
+	 * Lets the PDF open local files (the logo) in a folder.
+	 *
+	 * @param string $folder Folder path.
+	 */
+	public static function allow_folder( $folder ) {
+		self::$folders[ $folder ] = $folder;
+	}
+
+	/**
+	 * Makes Dompdf print its built-in font families in DejaVu (FONT_ALIASES): a template that asks
+	 * for Helvetica, Times, Courier or a generic family, or uses a tag that does (pre, code), gets
+	 * the DejaVu font. For every Dompdf made from the library this plugin ships, here and in
+	 * add-ons: the metric files of the built-in fonts are not in the plugin. Dompdf saves the
+	 * choice in its font folder (set it to a folder in uploads first), so this writes once.
+	 *
+	 * @param Dompdf $dompdf PDF renderer.
+	 */
+	public static function use_dejavu( Dompdf $dompdf ) {
+		$metrics  = $dompdf->getFontMetrics();
+		$families = $metrics->getFontFamilies();
+
+		foreach ( self::FONT_ALIASES as $family => $dejavu ) {
+			if ( ( $families[ $family ] ?? null ) !== $families[ $dejavu ] ) {
+				$metrics->setFontFamily( $family, $families[ $dejavu ] );
+			}
+		}
+	}
+
+	/**
 	 * Renders the PDF.
 	 *
 	 * @return string PDF data.
@@ -80,7 +134,7 @@ class PDF {
 		$options->set( 'defaultFont', 'dejavu sans' );
 		$options->set( 'isHtml5ParserEnabled', true );
 		// Documents print customer-entered text: never run PHP from them and never fetch remote files.
-		// Logos and QR codes are embedded as data URIs; page numbers are added after rendering.
+		// The logo is read from its file in uploads and QR codes are embedded as data URIs; page numbers are added after rendering.
 		$options->set( 'isPhpEnabled', false );
 		$options->set( 'isRemoteEnabled', false );
 		// Font metrics cache and fonts a custom template installs (@font-face, with installed-fonts.json) go to uploads, never the plugin folder. Dompdf skips the cache when the folder is missing; its bundled DejaVu still loads from the library folder.
@@ -90,6 +144,7 @@ class PDF {
 		$options->set( 'fontDir', $font_cache );
 
 		$dompdf = new Dompdf( $options );
+		self::use_dejavu( $dompdf );
 		$dompdf->setPaper( 'letter' === Style::get()['paper'] ? 'letter' : 'A4' );
 
 		\Nashenski\Hooks::action( 'nashenski_invoice_pdf_dompdf', 'nashenski/invoice/pdf/dompdf', $dompdf, $options );
@@ -97,6 +152,8 @@ class PDF {
 		ob_start();
 		$this->render_template();
 		$html = ob_get_clean();
+		// Dompdf opens local files only inside its own folder and the folders the template asked for (the logo's).
+		$options->setChroot( array_merge( $options->getChroot(), array_values( self::$folders ) ) );
 		// Pass the encoding: for large HTML on PHP 8.3+ dompdf's guess is ASCII and Cyrillic prints as "?".
 		$dompdf->loadHtml( $html, 'UTF-8' );
 

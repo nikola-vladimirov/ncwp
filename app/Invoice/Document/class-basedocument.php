@@ -682,20 +682,34 @@ class BaseDocument {
 	}
 
 	/**
-	 * The logo as a data URI with its size, fitted to the logo box, so the PDF never loads files over the web.
+	 * The logo file with its size, fitted to the logo box. Dompdf reads the file from the disk
+	 * (PDF::allow_folder() lets it open the logo's folder), so the PDF never loads files over the web.
 	 */
 	public static function get_logo_img() {
 		$id   = self::get_logo_id();
-		$file = $id ? get_attached_file( $id ) : '';
+		$file = $id ? (string) get_attached_file( $id ) : '';
+
+		// Media kept outside the server (s3:// and the like): Dompdf opens local files only, so the logo is copied once into the plugin's cache folder in uploads.
+		if ( '' !== $file && wp_is_stream( $file ) ) {
+			$copy = File::cache_folder( 'logo' ) . md5( $file ) . '-' . sanitize_file_name( wp_basename( $file ) );
+
+			if ( ! is_readable( $copy ) ) {
+				$data = (string) File::get_file( $file );
+
+				if ( '' === $data || ! wp_mkdir_p( dirname( $copy ) ) || ! File::put_to_file( $copy, $data ) ) {
+					return array();
+				}
+			}
+
+			$file = $copy;
+		}
 
 		if ( ! $file || ! is_readable( $file ) ) {
 			return array();
 		}
 
 		$type                  = wp_check_filetype( $file );
-		$mime                  = $type['type'] ? $type['type'] : 'image/png';
-		$data                  = base64_encode( (string) File::get_file( $file ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- the logo goes into the PDF as a data URI.
-		$size                  = 'image/svg+xml' === $mime ? false : wp_getimagesize( $file );
+		$size                  = 'image/svg+xml' === $type['type'] ? false : wp_getimagesize( $file );
 		list( $box_w, $box_h ) = \Nashenski\Invoice\PDF\Style::logo_box();
 		$width                 = 0;
 
@@ -705,8 +719,12 @@ class BaseDocument {
 			$box_h = round( $size[1] * $scale );
 		}
 
+		// Forward slashes: Dompdf reads the path as a URL.
+		$file = wp_normalize_path( $file );
+		PDF::allow_folder( dirname( $file ) );
+
 		return array(
-			'src'    => 'data:' . $mime . ';base64,' . $data,
+			'src'    => $file,
 			'width'  => $width,
 			'height' => $box_h,
 		);

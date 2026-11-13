@@ -808,16 +808,9 @@ class Pigeon {
 			$request_args['format'] = 'a4';
 		}
 
-		$pdf_escaped = $container[ Client::PIGEON ]->api_call( $container[ Client::PIGEON ]::CREATE_LABEL_ENDPOINT . '/' . $shipment_status['data']['reference_number'] . '/label', $request_args, 'GET', true );
+		$pdf = $container[ Client::PIGEON ]->api_call( $container[ Client::PIGEON ]::CREATE_LABEL_ENDPOINT . '/' . $shipment_status['data']['reference_number'] . '/label', $request_args, 'GET', true );
 
-		header( 'Content-Type: application/pdf' );
-		header( 'Content-Length: ' . strlen( $pdf_escaped ) );
-		header( 'X-Content-Type-Options: nosniff' );
-		header( 'Content-disposition: inline; filename="' . sanitize_file_name( (string) $shipment_status['data']['reference_number'] ) . '.pdf"' );
-
-		echo $pdf_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PDF file from the courier, sent as application/pdf.
-
-		wp_die();
+		nashenski_send_download( '', $shipment_status['data']['reference_number'] . '.pdf', 'application/pdf', true, (string) $pdf );
 	}
 
 	/**

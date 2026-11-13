@@ -272,17 +272,15 @@ class Automation {
 			$seen = array_map( 'intval', $cursor['ids'] );
 		}
 
-		$args = array(
+		// The orders already read in the cursor's second come back again (they are the first ones of the window) and are dropped after the query,
+		// so that many more are asked for: a full page of unread orders is still there. No exclude list goes into the query.
+		$args   = array(
 			'status'       => array( 'processing', 'on-hold' ),
-			'limit'        => $limit,
+			'limit'        => $limit > 0 ? $limit + count( $seen ) : $limit,
 			'date_created' => '>=' . $from,
 			'orderby'      => 'date',
 			'order'        => 'ASC',
 		);
-
-		if ( $seen ) {
-			$args['exclude'] = $seen; // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- the IDs already read in one second, at most the limit (100).
-		}
 		$open   = array(
 			'key'     => self::STATE_META,
 			'compare' => 'NOT EXISTS',
@@ -301,7 +299,7 @@ class Automation {
 			// The window goes on the first query built only: a nested query in the same run (refunds, inside compile_orders) must not get it.
 			$add = function ( $wp_query_args ) use ( $open, $parts, &$add ) {
 				remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
-				$wp_query_args['meta_query'] = array_merge( isset( $wp_query_args['meta_query'] ) ? (array) $wp_query_args['meta_query'] : array(), array( $open ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				$wp_query_args['meta_query'] = array_merge( isset( $wp_query_args['meta_query'] ) ? (array) $wp_query_args['meta_query'] : array(), array( $open ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- an hourly background job reads one page (100) of open orders that have no shipment state yet; only the meta can tell them apart.
 				$wp_query_args['date_query'] = array(
 					array(
 						'column'    => 'post_date_gmt',
@@ -321,7 +319,7 @@ class Automation {
 			add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
 			add_filter( 'posts_orderby', $order, 10, 2 );
 		} else {
-			$args['meta_query'] = array( $open ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			$args['meta_query'] = array( $open ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- an hourly background job reads one page (100) of open orders that have no shipment state yet; only the meta can tell them apart.
 		}
 
 		try {
@@ -331,6 +329,19 @@ class Automation {
 				remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
 				remove_filter( 'posts_orderby', $order );
 			}
+		}
+
+		if ( $seen ) {
+			$orders = array_slice(
+				array_filter(
+					$orders,
+					function ( $order ) use ( $seen ) {
+						return ! in_array( $order->get_id(), $seen, true );
+					}
+				),
+				0,
+				$limit
+			);
 		}
 
 		$dates = array();

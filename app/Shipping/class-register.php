@@ -281,7 +281,7 @@ class Register {
 
 		// One chosen method per package: shipping_method[0], shipping_method[1] and so on.
 		if ( isset( $_POST['shipping_method'] ) ) {
-			$posted['shipping_method'] = map_deep( wp_unslash( $_POST['shipping_method'] ), 'sanitize_text_field' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- map_deep() sanitizes each value.
+			$posted['shipping_method'] = map_deep( wp_unslash( $_POST['shipping_method'] ), 'sanitize_text_field' );
 		}
 
 		return self::normalize_checkout_post_data( array_replace_recursive( nashenski_order_review_data( array_merge( $keys, array( 'shipping_method' ) ) ), $posted ) );

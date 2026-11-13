@@ -87,10 +87,21 @@
 		return match ? decodeURIComponent( match[ 1 ] ) : '';
 	}
 
+	/*
+	 * JSON for the cookie. The server sanitizes it as text before decoding it, which would cut
+	 * "<...>" and "%41" out of the middle of the JSON, so these three characters are written as
+	 * JSON escapes: the value decodes to the very same text.
+	 */
+	function safeJson( value ) {
+		return JSON.stringify( value ).replace( /[<>%]/g, function ( c ) {
+			return '\\u00' + c.charCodeAt( 0 ).toString( 16 );
+		} );
+	}
+
 	function writeCookie( name, value ) {
 		var expires = new Date( Date.now() + 24 * 60 * 60 * 1000 ).toUTCString();
 
-		document.cookie = name + '=' + encodeURIComponent( JSON.stringify( value ) ) + ';expires=' + expires + ';path=/;SameSite=Lax';
+		document.cookie = name + '=' + encodeURIComponent( safeJson( value ) ) + ';expires=' + expires + ';path=/;SameSite=Lax';
 	}
 
 	/**
@@ -130,7 +141,7 @@
 	}
 
 	function commit( name, value, refresh ) {
-		var json = JSON.stringify( value );
+		var json = safeJson( value );
 
 		if ( readCookie( name ) === json ) {
 			return;

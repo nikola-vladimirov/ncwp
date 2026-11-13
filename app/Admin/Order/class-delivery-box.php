@@ -240,7 +240,8 @@ class Delivery_Box {
 		$order   = wc_get_order( $order_id );
 		$rate_id = sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_rate'] ) );
 		$options = self::options();
-		$choice  = isset( $_POST['nashenski_delivery_choice'] ) ? map_deep( json_decode( wp_unslash( $_POST['nashenski_delivery_choice'] ), true ), 'sanitize_text_field' ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized by map_deep() after decoding.
+		// Sanitized as text before decoding (the picker writes < > % as JSON escapes, so nothing is cut out of it) and value by value after.
+		$choice = isset( $_POST['nashenski_delivery_choice'] ) ? map_deep( json_decode( sanitize_text_field( wp_unslash( $_POST['nashenski_delivery_choice'] ) ), true ), 'sanitize_text_field' ) : null;
 
 		if ( ! self::applies( $order ) || ! isset( $options[ $rate_id ] ) ) {
 			return;

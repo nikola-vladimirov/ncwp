@@ -350,8 +350,11 @@ class Document_Storage {
 	public static function save( $name, $extension, $contents ) {
 		self::path();
 
+		// The folder and the XML type hold for this one write of the plugin's own file only: nobody can upload XML to the site.
 		add_filter( 'upload_dir', array( __CLASS__, 'change_upload_dir' ) );
+		add_filter( 'upload_mimes', array( __CLASS__, 'with_xml' ) );
 		$file = wp_upload_bits( $name . '.' . $extension, null, $contents );
+		remove_filter( 'upload_mimes', array( __CLASS__, 'with_xml' ) );
 		remove_filter( 'upload_dir', array( __CLASS__, 'change_upload_dir' ) );
 
 		if ( ! empty( $file['error'] ) ) {
@@ -378,6 +381,16 @@ class Document_Storage {
 		}
 
 		return (int) $attach_id;
+	}
+
+	/**
+	 * The file types plus XML, the type of the NRA audit file the plugin writes and sends itself.
+	 *
+	 * @param array $mimes File types by extension.
+	 * @return array
+	 */
+	public static function with_xml( $mimes ) {
+		return array_merge( (array) $mimes, array( 'xml' => 'application/xml' ) );
 	}
 
 	/**
@@ -470,17 +483,10 @@ class Document_Storage {
 			wp_die( esc_html__( 'The document was not found or you do not have access to it.', 'nashenski-commerce' ), '', array( 'response' => 404 ) );
 		}
 
-		$type        = wp_check_filetype( $path );
-		$disposition = 'application/pdf' === $type['type'] ? 'inline' : 'attachment';
+		$type = wp_check_filetype( $path, self::with_xml( get_allowed_mime_types() ) );
 
-		nocache_headers();
-		header( 'X-Robots-Tag: noindex, nofollow' );
-		header( 'X-Content-Type-Options: nosniff' );
-		header( 'Content-Type: ' . ( $type['type'] ? $type['type'] : 'application/octet-stream' ) );
-		header( 'Content-Disposition: ' . $disposition . '; filename="' . sanitize_file_name( basename( $path ) ) . '"' );
-		header( 'Content-Length: ' . filesize( $path ) );
-		readfile( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- streams a stored document.
-		exit;
+		// A stored file stays where it is: its bytes are handed over, not its path.
+		nashenski_send_download( '', basename( $path ), $type['type'] ? $type['type'] : 'application/octet-stream', 'application/pdf' === $type['type'], (string) File::get_file( $path ) );
 	}
 
 	/**

@@ -46,6 +46,13 @@ namespace {
 		 */
 		public function __construct( $arg = null ) {}
 		/**
+		 * The content folder, with a trailing slash as WordPress returns it.
+		 *
+		 * @return string
+		 */
+		public function wp_content_dir() {
+			return WP_CONTENT_DIR . '/'; }
+		/**
 		 * Folder listing.
 		 *
 		 * @param string $path Folder.

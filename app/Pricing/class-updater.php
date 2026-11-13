@@ -120,6 +120,7 @@ class Updater {
 		libxml_use_internal_errors( $previous );
 
 		$tables = array();
+		$xpath  = new \DOMXPath( $dom );
 
 		foreach ( $dom->getElementsByTagName( 'table' ) as $table ) {
 			$rows = array();
@@ -127,13 +128,10 @@ class Updater {
 			foreach ( $table->getElementsByTagName( 'tr' ) as $tr ) {
 				$cells = array();
 
-				// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHP DOM property names.
-				foreach ( $tr->childNodes as $cell ) {
-					if ( in_array( strtolower( $cell->nodeName ), array( 'td', 'th' ), true ) ) {
-						$cells[] = trim( preg_replace( '/\s+/u', ' ', $cell->textContent ) );
-					}
+				// The cells of this row only (its td and th children), each as its text.
+				foreach ( $xpath->query( 'td|th', $tr ) as $cell ) {
+					$cells[] = trim( preg_replace( '/\s+/u', ' ', (string) $xpath->evaluate( 'string(.)', $cell ) ) );
 				}
-				// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 				if ( $cells ) {
 					$rows[] = $cells;

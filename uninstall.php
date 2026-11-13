@@ -30,7 +30,10 @@ foreach ( $nashenski_sites as $nashenski_site ) {
 		'nashenski/econt/clear_cache_folder',
 		'nashenski/pigeon/clear_cache_folder',
 		'nashenski/speedy/clear_cache_folder',
+		'nashenski/cvc/clear_cache_folder',
 		'nashenski/prices/check',
+		'nashenski_delete_export_files',
+		'nashenski/upgrade/remove_shipping',
 	) as $nashenski_hook ) {
 		wp_clear_scheduled_hook( $nashenski_hook );
 	}
@@ -42,9 +45,10 @@ foreach ( $nashenski_sites as $nashenski_site ) {
 
 	delete_option( 'nashenski_shipments_cursor' );
 
-	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- uninstall cleanup.
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- uninstall drops the plugin's own table; WordPress has no API for that.
 	$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $wpdb->prefix . 'nashenski_carts' ) );
 
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- uninstall deletes the plugin's transients by prefix; delete_transient() needs each name.
 	$wpdb->query(
 		$wpdb->prepare(
 			'DELETE FROM %i WHERE option_name LIKE %s OR option_name LIKE %s',
@@ -53,7 +57,6 @@ foreach ( $nashenski_sites as $nashenski_site ) {
 			$wpdb->esc_like( '_transient_timeout_nashenski' ) . '%'
 		)
 	);
-	// phpcs:enable
 
 	if ( $nashenski_site ) {
 		restore_current_blog();
@@ -77,4 +80,4 @@ foreach ( $nashenski_sites as $nashenski_site ) {
 		restore_current_blog();
 	}
 }
-$nashenski_filesystem->rmdir( WP_CONTENT_DIR . '/cache/nashenski', true );
+$nashenski_filesystem->rmdir( $nashenski_filesystem->wp_content_dir() . 'cache/nashenski', true );

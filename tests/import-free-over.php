@@ -133,5 +133,57 @@ $check(
 	)
 );
 
+// Legacy rows stored serialized: read as plain data only, with no PHP warning for a damaged row.
+/**
+ * Stub: as WordPress, only the look of the value.
+ *
+ * @param mixed $value Value.
+ * @return bool
+ */
+function is_serialized( $value ) {
+	return is_string( $value ) && (bool) preg_match( '/^(N;|[bid]:.*;|s:\d+:".*";|[aOC]:\d+:.*[;}])$/s', trim( $value ) );
+}
+
+$read = new ReflectionMethod( 'Nashenski\Admin\Import_Sources', 'safe_unserialize' );
+$row  = array(
+	'name'    => 'Офис "Център"; a:1:{s:1:"x";}',
+	'count'   => 12,
+	'minus'   => -3,
+	'price'   => 5.9,
+	'on'      => true,
+	'off'     => false,
+	'none'    => null,
+	'empty'   => '',
+	7         => array( 'nested', array( 'deep' => 'да' ) ),
+	'numeric' => array( '15' => 'fifteen' ),
+);
+$warn = array();
+set_error_handler( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- the test fails on any PHP notice or warning.
+	function ( $level, $message ) use ( &$warn ) {
+		$warn[] = $message;
+
+		return true;
+	}
+);
+// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- the test makes the rows the old plugins stored.
+$check( 'serialized row: the same data back', $read->invoke( null, serialize( $row ) ), $row );
+$check( 'serialized row with spaces around it', $read->invoke( null, '  ' . serialize( array( 'a' => 1 ) ) . "\n" ), array( 'a' => 1 ) );
+
+foreach ( array( 'text', 0, 5.5, true, false, null, array(), 'b:0;' ) as $plain ) {
+	$check( 'serialized ' . wp_json( $plain ), $read->invoke( null, serialize( $plain ) ), $plain );
+}
+
+$check( 'not serialized: as it is', $read->invoke( null, 'plain text' ), 'plain text' );
+$check( 'not a string: as it is', $read->invoke( null, array( 1 ) ), array( 1 ) );
+$check( 'damaged row (a string cut short): false', $read->invoke( null, 'a:2:{s:4:"name";s:10:"short";s:1:"b";i:1;}' ), false );
+$check( 'damaged row (fewer pairs than it says): false', $read->invoke( null, 'a:3:{i:0;i:1;}' ), false );
+$check( 'damaged row (text after the value): false', $read->invoke( null, 'a:1:{i:0;i:1;}x;}' ), false );
+$check( 'damaged number: false', $read->invoke( null, 'i:12a;' ), false );
+$check( 'an object is never built: false', $read->invoke( null, serialize( array( 'o' => new ArrayObject( array( 1 ) ) ) ) ), false );
+$check( 'an object row: false', $read->invoke( null, 'O:8:"stdClass":1:{s:1:"a";i:1;}' ), false );
+// phpcs:enable WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+restore_error_handler();
+$check( 'no PHP notice or warning', $warn, array() );
+
 echo $fails ? "$fails FAILED\n" : "All passed\n";
 exit( $fails ? 1 : 0 );

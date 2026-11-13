@@ -197,9 +197,9 @@ class Payment {
 	}
 
 	/**
-	 * A staff request field, sanitized where it is read. Text is sanitized; any other type (a
-	 * true, an array) is kept as it is, so amount() refuses it instead of reading "1".
-	 * The order screen nonce is checked here, before the field is read.
+	 * An amount typed by the staff, sanitized where it is read. Anything that is not a number in
+	 * text (a word, a true, an array) comes back as an empty list, so amount() refuses it instead
+	 * of reading "1". The order screen nonce is checked here, before the field is read.
 	 *
 	 * @param string $key Field name.
 	 * @return mixed Null when missing or not verified.
@@ -213,12 +213,11 @@ class Payment {
 			return null;
 		}
 
-		return map_deep(
-			wp_unslash( $_REQUEST[ $key ] ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- map_deep() sanitizes every text value.
-			function ( $value ) {
-				return is_string( $value ) ? sanitize_text_field( $value ) : $value;
-			}
-		);
+		if ( ! is_numeric( $_REQUEST[ $key ] ) ) {
+			return array();
+		}
+
+		return sanitize_text_field( wp_unslash( $_REQUEST[ $key ] ) );
 	}
 
 	/**

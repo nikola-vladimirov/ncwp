@@ -11,8 +11,6 @@ use Nashenski\Abandoned_Carts\Tracker;
 
 defined( 'ABSPATH' ) || exit;
 
-// The cart table is read on every page view, so caching would show stale rows. Queries name the table with %i.
-// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- see above.
 /**
  * WooCommerce > Abandoned carts: the totals and the list of carts, with per-cart and bulk actions
  * (send a reminder, edit the contact, delete). Every action is an admin-post request with a nonce.

@@ -1,0 +1,153 @@
+Nashenski Commerce: third-party libraries and fonts
+===================================================
+
+Nashenski Commerce is licensed under the GNU General Public License, version 3
+or later (license.txt). It is a fork of Bulgarisation for WooCommerce 4.0.13 by
+Autopolis.bg, released under GPLv3 or later.
+
+The plugin ships the libraries and fonts below. Each one keeps its own licence,
+and every licence here is compatible with the GPL. The full text of a library's
+licence is in the library's folder, in the file named in the list.
+
+PHP libraries (vendor/)
+-----------------------
+
+chillerlan/php-qrcode             MIT, parts Apache-2.0   vendor/chillerlan/php-qrcode/LICENSE-MIT.txt, LICENSE-ASL-2.0.txt, NOTICE.txt
+chillerlan/php-settings-container MIT                     vendor/chillerlan/php-settings-container/LICENSE.txt
+ddeboer/vatin                     MIT                     vendor/ddeboer/vatin/LICENSE.txt
+dompdf/dompdf                     LGPL-2.1                vendor/dompdf/dompdf/LICENSE-LGPL.txt
+dompdf/php-font-lib               LGPL-2.1 or later       vendor/dompdf/php-font-lib/LICENSE.txt
+dompdf/php-svg-lib                LGPL-3.0 or later       vendor/dompdf/php-svg-lib/LICENSE.txt
+masterminds/html5                 MIT                     vendor/masterminds/html5/LICENSE.txt
+pimple/pimple                     MIT                     vendor/pimple/pimple/LICENSE.txt
+psr/container                     MIT                     vendor/psr/container/LICENSE.txt
+sabberworm/php-css-parser         MIT                     vendor/sabberworm/php-css-parser/LICENSE.txt
+setasign/fpdf                     MIT                     vendor/setasign/fpdf/license.txt
+setasign/fpdi                     MIT                     vendor/setasign/fpdi/LICENSE.txt
+Composer autoloader               MIT                     vendor/composer/LICENSE.txt
+
+Fonts (vendor/dompdf/dompdf/lib/fonts/)
+---------------------------------------
+
+DejaVu Sans, DejaVu Sans Mono and DejaVu Serif, version 2.37 (the .ttf files and
+their .ufm metric files), used for the PDF documents. They come with Dompdf.
+Licence: the Bitstream Vera Fonts licence and the Arev Fonts licence, with the
+DejaVu changes in the public domain. The text below is the licence as the font
+files themselves carry it.
+
+The metric files of the 14 Adobe PostScript core fonts (Courier, Helvetica,
+Times, Symbol, ZapfDingbats; the .afm files) come with Dompdf too. They are not
+in the plugin's release zip: the plugin prints those families in DejaVu. They
+stay in the source repository, with Adobe's notice (mustRead.html in the fonts
+folder): "This file and the 14 PostScript(R) AFM files it accompanies may be
+used, copied, and distributed for any purpose and without charge, with or
+without modification, provided that all copyright notices are retained; that
+the AFM files are not distributed without this file; that all modifications to
+this file or any of the AFM files are prominently noted in the modified
+file(s); and that this paragraph is not modified. Adobe Systems has no
+responsibility or obligation to support the use of the AFM files."
+
+DejaVu fonts licence
+--------------------
+
+Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved.
+Copyright (c) 2006 by Tavmjong Bah. All Rights Reserved.
+DejaVu changes are in public domain
+
+
+Fonts are (c) Bitstream (see below). DejaVu changes are in public domain. Glyphs imported from Arev fonts are (c) Tavmjung Bah (see below)
+
+Bitstream Vera Fonts Copyright
+------------------------------
+
+Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is
+a trademark of Bitstream, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of the fonts accompanying this license ("Fonts") and associated
+documentation files (the "Font Software"), to reproduce and distribute the
+Font Software, including without limitation the rights to use, copy, merge,
+publish, distribute, and/or sell copies of the Font Software, and to permit
+persons to whom the Font Software is furnished to do so, subject to the
+following conditions:
+
+The above copyright and trademark notices and this permission notice shall
+be included in all copies of one or more of the Font Software typefaces.
+
+The Font Software may be modified, altered, or added to, and in particular
+the designs of glyphs or characters in the Fonts may be modified and
+additional glyphs or characters may be added to the Fonts, only if the fonts
+are renamed to names not containing either the words "Bitstream" or the word
+"Vera".
+
+This License becomes null and void to the extent applicable to Fonts or Font
+Software that has been modified and is distributed under the "Bitstream
+Vera" names.
+
+The Font Software may be sold as part of a larger software package but no
+copy of one or more of the Font Software typefaces may be sold by itself.
+
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF COPYRIGHT, PATENT,
+TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL BITSTREAM OR THE GNOME
+FOUNDATION BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING
+ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER DEALINGS IN THE
+FONT SOFTWARE.
+
+Except as contained in this notice, the names of Gnome, the Gnome
+Foundation, and Bitstream Inc., shall not be used in advertising or
+otherwise to promote the sale, use or other dealings in this Font Software
+without prior written authorization from the Gnome Foundation or Bitstream
+Inc., respectively. For further information, contact: fonts at gnome dot
+org. 
+
+Arev Fonts Copyright
+------------------------------
+
+Copyright (c) 2006 by Tavmjong Bah. All Rights Reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the fonts accompanying this license ("Fonts") and
+associated documentation files (the "Font Software"), to reproduce
+and distribute the modifications to the Bitstream Vera Font Software,
+including without limitation the rights to use, copy, merge, publish,
+distribute, and/or sell copies of the Font Software, and to permit
+persons to whom the Font Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright and trademark notices and this permission notice
+shall be included in all copies of one or more of the Font Software
+typefaces.
+
+The Font Software may be modified, altered, or added to, and in
+particular the designs of glyphs or characters in the Fonts may be
+modified and additional glyphs or characters may be added to the
+Fonts, only if the fonts are renamed to names not containing either
+the words "Tavmjong Bah" or the word "Arev".
+
+This License becomes null and void to the extent applicable to Fonts
+or Font Software that has been modified and is distributed under the 
+"Tavmjong Bah Arev" names.
+
+The Font Software may be sold as part of a larger software package but
+no copy of one or more of the Font Software typefaces may be sold by
+itself.
+
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL
+TAVMJONG BAH BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+
+Except as contained in this notice, the name of Tavmjong Bah shall not
+be used in advertising or otherwise to promote the sale, use or other
+dealings in this Font Software without prior written authorization
+from Tavmjong Bah. For further information, contact: tavmjong @ free
+. fr.

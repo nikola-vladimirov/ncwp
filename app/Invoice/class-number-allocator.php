@@ -11,8 +11,6 @@ use Automattic\WooCommerce\Utilities\OrderUtil;
 
 defined( 'ABSPATH' ) || exit;
 
-// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery -- no WordPress API offers a named lock, an atomic counter upsert or meta rows by meta_id.
-
 /** Serialize all issuers, including shared order/refund and manually typed numbers. */
 class Number_Allocator {
 	/**
@@ -62,7 +60,7 @@ class Number_Allocator {
 	private static function locked( $callback ) {
 		global $wpdb;
 		$lock = 'nashenski_numbers_' . md5( DB_NAME . ':' . $wpdb->options );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching -- the result of taking a named lock must never be cached.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress has no API for a named lock, and its result must never be cached.
 		if ( self::$issuing || '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', $lock ) ) ) {
 			throw new \RuntimeException( 'Could not lock document numbering. Please retry.' );
 		}
@@ -74,7 +72,7 @@ class Number_Allocator {
 		} finally {
 			self::$issuing = false;
 			self::forget();
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching -- releasing the named lock cannot be cached.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress has no API for a named lock, and releasing it cannot be cached.
 			$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $lock ) );
 		}
 	}
@@ -94,7 +92,7 @@ class Number_Allocator {
 		if ( is_array( $hit ) ) {
 			return $hit[0];
 		}
-		// get_option() can still contain a pre-lock request or persistent-cache value.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- get_option() can still hold a value cached before the lock was taken; the counter must be read from the database.
 		$value = $wpdb->get_var( $wpdb->prepare( 'SELECT option_value FROM %i WHERE option_name = %s', $args[0], $args[1] ) );
 		if ( $wpdb->last_error ) {
 			throw new \RuntimeException( 'Could not read document numbering.' );
@@ -115,6 +113,7 @@ class Number_Allocator {
 		$key   = 'nashenski_settings_invoice_' . $name;
 		$value = str_pad( $next, 10, '0', STR_PAD_LEFT );
 		self::forget();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- update_option() cannot do an atomic upsert of the counter.
 		if ( false === $wpdb->query(
 			$wpdb->prepare(
 				"INSERT INTO $wpdb->options (option_name, option_value, autoload) VALUES (%s, %s, 'no') ON DUPLICATE KEY UPDATE option_value = %s",
@@ -157,7 +156,7 @@ class Number_Allocator {
 		$key                         = self::key( 'saved', $args );
 		$rows                        = wp_cache_get( $key, self::CACHE_GROUP );
 		if ( ! is_array( $rows ) ) {
-			// Read the authoritative store, including when HPOS metadata caching is enabled.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- reads the stored meta rows with their meta_id, past the HPOS metadata cache; no WordPress API returns them.
 			$rows = $wpdb->get_results( $wpdb->prepare( 'SELECT %i AS meta_id, meta_value FROM %i WHERE %i = %d AND meta_key = %s ORDER BY %i', $id, $table, $column, $order->get_id(), $meta, $id ) );
 			if ( $wpdb->last_error ) {
 				throw new \RuntimeException( 'Could not read saved document number.' );
@@ -232,6 +231,7 @@ class Number_Allocator {
 		if ( is_array( $hit ) ) {
 			return $hit[0];
 		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- one indexed lookup of a number across all orders under the lock; wc_get_orders() cannot compare meta as a number.
 		$value = $wpdb->get_var( $wpdb->prepare( 'SELECT %i FROM %i WHERE meta_key IN (' . implode( ',', array_fill( 0, count( $keys ), '%s' ) ) . ') AND CAST(meta_value AS UNSIGNED) = %d AND %i <> %d LIMIT 1', $args ) );
 		if ( $wpdb->last_error ) {
 			throw new \RuntimeException( 'Could not read document numbering.' );
@@ -256,6 +256,7 @@ class Number_Allocator {
 		if ( is_array( $hit ) ) {
 			return $hit[0];
 		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the highest number across all orders under the lock; no WordPress API returns an aggregate of meta values.
 		$value = $wpdb->get_var( $wpdb->prepare( 'SELECT MAX(CAST(meta_value AS UNSIGNED)) FROM %i WHERE meta_key IN (' . implode( ',', array_fill( 0, count( $keys ), '%s' ) ) . ')', $args ) );
 		if ( $wpdb->last_error ) {
 			throw new \RuntimeException( 'Could not read document numbering.' );

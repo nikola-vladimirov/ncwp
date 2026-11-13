@@ -33,7 +33,7 @@ defined( 'ABSPATH' ) || exit;
 define( 'NASHENSKI_PHP_MINIMUM_VERSION', '8.2' );
 define( 'NASHENSKI_WP_MINIMUM_VERSION', '6.5' );
 
-// Stop the plugin's scheduled jobs on deactivation; no data is deleted (see uninstall.php).
+// Stop every scheduled job of the plugin on deactivation; no data is deleted (see uninstall.php). The jobs are scheduled again when the plugin is turned on and loads.
 register_deactivation_hook(
 	__FILE__,
 	function () {
@@ -42,7 +42,10 @@ register_deactivation_hook(
 			'nashenski/econt/clear_cache_folder',
 			'nashenski/pigeon/clear_cache_folder',
 			'nashenski/speedy/clear_cache_folder',
+			'nashenski/cvc/clear_cache_folder',
 			'nashenski/prices/check',
+			'nashenski_delete_export_files',
+			'nashenski/upgrade/remove_shipping',
 		) as $hook ) {
 			wp_clear_scheduled_hook( $hook );
 		}
@@ -55,6 +58,18 @@ register_deactivation_hook(
 		// The flags that make the carts tracker and the documents migration schedule their jobs again on the next load.
 		delete_option( 'nashenski_carts_db_version' );
 		delete_option( 'nashenski_documents_migration_version' );
+	}
+);
+
+// Deactivation clears the one-off 0.21.8 background step too. While it is still due (its retired option exists), turning the plugin on schedules it again.
+register_activation_hook(
+	__FILE__,
+	function () {
+		$due = false !== get_option( 'nashenski_settings_invoice_remove_shipping' ) && version_compare( (string) get_option( 'nashenski_version' ), '0.21.8', '>=' );
+
+		if ( $due && ! wp_next_scheduled( 'nashenski/upgrade/remove_shipping' ) ) {
+			wp_schedule_single_event( time(), 'nashenski/upgrade/remove_shipping' );
+		}
 	}
 );
 

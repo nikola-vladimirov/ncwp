@@ -51,8 +51,8 @@ class Export_Builder {
 			return Builder::normalize( array() );
 		}
 
-		// Decode first, then sanitize every value (sanitizing the raw JSON would corrupt it); Builder::normalize() then validates each one.
-		$raw = isset( $_POST['config'] ) ? map_deep( json_decode( wp_unslash( $_POST['config'] ), true ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized by map_deep() after decoding.
+		// Sanitized as text before decoding (the script writes < > % as JSON escapes, so nothing is cut out of it) and value by value after; Builder::normalize() then validates each one.
+		$raw = isset( $_POST['config'] ) ? map_deep( json_decode( sanitize_text_field( wp_unslash( $_POST['config'] ) ), true ), 'sanitize_text_field' ) : array();
 
 		return Builder::normalize( $raw );
 	}

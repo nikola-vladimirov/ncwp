@@ -18,15 +18,37 @@ const P = Object.assign(window.nashenskiPickers, {
   courierFee: '%s, paid to the courier on delivery, not included in the total',
 });
 
+// A price element as the script sees it: attributes and the font size it sets.
+function node() {
+  const attrs = {};
+  const style = {};
+  return {
+    attrs, style: { setProperty(k, v) { style[k] = v; }, removeProperty(k) { delete style[k]; }, get: (k) => style[k] },
+    setAttribute(k, v) { attrs[k] = v; },
+    removeAttribute(k) { delete attrs[k]; },
+  };
+}
+// The block checkout page: one price element per shipping option (kept between runs, like the real page) and the one in the order summary.
+const prices = {};
+const summary = node();
+
 function run(packages) {
   let observer = null;
-  let style = null;
+  packages.forEach((pkg) => pkg.shipping_rates.forEach((r) => { prices[r.rate_id] = prices[r.rate_id] || node(); }));
   const document = {
-    head: { appendChild(node) { style = node; } },
     body: {},
-    createElement() { return {}; },
-    getElementById() { return style; },
-    querySelector() { return null; },
+    createElement(tag) { assert.ok(!/^(style|script|link)$/i.test(tag), 'no style, script or link element is created'); return {}; },
+    querySelector(selector) {
+      const input = /^input[.]wc-block-components-radio-control__input[[]value="([^"]+)"[\]]$/.exec(selector);
+      if (input) {
+        return prices[input[1]] ? { closest: () => ({ querySelector: () => prices[input[1]] }) } : null;
+      }
+      return '.wc-block-components-totals-shipping .wc-block-components-totals-item__value' === selector ? summary : null;
+    },
+    querySelectorAll(selector) {
+      assert.equal(selector, '[data-nashenski-text]');
+      return Object.values(prices).concat(summary).filter((n) => 'data-nashenski-text' in n.attrs);
+    },
   };
   const wp = {
     element: { createElement() {}, useLayoutEffect() {}, createPortal() {} },
@@ -46,34 +68,42 @@ function run(packages) {
     MutationObserver: class { constructor(fn) { observer = fn; } observe() {} },
   });
   observer();
-  return style ? style.textContent : '';
 }
 
 const rate = (id, selected, meta) => ({ rate_id: id, selected, meta_data: Object.keys(meta).map((key) => ({ key, value: meta[key] })) });
-const fee = '"6,50 €, paid to the courier on delivery, not included in the total"';
+const text = (n) => n.attrs['data-nashenski-text'];
+const fee = '6,50 €, paid to the courier on delivery, not included in the total';
+const econt = 'nashenski_econt:3';
+const speedy = 'nashenski_speedy:4';
 
-let css = run([{ shipping_rates: [rate('nashenski_econt:3', true, { nashenski_courier_fee: '6.50' }), rate('nashenski_speedy:4', false, {})] }]);
-check(css.includes('input[value="nashenski_econt:3"]') && css.includes('content:' + fee), 'the option shows the price paid to the courier instead of "Free"');
-check(!css.includes('nashenski_speedy:4'), 'an option the shop collects keeps its own price');
-check(css.includes('.wc-block-components-totals-shipping .wc-block-components-totals-item__value::after{content:' + fee), 'the order summary says the delivery is paid to the courier');
+run([{ shipping_rates: [rate(econt, true, { nashenski_courier_fee: '6.50' }), rate(speedy, false, {})] }]);
+check(text(prices[econt]) === fee && !('data-nashenski-price' in prices[econt].attrs), 'the option shows the price paid to the courier instead of "Free"');
+check('0.875rem' === prices[econt].style.get('--nashenski-text-size'), 'the text gets a font size (the default one here: the page has no option label to measure)');
+check(undefined === text(prices[speedy]), 'an option the shop collects keeps its own price');
+check(text(summary) === fee, 'the order summary says the delivery is paid to the courier');
 
-css = run([{ shipping_rates: [rate('nashenski_econt:3', false, { nashenski_courier_fee: '6.50' }), rate('nashenski_speedy:4', true, {})] }]);
-check(!css.includes('totals-item__value::after'), 'another chosen option leaves the order summary alone');
+run([{ shipping_rates: [rate(econt, false, { nashenski_courier_fee: '6.50' }), rate(speedy, true, {})] }]);
+check(undefined === text(summary) && undefined === summary.style.get('--nashenski-text-size'), 'another chosen option gives the order summary its own price back');
 
-css = run([{ shipping_rates: [rate('nashenski_econt:3', true, { nashenski_pending: 'yes' })] }]);
-check(css.includes('Complete the fields to calculate') && !css.includes('paid to the courier'), 'a pending option still says "Complete the fields to calculate"');
+run([{ shipping_rates: [rate(econt, true, { nashenski_pending: 'yes' })] }]);
+check('Complete the fields to calculate' === text(prices[econt]) && 'Complete the fields to calculate' === text(summary), 'a pending option still says "Complete the fields to calculate"');
 
 // Cards and side by side layouts: short texts in the option, the long ones in the summary.
 P.cardTexts = { pending: 'Price after address', toCourier: 'to the courier' };
-css = run([{ shipping_rates: [rate('nashenski_econt:3', true, { nashenski_courier_fee: '6.50' }), rate('nashenski_speedy:4', false, { nashenski_pending: 'yes' })] }]);
-check(css.includes('secondary-label::before{content:"6,50 €"') && css.includes('::after{content:" to the courier"'), 'the card shows the price and a short "to the courier"');
-check(css.includes('totals-item__value::after{content:' + fee), 'the order summary keeps the full sentence');
-check(css.includes('input[value="nashenski_speedy:4"]) .wc-block-components-radio-control__secondary-label::after{content:"Price after address"'), 'a card still waiting for the address says "Price after address"');
+run([{ shipping_rates: [rate(econt, true, { nashenski_courier_fee: '6.50' }), rate(speedy, false, { nashenski_pending: 'yes' })] }]);
+check('6,50 €' === prices[econt].attrs['data-nashenski-price'] && ' to the courier' === text(prices[econt]), 'the card shows the price and a short "to the courier"');
+check(text(summary) === fee, 'the order summary keeps the full sentence');
+check('Price after address' === text(prices[speedy]) && !('data-nashenski-price' in prices[speedy].attrs), 'a card still waiting for the address says "Price after address"');
 
 // R7: the fee is in the store currency, whatever currency the shopper switched to.
 P.feeSymbol = 'лв.';
-css = run([{ shipping_rates: [rate('nashenski_econt:3', true, { nashenski_courier_fee: '6.50' })] }]);
-check(css.includes('secondary-label::before{content:"6,50 лв."') && css.includes('totals-item__value::after{content:"6,50 лв., paid'), 'the fee shows the store currency symbol');
+run([{ shipping_rates: [rate(econt, true, { nashenski_courier_fee: '6.50' })] }]);
+check('6,50 лв.' === prices[econt].attrs['data-nashenski-price'] && 0 === text(summary).indexOf('6,50 лв., paid'), 'the fee shows the store currency symbol');
+check(undefined === text(prices[speedy]), 'an option that is priced again gets its own price back');
 delete P.feeSymbol;
+
+// The texts are printed by the stylesheet, from the attributes.
+const css = fs.readFileSync(path.join(__dirname, '../assets/css/checkout.css'), 'utf8');
+check(css.includes('content: attr(data-nashenski-text)') && css.includes('content: attr(data-nashenski-price)'), 'checkout.css prints the text and the price from the attributes');
 
 console.log('PASS: ' + checks + ' block checkout courier fee assertions');

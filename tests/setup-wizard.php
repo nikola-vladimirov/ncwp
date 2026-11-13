@@ -1,4 +1,4 @@
-<?php // phpcs:disable WordPress.Files.FileName, Universal.Files.SeparateFunctionsFromOO, Generic.Files.OneObjectStructurePerFile, WordPress.Security, WordPress.WP.GlobalVariablesOverride, Generic.CodeAnalysis.UnusedFunctionParameter, WordPress.NamingConventions, Squiz.Commenting -- offline test: WordPress and WooCommerce stubs and the test share one file.
+<?php // phpcs:disable WordPress.Files.FileName, Universal.Files.SeparateFunctionsFromOO, Generic.Files.OneObjectStructurePerFile, WordPress.Security, WordPress.WP.GlobalVariablesOverride, Generic.CodeAnalysis.UnusedFunctionParameter, WordPress.NamingConventions, Squiz.Commenting, WordPress.WP.AlternativeFunctions.strip_tags_strip_tags, Universal.NamingConventions.NoReservedKeywordParameterNames, PSR2.Methods.MethodDeclaration.Underscore -- offline test: WordPress and WooCommerce stubs (with their own names and signatures) and the test share one file.
 /**
  * Offline test: Setup_Wizard saves VAT, company, shipping and checkout choices without duplicates. Run: php tests/setup-wizard.php
  *

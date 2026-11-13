@@ -356,9 +356,8 @@ class Quick_Order {
 		wp_enqueue_script( 'nashenski-quick-order', nashenski()->plugin_dir_url() . 'assets/js/quick-order.js', array(), \Nashenski\Plugin::VERSION . '-' . filemtime( nashenski()->plugin_dir_path() . 'assets/js/quick-order.js' ), true );
 		wp_localize_script( 'nashenski-quick-order', 'nashenskiQuickOrder', self::config() );
 
-		// Space the button away from the add-to-cart button and quantity above it, so it does not look stuck.
-		wp_register_style( 'nashenski-quick-order', false, array(), \Nashenski\Plugin::VERSION );
-		wp_enqueue_style( 'nashenski-quick-order' );
+		// The form's look, loaded only with the script. The inline rule spaces the button away from the add-to-cart button and quantity above it, so it does not look stuck.
+		wp_enqueue_style( 'nashenski-quick-order', nashenski()->plugin_dir_url() . 'assets/css/quick-order.css', array(), \Nashenski\Plugin::VERSION . '-' . filemtime( nashenski()->plugin_dir_path() . 'assets/css/quick-order.css' ) );
 		wp_add_inline_style( 'nashenski-quick-order', '.nashenski-quick-order-open{display:inline-block;margin-top:12px}' );
 	}
 
@@ -504,8 +503,11 @@ class Quick_Order {
 		$post = array();
 
 		foreach ( array_merge( array( 'name', 'email', 'phone', 'consent', 'context', 'product_id' ), array_keys( self::optional_fields() ) ) as $key ) {
-			$value        = isset( $_POST[ $key ] ) && is_scalar( $_POST[ $key ] ) ? wp_unslash( $_POST[ $key ] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized on the next line, by type.
-			$post[ $key ] = in_array( $key, array( 'product_notes', 'message' ), true ) ? sanitize_textarea_field( $value ) : sanitize_text_field( $value );
+			$post[ $key ] = '';
+
+			if ( isset( $_POST[ $key ] ) && is_scalar( $_POST[ $key ] ) ) {
+				$post[ $key ] = in_array( $key, array( 'product_notes', 'message' ), true ) ? sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) : sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+			}
 		}
 
 		if ( self::too_many_requests() ) {

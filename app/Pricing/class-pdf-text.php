@@ -77,19 +77,18 @@ class Pdf_Text {
 			return '';
 		}
 
-		$data = rtrim( $m[1], "\r\n" );
+		$data = $m[1];
 
-		if ( false !== strpos( $body, '/FlateDecode' ) ) {
-			$inflated = @gzuncompress( $data, 20 * 1024 * 1024 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- try both zlib formats.
-
-			if ( false === $inflated ) {
-				$inflated = @gzinflate( $data ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-			}
-
-			$data = false === $inflated ? '' : $inflated;
+		if ( false === strpos( $body, '/FlateDecode' ) ) {
+			return rtrim( $data, "\r\n" );
 		}
 
-		return $data;
+		// The compressed bytes go in whole: a line break at their end can be the last byte of the checksum, and one that is only the end of the line is ignored by the inflate functions.
+		// A zlib stream starts with two header bytes (method 8, and the pair divides by 31); anything else is a bare deflate stream.
+		$zlib     = strlen( $data ) > 1 && 8 === ( ord( $data[0] ) & 0x0F ) && 0 === ( ( ord( $data[0] ) << 8 ) + ord( $data[1] ) ) % 31;
+		$inflated = $zlib ? gzuncompress( $data, 20 * 1024 * 1024 ) : gzinflate( $data, 20 * 1024 * 1024 );
+
+		return false === $inflated ? '' : $inflated;
 	}
 
 	/**

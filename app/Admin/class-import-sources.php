@@ -1245,12 +1245,95 @@ class Import_Sources {
 	}
 
 	/**
-	 * Like maybe_unserialize(), but never builds objects from legacy rows.
+	 * Like maybe_unserialize() for the rows the old plugins stored serialized, without PHP's
+	 * unserialize(): only plain data is read (null, booleans, numbers, strings and arrays of them).
+	 * A row with an object or a reference in it, or a damaged row, comes back as false, with no
+	 * PHP warning.
 	 *
 	 * @param mixed $value Value.
 	 */
 	private static function safe_unserialize( $value ) {
-		return is_serialized( $value ) ? @unserialize( trim( $value ), array( 'allowed_classes' => false ) ) : $value; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- legacy rows, classes are not allowed.
+		if ( ! is_serialized( $value ) ) {
+			return $value;
+		}
+
+		$data = trim( $value );
+		$at   = 0;
+
+		try {
+			$read = self::read_serialized( $data, $at );
+		} catch ( \UnexpectedValueException $e ) {
+			return false;
+		}
+
+		return strlen( $data ) === $at ? $read : false;
+	}
+
+	/**
+	 * Reads one serialized value and moves the position past it.
+	 *
+	 * @param string $data Serialized data.
+	 * @param int    $at   Position of the value, in bytes.
+	 * @return mixed
+	 * @throws \UnexpectedValueException When the data is damaged or holds anything but plain data.
+	 */
+	private static function read_serialized( $data, &$at ) {
+		$type = $data[ $at ] ?? '';
+
+		if ( 'N' === $type && ';' === ( $data[ $at + 1 ] ?? '' ) ) {
+			$at += 2;
+
+			return null;
+		}
+
+		// A boolean, an integer or a float: "b:1;", "i:-5;", "d:0.5;".
+		if ( preg_match( '/\G([bid]):([^;]*);/', $data, $found, 0, $at ) ) {
+			$at += strlen( $found[0] );
+
+			if ( 'b' === $found[1] && in_array( $found[2], array( '0', '1' ), true ) ) {
+				return '1' === $found[2];
+			}
+
+			if ( 'i' === $found[1] && preg_match( '/^[+-]?\d+$/', $found[2] ) ) {
+				return (int) $found[2];
+			}
+
+			if ( 'd' === $found[1] && is_numeric( $found[2] ) ) {
+				return (float) $found[2];
+			}
+		}
+
+		// A string with its length in bytes: s:5:"hello";.
+		if ( preg_match( '/\Gs:(\d+):"/', $data, $found, 0, $at ) && '";' === substr( $data, $at + strlen( $found[0] ) + (int) $found[1], 2 ) ) {
+			$text = substr( $data, $at + strlen( $found[0] ), (int) $found[1] );
+			$at  += strlen( $found[0] ) + (int) $found[1] + 2;
+
+			return $text;
+		}
+
+		// An array with its number of pairs: a:1:{key;value;}.
+		if ( preg_match( '/\Ga:(\d+):\{/', $data, $found, 0, $at ) ) {
+			$at  += strlen( $found[0] );
+			$list = array();
+
+			for ( $i = 0; $i < (int) $found[1]; $i++ ) {
+				$key = self::read_serialized( $data, $at );
+
+				if ( ! is_int( $key ) && ! is_string( $key ) ) {
+					break;
+				}
+
+				$list[ $key ] = self::read_serialized( $data, $at );
+			}
+
+			if ( (int) $found[1] === $i && '}' === ( $data[ $at ] ?? '' ) ) {
+				++$at;
+
+				return $list;
+			}
+		}
+
+		throw new \UnexpectedValueException( 'Not plain serialized data.' );
 	}
 
 	/**
@@ -1281,7 +1364,7 @@ class Import_Sources {
 		return wc_get_orders(
 			array(
 				'limit'    => -1,
-				'meta_key' => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_key' => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- the one-time import finds the old plugin's orders by the meta key it left; an admin starts it by hand.
 			'meta_compare' => 'EXISTS',
 			)
 		);

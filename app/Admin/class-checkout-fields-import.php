@@ -191,7 +191,8 @@ class Checkout_Fields_Import {
 		}
 
 		// The table goes first: when it cannot be saved, the standard field rules go back to what they were.
-		if ( ! update_option( Field_Editor::LAYOUT_OPTION, $rows, false ) && get_option( Field_Editor::LAYOUT_OPTION ) != $rows ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual -- the stored copy comes back with string values.
+		// update_option() also answers false when nothing changed, so the stored copy is compared, every value as text (it comes back with string values).
+		if ( ! update_option( Field_Editor::LAYOUT_OPTION, $rows, false ) && map_deep( get_option( Field_Editor::LAYOUT_OPTION ), 'strval' ) !== map_deep( $rows, 'strval' ) ) {
 			foreach ( $rules_before as $field => $rule ) {
 				nashenski_set_option( $group( $field ), $field, $rule );
 			}

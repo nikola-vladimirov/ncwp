@@ -709,7 +709,7 @@ namespace {
 	check( array( 1, 2 ) === run() && day( 2 ) === cursor() && array( 2 ) === cursor_ids(), 'cursor: the first batch is 1, 2 and the cursor is the date of order 2 with its ID' );
 	check( array( 3, 4 ) === run() && day( 4 ) === cursor() && array( 4 ) === cursor_ids(), 'cursor: the next batch starts at the cursor and skips order 2 (3, 4)' );
 	$q = $GLOBALS['queries'][ count( $GLOBALS['queries'] ) - 1 ];
-	check( day( 2 ) === qfrom() && array( 2 ) === $q['exclude'], 'cursor: the query asks for orders created at or after the cursor, excluding the stored IDs' );
+	check( day( 2 ) === qfrom() && ! isset( $q['exclude'] ) && 3 === $q['limit'], 'cursor: the query asks for orders created at or after the cursor, with no exclude list: one more order for the stored ID, which is dropped after the query' );
 	check( array( 5 ) === run() && abs( cursor() - ( time() - 60 * 86400 ) ) <= 2 && array() === cursor_ids(), 'reset: a short page ends the cycle and the cursor goes back to the window start with no IDs' );
 	check( array( 1, 2 ) === run(), 'reset: the next cycle starts at the oldest order again' );
 	foreach ( $GLOBALS['result'] as $o ) {

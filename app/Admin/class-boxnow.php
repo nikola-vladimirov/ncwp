@@ -725,16 +725,9 @@ class BoxNow {
 
 		$url = '/api/v1/parcels/' . $parcel . '/label.pdf';
 
-		$pdf_escaped = $container[ Client::BOXNOW ]->api_call( $url, array(), 'GET', true );
+		$pdf = $container[ Client::BOXNOW ]->api_call( $url, array(), 'GET', true );
 
-		header( 'Content-Type: application/pdf' );
-		header( 'Content-Length: ' . strlen( $pdf_escaped ) );
-		header( 'X-Content-Type-Options: nosniff' );
-		header( 'Content-disposition: inline; filename="' . sanitize_file_name( (string) $parcel ) . '.pdf"' );
-
-		echo $pdf_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PDF file from the courier, sent as application/pdf.
-
-		wp_die();
+		nashenski_send_download( '', $parcel . '.pdf', 'application/pdf', true, (string) $pdf );
 	}
 
 	/**

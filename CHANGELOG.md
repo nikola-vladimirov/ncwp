@@ -11,6 +11,14 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 - Security Audit: the plugin no longer defines WordPress's FS_CHMOD_DIR and FS_CHMOD_FILE. Its own files get the permissions of their folder, as uploads do.
 - Security Audit: document and export download links carry a nonce besides their signature. A link on a page left open for more than a day needs a reload.
 - Security Audit: only standard file types in the plugin. Library licence files end in .txt, the NRA audit schema is dex-audit-schema.xml, and unused PDF library files (encoding maps, the PDF/A colour profile) are left out. The WordPress.org zip has no .pot file.
+- Security Audit: XML uploads are no longer allowed on the whole site. The plugin allows the type only while it saves its own NRA audit file.
+- Security Audit: deactivating or deleting the plugin clears every scheduled job, the daily export file cleanup and the 0.21.8 background step too. The jobs come back when the plugin is turned on again.
+- Security Audit: the courier choice cookie, the export settings and the delivery choice on the order screen are sanitized before and after they are decoded. The checkout form of "update order review" is taken from WooCommerce, not read from the request.
+- Security Audit: every file the plugin sends (an export, a stored document, a courier label) goes through one place, with its content type and "nosniff".
+- PDF documents: the logo is read from its file in the media library. A custom template that asks for Helvetica, Times, Courier or a generic font family now prints in the DejaVu font, which has Cyrillic letters; the unused built-in font metric files are left out of the plugin.
+- The libraries and fonts that come with the plugin, and the DejaVu font licence, are listed in third-party-licenses.txt.
+- Abandoned carts: the cart table is read through the object cache, and every change clears it.
+- The quick order form and the block checkout price texts are styled from CSS files; scripts no longer add style elements to the page.
 - The withdrawal link in emails now carries the order number as nashenski_order. Links in emails sent before this version still open the form, without the order number filled in.
 - Old settings links (admin.php?page=nashenski&tab=...) open the Nashenski Commerce settings at the start.
 
