@@ -39,7 +39,7 @@ class Pigeon_Tab extends Base_Tab {
 		$this->set_name( __( 'Pigeon Express', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'pigeon' );
 
-		add_action( 'nashenski_admin_settings_after_save_fields_' . $this->tab_name, array( $this, 'after_save_fields' ) );
+		add_action( 'nashenski_admin_settings_after_save_fields', array( $this, 'after_save_fields' ) );
 		add_filter( 'nashenski_admin_settings_pigeon_fields', array( $this, 'add_send_from_fields' ), 10 );
 		add_filter( 'nashenski_admin_settings_pigeon_fields', array( $this, 'add_additional_fields' ), 20 );
 	}
@@ -170,8 +170,8 @@ class Pigeon_Tab extends Base_Tab {
 				),
 				'pigeon_services'  => array(
 					'title' => __( 'Extra services on labels', 'nashenski-commerce' ),
-					/* translators: %s: Pigeon Express price page address */
-					'desc'  => sprintf( __( 'You can see the current prices on the <a href="%s" target="_blank">Pigeon Express website</a> or according to your agreed upon terms.', 'nashenski-commerce' ), 'https://pigeonexpress.com/prices-and-taxes/' ),
+					/* translators: %s: link to the Pigeon Express price page */
+					'desc'  => sprintf( __( 'You can see the current prices on the %s or according to your agreed upon terms.', 'nashenski-commerce' ), '<a href="' . esc_url( 'https://pigeonexpress.com/prices-and-taxes/' ) . '" target="_blank">' . esc_html__( 'Pigeon Express website', 'nashenski-commerce' ) . '</a>' ),
 				),
 			)
 		);
@@ -180,9 +180,15 @@ class Pigeon_Tab extends Base_Tab {
 	}
 
 	/**
-	 * After save fields.
+	 * After the settings are saved: only when it was this tab.
+	 *
+	 * @param string $tab_class Class of the tab that was saved.
 	 */
-	public function after_save_fields() {
+	public function after_save_fields( $tab_class = '' ) {
+		if ( $tab_class !== $this->tab_name ) {
+			return;
+		}
+
 		$is_valid_access = $this->container[ Client::PIGEON ]->check_credentials();
 
 		nashenski_set_option( 'pigeon', 'is_valid_access', $is_valid_access );

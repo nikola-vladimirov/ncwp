@@ -11,8 +11,6 @@ use Nashenski\Abandoned_Carts\Tracker;
 
 defined( 'ABSPATH' ) || exit;
 
-// The cart table is read on every page view, so caching would show stale rows. Queries name the table with %i.
-// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- see above.
 /**
  * WooCommerce > Abandoned carts: the totals and the list of carts, with per-cart and bulk actions
  * (send a reminder, edit the contact, delete). Every action is an admin-post request with a nonce.
@@ -27,6 +25,9 @@ class Abandoned_Carts_Page {
 	const ACTION_REMIND = 'nashenski_cart_remind';
 	const ACTION_DELETE = 'nashenski_cart_delete';
 	const ACTION_UPDATE = 'nashenski_cart_update';
+
+	/** Nonce action of the list links (filter, page number, edit). */
+	const VIEW = 'nashenski_carts_view';
 
 	/** Status keys the screen can filter by, with the label. */
 	const VISIBLE = array( 'open', 'recovered', 'emptied', 'unsubscribed' );
@@ -73,11 +74,11 @@ class Abandoned_Carts_Page {
 	}
 
 	/**
-	 * Bulk action. The handlers check the capability and the nonce, do their work and go back.
+	 * Bulk action. The handlers check the nonce and the capability, do their work and go back.
 	 */
 	public static function handle_bulk() {
-		self::guard();
 		check_admin_referer( self::ACTION_BULK );
+		self::guard();
 
 		$bulk  = isset( $_POST['bulk'] ) ? sanitize_key( wp_unslash( $_POST['bulk'] ) ) : '';
 		$ids   = isset( $_POST['carts'] ) ? array_map( 'absint', (array) wp_unslash( $_POST['carts'] ) ) : array();
@@ -104,10 +105,10 @@ class Abandoned_Carts_Page {
 	 * Handle remind.
 	 */
 	public static function handle_remind() {
-		self::guard();
 		check_admin_referer( self::ACTION_REMIND );
+		self::guard();
 
-		$id = isset( $_GET['cart'] ) ? absint( $_GET['cart'] ) : 0;
+		$id = isset( $_GET['cart'] ) ? absint( wp_unslash( $_GET['cart'] ) ) : 0;
 
 		self::back( self::ACTION_REMIND, Tracker::send_now( $id ) ? 'reminded' : 'send_failed', 0 );
 	}
@@ -116,10 +117,10 @@ class Abandoned_Carts_Page {
 	 * Handle delete.
 	 */
 	public static function handle_delete() {
-		self::guard();
 		check_admin_referer( self::ACTION_DELETE );
+		self::guard();
 
-		$id = isset( $_GET['cart'] ) ? absint( $_GET['cart'] ) : 0;
+		$id = isset( $_GET['cart'] ) ? absint( wp_unslash( $_GET['cart'] ) ) : 0;
 
 		self::back( self::ACTION_DELETE, Tracker::delete_row( $id ) ? 'deleted' : 'no_selection', 0 );
 	}
@@ -128,10 +129,10 @@ class Abandoned_Carts_Page {
 	 * Handle update.
 	 */
 	public static function handle_update() {
-		self::guard();
 		check_admin_referer( self::ACTION_UPDATE );
+		self::guard();
 
-		$id    = isset( $_POST['cart'] ) ? absint( $_POST['cart'] ) : 0;
+		$id    = isset( $_POST['cart'] ) ? absint( wp_unslash( $_POST['cart'] ) ) : 0;
 		$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
 		$name  = isset( $_POST['first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['first_name'] ) ) : '';
 		$phone = isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '';
@@ -166,18 +167,44 @@ class Abandoned_Carts_Page {
 		$paged  = isset( $_REQUEST['paged'] ) ? max( 1, absint( wp_unslash( $_REQUEST['paged'] ) ) ) : 1;
 
 		wp_safe_redirect(
-			add_query_arg(
-				array(
-					'page'                   => self::SLUG,
-					'status'                 => $status,
-					'paged'                  => $paged,
-					'nashenski_carts_notice' => $notice,
-					'nashenski_carts_count'  => (int) $count,
-				),
-				admin_url( 'admin.php' )
+			nashenski_notice_url(
+				self::view_url(
+					array(
+						'status'                 => $status,
+						'paged'                  => $paged,
+						'nashenski_carts_notice' => $notice,
+						'nashenski_carts_count'  => (int) $count,
+					)
+				)
 			)
 		);
 		exit;
+	}
+
+	/**
+	 * A link to the list. It carries a nonce, so the screen reads the filter, the page number and
+	 * the cart to edit only from links it printed itself.
+	 *
+	 * @param array $args Query values: status, paged, edit.
+	 * @return string
+	 */
+	private static function view_url( $args ) {
+		return add_query_arg( array( 'page' => self::SLUG ) + $args + array( '_wpnonce' => wp_create_nonce( self::VIEW ) ), admin_url( 'admin.php' ) );
+	}
+
+	/**
+	 * A value of the list view from the address bar. Without the nonce of view_url() it is empty and
+	 * the default view shows.
+	 *
+	 * @param string $key Query key: status, paged or edit.
+	 * @return string
+	 */
+	private static function view_arg( $key ) {
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), self::VIEW ) ) {
+			return '';
+		}
+
+		return isset( $_GET[ $key ] ) ? sanitize_key( wp_unslash( $_GET[ $key ] ) ) : '';
 	}
 
 	/**
@@ -205,8 +232,7 @@ class Abandoned_Carts_Page {
 	 * The filter and page number to carry back into forms and links.
 	 */
 	private static function current_filter() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reading the filter only.
-		$status = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : '';
+		$status = self::view_arg( 'status' );
 
 		return in_array( $status, self::VISIBLE, true ) ? $status : '';
 	}
@@ -215,8 +241,7 @@ class Abandoned_Carts_Page {
 	 * Current page.
 	 */
 	private static function current_page() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reading the page number only.
-		return isset( $_GET['paged'] ) ? max( 1, absint( wp_unslash( $_GET['paged'] ) ) ) : 1;
+		return max( 1, absint( self::view_arg( 'paged' ) ) );
 	}
 
 	/**
@@ -233,8 +258,7 @@ class Abandoned_Carts_Page {
 		$labels = self::statuses();
 		$pages  = max( 1, (int) ceil( $total / self::PER_PAGE ) );
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- showing an edit form only.
-		$edit_id  = isset( $_GET['edit'] ) ? absint( wp_unslash( $_GET['edit'] ) ) : 0;
+		$edit_id  = absint( self::view_arg( 'edit' ) );
 		$edit_row = $edit_id ? Tracker::get_row( $edit_id ) : null;
 
 		$open_value = Tracker::open_value();
@@ -243,7 +267,7 @@ class Abandoned_Carts_Page {
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Abandoned carts', 'nashenski-commerce' ); ?></h1>
 
-			<?php self::notice( isset( $_GET['nashenski_carts_notice'] ) ? sanitize_key( wp_unslash( $_GET['nashenski_carts_notice'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display only. ?>
+			<?php self::notice(); ?>
 
 			<p>
 				<?php
@@ -265,13 +289,7 @@ class Abandoned_Carts_Page {
 				$links = array();
 
 				foreach ( $views as $key => $label ) {
-					$url = add_query_arg(
-						array(
-							'page'   => self::SLUG,
-							'status' => $key,
-						),
-						admin_url( 'admin.php' )
-					);
+					$url = self::view_url( array( 'status' => $key ) );
 
 					$links[] = sprintf(
 						'<li><a href="%s" class="%s">%s <span class="count">(%d)</span></a></li>',
@@ -356,14 +374,12 @@ class Abandoned_Carts_Page {
 									<a href="
 									<?php
 									echo esc_url(
-										add_query_arg(
+										self::view_url(
 											array(
-												'page'   => self::SLUG,
 												'status' => $status,
 												'paged'  => $paged,
 												'edit'   => (int) $cart->id,
-											),
-											admin_url( 'admin.php' )
+											)
 										)
 									);
 									?>
@@ -390,13 +406,11 @@ class Abandoned_Carts_Page {
 							<?php
 							$pagination = paginate_links(
 								array(
-									'base'      => add_query_arg(
+									'base'      => self::view_url(
 										array(
-											'page'   => self::SLUG,
 											'status' => $status,
 											'paged'  => '%#%',
-										),
-										admin_url( 'admin.php' )
+										)
 									),
 									'format'    => '',
 									'current'   => $paged,
@@ -467,15 +481,7 @@ class Abandoned_Carts_Page {
 				<button type="submit" class="button button-primary"><?php esc_html_e( 'Save', 'nashenski-commerce' ); ?></button>
 				<a class="button" href="
 				<?php
-				echo esc_url(
-					add_query_arg(
-						array(
-							'page'   => self::SLUG,
-							'status' => self::current_filter(),
-						),
-						admin_url( 'admin.php' )
-					)
-				);
+				echo esc_url( self::view_url( array( 'status' => self::current_filter() ) ) );
 				?>
 										"><?php esc_html_e( 'Cancel', 'nashenski-commerce' ); ?></a>
 			</p>
@@ -484,17 +490,11 @@ class Abandoned_Carts_Page {
 	}
 
 	/**
-	 * Notice.
-	 *
-	 * @param mixed $code Code.
+	 * The notice after a handler's redirect. nashenski_query_arg() reads it only with the notice nonce.
 	 */
-	private static function notice( $code ) {
-		if ( '' === $code ) {
-			return;
-		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display only.
-		$count = isset( $_GET['nashenski_carts_count'] ) ? absint( wp_unslash( $_GET['nashenski_carts_count'] ) ) : 0;
+	private static function notice() {
+		$code  = sanitize_key( nashenski_query_arg( 'nashenski_carts_notice' ) );
+		$count = absint( nashenski_query_arg( 'nashenski_carts_count' ) );
 
 		$messages = array(
 			'reminded'       => array( 'success', __( 'Reminder sent.', 'nashenski-commerce' ) ),

@@ -118,14 +118,32 @@ class Settings_Page extends \WC_Settings_Page {
 	 */
 	private function current_courier() {
 		$couriers = $this->couriers();
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- navigation only.
-		$courier = isset( $_GET['courier'] ) ? sanitize_key( wp_unslash( $_GET['courier'] ) ) : '';
+		$courier  = self::requested_courier();
 
 		return in_array( $courier, $couriers, true ) ? $courier : ( $couriers[0] ?? '' );
 	}
 
 	/**
-	 * The sections and what each one shows. A part is array( tab slug, groups or null for all groups, optional field names, optional groups to leave out ).
+	 * The courier the request names: the form being saved names its own (WooCommerce's settings
+	 * nonce, checked again here), a link carries the nonce of Settings::courier_url(). Otherwise
+	 * none, and the first courier shows.
+	 *
+	 * @return string
+	 */
+	private static function requested_courier() {
+		if ( isset( $_POST['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'woocommerce-settings' ) ) {
+			return isset( $_POST['nashenski_courier'] ) ? sanitize_key( wp_unslash( $_POST['nashenski_courier'] ) ) : '';
+		}
+
+		if ( isset( $_GET['_nashenski_courier'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_nashenski_courier'] ) ), 'nashenski_courier' ) ) {
+			return isset( $_GET['courier'] ) ? sanitize_key( wp_unslash( $_GET['courier'] ) ) : '';
+		}
+
+		return '';
+	}
+
+	/**
+	 * The sections and what each one shows. A part is array( tab slug, groups or null for all groups, optional field names ).
 	 */
 	private function layout() {
 		$layout = array(
@@ -139,8 +157,7 @@ class Settings_Page extends \WC_Settings_Page {
 			),
 			'checkout'        => array(
 				'label' => __( 'Checkout', 'nashenski-commerce' ),
-				// The company group moves to Documents only while that section exists; with documents off its switch stays here.
-				'parts' => array( array( 'shipping', null ), array( 'fields', null, null, $this->tab( 'documents' ) ? array( \Nashenski\Front_End\Checkout\Company_Fields::GROUP ) : array() ) ),
+				'parts' => array( array( 'shipping', null ), array( 'fields', null ) ),
 			),
 			// Always in the menu: the on/off switch first, the settings once it is on.
 			'quick_order'     => array(
@@ -153,7 +170,7 @@ class Settings_Page extends \WC_Settings_Page {
 			),
 			'documents'       => array(
 				'label' => __( 'Documents', 'nashenski-commerce' ),
-				'parts' => array( array( 'documents', null ), array( 'fields', array( \Nashenski\Front_End\Checkout\Company_Fields::GROUP ) ) ),
+				'parts' => array( array( 'documents', null ) ),
 			),
 			'checks'          => array(
 				'label' => __( 'Customer checks', 'nashenski-commerce' ),
@@ -290,7 +307,7 @@ class Settings_Page extends \WC_Settings_Page {
 			$columns = 'couriers' === $section_id && ! empty( $groups[ $part[0] ] ) && ! empty( $groups[ $send_from ] );
 
 			foreach ( $groups as $group => $pairs ) {
-				if ( empty( $pairs ) || ( null !== $part[1] && ! in_array( $group, $part[1], true ) ) || in_array( $group, $part[3] ?? array(), true ) ) {
+				if ( empty( $pairs ) || ( null !== $part[1] && ! in_array( $group, $part[1], true ) ) ) {
 					continue;
 				}
 
@@ -394,35 +411,7 @@ class Settings_Page extends \WC_Settings_Page {
 			$settings = array_merge( $settings, $look, \Nashenski\Front_End\Withdrawal::settings() );
 		}
 
-		if ( 'documents' === $section_id ) {
-			$settings = self::invoice_rows( $settings );
-		}
-
 		return self::boxes( Setting_Help::apply( $settings ) );
-	}
-
-	/**
-	 * Documents: "Invoice numbering" (stored in the company group) moves under "When to generate invoices?".
-	 * Nothing hides while invoices are off: numbering, the next number, due days and separate copies all feed "Make invoice" on the order screen.
-	 *
-	 * @param array $settings Settings of the section.
-	 */
-	public static function invoice_rows( $settings ) {
-		$from = null;
-		$to   = null;
-
-		foreach ( $settings as $i => $setting ) {
-			$id   = $setting['id'] ?? '';
-			$from = 'nashenski_settings_company_invoice_numbering' === $id ? $i : $from;
-			$to   = 'nashenski_settings_invoice_invoices' === $id ? $i : $to;
-		}
-
-		if ( null !== $from && null !== $to ) {
-			$moved = array_splice( $settings, $from, 1 );
-			array_splice( $settings, $from > $to ? $to + 1 : $to, 0, $moved );
-		}
-
-		return $settings;
 	}
 
 	/**
@@ -629,6 +618,8 @@ class Settings_Page extends \WC_Settings_Page {
 		}
 
 		if ( 'couriers' === $id ) {
+			// The save reads the courier from the form, not from a link that may have expired.
+			echo '<input type="hidden" name="nashenski_courier" value="' . esc_attr( $this->current_courier() ) . '">';
 			$this->output_courier_nav();
 			$this->maybe_reload_courier_data( $this->current_courier() );
 		}
@@ -660,7 +651,7 @@ class Settings_Page extends \WC_Settings_Page {
 		foreach ( $couriers as $courier ) {
 			printf(
 				'<a href="%1$s" class="nashenski-courier-nav__item%2$s"%3$s>%4$s<span>%5$s</span></a>',
-				esc_url( add_query_arg( 'courier', $courier, Settings::url( 'couriers' ) ) ),
+				esc_url( Settings::courier_url( $courier ) ),
 				$courier === $current ? ' is-current' : '',
 				$courier === $current ? ' aria-current="page"' : '',
 				isset( $logos[ $courier ] ) ? '<img src="' . esc_url( $logos[ $courier ] ) . '" alt="">' : '',
@@ -701,16 +692,7 @@ class Settings_Page extends \WC_Settings_Page {
 		}
 
 		if ( $is_courier ) {
-			$url = wp_nonce_url(
-				add_query_arg(
-					array(
-						self::RELOAD => 1,
-						'courier'    => $slug,
-					),
-					Settings::url( 'couriers' )
-				),
-				self::RELOAD
-			);
+			$url = wp_nonce_url( add_query_arg( self::RELOAD, 1, Settings::courier_url( $slug ) ), self::RELOAD );
 
 			printf(
 				'<p class="nashenski-section-actions"><a class="button" href="%1$s">%2$s</a> <span class="description">%3$s</span></p>',
@@ -727,12 +709,14 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @param mixed $courier Courier.
 	 */
 	private function maybe_reload_courier_data( $courier ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the nonce is verified below.
-		if ( ! in_array( $courier, \Nashenski\Plugin::COURIERS, true ) || empty( $_GET[ self::RELOAD ] ) || ! current_user_can( 'manage_woocommerce' ) ) {
+		// Only the Reload link carries this nonce.
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), self::RELOAD ) ) {
 			return;
 		}
 
-		check_admin_referer( self::RELOAD );
+		if ( ! in_array( $courier, \Nashenski\Plugin::COURIERS, true ) || ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
 
 		$class = nashenski()->container()[ 'client.' . $courier ];
 		$class::clear_cache_folder();
@@ -780,8 +764,11 @@ class Settings_Page extends \WC_Settings_Page {
 	 * The weekly check found published prices that differ from the saved ones.
 	 */
 	private static function output_price_update_notice() {
-		if ( isset( $_GET['nashenski_dismiss_prices'] ) && check_admin_referer( 'nashenski_dismiss_prices' ) && current_user_can( 'manage_woocommerce' ) ) {
-			\Nashenski\Pricing\Updater::forget();
+		// Only the Dismiss link below carries this nonce.
+		if ( isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'nashenski_dismiss_prices' ) ) {
+			if ( current_user_can( 'manage_woocommerce' ) ) {
+				\Nashenski\Pricing\Updater::forget();
+			}
 		}
 
 		$found = get_option( \Nashenski\Pricing\Updater::NOTICE_OPTION, array() );
@@ -795,7 +782,7 @@ class Settings_Page extends \WC_Settings_Page {
 
 		foreach ( $found as $courier => $date ) {
 			if ( isset( $names[ $courier ] ) ) {
-				$links[] = '<a href="' . esc_url( add_query_arg( 'courier', $courier, Settings::url( 'couriers' ) ) ) . '">' . esc_html( $names[ $courier ] ) . '</a>';
+				$links[] = '<a href="' . esc_url( Settings::courier_url( $courier ) ) . '">' . esc_html( $names[ $courier ] ) . '</a>';
 			}
 		}
 
@@ -938,13 +925,16 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 
 	/**
-	 * Runs the after-save hook of a tab: the current name, and the old misspelt one for add-ons still listening on it.
+	 * Runs the after-save hook: one name for every tab, with the tab's class as its argument. The older
+	 * names had the class in them; they still run for add-ons listening on those.
 	 *
 	 * @param string $tab_class Tab class name.
 	 */
 	public static function run_after_save_fields( $tab_class ) {
-		\Nashenski\Hooks::action( 'nashenski_admin_settings_after_save_fields_' . $tab_class, 'nashenski/admin/settings/after_save_fields/' . $tab_class );
-		do_action_deprecated( 'nashenski/admin/settings/afte_save_fields/' . $tab_class, array(), '0.19.9', 'nashenski_admin_settings_after_save_fields_' . $tab_class );
+		\Nashenski\Hooks::action( 'nashenski_admin_settings_after_save_fields', 'nashenski/admin/settings/after_save_fields', $tab_class );
+		do_action_deprecated( 'nashenski_admin_settings_after_save_fields_' . $tab_class, array(), '0.21.10', 'nashenski_admin_settings_after_save_fields' );
+		do_action_deprecated( 'nashenski/admin/settings/after_save_fields/' . $tab_class, array(), '0.19.9', 'nashenski_admin_settings_after_save_fields' );
+		do_action_deprecated( 'nashenski/admin/settings/afte_save_fields/' . $tab_class, array(), '0.19.9', 'nashenski_admin_settings_after_save_fields' );
 	}
 
 	/**
@@ -964,7 +954,10 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 
 	/**
-	 * The mask posted back unchanged means "keep the saved value".
+	 * A login, key or secret: the mask posted back unchanged means "keep the saved value". A new value is
+	 * kept as typed, as WooCommerce keeps a password field (it only trims it): a real password may hold any
+	 * printable character, "<" and "%" too. Only what no password has is taken out: control characters and
+	 * text that is not valid UTF-8. The value goes to the courier or service it belongs to and is shown masked.
 	 *
 	 * @param mixed $value     Value.
 	 * @param array $option    Setting definition.
@@ -972,11 +965,15 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @return mixed
 	 */
 	public static function keep_secret( $value, $option, $raw_value ) {
-		if ( self::SECRET_MASK === $raw_value && self::is_secret( (string) ( $option['id'] ?? '' ), (string) ( $option['type'] ?? '' ) ) ) {
+		if ( ! self::is_secret( (string) ( $option['id'] ?? '' ), (string) ( $option['type'] ?? '' ) ) ) {
+			return $value;
+		}
+
+		if ( self::SECRET_MASK === $raw_value ) {
 			return get_option( $option['id'], '' );
 		}
 
-		return $value;
+		return is_string( $value ) ? trim( (string) preg_replace( '/[\x00-\x1F\x7F]/', '', wp_check_invalid_utf8( $value ) ) ) : $value;
 	}
 
 	/**
@@ -1045,6 +1042,7 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @return mixed
 	 */
 	public static function sanitize_value( $value, $option ) {
+		$value = self::keep_secret( $value, $option, $value );
 		$value = self::sanitize_rules_field( $value, $option, $value );
 		$value = self::sanitize_rows_field( $value, $option, $value );
 		$value = self::sanitize_methods_field( $value, $option, $value );

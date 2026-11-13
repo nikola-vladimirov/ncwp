@@ -45,6 +45,8 @@ class Quick_Order {
 	public function __construct() {
 		add_action( 'init', array( __CLASS__, 'register_status' ) );
 		add_filter( 'wc_order_statuses', array( __CLASS__, 'add_status' ) );
+		// The posts-table orders list prints label_count as is; the HPOS list adds the grey count itself.
+		add_filter( 'views_edit-shop_order', array( __CLASS__, 'grey_count' ) );
 		// Quick orders wait for the owner, so they count in the Orders menu bubble with the processing ones.
 		add_filter( 'woocommerce_menu_order_count', array( __CLASS__, 'menu_count' ) );
 
@@ -62,8 +64,7 @@ class Quick_Order {
 			add_action( 'woocommerce_after_cart_totals', array( __CLASS__, 'button' ) );
 		}
 
-		add_action( 'wp_ajax_nashenski_quick_order_form', array( __CLASS__, 'form_ajax' ) );
-		add_action( 'wp_ajax_nopriv_nashenski_quick_order_form', array( __CLASS__, 'form_ajax' ) );
+		add_action( 'rest_api_init', array( __CLASS__, 'register_route' ) );
 		add_action( 'wp_ajax_nashenski_quick_order_submit', array( __CLASS__, 'submit_ajax' ) );
 		add_action( 'wp_ajax_nopriv_nashenski_quick_order_submit', array( __CLASS__, 'submit_ajax' ) );
 	}
@@ -293,7 +294,7 @@ class Quick_Order {
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
 				/* translators: %s: number of quick orders */
-				'label_count'               => _n_noop( 'Quick order <span class="count">(%s)</span>', 'Quick orders <span class="count">(%s)</span>', 'nashenski-commerce' ),
+				'label_count'               => _n_noop( 'Quick order (%s)', 'Quick orders (%s)', 'nashenski-commerce' ),
 			)
 		);
 	}
@@ -308,6 +309,21 @@ class Quick_Order {
 		$statuses[ 'wc-' . self::STATUS ] = _x( 'Quick order', 'Order status', 'nashenski-commerce' );
 
 		return $statuses;
+	}
+
+	/**
+	 * Wraps the number of the status link in the grey count span, so the translatable text stays plain.
+	 *
+	 * @param mixed $views Status links of the orders list.
+	 * @return mixed Result.
+	 */
+	public static function grey_count( $views ) {
+		$key = 'wc-' . self::STATUS;
+		if ( is_array( $views ) && isset( $views[ $key ] ) && false === strpos( $views[ $key ], 'class="count"' ) ) {
+			$views[ $key ] = preg_replace( '/\(([^()<>]*)\)(\s*<\/a>)/', '<span class="count">($1)</span>$2', $views[ $key ] );
+		}
+
+		return $views;
 	}
 
 	/**
@@ -351,127 +367,87 @@ class Quick_Order {
 			return;
 		}
 
-		wp_register_script( 'nashenski-quick-order', false, array(), \Nashenski\Plugin::VERSION, true );
-		wp_enqueue_script( 'nashenski-quick-order' );
-		wp_add_inline_script( 'nashenski-quick-order', self::script() );
+		wp_enqueue_script( 'nashenski-quick-order', nashenski()->plugin_dir_url() . 'assets/js/quick-order.js', array(), \Nashenski\Plugin::VERSION . '-' . filemtime( nashenski()->plugin_dir_path() . 'assets/js/quick-order.js' ), true );
+		wp_localize_script( 'nashenski-quick-order', 'nashenskiQuickOrder', self::config() );
 
-		// Space the button away from the add-to-cart button and quantity above it, so it does not look stuck.
-		wp_register_style( 'nashenski-quick-order', false, array(), \Nashenski\Plugin::VERSION );
-		wp_enqueue_style( 'nashenski-quick-order' );
+		// The form's look, loaded only with the script. The inline rule spaces the button away from the add-to-cart button and quantity above it, so it does not look stuck.
+		wp_enqueue_style( 'nashenski-quick-order', nashenski()->plugin_dir_url() . 'assets/css/quick-order.css', array(), \Nashenski\Plugin::VERSION . '-' . filemtime( nashenski()->plugin_dir_path() . 'assets/css/quick-order.css' ) );
 		wp_add_inline_style( 'nashenski-quick-order', '.nashenski-quick-order-open{display:inline-block;margin-top:12px}' );
 	}
 
 	/**
-	 * Plain script, no build step: a form fetched on each click, shown as chosen, with a light
-	 * phone mask that follows the configured Bulgarian format.
+	 * What assets/js/quick-order.js needs: where to ask for the form, how to show it and the phone format.
 	 */
-	private static function script() {
-		$config = wp_json_encode(
+	private static function config() {
+		return array(
+			'ajax'        => admin_url( 'admin-ajax.php' ),
+			'formUrl'     => esc_url_raw( rest_url( 'nashenski/v1/quick-order/form' ) ),
+			// A logged-in shopper's request needs it to stay logged in (the form is then filled in from the account). A guest sends none.
+			'restNonce'   => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
+			'appearance'  => nashenski_get_choice( 'quick_order', 'appearance', self::appearances() ),
+			'phoneFormat' => self::phone_format(),
+			'phoneDial'   => self::phone_dial(),
+			'errorText'   => __( 'Something went wrong. Please try again.', 'nashenski-commerce' ),
+			'closeText'   => _x( 'Close', 'button that closes a window', 'nashenski-commerce' ),
+		);
+	}
+
+	/**
+	 * The route the script reads the form from on each click, so a cached page still gets a form
+	 * with a fresh nonce in it (the one submit_ajax() checks).
+	 */
+	public static function register_route() {
+		register_rest_route(
+			'nashenski/v1',
+			'/quick-order/form',
 			array(
-				'ajax'        => admin_url( 'admin-ajax.php' ),
-				'appearance'  => nashenski_get_choice( 'quick_order', 'appearance', self::appearances() ),
-				'phoneFormat' => self::phone_format(),
-				'phoneDial'   => self::phone_dial(),
-				'errorText'   => __( 'Something went wrong. Please try again.', 'nashenski-commerce' ),
-				'closeText'   => __( 'Close', 'nashenski-commerce' ),
+				'methods'             => 'GET',
+				'callback'            => array( __CLASS__, 'form_rest' ),
+				// Public and read-only: the order form every visitor may open. It reads three values, changes nothing and stores nothing.
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'context'    => array(
+						'type'              => 'string',
+						'enum'              => array( 'product', 'cart' ),
+						'default'           => 'product',
+						'sanitize_callback' => 'sanitize_key',
+						'validate_callback' => 'rest_validate_request_arg',
+					),
+					'product_id' => array(
+						'type'              => 'integer',
+						'minimum'           => 0,
+						'default'           => 0,
+						'sanitize_callback' => 'absint',
+						'validate_callback' => 'rest_validate_request_arg',
+					),
+					// Whatever the quantity box holds (empty, 0, a decimal from another plugin): at least 1, as before the REST route.
+					'quantity'   => array(
+						'default'           => 1,
+						'sanitize_callback' => static fn( $value ) => max( 1, absint( $value ) ),
+					),
+				),
 			)
 		);
-
-		return '(function(){var cfg=' . $config . ';
-var open=null,box=null;
-function css(){
-  if(document.getElementById("nashenski-quick-order-css")){return;}
-  var s=document.createElement("style");
-  s.id="nashenski-quick-order-css";
-  s.textContent=".nashenski-quick-order{border:0;border-radius:8px;padding:24px;width:min(440px,92vw);max-height:90vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.25);background:#fff}.nashenski-quick-order::backdrop{background:rgba(0,0,0,.45)}.nashenski-quick-order label{display:block}.nashenski-quick-order input:not([type=checkbox]),.nashenski-quick-order textarea{width:100%;box-sizing:border-box;margin-top:4px}.nashenski-quick-order h2{margin:0 0 8px}.nashenski-quick-order-actions{display:flex;gap:12px;align-items:center;justify-content:flex-start;margin-top:12px}.nashenski-quick-order--inline{position:static;box-shadow:none;border:1px solid rgba(0,0,0,.12);width:auto;margin:8px 0}.nashenski-quick-order--side{position:fixed;top:0;right:0;height:100%;width:min(440px,92vw);max-height:none;border-radius:0;z-index:100000;overflow:auto}.nashenski-quick-order__backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99999}";
-  document.head.appendChild(s);
-}
-function close(){
-  if(!box){return;}
-  if(typeof box.close==="function"&&box.tagName==="DIALOG"){box.close();}
-  if(box._backdrop){box._backdrop.remove();}
-  box.remove();box=null;
-}
-function show(html,trigger){
-  close();css();
-  var a=cfg.appearance;
-  if(a==="modal"){
-    box=document.createElement("dialog");box.className="nashenski-quick-order";
-    box.addEventListener("click",function(e){if(e.target===box){close();}});
-    document.body.appendChild(box);box.innerHTML=html;box.showModal();
-  } else if(a==="side"){
-    box=document.createElement("div");box.className="nashenski-quick-order nashenski-quick-order--side";
-    box._backdrop=document.createElement("div");box._backdrop.className="nashenski-quick-order__backdrop";
-    box._backdrop.addEventListener("click",close);
-    document.body.appendChild(box._backdrop);document.body.appendChild(box);box.innerHTML=html;
-  } else {
-    box=document.createElement("div");box.className="nashenski-quick-order nashenski-quick-order--inline";
-    box.innerHTML=html;
-    if(trigger&&trigger.parentNode){trigger.parentNode.insertBefore(box,trigger.nextSibling);}
-    else{document.body.appendChild(box);}
-  }
-  var actions=box.querySelector(".nashenski-quick-order-actions");
-  if(actions){actions.insertAdjacentHTML("beforeend","<button type=\'button\' class=\'button nashenski-quick-order-close\'>"+cfg.closeText+"</button>");}
-  else{box.insertAdjacentHTML("beforeend","<p class=\'nashenski-quick-order-actions\'><button type=\'button\' class=\'button nashenski-quick-order-close\'>"+cfg.closeText+"</button></p>");}
-  var phone=box.querySelector("[data-nashenski-phone]");
-  if(phone){mask(phone);phone.addEventListener("input",function(){mask(phone);});}
-}
-function mask(input){
-  var d=input.value.replace(/[^0-9]/g,""),out="",dial=cfg.phoneDial||"";
-  if(cfg.phoneFormat==="international"){
-    if(dial&&d.indexOf(dial)!==0){d=(d.charAt(0)==="0")?dial+d.slice(1):dial+d;}
-    var nat=d.slice(dial.length,20),parts=nat.match(/\d{1,4}/g)||[];
-    out="+"+dial+(parts.length?" "+parts.join(" "):"");
-  } else {
-    if(d.charAt(0)!=="0"){d="0"+d;}
-    var p=d.slice(0,14).match(/\d{1,4}/g)||[];
-    out=p.join(" ");
-  }
-  if(input.value!==out){input.value=out;}
-}
-document.addEventListener("click",function(e){
-  var btn=e.target.closest(".nashenski-quick-order-open");
-  if(btn){
-    e.preventDefault();open=btn;
-    var qty=document.querySelector("form.cart input.qty");
-    var body=new URLSearchParams({action:"nashenski_quick_order_form",context:btn.getAttribute("data-context")||"product",product_id:btn.getAttribute("data-product-id")||"0",quantity:qty?qty.value:"1"});
-    fetch(cfg.ajax,{method:"POST",credentials:"same-origin",body:body}).then(function(r){return r.text();}).then(function(html){show(html,btn);}).catch(function(){show("<p>"+cfg.errorText+"</p>",btn);});
-    return;
-  }
-  if(e.target.closest(".nashenski-quick-order-close")){close();}
-});
-document.addEventListener("submit",function(e){
-  var form=e.target;
-  if(!form.closest||!form.closest(".nashenski-quick-order")){return;}
-  e.preventDefault();
-  var button=form.querySelector("button[type=submit]");
-  if(button){button.disabled=true;}
-  fetch(cfg.ajax,{method:"POST",credentials:"same-origin",body:new URLSearchParams(new FormData(form))}).then(function(r){return r.json();}).then(function(res){
-    var msg=res&&res.data&&res.data.message?res.data.message:cfg.errorText;
-    if(res&&res.success){if(box){box.innerHTML="<p>"+msg+"</p><p><button type=\'button\' class=\'button nashenski-quick-order-close\'>"+cfg.closeText+"</button></p>";}}
-    else{if(button){button.disabled=false;}var note=form.querySelector(".nashenski-quick-order-error");if(note){note.textContent=msg;}}
-  }).catch(function(){if(button){button.disabled=false;}});
-});
-})();';
 	}
 
 	/**
 	 * The form, as an HTML fragment for the dialog.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response|\WP_Error
 	 */
-	public static function form_ajax() {
+	public static function form_rest( $request ) {
 		if ( ! self::enabled() ) {
-			wp_die( '', '', array( 'response' => 404 ) );
+			return new \WP_Error( 'nashenski_quick_order_off', __( 'Quick orders are turned off.', 'nashenski-commerce' ), array( 'status' => 404 ) );
 		}
 
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- read-only: the fragment changes nothing and carries the nonce itself.
-		$context    = isset( $_POST['context'] ) && 'cart' === $_POST['context'] ? 'cart' : 'product';
-		$product_id = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
-		$quantity   = isset( $_POST['quantity'] ) ? max( 1, absint( $_POST['quantity'] ) ) : 1;
-		// phpcs:enable WordPress.Security.NonceVerification.Missing
-
 		// The fragment is escaped in its template; wp_kses_post would strip the form tags.
-		echo wp_kses( self::form_html( $context, $product_id, $quantity ), nashenski_allowed_html() );
-		wp_die();
+		$response = new \WP_REST_Response( array( 'html' => wp_kses( self::form_html( $request['context'], $request['product_id'], $request['quantity'] ), nashenski_allowed_html() ) ) );
+
+		// The form carries a nonce: no cache may keep it.
+		$response->header( 'Cache-Control', 'no-store, private' );
+
+		return $response;
 	}
 
 	/**
@@ -559,9 +535,7 @@ document.addEventListener("submit",function(e){
 			wp_send_json_error( array( 'message' => __( 'Quick orders are turned off.', 'nashenski-commerce' ) ) );
 		}
 
-		$nonce = isset( $_POST['_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_nonce'] ) ) : '';
-
-		if ( ! wp_verify_nonce( $nonce, self::NONCE ) ) {
+		if ( ! isset( $_POST['_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_nonce'] ) ), self::NONCE ) ) {
 			wp_send_json_error( array( 'message' => __( 'The form has expired. Reload the page and try again.', 'nashenski-commerce' ) ) );
 		}
 
@@ -574,8 +548,11 @@ document.addEventListener("submit",function(e){
 		$post = array();
 
 		foreach ( array_merge( array( 'name', 'email', 'phone', 'consent', 'context', 'product_id' ), array_keys( self::optional_fields() ) ) as $key ) {
-			$value        = isset( $_POST[ $key ] ) && is_scalar( $_POST[ $key ] ) ? wp_unslash( $_POST[ $key ] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized on the next line, by type.
-			$post[ $key ] = in_array( $key, array( 'product_notes', 'message' ), true ) ? sanitize_textarea_field( $value ) : sanitize_text_field( $value );
+			$post[ $key ] = '';
+
+			if ( isset( $_POST[ $key ] ) && is_scalar( $_POST[ $key ] ) ) {
+				$post[ $key ] = in_array( $key, array( 'product_notes', 'message' ), true ) ? sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) : sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+			}
 		}
 
 		if ( self::too_many_requests() ) {
@@ -731,7 +708,8 @@ document.addEventListener("submit",function(e){
 	 * @return mixed Result.
 	 */
 	private static function thanks_text() {
-		return esc_html__( 'Thank you. We have your details and will contact you to confirm the order.', 'nashenski-commerce' );
+		// Plain text: the script shows it with textContent.
+		return __( 'Thank you. We have your details and will contact you to confirm the order.', 'nashenski-commerce' );
 	}
 
 	/**

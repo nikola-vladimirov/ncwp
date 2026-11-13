@@ -6,7 +6,8 @@
  * extensionCartUpdate (namespace "nashenski") makes WooCommerce price the cart again.
  *
  * Options that still wait for a choice say "Complete the fields to calculate" instead of "Free":
- * a small style element changes their price text, so the checkout's own markup is left alone.
+ * their price element gets an attribute with the text, and checkout.css prints it in place of the
+ * price, so the checkout's own markup is left alone.
  */
 ( function () {
 	'use strict';
@@ -32,9 +33,6 @@
 		return meta;
 	}
 
-	function cssString( text ) {
-		return '"' + String( text ).replace( /\\/g, '\\\\' ).replace( /"/g, '\\"' ).replace( /\n/g, ' ' ) + '"';
-	}
 
 	/* Rate IDs waiting for a choice, whether the chosen one is among them, the free shipping totals and the fees paid to the courier. */
 	function pendingState( packages ) {
@@ -65,8 +63,6 @@
 		return { pending: pending, chosenPending: chosenPending, offers: offers, fees: fees, chosenFee: chosenFee };
 	}
 
-	var lastCss = null;
-
 	/* The font size of an element, or of the first element matching a selector. */
 	function fontSize( sizeFrom ) {
 		var node = 'string' === typeof sizeFrom ? document.querySelector( sizeFrom ) : sizeFrom;
@@ -76,68 +72,75 @@
 		return '0px' === size ? '0.95rem' : size || '0.875rem';
 	}
 
-	/* Put the text in place of an element's content, so it takes the room it needs and wraps. */
-	function replaceText( selector, text, sizeFrom ) {
-		var size = fontSize( sizeFrom );
+	/* The price element of a shipping option in the block checkout, or null. */
+	function priceOf( id ) {
+		var input = document.querySelector( 'input.wc-block-components-radio-control__input[value="' + String( id ).replace( /"/g, '' ) + '"]' );
+		var option = input ? input.closest( '.wc-block-components-radio-control__option' ) : null;
 
-		return selector + '{font-size:0!important}' + selector + '>*{display:none}' +
-			selector + '::after{content:' + text + ';font-size:' + size + '}';
+		return option ? option.querySelector( '.wc-block-components-radio-control__secondary-label' ) : null;
+	}
+
+	/*
+	 * Put the text in place of an element's content, so it takes the room it needs and wraps. The
+	 * element only gets attributes and a font size: checkout.css ([data-nashenski-text]) hides its
+	 * content and prints the text. With a price (cards) the price comes first and the text is the
+	 * short muted note after it.
+	 */
+	function replaceText( node, text, sizeFrom, price ) {
+		if ( ! node ) {
+			return null;
+		}
+
+		node.setAttribute( 'data-nashenski-text', text );
+
+		if ( price ) {
+			node.setAttribute( 'data-nashenski-price', price );
+		} else {
+			node.removeAttribute( 'data-nashenski-price' );
+		}
+
+		node.style.setProperty( '--nashenski-text-size', fontSize( sizeFrom ) );
+
+		return node;
 	}
 
 	/* "6,50 €, paid to the courier on delivery, not included in the total" in place of "Free". */
 	function feeText( fee ) {
-		return cssString( String( P.courierFee || '%s' ).replace( '%s', P.money( fee, P.feeSymbol ) ) );
+		return String( P.courierFee || '%s' ).replace( '%s', P.money( fee, P.feeSymbol ) );
 	}
 
-	/* Cards: the price, then a short muted "to the courier" (the long text is in the summary). */
-	function replaceFee( selector, fee, sizeFrom ) {
-		var size = fontSize( sizeFrom );
-
-		return selector + '{font-size:0!important}' + selector + '>*{display:none}' +
-			selector + '::before{content:' + cssString( P.money( fee, P.feeSymbol ) ) + ';font-size:' + size + '}' +
-			selector + '::after{content:' + cssString( ' ' + P.cardTexts.toCourier ) + ';font-size:calc(' + size + ' * 0.875);color:var(--nashenski-muted);white-space:pre}';
-	}
-
-	function writePendingCss( state ) {
-		var text = cssString( P.pending );
-		var cardText = P.cardTexts ? cssString( P.cardTexts.pending ) : text;
+	function markPendingRates( state ) {
+		var cardText = P.cardTexts ? P.cardTexts.pending : P.pending;
 		var fees = state.fees || {};
-		// Size from a courier's own option, whatever comes first in the list (flat rate, pickup). No :has() here: older browsers throw on it.
+		// Size from a courier's own option, whatever comes first in the list (flat rate, pickup).
 		var logo = document.querySelector( '.wc-block-components-radio-control__label > .nashenski-courier-logo' );
 		var label = logo ? logo.parentNode : '.wc-block-components-radio-control__label';
-		var summary = '.wc-block-components-totals-shipping .wc-block-components-totals-item__value';
+		var summary = document.querySelector( '.wc-block-components-totals-shipping .wc-block-components-totals-item__value' );
 		var summaryLabel = '.wc-block-components-totals-shipping .wc-block-components-totals-item__label';
-		var option = function ( id ) {
-			return '.wc-block-components-radio-control__option:has(input[value="' + id + '"]) .wc-block-components-radio-control__secondary-label';
-		};
-		var css = state.pending.map( function ( id ) {
-			return replaceText( option( id ), cardText, label );
-		} ).join( '' ) + Object.keys( fees ).map( function ( id ) {
-			return P.cardTexts ? replaceFee( option( id ), fees[ id ], label ) : replaceText( option( id ), feeText( fees[ id ] ), label );
-		} ).join( '' );
+		var shown = state.pending.map( function ( id ) {
+			return replaceText( priceOf( id ), cardText, label );
+		} );
+
+		Object.keys( fees ).forEach( function ( id ) {
+			// Cards: the price, then a short muted "to the courier" (the long text is in the summary).
+			shown.push( P.cardTexts ? replaceText( priceOf( id ), ' ' + P.cardTexts.toCourier, label, P.money( fees[ id ], P.feeSymbol ) ) : replaceText( priceOf( id ), feeText( fees[ id ] ), label ) );
+		} );
 
 		// In the order summary the text takes the place of the shipping price.
 		if ( state.chosenPending ) {
-			css += replaceText( summary, text, summaryLabel );
+			shown.push( replaceText( summary, P.pending, summaryLabel ) );
 		} else if ( state.chosenFee ) {
-			css += replaceText( summary, feeText( state.chosenFee ), summaryLabel );
+			shown.push( replaceText( summary, feeText( state.chosenFee ), summaryLabel ) );
 		}
 
-		if ( css === lastCss ) {
-			return;
-		}
-
-		lastCss = css;
-
-		var style = document.getElementById( 'nashenski-pending-rates' );
-
-		if ( ! style ) {
-			style = document.createElement( 'style' );
-			style.id = 'nashenski-pending-rates';
-			document.head.appendChild( style );
-		}
-
-		style.textContent = css;
+		// An element that no longer needs a text gets its own content back.
+		Array.prototype.forEach.call( document.querySelectorAll( '[data-nashenski-text]' ), function ( node ) {
+			if ( shown.indexOf( node ) < 0 ) {
+				node.removeAttribute( 'data-nashenski-text' );
+				node.removeAttribute( 'data-nashenski-price' );
+				node.style.removeProperty( '--nashenski-text-size' );
+			}
+		} );
 	}
 
 	function useCheckoutData() {
@@ -230,7 +233,7 @@
 			var state = pendingState( data.packages );
 
 			place();
-			writePendingCss( state );
+			markPendingRates( state );
 			P.decorateRates( state.pending, state.offers );
 		} );
 
@@ -272,7 +275,7 @@
 			var cart = wp.data.select( 'wc/store/cart' );
 			var state = pendingState( cart ? cart.getShippingRates() || [] : [] );
 
-			writePendingCss( state );
+			markPendingRates( state );
 			P.decorateRates( state.pending, state.offers );
 			// The checkout re-rendered the options: keep the picker under the chosen one.
 			place();

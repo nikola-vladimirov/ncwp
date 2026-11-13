@@ -24,6 +24,10 @@ function add_action( $tag, $cb ) {
 	}
 }
 /**
+ * Activation hook stub.
+ */
+function register_activation_hook() {}
+/**
  * Deactivation hook stub.
  */
 function register_deactivation_hook() {}

@@ -48,32 +48,46 @@
 
 	function fillTemplates() {
 		var select = $( '.nashenski-builder__template' );
-		var html = '<option value="">' + escapeHtml( t.newExport ) + '</option>';
-
-		html += '<optgroup label="' + escapeHtml( t.readyMade ) + '">';
-		Object.keys( data.presets ).forEach( function ( key ) {
-			html += '<option value="preset:' + key + '">' + escapeHtml( data.presets[ key ].name ) + '</option>';
-		} );
-		html += '</optgroup>';
-
 		var saved = Object.keys( data.templates || {} );
 
-		if ( saved.length ) {
-			html += '<optgroup label="' + escapeHtml( t.savedGroup ) + '">';
-			saved.forEach( function ( key ) {
-				html += '<option value="saved:' + key + '">' + escapeHtml( data.templates[ key ].name || key ) + '</option>';
-			} );
-			html += '</optgroup>';
-		}
-
-		select.innerHTML = html;
+		fill( select, [
+			el( 'option', { value: '', text: t.newExport } ),
+			el( 'optgroup', { label: t.readyMade }, Object.keys( data.presets ).map( function ( key ) {
+				return el( 'option', { value: 'preset:' + key, text: data.presets[ key ].name } );
+			} ) ),
+			saved.length ? el( 'optgroup', { label: t.savedGroup }, saved.map( function ( key ) {
+				return el( 'option', { value: 'saved:' + key, text: data.templates[ key ].name || key } );
+			} ) ) : null,
+		] );
 		select.value = currentKey ? 'saved:' + currentKey : '';
 		$( '.nashenski-builder__delete' ).hidden = ! currentKey;
 	}
 
-	function escapeHtml( text ) {
-		return String( text ).replace( /[&<>"']/g, function ( c ) {
-			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ c ];
+	// A DOM node. "text" in attrs sets its text, the rest are attributes; children are nodes or strings.
+	function el( tag, attrs, children ) {
+		var node = document.createElement( tag );
+
+		Object.keys( attrs || {} ).forEach( function ( key ) {
+			if ( 'text' === key ) {
+				node.textContent = attrs[ key ];
+			} else {
+				node.setAttribute( key, attrs[ key ] );
+			}
+		} );
+		( children || [] ).forEach( function ( child ) {
+			node.appendChild( 'object' === typeof child ? child : document.createTextNode( String( child ) ) );
+		} );
+
+		return node;
+	}
+
+	// Replaces what the node holds with the given nodes (empty entries are skipped).
+	function fill( node, children ) {
+		node.textContent = '';
+		children.forEach( function ( child ) {
+			if ( child ) {
+				node.appendChild( child );
+			}
 		} );
 	}
 
@@ -134,39 +148,37 @@
 			( groups[ field.group ] = groups[ field.group ] || [] ).push( field );
 		} );
 
-		var html = '';
-
-		Object.keys( groups ).forEach( function ( group ) {
-			html += '<div class="nashenski-builder__group"><h4>' + escapeHtml( group ) + '</h4>';
-			groups[ group ].forEach( function ( field ) {
-				html += '<button type="button" class="nashenski-builder__field" role="listitem" data-field="' + escapeHtml( field.id ) + '"><span aria-hidden="true">+</span> ' + escapeHtml( field.label ) + '</button>';
-			} );
-			html += '</div>';
-		} );
-
-		box.innerHTML = html;
+		fill( box, Object.keys( groups ).map( function ( group ) {
+			return el( 'div', { 'class': 'nashenski-builder__group' }, [ el( 'h4', { text: group } ) ].concat( groups[ group ].map( function ( field ) {
+				return el( 'button', { type: 'button', 'class': 'nashenski-builder__field', role: 'listitem', 'data-field': field.id }, [
+					el( 'span', { 'aria-hidden': 'true', text: '+' } ),
+					' ' + field.label,
+				] );
+			} ) ) );
+		} ) );
 	}
 
 	function renderColumns() {
 		var list = $( '.nashenski-builder__list' );
 
 		if ( ! config.columns.length ) {
-			list.innerHTML = '<li class="nashenski-builder__empty">' + escapeHtml( t.noColumns ) + '</li>';
+			fill( list, [ el( 'li', { 'class': 'nashenski-builder__empty', text: t.noColumns } ) ] );
 			return;
 		}
 
-		list.innerHTML = config.columns.map( function ( column, index ) {
+		// The signs are the drag handle (two vertical ellipses), the arrows up and down, and the times sign.
+		fill( list, config.columns.map( function ( column, index ) {
 			var info = fieldInfo( column.field );
 
-			return '<li class="nashenski-builder__column" draggable="true" data-index="' + index + '">' +
-				'<span class="nashenski-builder__handle" aria-hidden="true">&#8942;&#8942;</span>' +
-				'<input type="text" class="nashenski-builder__label" value="' + escapeHtml( column.label ) + '" aria-label="' + escapeHtml( t.heading ) + '">' +
-				'<span class="nashenski-builder__source-field">' + escapeHtml( info ? info.label : column.field ) + '</span>' +
-				'<button type="button" class="button-link" data-move="-1" aria-label="' + escapeHtml( t.up ) + '">&uarr;</button>' +
-				'<button type="button" class="button-link" data-move="1" aria-label="' + escapeHtml( t.down ) + '">&darr;</button>' +
-				'<button type="button" class="button-link button-link-delete" data-remove aria-label="' + escapeHtml( t.remove ) + '">&times;</button>' +
-				'</li>';
-		} ).join( '' );
+			return el( 'li', { 'class': 'nashenski-builder__column', draggable: 'true', 'data-index': index }, [
+				el( 'span', { 'class': 'nashenski-builder__handle', 'aria-hidden': 'true', text: '\u22EE\u22EE' } ),
+				el( 'input', { type: 'text', 'class': 'nashenski-builder__label', value: column.label, 'aria-label': t.heading } ),
+				el( 'span', { 'class': 'nashenski-builder__source-field', text: info ? info.label : column.field } ),
+				el( 'button', { type: 'button', 'class': 'button-link', 'data-move': '-1', 'aria-label': t.up, text: '\u2191' } ),
+				el( 'button', { type: 'button', 'class': 'button-link', 'data-move': '1', 'aria-label': t.down, text: '\u2193' } ),
+				el( 'button', { type: 'button', 'class': 'button-link button-link-delete', 'data-remove': '', 'aria-label': t.remove, text: '\u00D7' } ),
+			] );
+		} ) );
 	}
 
 	function addColumn( id ) {
@@ -368,7 +380,7 @@
 		config.to = dates.to;
 		$( '.nashenski-builder__delete' ).hidden = ! currentKey;
 		message( '' );
-		$( '.nashenski-builder__preview' ).innerHTML = '';
+		$( '.nashenski-builder__preview' ).textContent = '';
 		render();
 	}
 
@@ -388,12 +400,23 @@
 		box.className = 'nashenski-builder__message' + ( text ? ( isError ? ' notice notice-error inline' : ' notice notice-success inline' ) : '' );
 	}
 
+	/*
+	 * The settings as JSON. The server sanitizes it as text before decoding it, which would cut
+	 * "<...>" and "%41" out of the middle of the JSON, so these three characters are written as
+	 * JSON escapes: the value decodes to the very same text.
+	 */
+	function safeJson( value ) {
+		return JSON.stringify( value ).replace( /[<>%]/g, function ( c ) {
+			return '\\u00' + c.charCodeAt( 0 ).toString( 16 );
+		} );
+	}
+
 	function post( action, extra ) {
 		var body = new FormData();
 
 		body.append( 'action', action );
 		body.append( 'nonce', data.nonce );
-		body.append( 'config', JSON.stringify( config ) );
+		body.append( 'config', safeJson( config ) );
 		Object.keys( extra || {} ).forEach( function ( key ) {
 			body.append( key, extra[ key ] );
 		} );
@@ -418,24 +441,25 @@
 			var box = $( '.nashenski-builder__preview' );
 
 			if ( ! result.rows.length ) {
-				box.innerHTML = '<p>' + escapeHtml( t.noRows ) + '</p>';
+				fill( box, [ el( 'p', { text: t.noRows } ) ] );
 				return;
 			}
 
-			var html = '<p class="nashenski-builder__count">' + escapeHtml( t.previewOf.replace( '%1$d', result.rows.length ).replace( '%2$d', result.total ).replace( '%3$s', result.file ) ) + '</p>';
-
-			html += '<div class="nashenski-builder__table"><table class="widefat striped"><thead><tr>';
-			result.labels.forEach( function ( label ) {
-				html += '<th>' + escapeHtml( label ) + '</th>';
-			} );
-			html += '</tr></thead><tbody>';
-			result.rows.forEach( function ( row ) {
-				html += '<tr>' + row.map( function ( cell ) {
-					return '<td>' + escapeHtml( cell ) + '</td>';
-				} ).join( '' ) + '</tr>';
-			} );
-			html += '</tbody></table></div>';
-			box.innerHTML = html;
+			fill( box, [
+				el( 'p', { 'class': 'nashenski-builder__count', text: t.previewOf.replace( '%1$d', result.rows.length ).replace( '%2$d', result.total ).replace( '%3$s', result.file ) } ),
+				el( 'div', { 'class': 'nashenski-builder__table' }, [
+					el( 'table', { 'class': 'widefat striped' }, [
+						el( 'thead', {}, [ el( 'tr', {}, result.labels.map( function ( label ) {
+							return el( 'th', { text: label } );
+						} ) ) ] ),
+						el( 'tbody', {}, result.rows.map( function ( row ) {
+							return el( 'tr', {}, row.map( function ( cell ) {
+								return el( 'td', { text: cell } );
+							} ) );
+						} ) ),
+					] ),
+				] ),
+			] );
 		} ).catch( function () {
 			busy( false );
 			message( t.failed, true );
@@ -453,7 +477,7 @@
 		form.method = 'post';
 		form.action = data.postUrl;
 		form.style.display = 'none';
-		[ [ 'action', 'nashenski_export_download' ], [ 'nonce', data.nonce ], [ 'config', JSON.stringify( config ) ] ].forEach( function ( pair ) {
+		[ [ 'action', 'nashenski_export_download' ], [ 'nonce', data.nonce ], [ 'config', safeJson( config ) ] ].forEach( function ( pair ) {
 			var input = document.createElement( 'input' );
 
 			input.type = 'hidden';

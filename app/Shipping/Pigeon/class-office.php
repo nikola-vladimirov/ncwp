@@ -39,7 +39,20 @@ class Office {
 	 * Picker request: the offices in the city.
 	 */
 	public static function load_offices() {
-		nashenski_check_picker_request();
+		// The checkout pickers send their own nonce, the order screen sends the label one.
+		$nonce    = isset( $_REQUEST['nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) : '';
+		$verified = false;
+
+		foreach ( array( 'nashenski_pickers', 'nashenski_admin_label' ) as $action ) {
+			if ( wp_verify_nonce( $nonce, $action ) ) {
+				$verified = true;
+				break;
+			}
+		}
+
+		if ( ! $verified ) {
+			wp_send_json_error( array( 'error' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ), 403 );
+		}
 
 		// Without a Pigeon login (it has no public test login), the public list.
 		if ( ! \Nashenski\Front_End\Checkout\Pickers::connected( 'pigeon' ) ) {
@@ -112,7 +125,7 @@ class Office {
 					'headers' => array( 'Accept' => 'application/json' ),
 				)
 			);
-			$body     = json_decode( wp_remote_retrieve_body( $response ), true );
+			$body     = ! is_wp_error( $response ) && 200 === (int) wp_remote_retrieve_response_code( $response ) ? json_decode( wp_remote_retrieve_body( $response ), true ) : null;
 			$list     = is_array( $body ) && ! empty( $body['locations'] ) ? $body['locations'] : array();
 
 			if ( $list ) {

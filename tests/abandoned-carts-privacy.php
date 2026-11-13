@@ -67,6 +67,65 @@ function wp_add_privacy_policy_content( $name, $text ) {
 function absint( $value ) {
 	return abs( (int) $value ); }
 
+define( 'HOUR_IN_SECONDS', 3600 );
+$GLOBALS['cache']      = array();
+$GLOBALS['cache_hits'] = 0;
+
+/**
+ * Stub.
+ *
+ * @param mixed $value Value.
+ * @return string
+ */
+function wp_json_encode( $value ) {
+	return json_encode( $value ); } // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- the stub of wp_json_encode() itself.
+
+/**
+ * Stub: an object cache in memory, as WordPress has without a persistent one.
+ *
+ * @param string $key   Key.
+ * @param string $group Group.
+ * @return mixed
+ */
+function wp_cache_get( $key, $group ) {
+	if ( ! isset( $GLOBALS['cache'][ $group ] ) || ! array_key_exists( $key, $GLOBALS['cache'][ $group ] ) ) {
+		return false;
+	}
+	++$GLOBALS['cache_hits'];
+	return $GLOBALS['cache'][ $group ][ $key ]; }
+
+/**
+ * Stub.
+ *
+ * @param string $key   Key.
+ * @param mixed  $value Value.
+ * @param string $group Group.
+ */
+function wp_cache_set( $key, $value, $group ) {
+	$GLOBALS['cache'][ $group ][ $key ] = $value; }
+
+/**
+ * Stub.
+ *
+ * @param string $key   Key.
+ * @param string $group Group.
+ */
+function wp_cache_delete( $key, $group ) {
+	unset( $GLOBALS['cache'][ $group ][ $key ] ); }
+
+/**
+ * Stub: as in WordPress, a new value once the old one was deleted.
+ *
+ * @param string $group Group.
+ * @return string
+ */
+function wp_cache_get_last_changed( $group ) {
+	static $n = 0;
+	if ( ! isset( $GLOBALS['cache'][ $group ]['last_changed'] ) ) {
+		$GLOBALS['cache'][ $group ]['last_changed'] = 'changed-' . ( ++$n );
+	}
+	return $GLOBALS['cache'][ $group ]['last_changed']; }
+
 /**
  * Stub: coupons 7 (unused) and 8 (used) exist; 9 was deleted.
  *
@@ -260,6 +319,12 @@ expect( '0888123456' === $values['Phone'] && 'Ana' === $values['First name'] && 
 $bob = Tracker::export_personal_data( 'bob@example.com', 1 );
 expect( 3 === count( $bob['data'] ) && $bob['done'], 'another email gets only its own rows' );
 
+// The same read again is answered by the object cache; a write to the table clears it.
+$hits  = $GLOBALS['cache_hits'];
+$again = Tracker::export_personal_data( 'bob@example.com', 1 );
+expect( $GLOBALS['cache_hits'] === $hits + 1 && $again == $bob, 'a repeated read comes from the object cache' ); // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- two arrays of equal rows, not the same objects.
+$stamp = wp_cache_get_last_changed( 'nashenski_carts' );
+
 // Erase, 100 rows a call, until done. The first page has the coupons.
 $calls = 0;
 do {
@@ -273,6 +338,7 @@ expect( false === $result['items_retained'] && array() === $result['messages'], 
 expect( 3 === $calls && true === $result['items_removed'], 'the eraser removes 250 rows in 3 pages' );
 expect( array( 8 => 1 ) === $GLOBALS['coupons'], 'the unused reminder coupon is deleted, the used one is kept, a deleted one is skipped' );
 expect( 3 === count( $wpdb->rows ), 'the other email keeps its rows' );
+expect( wp_cache_get_last_changed( 'nashenski_carts' ) !== $stamp && array() === Tracker::export_personal_data( 'ana@example.com', 1 )['data'], 'after the erase no read is answered from before it' );
 $again = Tracker::erase_personal_data( 'ana@example.com' );
 expect( false === $again['items_removed'] && $again['done'], 'nothing left to remove' );
 

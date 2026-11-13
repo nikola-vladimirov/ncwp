@@ -110,11 +110,17 @@ class Pigeon {
 			$request = wp_remote_post( $url, $request_args );
 		}
 
-		if ( $plain ) {
-			return wp_remote_retrieve_body( $request );
-		} else {
-			return json_decode( wp_remote_retrieve_body( $request ), 1 );
+		// No answer at all (no connection, a timeout): nothing to read.
+		if ( is_wp_error( $request ) ) {
+			return $plain ? '' : null;
 		}
+
+		// A file (a label PDF) only when Pigeon Express says it is one: an error answer is not a file.
+		if ( $plain ) {
+			return 200 === (int) wp_remote_retrieve_response_code( $request ) ? wp_remote_retrieve_body( $request ) : '';
+		}
+
+		return json_decode( wp_remote_retrieve_body( $request ), 1 );
 	}
 
 	/**
@@ -165,7 +171,8 @@ class Pigeon {
 			)
 		);
 
-		return 200 === wp_remote_retrieve_response_code( $request )
+		return ! is_wp_error( $request )
+			&& 200 === wp_remote_retrieve_response_code( $request )
 			&& is_array( json_decode( wp_remote_retrieve_body( $request ), true ) );
 	}
 

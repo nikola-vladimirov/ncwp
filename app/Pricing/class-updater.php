@@ -120,6 +120,7 @@ class Updater {
 		libxml_use_internal_errors( $previous );
 
 		$tables = array();
+		$xpath  = new \DOMXPath( $dom );
 
 		foreach ( $dom->getElementsByTagName( 'table' ) as $table ) {
 			$rows = array();
@@ -127,13 +128,10 @@ class Updater {
 			foreach ( $table->getElementsByTagName( 'tr' ) as $tr ) {
 				$cells = array();
 
-				// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHP DOM property names.
-				foreach ( $tr->childNodes as $cell ) {
-					if ( in_array( strtolower( $cell->nodeName ), array( 'td', 'th' ), true ) ) {
-						$cells[] = trim( preg_replace( '/\s+/u', ' ', $cell->textContent ) );
-					}
+				// The cells of this row only (its td and th children), each as its text.
+				foreach ( $xpath->query( 'td|th', $tr ) as $cell ) {
+					$cells[] = trim( preg_replace( '/\s+/u', ' ', (string) $xpath->evaluate( 'string(.)', $cell ) ) );
 				}
-				// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 				if ( $cells ) {
 					$rows[] = $cells;
@@ -568,7 +566,11 @@ class Updater {
 	 * AJAX: reads a courier's price list and sends it with the changes.
 	 */
 	public static function ajax_check() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_ajax_referer( 'nashenski_check_prices', 'nonce', false ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'nashenski_check_prices' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
 		}
 

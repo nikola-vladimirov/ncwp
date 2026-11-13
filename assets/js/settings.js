@@ -69,9 +69,18 @@
 
 		if ( button.classList.contains( 'nashenski-layout__add' ) ) {
 			var cell = button.closest( 'td' );
-			var html = cell.querySelector( '.nashenski-layout__template' ).innerHTML.replace( /__uid__/g, 'f' + Date.now().toString( 36 ) );
+			var copy = cell.querySelector( '.nashenski-layout__template' ).content.cloneNode( true );
+			var uid = 'f' + Date.now().toString( 36 );
 
-			cell.querySelector( '.nashenski-layout tbody' ).insertAdjacentHTML( 'beforeend', html );
+			// The copied row carries "__uid__" in its field names; each new row gets its own id there.
+			each( copy.querySelectorAll( '*' ), function ( node ) {
+				each( node.attributes, function ( attr ) {
+					if ( attr.value.indexOf( '__uid__' ) !== -1 ) {
+						attr.value = attr.value.replace( /__uid__/g, uid );
+					}
+				} );
+			} );
+			cell.querySelector( '.nashenski-layout tbody' ).appendChild( copy );
 			cell.querySelector( '.nashenski-layout tbody tr:last-child input[type="text"]' ).focus();
 		} else if ( button.classList.contains( 'nashenski-layout__remove' ) ) {
 			row.remove();
@@ -478,24 +487,46 @@
 
 	var KINDS = [ 'office', 'locker', 'address' ];
 
-	function escapeHtml( text ) {
-		var div = document.createElement( 'div' );
-		div.textContent = text == null ? '' : String( text );
-		return div.innerHTML;
+	// A DOM node. "text" in attrs sets its text, the rest are attributes; children are nodes.
+	function el( tag, attrs, children ) {
+		var node = document.createElement( tag );
+
+		Object.keys( attrs || {} ).forEach( function ( key ) {
+			if ( 'text' === key ) {
+				node.textContent = attrs[ key ];
+			} else {
+				node.setAttribute( key, attrs[ key ] );
+			}
+		} );
+		( children || [] ).forEach( function ( child ) {
+			node.appendChild( child );
+		} );
+
+		return node;
+	}
+
+	// An inline notice with one line of text.
+	function notice( type, text ) {
+		return el( 'div', { 'class': 'notice notice-' + type + ' inline' }, [ el( 'p', { text: text } ) ] );
 	}
 
 	function priceInput( name, value, step ) {
-		return '<input type="number" min="0" step="' + ( step || '0.01' ) + '" name="' + escapeHtml( name ) + '" value="' + escapeHtml( value == null ? '' : value ) + '">';
+		return el( 'input', { type: 'number', min: '0', step: step || '0.01', name: name, value: value == null ? '' : value } );
 	}
 
 	function priceRow( name, index, band ) {
-		var html = '<tr><td>' + priceInput( name + '[bands][' + index + '][to]', band.to, '0.001' ) + '</td>';
+		var cells = [ el( 'td', {}, [ priceInput( name + '[bands][' + index + '][to]', band.to, '0.001' ) ] ) ];
 
 		KINDS.forEach( function ( kind ) {
-			html += '<td>' + priceInput( name + '[bands][' + index + '][' + kind + ']', band[ kind ] ) + '</td>';
+			cells.push( el( 'td', {}, [ priceInput( name + '[bands][' + index + '][' + kind + ']', band[ kind ] ) ] ) );
 		} );
 
-		return html + '<td class="nashenski-rows__remove"><button type="button" class="button-link nashenski-price-list__delete" aria-label="' + escapeHtml( i18n.removeRow || 'Remove row' ) + '">&times;</button></td></tr>';
+		// The button shows the times sign.
+		cells.push( el( 'td', { 'class': 'nashenski-rows__remove' }, [
+			el( 'button', { type: 'button', 'class': 'button-link nashenski-price-list__delete', 'aria-label': i18n.removeRow || 'Remove row', text: '\u00D7' } ),
+		] ) );
+
+		return el( 'tr', {}, cells );
 	}
 
 	function renumberPrices( cell ) {
@@ -529,9 +560,10 @@
 		var name = cell.getAttribute( 'data-name' );
 		var body = cell.querySelector( '.nashenski-price-list__table tbody' );
 
-		body.innerHTML = list.bands.map( function ( band, i ) {
-			return priceRow( name, i, band );
-		} ).join( '' );
+		body.textContent = '';
+		list.bands.forEach( function ( band, i ) {
+			body.appendChild( priceRow( name, i, band ) );
+		} );
 
 		KINDS.forEach( function ( kind ) {
 			setValue( cell, '[over][base][' + kind + ']', list.over.base[ kind ] );
@@ -546,8 +578,15 @@
 		setValue( cell, '[source]', list.source );
 	}
 
-	function showPriceResult( cell, html ) {
-		cell.querySelector( '.nashenski-price-list__result' ).innerHTML = html;
+	// Shows the node as the result of the price list; nothing clears it.
+	function showPriceResult( cell, node ) {
+		var box = cell.querySelector( '.nashenski-price-list__result' );
+
+		box.textContent = '';
+
+		if ( node ) {
+			box.appendChild( node );
+		}
 	}
 
 	document.addEventListener( 'click', function ( event ) {
@@ -559,7 +598,7 @@
 
 		if ( event.target.closest( '.nashenski-price-list__add' ) ) {
 			var body = cell.querySelector( '.nashenski-price-list__table tbody' );
-			body.insertAdjacentHTML( 'beforeend', priceRow( cell.getAttribute( 'data-name' ), body.rows.length, {} ) );
+			body.appendChild( priceRow( cell.getAttribute( 'data-name' ), body.rows.length, {} ) );
 			body.rows[ body.rows.length - 1 ].querySelector( 'input' ).focus();
 		}
 
@@ -570,7 +609,7 @@
 
 		if ( event.target.closest( '.nashenski-price-list__restore' ) ) {
 			fillPrices( cell, JSON.parse( cell.getAttribute( 'data-defaults' ) ) );
-			showPriceResult( cell, '<div class="notice notice-info inline"><p>' + escapeHtml( i18n.restored || 'Built-in prices restored. Save to keep them.' ) + '</p></div>' );
+			showPriceResult( cell, notice( 'info', i18n.restored || 'Built-in prices restored. Save to keep them.' ) );
 		}
 
 		var check = event.target.closest( '.nashenski-price-list__check' );
@@ -584,7 +623,7 @@
 			data.append( 'nonce', check.getAttribute( 'data-nonce' ) );
 			check.disabled = true;
 			spinner.classList.add( 'is-active' );
-			showPriceResult( cell, '' );
+			showPriceResult( cell, null );
 
 			fetch( window.ajaxurl, { method: 'POST', body: data, credentials: 'same-origin' } )
 				.then( function ( response ) {
@@ -592,34 +631,37 @@
 				} )
 				.then( function ( json ) {
 					if ( ! json || ! json.success ) {
-						showPriceResult( cell, '<div class="notice notice-warning inline"><p>' + escapeHtml( json && json.data && json.data.message ? json.data.message : i18n.failed ) + '</p></div>' );
+						showPriceResult( cell, notice( 'warning', json && json.data && json.data.message ? json.data.message : i18n.failed ) );
 						return;
 					}
 
 					var changes = json.data.changes || [];
 
 					if ( ! changes.length ) {
-						showPriceResult( cell, '<div class="notice notice-success inline"><p>' + escapeHtml( i18n.pricesSame || 'Your prices match the courier website.' ) + '</p></div>' );
+						showPriceResult( cell, notice( 'success', i18n.pricesSame || 'Your prices match the courier website.' ) );
 						return;
 					}
 
-					var rows = changes.map( function ( c ) {
-						return '<tr><td>' + escapeHtml( c[ 0 ] ) + '</td><td>' + escapeHtml( c[ 1 ] ) + '</td><td><strong>' + escapeHtml( c[ 2 ] ) + '</strong></td></tr>';
-					} ).join( '' );
+					var use = el( 'button', { type: 'button', 'class': 'button button-primary nashenski-price-list__use', text: i18n.useThese || 'Use these prices' } );
+					var changed = notice( 'info', i18n.pricesChanged || 'The courier website has different prices:' );
 
-					showPriceResult( cell,
-						'<div class="notice notice-info inline nashenski-price-changes"><p>' + escapeHtml( i18n.pricesChanged || 'The courier website has different prices:' ) + '</p>' +
-						'<table class="widefat striped"><thead><tr><th></th><th>' + escapeHtml( i18n.now || 'Now' ) + '</th><th>' + escapeHtml( i18n.website || 'Website' ) + '</th></tr></thead><tbody>' + rows + '</tbody></table>' +
-						'<p><button type="button" class="button button-primary nashenski-price-list__use">' + escapeHtml( i18n.useThese || 'Use these prices' ) + '</button></p></div>'
-					);
+					changed.classList.add( 'nashenski-price-changes' );
+					changed.appendChild( el( 'table', { 'class': 'widefat striped' }, [
+						el( 'thead', {}, [ el( 'tr', {}, [ el( 'th' ), el( 'th', { text: i18n.now || 'Now' } ), el( 'th', { text: i18n.website || 'Website' } ) ] ) ] ),
+						el( 'tbody', {}, changes.map( function ( c ) {
+							return el( 'tr', {}, [ el( 'td', { text: c[ 0 ] } ), el( 'td', { text: c[ 1 ] } ), el( 'td', {}, [ el( 'strong', { text: c[ 2 ] } ) ] ) ] );
+						} ) ),
+					] ) );
+					changed.appendChild( el( 'p', {}, [ use ] ) );
+					showPriceResult( cell, changed );
 
-					cell.querySelector( '.nashenski-price-list__use' ).addEventListener( 'click', function () {
+					use.addEventListener( 'click', function () {
 						fillPrices( cell, json.data.list );
-						showPriceResult( cell, '<div class="notice notice-success inline"><p>' + escapeHtml( i18n.filled || 'New prices filled in. Check them and save.' ) + '</p></div>' );
+						showPriceResult( cell, notice( 'success', i18n.filled || 'New prices filled in. Check them and save.' ) );
 					} );
 				} )
 				.catch( function () {
-					showPriceResult( cell, '<div class="notice notice-warning inline"><p>' + escapeHtml( i18n.failed ) + '</p></div>' );
+					showPriceResult( cell, notice( 'warning', i18n.failed ) );
 				} )
 				.then( function () {
 					check.disabled = false;
@@ -677,11 +719,72 @@
 
 	/* Exports -------------------------------------------------------------- */
 
-	// html is trusted: the export handlers escape every text they send (esc_html, esc_url).
-	function show( form, html, type ) {
+	/*
+	 * The export handlers answer with a little HTML: a download link, line breaks, a list of errors, prices.
+	 * It is parsed in a separate document and rebuilt here from these tags and attributes alone. Any other
+	 * element is left out and only its text is kept (a script or a style goes whole); a link keeps its
+	 * address only when it is a web address.
+	 */
+	var SAFE_TAGS = [ 'A', 'B', 'BDI', 'BR', 'CODE', 'DIV', 'EM', 'H2', 'H3', 'H4', 'I', 'LI', 'OL', 'P', 'SMALL', 'SPAN', 'STRONG', 'UL' ];
+	var SAFE_ATTRS = [ 'class', 'download', 'href', 'rel', 'target' ];
+
+	// True for an http or https address, on this site or another.
+	function webAddress( href ) {
+		try {
+			return /^https?:$/.test( new URL( href, window.location.href ).protocol );
+		} catch ( error ) {
+			return false;
+		}
+	}
+
+	function safeCopy( from, to ) {
+		each( from.childNodes, function ( child ) {
+			if ( 3 === child.nodeType ) {
+				to.appendChild( document.createTextNode( child.nodeValue ) );
+				return;
+			}
+
+			if ( 1 !== child.nodeType || 'SCRIPT' === child.tagName || 'STYLE' === child.tagName ) {
+				return;
+			}
+
+			if ( SAFE_TAGS.indexOf( child.tagName ) === -1 ) {
+				safeCopy( child, to );
+				return;
+			}
+
+			var copy = document.createElement( child.tagName );
+
+			SAFE_ATTRS.forEach( function ( name ) {
+				if ( child.hasAttribute( name ) && ( 'href' !== name || webAddress( child.getAttribute( name ) ) ) ) {
+					copy.setAttribute( name, child.getAttribute( name ) );
+				}
+			} );
+			safeCopy( child, copy );
+			to.appendChild( copy );
+		} );
+	}
+
+	// Shows a result under the export: plain text, or the handler's HTML when isHtml is set. Nothing clears it.
+	function show( form, message, type, isHtml ) {
 		var box = form.querySelector( '.nashenski-export__result' );
 
-		box.innerHTML = html ? '<div class="notice notice-' + type + ' inline"><p>' + html + '</p></div>' : '';
+		box.textContent = '';
+
+		if ( ! message ) {
+			return;
+		}
+
+		if ( ! isHtml ) {
+			box.appendChild( notice( type, message ) );
+			return;
+		}
+
+		// Parsed inside a paragraph, as the notice shows it: the parser ends the paragraph before a heading or a list.
+		var wrap = el( 'div', { 'class': 'notice notice-' + type + ' inline' } );
+
+		safeCopy( new DOMParser().parseFromString( '<p>' + message + '</p>', 'text/html' ).body, wrap );
+		box.appendChild( wrap );
 	}
 
 	function download( blob, response ) {
@@ -722,7 +825,7 @@
 
 		data.append( 'action', form.getAttribute( 'data-action' ) );
 		data.append( 'nonce', form.getAttribute( 'data-nonce' ) );
-		data.append( 'year', month.value );
+		data.append( 'period', month.value );
 		data.append( 'generate_files', files && files.checked ? 'true' : 'false' );
 
 		button.disabled = true;
@@ -743,7 +846,7 @@
 				return response.json().then( function ( json ) {
 					var message = json && json.data && json.data.message ? json.data.message : ( json && json.data && json.data.errors ? json.data.errors : '' );
 
-					show( form, message || i18n.failed || 'Something went wrong.', json && json.success ? 'info' : 'error' );
+					show( form, message || i18n.failed || 'Something went wrong.', json && json.success ? 'info' : 'error', !! message );
 				} );
 			} )
 			.catch( function () {

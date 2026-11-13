@@ -173,9 +173,13 @@ class Setup_Wizard {
 	 * Dismiss.
 	 */
 	public static function dismiss() {
-		if ( current_user_can( 'manage_woocommerce' ) && check_admin_referer( self::DISMISS ) ) {
-			update_option( self::DISMISS_OPTION, 1, false );
+		check_admin_referer( self::DISMISS );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
+
+		update_option( self::DISMISS_OPTION, 1, false );
 
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url() );
 		exit;
@@ -198,7 +202,7 @@ class Setup_Wizard {
 
 		update_option( self::DONE_OPTION, self::save( $input ), false );
 
-		wp_safe_redirect( add_query_arg( 'nashenski_setup_saved', 1, self::url() ) );
+		wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_setup_saved', 1, self::url() ) ) );
 		exit;
 	}
 
@@ -314,12 +318,12 @@ class Setup_Wizard {
 		// Documents.
 		$invoices = $text( 'invoices' );
 
-		if ( in_array( $invoices, array( 'always', 'only_for_company', 'disable' ), true ) ) {
-			$was = (string) nashenski_get_option( 'invoice', 'invoices' );
-			$set( 'nashenski_settings_invoice_invoices', $invoices );
+		if ( in_array( $invoices, array( 'yes', 'no' ), true ) ) {
+			$was = (string) nashenski_get_option( 'invoice', 'enabled' );
+			$set( 'nashenski_settings_invoice_enabled', $invoices );
 
 			// Invoices are made only while documents are on.
-			if ( 'disable' !== $invoices && $invoices !== $was && 'yes' !== nashenski_get_option( 'apis', 'enable_documents' ) ) {
+			if ( 'yes' === $invoices && $invoices !== $was && 'yes' !== nashenski_get_option( 'apis', 'enable_documents' ) ) {
 				nashenski_set_option( 'apis', 'enable_documents', 'yes' );
 				$report[] = __( 'Invoices and N-18 documents turned on.', 'nashenski-commerce' );
 			}
@@ -508,7 +512,7 @@ class Setup_Wizard {
 			<?php foreach ( (array) ( $done['couriers'] ?? array() ) as $courier ) : ?>
 				<?php if ( isset( $names[ $courier ], self::LOGIN[ $courier ] ) && '' === trim( (string) nashenski_get_option( $courier, self::LOGIN[ $courier ] ) ) ) : ?>
 					<li>
-						<a href="<?php echo esc_url( add_query_arg( 'courier', $courier, Settings::url( 'couriers' ) ) ); ?>">
+						<a href="<?php echo esc_url( Settings::courier_url( $courier ) ); ?>">
 							<?php
 							/* translators: %s: courier name */
 							echo esc_html( sprintf( __( 'Enter your %s login.', 'nashenski-commerce' ), $names[ $courier ] ) );
@@ -566,8 +570,8 @@ class Setup_Wizard {
 			}
 		}
 
-		$invoices = (string) nashenski_get_option( 'invoice', 'invoices' );
-		$invoices = in_array( $invoices, array( 'always', 'only_for_company', 'disable' ), true ) ? $invoices : ( 'yes' === nashenski_get_option( 'apis', 'enable_documents' ) ? 'only_for_company' : 'disable' );
+		$invoices = (string) nashenski_get_option( 'invoice', 'enabled' );
+		$invoices = in_array( $invoices, array( 'yes', 'no' ), true ) ? $invoices : (string) nashenski_get_option( 'apis', 'enable_documents' );
 		$layout   = (string) nashenski_get_option( 'appearance', 'layout' );
 		$layout   = in_array( $layout, array( 'plain', 'cards', 'buttons' ), true ) ? $layout : \Nashenski\Front_End\Checkout\Appearance::layout();
 		?>
@@ -645,9 +649,8 @@ class Setup_Wizard {
 					<td>
 						<fieldset>
 							<legend class="screen-reader-text"><?php esc_html_e( 'Invoices', 'nashenski-commerce' ); ?></legend>
-							<label><input type="radio" name="nashenski_setup[invoices]" value="always"<?php checked( 'always' === $invoices ); ?>> <?php esc_html_e( 'Always', 'nashenski-commerce' ); ?></label><br>
-							<label><input type="radio" name="nashenski_setup[invoices]" value="only_for_company"<?php checked( 'only_for_company' === $invoices ); ?>> <?php esc_html_e( 'Only for companies', 'nashenski-commerce' ); ?></label><br>
-							<label><input type="radio" name="nashenski_setup[invoices]" value="disable"<?php checked( 'disable' === $invoices ); ?>> <?php esc_html_e( 'No invoices', 'nashenski-commerce' ); ?></label>
+							<label><input type="radio" name="nashenski_setup[invoices]" value="yes"<?php checked( 'yes' === $invoices ); ?>> <?php esc_html_e( 'Only for companies', 'nashenski-commerce' ); ?></label><br>
+							<label><input type="radio" name="nashenski_setup[invoices]" value="no"<?php checked( 'yes' !== $invoices ); ?>> <?php esc_html_e( 'No invoices', 'nashenski-commerce' ); ?></label>
 						</fieldset>
 					</td>
 				</tr>

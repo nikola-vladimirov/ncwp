@@ -130,7 +130,7 @@ class BoxNow_Tab extends Base_Tab {
 					$fields['boxnow_price'][] = new Fields\Multi_Field(
 						array(
 							'type'           => __( 'kg', 'nashenski-commerce' ),
-							'separator_text' => __( ' to ', 'nashenski-commerce' ),
+							'separator_text' => ' ' . _x( 'to', 'between the two numbers of a range', 'nashenski-commerce' ) . ' ',
 							'price_text'     => __( 'Price', 'nashenski-commerce' ),
 							'add_row_text'   => __( '+ Add new row', 'nashenski-commerce' ),
 							'currency'       => get_woocommerce_currency_symbol(),
@@ -147,7 +147,7 @@ class BoxNow_Tab extends Base_Tab {
 					$fields['boxnow_price'][] = new Fields\Multi_Field(
 						array(
 							'type'           => get_woocommerce_currency_symbol(),
-							'separator_text' => __( ' to ', 'nashenski-commerce' ),
+							'separator_text' => ' ' . _x( 'to', 'between the two numbers of a range', 'nashenski-commerce' ) . ' ',
 							'add_row_text'   => __( '+ Add new row', 'nashenski-commerce' ),
 							'price_text'     => __( 'Price', 'nashenski-commerce' ),
 							'currency'       => get_woocommerce_currency_symbol(),
@@ -164,7 +164,7 @@ class BoxNow_Tab extends Base_Tab {
 							'type'           => __( 'kg', 'nashenski-commerce' ),
 							'type2'          => get_woocommerce_currency_symbol(),
 							'and_text'       => __( 'and', 'nashenski-commerce' ),
-							'separator_text' => __( ' to ', 'nashenski-commerce' ),
+							'separator_text' => ' ' . _x( 'to', 'between the two numbers of a range', 'nashenski-commerce' ) . ' ',
 							'price_text'     => __( 'Price', 'nashenski-commerce' ),
 							'add_row_text'   => __( '+ Add new row', 'nashenski-commerce' ),
 							'currency'       => get_woocommerce_currency_symbol(),

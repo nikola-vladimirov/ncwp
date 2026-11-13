@@ -568,38 +568,18 @@ function nashenski_verified_request( $key, $fallback, $field, $actions ) {
 	$verified = false;
 
 	foreach ( (array) $actions as $action ) {
-		$verified = $verified || wp_verify_nonce( $nonce, $action );
+		if ( wp_verify_nonce( $nonce, $action ) ) {
+			$verified = true;
+			break;
+		}
 	}
 
+	// No valid nonce, no read.
 	if ( ! $verified ) {
 		return $fallback;
 	}
 
 	return null !== $key && isset( $_REQUEST[ $key ] ) ? map_deep( wp_unslash( $_REQUEST[ $key ] ), 'sanitize_text_field' ) : $fallback;
-}
-
-/**
- * Order screen label actions: stop with a JSON error when the label nonce is wrong or the user
- * may not manage the store.
- */
-function nashenski_check_admin_label_actions() {
-	$errors = array();
-
-	if ( null === nashenski_label_request( 'nonce', null ) ) {
-		$errors[] = __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' );
-	}
-
-	if ( ! current_user_can( 'manage_woocommerce' ) ) {
-		$errors[] = __( 'You cannot create labels.', 'nashenski-commerce' );
-	}
-
-	if ( ! empty( $errors ) ) {
-		wp_send_json_error(
-			array(
-				'message' => implode( ' ', $errors ),
-			)
-		);
-	}
 }
 
 /**
@@ -618,18 +598,27 @@ function nashenski_label_request( $key = null, $fallback = '' ) {
 }
 
 /**
- * Office, locker and street lists for the checkout pickers: stop with a JSON error unless the
- * request carries the pickers nonce (or the label nonce of the order screen).
+ * Ends an order screen label request with a JSON error: something it needs is missing.
  */
-function nashenski_check_picker_request() {
-	if ( null === nashenski_picker_request( 'nonce', null ) ) {
-		wp_send_json_error(
-			array(
-				'error' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ),
-			),
-			403
-		);
+function nashenski_label_incomplete() {
+	wp_send_json_error( array( 'message' => __( 'The request is not complete. Reload the page and try again.', 'nashenski-commerce' ) ), 400 );
+}
+
+/**
+ * The order of an order screen label request (its nonce is checked by nashenski_label_request()).
+ * A request without a real order ends here with a JSON error.
+ *
+ * @return WC_Order
+ */
+function nashenski_label_order() {
+	$id    = nashenski_label_request( 'orderId', 0 );
+	$order = is_scalar( $id ) ? wc_get_order( absint( $id ) ) : false;
+
+	if ( ! $order instanceof WC_Order ) {
+		nashenski_label_incomplete();
 	}
+
+	return $order;
 }
 
 /**
@@ -646,15 +635,30 @@ function nashenski_picker_request( $key, $fallback = '' ) {
 }
 
 /**
- * A read-only value from the address bar: which screen or notice to show. Never used to change data.
+ * Adds the notice nonce to a URL we redirect to after an action, so the next screen may read the
+ * notice values in it.
+ *
+ * @param string $url URL.
+ * @return string
+ */
+function nashenski_notice_url( $url ) {
+	return add_query_arg( '_nashenski_notice', wp_create_nonce( 'nashenski_notice' ), $url );
+}
+
+/**
+ * A notice value from the address bar after our own redirect, read only when the notice nonce is
+ * valid. Never used to change data.
  *
  * @param string $key      Query key.
- * @param string $fallback Value when missing.
+ * @param string $fallback Value when missing or not verified.
  * @return string
  */
 function nashenski_query_arg( $key, $fallback = '' ) {
-	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only: chooses the screen or notice to show.
-	return isset( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : $fallback;
+	if ( ! isset( $_GET['_nashenski_notice'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_nashenski_notice'] ) ), 'nashenski_notice' ) ) {
+		return $fallback;
+	}
+
+	return isset( $_GET[ $key ] ) && is_scalar( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : $fallback;
 }
 
 /**
@@ -672,43 +676,64 @@ function nashenski_checkout_posted( $key, $fallback = '' ) {
 }
 
 /**
- * The classic checkout form sent with "update order review" (WooCommerce checks its nonce
- * before; it is checked again here): only the named fields, sanitized.
+ * The classic checkout form sent with "update order review": only the named fields, sanitized.
  *
- * @param string[] $keys Fields to read.
+ * The form is a query string. WooCommerce checks the nonce of the request and then hands the
+ * form to the action woocommerce_checkout_update_order_review; it is taken from that action
+ * (nashenski_keep_order_review_form()) and the request is never read here. Each value is
+ * sanitized after the string is parsed: sanitizing the string itself would strip its
+ * percent-encoded letters, which is every Cyrillic one.
+ *
+ * @param string[]    $keys Fields to read.
+ * @param string|null $form The form, when WooCommerce hands it over: parsed, sanitized and kept.
  * @return array
  */
-function nashenski_order_review_data( array $keys ) {
-	if ( ! isset( $_POST['post_data'], $_POST['security'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'update-order-review' ) ) {
-		return array();
+function nashenski_order_review_data( array $keys, $form = null ) {
+	static $kept = array();
+
+	if ( is_string( $form ) ) {
+		$kept = array();
+		parse_str( $form, $kept );
+		$kept = map_deep( $kept, 'sanitize_text_field' );
 	}
 
-	$data = array();
-	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a query string; every value is sanitized below.
-	parse_str( wp_unslash( $_POST['post_data'] ), $data );
-
-	return map_deep( array_intersect_key( $data, array_flip( $keys ) ), 'sanitize_text_field' );
+	return array_intersect_key( $kept, array_flip( $keys ) );
 }
+
 /**
- * Send a temporary file to the browser as a download, delete it and stop.
+ * Keeps the checkout form WooCommerce hands to woocommerce_checkout_update_order_review.
  *
- * @param string $path File path.
- * @param string $name File name for the browser.
- * @param string $type Content type.
+ * @param mixed $form The form as a query string.
  */
-function nashenski_send_download( $path, $name, $type ) {
-	require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
-	require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+function nashenski_keep_order_review_form( $form ) {
+	nashenski_order_review_data( array(), is_string( $form ) ? $form : '' );
+}
 
-	$filesystem = new WP_Filesystem_Direct( null );
-	$contents   = (string) $filesystem->get_contents( $path );
+/**
+ * Send a file to the browser and stop. Every file the plugin sends goes through here: an export,
+ * a stored document, a courier label. It is the one place that prints the bytes of a file.
+ *
+ * @param string      $path     A temporary file: it is read, then deleted. '' when $contents is given.
+ * @param string      $name     File name for the browser.
+ * @param string      $type     Content type.
+ * @param bool        $inline   True shows the file in the browser (a PDF); false saves it.
+ * @param string|null $contents The bytes of the file, when it is not a temporary file.
+ */
+function nashenski_send_download( $path, $name, $type, $inline = false, $contents = null ) {
+	if ( null === $contents ) {
+		$contents = (string) \Nashenski\File::filesystem()->get_contents( $path );
 
-	wp_delete_file( $path );
+		wp_delete_file( $path );
+	}
+
 	nocache_headers();
+	header( 'X-Robots-Tag: noindex, nofollow' );
 	header( 'Content-Type: ' . $type );
-	header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $name ) . '"' );
+	header( 'Content-Disposition: ' . ( $inline ? 'inline' : 'attachment' ) . '; filename="' . sanitize_file_name( $name ) . '"' );
 	header( 'Content-Length: ' . strlen( $contents ) );
-	echo $contents; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a file download (CSV, Excel, JSON, XML or ZIP), not HTML.
+	// The browser must keep the type we send: the bytes are a file, never a page.
+	header( 'X-Content-Type-Options: nosniff' );
+	echo $contents; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the bytes of a file (CSV, Excel, JSON, XML, ZIP or PDF), sent with its content type and nosniff; escaping would corrupt the file.
 	exit;
 }
 
@@ -832,9 +857,8 @@ function nashenski_courier_cookie( $name ) {
 		return '';
 	}
 
-	// Decode first, then sanitize every value: sanitizing the raw JSON would corrupt it.
-	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized by map_deep() after decoding.
-	$data = map_deep( json_decode( urldecode( wp_unslash( $_COOKIE[ $name ] ) ), true ), 'sanitize_text_field' );
+	// PHP has already URL-decoded the cookie. Sanitized as text before decoding (the picker writes < > % as JSON escapes, so nothing is cut out of it) and value by value after.
+	$data = map_deep( json_decode( sanitize_text_field( wp_unslash( $_COOKIE[ $name ] ) ), true ), 'sanitize_text_field' );
 
 	return is_array( $data ) ? $data : '';
 }
@@ -862,7 +886,18 @@ function nashenski_save_checkout_label( $order_id, $courier ) {
 		}
 
 		if ( $label ) {
-			$order->update_meta_data( "nashenski_{$courier}_label", \Nashenski\Hooks::filter( "nashenski_{$courier}_label_before_save", "nashenski/{$courier}/label_before_save", $label, $order ) );
+			// One filter per courier, each with its own name.
+			if ( 'econt' === $courier ) {
+				$label = \Nashenski\Hooks::filter( 'nashenski_econt_label_before_save', 'nashenski/econt/label_before_save', $label, $order );
+			} elseif ( 'speedy' === $courier ) {
+				$label = \Nashenski\Hooks::filter( 'nashenski_speedy_label_before_save', 'nashenski/speedy/label_before_save', $label, $order );
+			} elseif ( 'boxnow' === $courier ) {
+				$label = \Nashenski\Hooks::filter( 'nashenski_boxnow_label_before_save', 'nashenski/boxnow/label_before_save', $label, $order );
+			} elseif ( 'pigeon' === $courier ) {
+				$label = \Nashenski\Hooks::filter( 'nashenski_pigeon_label_before_save', 'nashenski/pigeon/label_before_save', $label, $order );
+			}
+
+			$order->update_meta_data( "nashenski_{$courier}_label", $label );
 			WC()->session->__unset( "nashenski-{$courier}-label" );
 		}
 
@@ -954,6 +989,10 @@ function nashenski_get_order_label( $order_id ) {
 	$label_data = array();
 	$method     = '';
 
+	if ( ! $order ) {
+		return $data;
+	}
+
 	if ( ! empty( $order->get_items( 'shipping' ) ) ) {
 		$items         = $order->get_items( 'shipping' );
 		$method_object = array_shift( $items );
@@ -966,7 +1005,13 @@ function nashenski_get_order_label( $order_id ) {
 		}
 	}
 
-	$print = admin_url( 'admin-ajax.php' ) . '?cache-buster=' . wp_rand() . '&nonce=' . wp_create_nonce( 'nashenski_admin_label' ) . '&action=';
+	$print = add_query_arg(
+		array(
+			'cache-buster' => wp_rand(),
+			'nonce'        => wp_create_nonce( 'nashenski_admin_label' ),
+		),
+		admin_url( 'admin-ajax.php' )
+	) . '&action=';
 
 	if ( ! empty( $label_data ) ) {
 		switch ( $method ) {

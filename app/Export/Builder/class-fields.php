@@ -40,7 +40,7 @@ class Fields {
 		};
 
 		$add(
-			__( 'Order', 'nashenski-commerce' ),
+			_x( 'Order', 'a store order', 'nashenski-commerce' ),
 			array(
 				'order_id'       => __( 'Order ID', 'nashenski-commerce' ),
 				'order_number'   => __( 'Order number', 'nashenski-commerce' ),

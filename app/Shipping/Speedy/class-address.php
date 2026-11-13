@@ -39,7 +39,20 @@ class Address {
 	 * AJAX: streets and quarters that match the typed text, or the towns when the town is unknown.
 	 */
 	public static function search_address() {
-		nashenski_check_picker_request();
+		// The checkout pickers send their own nonce, the order screen sends the label one.
+		$nonce    = isset( $_REQUEST['nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) : '';
+		$verified = false;
+
+		foreach ( array( 'nashenski_pickers', 'nashenski_admin_label' ) as $action ) {
+			if ( wp_verify_nonce( $nonce, $action ) ) {
+				$verified = true;
+				break;
+			}
+		}
+
+		if ( ! $verified ) {
+			wp_send_json_error( array( 'error' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ), 403 );
+		}
 
 		self::$container = nashenski()->container();
 		$args            = array();
@@ -71,7 +84,20 @@ class Address {
 	 * AJAX: all streets and quarters of the town.
 	 */
 	public static function load_streets() {
-		nashenski_check_picker_request();
+		// The checkout pickers send their own nonce, the order screen sends the label one.
+		$nonce    = isset( $_REQUEST['nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) : '';
+		$verified = false;
+
+		foreach ( array( 'nashenski_pickers', 'nashenski_admin_label' ) as $action ) {
+			if ( wp_verify_nonce( $nonce, $action ) ) {
+				$verified = true;
+				break;
+			}
+		}
+
+		if ( ! $verified ) {
+			wp_send_json_error( array( 'error' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ), 403 );
+		}
 
 		self::$container = nashenski()->container();
 		$args            = array();

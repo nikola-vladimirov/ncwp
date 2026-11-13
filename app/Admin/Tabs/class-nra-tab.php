@@ -46,27 +46,24 @@ class Nra_Tab extends Base_Tab {
 				),
 				'invoice' => array(
 					new Fields\TrueFalse_Field( 'nra_n18', __( 'Enable N-18', 'nashenski-commerce' ), null, null, __( 'Turn on the NRA audit file (XML) in Exports. The order document is made for every order either way.', 'nashenski-commerce' ) ),
+					// Read through Invoice\Mode. The first choice of the select is the default.
+					new Fields\TrueFalse_Field( 'enabled', __( 'Enable invoices', 'nashenski-commerce' ), null, null, __( 'Add "I want an invoice for a company" to the checkout and make an invoice for every order where it is ticked.', 'nashenski-commerce' ) ),
 					new Fields\Select_Field(
 						array(
-							'disable'          => array(
-								'id'    => 'disable',
-								'label' => __( 'Disable invoice generation', 'nashenski-commerce' ),
+							'request'     => array(
+								'id'    => 'request',
+								'label' => __( 'On request, not in the NRA audit file', 'nashenski-commerce' ),
 							),
-							'only_fields'      => array(
-								'id'    => 'only_fields',
-								'label' => __( 'Add only fields on checkout', 'nashenski-commerce' ),
-							),
-							'only_for_company' => array(
-								'id'    => 'only_for_company',
-								'label' => __( 'Only for companies', 'nashenski-commerce' ),
-							),
-							'always'           => array(
-								'id'    => 'always',
-								'label' => __( 'Always', 'nashenski-commerce' ),
+							'request_nra' => array(
+								'id'    => 'request_nra',
+								'label' => __( 'On request, in the NRA audit file', 'nashenski-commerce' ),
 							),
 						),
-						'invoices',
-						__( 'When to generate invoices?', 'nashenski-commerce' )
+						'mode',
+						__( 'How to issue invoices', 'nashenski-commerce' ),
+						null,
+						null,
+						__( 'Not in the NRA audit file: orders with an invoice are left out of the file and the monthly audit email. In the NRA audit file: they stay in it. That choice needs "Enable N-18" on.', 'nashenski-commerce' )
 					),
 					new Fields\Select_Field(
 						array(

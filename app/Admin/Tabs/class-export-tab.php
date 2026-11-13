@@ -30,7 +30,11 @@ class Export_Tab extends Base_Tab {
 	 * Nashenski export nap callback.
 	 */
 	public static function nashenski_export_nap_callback() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ?? '' ) ), 'nashenski_export_nap' ) ) {
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_export_nap' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
 		}
 
@@ -47,8 +51,12 @@ class Export_Tab extends Base_Tab {
 			);
 		}
 
+		// The month to export, as the month field sends it: YYYY-MM. Anything else is no month, which is the current one.
+		$period = isset( $_REQUEST['period'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['period'] ) ) : '';
+		$period = preg_match( '/^20\d{2}-(0[1-9]|1[0-2])$/', $period ) ? $period : '';
+
 		$export = new NraExport(
-			sanitize_text_field( wp_unslash( $_REQUEST['year'] ?? '' ) ),
+			$period,
 			sanitize_text_field( wp_unslash( $_REQUEST['generate_files'] ?? '' ) )
 		);
 
@@ -99,8 +107,8 @@ class Export_Tab extends Base_Tab {
 
 		wp_send_json_success(
 			array(
-				/* translators: %s: file address */
-				'message' => sprintf( __( 'File generated successfully! <a href="%s" download target="_blank">Download</a>', 'nashenski-commerce' ), $generated_file['file'] ) . $additional_message,
+				/* translators: %s: link that downloads the file */
+				'message' => sprintf( __( 'File generated successfully! %s', 'nashenski-commerce' ), '<a href="' . esc_url( $generated_file['file'] ) . '" download target="_blank">' . esc_html_x( 'Download', 'link that downloads a file', 'nashenski-commerce' ) . '</a>' ) . $additional_message,
 			)
 		);
 	}
@@ -110,11 +118,19 @@ class Export_Tab extends Base_Tab {
 	 * Nashenski export microinvest callback.
 	 */
 	public static function nashenski_export_microinvest_callback() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ?? '' ) ), 'nashenski_export_nap' ) ) {
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_export_nap' ) ) {
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
 		}
 
-		$export         = new DeltaExport( sanitize_text_field( wp_unslash( $_REQUEST['year'] ?? '' ) ) );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
+		}
+
+		// The month to export, as the month field sends it: YYYY-MM. Anything else is no month, which is the current one.
+		$period = isset( $_REQUEST['period'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['period'] ) ) : '';
+		$period = preg_match( '/^20\d{2}-(0[1-9]|1[0-2])$/', $period ) ? $period : '';
+
+		$export         = new DeltaExport( $period );
 		$generated_file = $export->get_file();
 
 		if ( ! $generated_file ) {
@@ -127,8 +143,8 @@ class Export_Tab extends Base_Tab {
 
 		wp_send_json_success(
 			array(
-				/* translators: %s: file address */
-				'message' => sprintf( __( 'File generated successfully! <a href="%s" download target="_blank">Download</a>', 'nashenski-commerce' ), $generated_file['file'] ),
+				/* translators: %s: link that downloads the file */
+				'message' => sprintf( __( 'File generated successfully! %s', 'nashenski-commerce' ), '<a href="' . esc_url( $generated_file['file'] ) . '" download target="_blank">' . esc_html_x( 'Download', 'link that downloads a file', 'nashenski-commerce' ) . '</a>' ),
 			)
 		);
 	}
@@ -137,11 +153,19 @@ class Export_Tab extends Base_Tab {
 	 * Nashenski export invoice archive callback.
 	 */
 	public static function nashenski_export_invoice_archive_callback() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ?? '' ) ), 'nashenski_export_nap' ) ) {
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_export_nap' ) ) {
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
 		}
 
-		$export         = new InvoiceArchiveExport( sanitize_text_field( wp_unslash( $_REQUEST['year'] ?? '' ) ) );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'nashenski-commerce' ) ), 403 );
+		}
+
+		// The month to export, as the month field sends it: YYYY-MM. Anything else is no month, which is the current one.
+		$period = isset( $_REQUEST['period'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['period'] ) ) : '';
+		$period = preg_match( '/^20\d{2}-(0[1-9]|1[0-2])$/', $period ) ? $period : '';
+
+		$export         = new InvoiceArchiveExport( $period );
 		$generated_file = $export->get_file();
 
 		if ( is_wp_error( $generated_file ) ) {

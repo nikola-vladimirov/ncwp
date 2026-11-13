@@ -135,9 +135,18 @@ The preview guard accepts absolute remote HTTP(S) URLs, upgrades HTTP to HTTPS,
 and rejects executable schemes, relative URLs, credentials, control characters,
 backslashes, malformed URLs and the administrator site's hostname. Econt print
 size is set through URL query APIs, retaining existing tokens and fragments.
-Unknown provider/CDN hosts are retained: no complete courier PDF host allowlist
-is established by the repository. This fix prevents URL-based script execution;
-it does not authenticate arbitrary remote content or constrain remote redirects.
+The JavaScript helper (`assets/js/courier-pdf.js`), which gives the label frame
+its address, keeps Econt's own hosts only (econt.com and its subdomains): Econt
+is the one courier that sends a PDF address, so any other host gives no frame.
+The PHP check (`Admin\Courier_Pdf::url()`) still keeps unknown hosts. Neither
+authenticates the remote content or constrains remote redirects.
+
+```sh
+node tests/settings-safe-html.js
+```
+
+The export result on the settings screen is rebuilt from a short list of tags
+and attributes; this runs the shipped functions on a stand-in for the DOM.
 
 Both lazy components call the readable `assets/js/courier-pdf.js` helper and
 fail closed if it is absent. Their changed chunks/loaders have new content-based

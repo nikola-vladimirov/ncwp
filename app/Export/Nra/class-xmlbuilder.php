@@ -10,7 +10,7 @@ namespace Nashenski\Export\Nra;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Builds the NRA standardised audit file (Ordinance N-18, Annex 38, dex_audit.xsd)
+ * Builds the NRA standardised audit file (Ordinance N-18, Annex 38, the schema in dex-audit-schema.xml)
  * on the site itself, for any number of orders.
  *
  * Input is the array Export::get_xml_file() collects:

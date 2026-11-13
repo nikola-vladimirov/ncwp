@@ -87,7 +87,14 @@ class Connectix {
 			);
 		}
 
-		return json_decode( wp_remote_retrieve_body( $request ), 1 );
+		$status = (int) wp_remote_retrieve_response_code( $request );
+		$data   = json_decode( wp_remote_retrieve_body( $request ), 1 );
+
+		// Connectix answers in JSON, errors too. Anything else (a gateway page) is an error with its HTTP status.
+		return is_array( $data ) ? $data : array(
+			'success' => false,
+			'error'   => 'HTTP ' . $status,
+		);
 	}
 
 	/**

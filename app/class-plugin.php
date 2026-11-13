@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * Plugin.
  */
 class Plugin {
-	const VERSION = '0.21.9';
+	const VERSION = '0.21.10';
 
 	/** Cron hook: the one-off 0.21.8 job that turns "Remove delivery from documents" into "Is ... courier?". */
 	const REMOVE_SHIPPING_JOB = 'nashenski/upgrade/remove_shipping';
@@ -51,8 +51,12 @@ class Plugin {
 	 */
 	public function init() {
 		require_once __DIR__ . '/functions.php';
+		add_action( 'woocommerce_checkout_update_order_review', 'nashenski_keep_order_review_form', -1 );
 		add_action( self::REMOVE_SHIPPING_JOB, array( __CLASS__, 'upgrade_remove_shipping' ) );
+		$was = get_option( 'nashenski_version' );
 		$this->maybe_upgrade();
+		// 0.21.10, once. Not under the version check: sites that ran an earlier 0.21.10 build get it too.
+		Invoice\Mode::upgrade( $was );
 		$this->load_default_options();
 		$this->load_classes();
 		$this->container->register( new Container\Client() );
@@ -94,7 +98,7 @@ class Plugin {
 		wp_clear_scheduled_hook( 'nashenski/cvc/clear_cache_folder' );
 
 		// 0.21.7: the courier cache moved to File::cache_folder() in uploads. The old folder is only a cache (CVC files too), shared by all sites of a network.
-		File::filesystem()->rmdir( WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski', true ); // A missing folder is fine.
+		File::filesystem()->rmdir( File::filesystem()->wp_content_dir() . 'cache/nashenski', true ); // A missing folder is fine.
 
 		// After 0.19.9: the documents migration flag is read on every request; sites that saved it outside the autoload set load it with the other options now.
 		wp_set_option_autoload( 'nashenski_documents_migration_version', true );
@@ -180,7 +184,7 @@ class Plugin {
 				'admin_notices',
 				function () {
 					/* translators: %s: link to the settings */
-					$message = sprintf( __( 'Nashenski Commerce - Please review the options and save them again from "%s".', 'nashenski-commerce' ), sprintf( '<a href="%s">%s</a>', \Nashenski\Admin\Settings::url(), __( 'Settings', 'nashenski-commerce' ) ) );
+					$message = sprintf( __( 'Nashenski Commerce - Please review the options and save them again from "%s".', 'nashenski-commerce' ), sprintf( '<a href="%s">%s</a>', esc_url( \Nashenski\Admin\Settings::url() ), esc_html__( 'Settings', 'nashenski-commerce' ) ) );
 
 					echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
 				}
@@ -237,7 +241,7 @@ class Plugin {
 			}
 		}
 
-		if ( Front_End\Checkout\Company_Fields::enabled() ) {
+		if ( Invoice\Mode::enabled() ) {
 			new Front_End\Checkout\Company_Fields();
 
 			if ( ! class_exists( 'WC_EU_VAT_Number_Init' ) ) {
@@ -333,7 +337,7 @@ class Plugin {
 	 */
 	public static function plugin_action_links( $actions ) {
 		$custom_actions = array(
-			'settings' => sprintf( '<a href="%s">%s</a>', \Nashenski\Admin\Settings::url(), __( 'Settings', 'nashenski-commerce' ) ),
+			'settings' => sprintf( '<a href="%s">%s</a>', esc_url( \Nashenski\Admin\Settings::url() ), esc_html__( 'Settings', 'nashenski-commerce' ) ),
 		);
 		return array_merge( $custom_actions, $actions );
 	}
@@ -344,34 +348,15 @@ class Plugin {
 	 * per-email settings page instead, which still renders and saves our form the normal way.
 	 */
 	private static function maybe_redirect_email_edit() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- screen detection only.
-		if ( ! isset( $_GET['page'], $_GET['tab'] ) || 'wc-settings' !== $_GET['page'] || 'email' !== $_GET['tab'] ) {
+		// WordPress's page and WooCommerce's settings tab of this screen.
+		global $plugin_page, $current_tab;
+
+		if ( 'wc-settings' !== $plugin_page || 'email' !== $current_tab ) {
 			return;
 		}
 
-		if ( ! function_exists( 'wp_add_inline_script' ) ) {
-			return;
-		}
-
-		$classic_url = admin_url( 'admin.php?page=wc-settings&tab=email&section=nashenski_abandoned_cart' );
-
-		wp_register_script( 'nashenski-email-edit', false, array( 'wp-api-fetch' ), self::VERSION, true );
-		wp_enqueue_script( 'nashenski-email-edit' );
-		wp_add_inline_script(
-			'nashenski-email-edit',
-			'(function(){
-			if(!window.wp||!wp.apiFetch||!wp.apiFetch.use){return;}
-			var url=' . wp_json_encode( $classic_url ) . ';
-			wp.apiFetch.use(function(options,next){
-				var path=options&&options.path?String(options.path):"";
-				if(path.indexOf("recreate-email-post")!==-1&&options.data&&options.data.email_id==="nashenski_abandoned_cart"){
-					window.location.href=url;
-					return new Promise(function(){});
-				}
-				return next(options);
-			});
-		})();'
-		);
+		wp_enqueue_script( 'nashenski-email-edit', nashenski()->plugin_dir_url() . 'assets/js/email-edit.js', array( 'wp-api-fetch' ), self::VERSION, true );
+		wp_localize_script( 'nashenski-email-edit', 'nashenskiEmailEdit', array( 'url' => admin_url( 'admin.php?page=wc-settings&tab=email&section=nashenski_abandoned_cart' ) ) );
 	}
 
 	/**
@@ -402,8 +387,8 @@ class Plugin {
 				)
 			);
 
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- screen detection only.
-			if ( isset( $_GET['section'] ) && 'exports' === $_GET['section'] ) {
+			// WooCommerce's section of the settings screen.
+			if ( 'exports' === $GLOBALS['current_section'] ) {
 				wp_enqueue_script( 'nashenski-export-builder', nashenski()->plugin_dir_url() . 'assets/js/export-builder.js', array(), self::VERSION, true );
 				wp_localize_script( 'nashenski-export-builder', 'nashenskiExportBuilder', Admin\Export_Builder::script_data() );
 			}

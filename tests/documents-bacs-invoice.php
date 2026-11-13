@@ -213,7 +213,11 @@ namespace {
 		 * @return string Result.
 		 */
 		public function get_meta( $key ) {
-			return 'nashenski_invoice_document' === $key ? $this->has_invoice : ( 'nashenski_order_number' === $key ? $this->has_number : '' ); }
+			return array(
+				'nashenski_invoice_document' => $this->has_invoice,
+				'nashenski_order_number'     => $this->has_number,
+				'_billing_to_company'        => '1', // The customer asked for a company invoice.
+			)[ $key ] ?? ''; }
 	}
 	/**
 	 * Fakerefund.
@@ -287,7 +291,7 @@ namespace {
 	function nashenski_get_option( $group, $key ) {
 		return array(
 			'apis/enable_documents' => 'yes',
-			'invoice/invoices'      => 'always',
+			'invoice/enabled'       => 'yes',
 			'invoice/trigger'       => $GLOBALS['trigger'],
 		)[ $group . '/' . $key ] ?? ''; }
 	/**

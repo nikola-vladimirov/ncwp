@@ -13,8 +13,6 @@ namespace {
 	define( 'ABSPATH', __DIR__ . '/' );
 	define( 'WP_CONTENT_DIR', '/site/wp-content' );
 	define( 'WP_UNINSTALL_PLUGIN', 'nashenski-commerce/nashenski-commerce.php' );
-	define( 'FS_CHMOD_DIR', 0755 );
-	define( 'FS_CHMOD_FILE', 0644 );
 	$GLOBALS['basedir'] = '/site/wp-content/uploads';
 	$GLOBALS['log']     = array();
 	/**
@@ -47,6 +45,13 @@ namespace {
 		 * @param mixed $arg Unused.
 		 */
 		public function __construct( $arg = null ) {}
+		/**
+		 * The content folder, with a trailing slash as WordPress returns it.
+		 *
+		 * @return string
+		 */
+		public function wp_content_dir() {
+			return WP_CONTENT_DIR . '/'; }
 		/**
 		 * Folder listing.
 		 *

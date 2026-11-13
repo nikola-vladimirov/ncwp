@@ -4,8 +4,6 @@ namespace {
 	$root = sys_get_temp_dir() . '/nashenski-origins-' . bin2hex( random_bytes( 4 ) );
 	mkdir( $root . '/uploads', 0777, true );
 	define( 'ABSPATH', $root . '/' );
-	define( 'FS_CHMOD_FILE', 0644 );
-	define( 'FS_CHMOD_DIR', 0755 );
 	const MINUTE_IN_SECONDS = 60;
 
 	$GLOBALS['root'] = $root;

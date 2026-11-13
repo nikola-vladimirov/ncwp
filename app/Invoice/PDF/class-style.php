@@ -275,7 +275,8 @@ class Style {
 		$density   = $densities[ $s['density'] ] ?? $densities['compact'];
 
 		return sprintf(
-			'body { font-family: "%1$s"; color: %2$s; }
+			// No quotes or other HTML special characters: the template prints this through esc_html().
+			'body { font-family: %1$s; color: %2$s; }
 			h1 { color: %3$s; }
 			.add-detail { border-bottom: 2px solid %4$s; padding-bottom: 10px; }
 			.site-details .site-details__name { color: %3$s; }
@@ -285,7 +286,7 @@ class Style {
 			footer { color: %2$s; border-top: 1px solid %4$s; padding-top: 4px; }
 			table tr th, table tr td { padding: %8$s; }
 			.box-text { line-height: %9$s; }',
-			esc_attr( $font ),
+			$font,
 			$s['text_color'],
 			$s['title_color'],
 			$s['accent_color'],

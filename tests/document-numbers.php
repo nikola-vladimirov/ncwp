@@ -337,12 +337,24 @@ foreach ( array( false, true ) as $hpos ) {
 		check( Actions::use_invoice_number( $orders[16], (string) $first ) === '', 'Released manual reference assigned elsewhere' );
 		$stale->save();
 		check( (int) fresh_number( $orders[15]->get_id(), 'nashenski_order_invoice_number' ) === (int) $first + 1, 'Later stale save cannot overwrite newer numbering and create a duplicate' );
-		// Main's own-program numbering: the typed number is kept but the website sequence does not move.
-		nashenski_set_option( 'company', 'invoice_numbering', 'own' );
-		$sequence = (int) nashenski_get_option( 'invoice', 'next_invoice_separate_number' );
-		check( Actions::use_invoice_number( $orders[16], (string) ( $first + 5000 ) ) === '', 'Own-program manual reference assigned' );
-		nashenski_set_option( 'company', 'invoice_numbering', '' );
-		check( fresh_number( $orders[16]->get_id(), 'nashenski_invoice_own_program' ) === 'yes' && (int) nashenski_get_option( 'invoice', 'next_invoice_separate_number' ) === $sequence, 'Own-program number is flagged and does not advance the sequence' );
+		// 0.21.10: a typed number is a website number (the own-program exception is gone), so the sequence continues after it.
+		$typed = $first + 5000;
+		check( Actions::use_invoice_number( $orders[16], (string) $typed ) === '', 'Typed invoice number assigned' );
+		$sequence = nashenski_get_option( 'invoice', 'next_invoice_separate_number' ) ? 'next_invoice_separate_number' : 'next_invoice_number';
+		check( (int) nashenski_get_option( 'invoice', $sequence ) === $typed + 1 && ! fresh_number( $orders[16]->get_id(), 'nashenski_invoice_own_program' ), 'A typed number moves the website sequence and does not take the order out of the NRA audit file' );
+		// "How to issue invoices" decides that, once, when the first invoice of the order is made.
+		$issue_before = nashenski_get_option( 'invoice', 'mode' );
+		foreach ( array(
+			'request_nra' => '',
+			'request'     => 'yes',
+		) as $issue => $out_of_nra ) {
+			nashenski_set_option( 'invoice', 'mode', $issue );
+			$marked = wc_get_order( $orders[16]->get_id() );
+			\Nashenski\Invoice\Mode::mark( $marked );
+			$marked->save();
+			check( (string) fresh_number( $orders[16]->get_id(), 'nashenski_invoice_own_program' ) === $out_of_nra, "First invoice with $issue: out of the NRA audit file is '$out_of_nra'" );
+		}
+		nashenski_set_option( 'invoice', 'mode', $issue_before );
 		$legacy       = random_int( 1800000000, 1900000000 );
 		$legacy_table = $wpdb->prefix . 'notasupto_documents';
 		$wpdb->query( "DROP TABLE IF EXISTS $legacy_table" ); // A table left by an earlier run may lack the id column.

@@ -210,13 +210,13 @@ namespace {
 			return 9; }
 
 		/**
-		 * Meta: always empty.
+		 * Meta: empty, but the customer asked for a company invoice.
 		 *
 		 * @param string $key Meta key.
 		 * @return string
 		 */
 		public function get_meta( $key ) {
-			return ''; }
+			return '_billing_to_company' === $key ? '1' : ''; }
 
 		/**
 		 * Payment method.
@@ -308,7 +308,7 @@ namespace {
 			return ''; }
 		return array(
 			'apis/enable_documents' => 'yes',
-			'invoice/invoices'      => 'always',
+			'invoice/enabled'       => 'yes',
 		)[ $group . '/' . $key ] ?? '';
 	}
 

@@ -56,7 +56,7 @@ class NRARefunded extends BaseDocument {
 		$this->order          = new Order( $order );
 		$this->return_methods = nashenski_get_return_methods();
 		$this->return_method  = nashenski_get_option( 'shop', 'return_method' );
-		$this->payment_method = $this->return_methods[ $this->return_method ]['label'];
+		$this->payment_method = $this->return_methods[ $this->return_method ]['label'] ?? '';
 
 		$this->set_title( \Nashenski\Hooks::filter( 'nashenski_admin_invoice_order_document_title_refunded', 'nashenski/admin/invoice/order_document_title_refunded', __( 'Refunded Order - Original', 'nashenski-commerce' ) ) );
 		$this->meta = 'nashenski_refunded_order_document';

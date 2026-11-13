@@ -144,7 +144,7 @@ class Migration {
 		}
 
 		$back = wp_get_referer() ? wp_get_referer() : Settings::url();
-		wp_safe_redirect( add_query_arg( 'nashenski_imported', 1, $back ) );
+		wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_imported', 1, $back ) ) );
 		exit;
 	}
 
@@ -201,6 +201,8 @@ class Migration {
 			'shipping_options' => self::copy_options( 'woocommerce_' . $old . '_', $old ),
 		);
 
+		self::invoice_settings( $old );
+
 		// Shipping zone methods: woo_bg_econt -> nashenski_econt.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import of the old plugin data; no WordPress API for it.
 		$report['zone_methods'] = (int) $wpdb->query(
@@ -236,6 +238,23 @@ class Migration {
 		$report['order_meta'] += self::copy_meta( $wpdb->postmeta, 'post_id', $old, $report['skipped_numbers'] );
 
 		return $report;
+	}
+
+	/**
+	 * Bulgarisation's "When to generate invoices?" ({prefix}_settings_invoice_invoices: disable,
+	 * only_fields, only_for_company or always) becomes "Enable invoices" and "How to issue invoices".
+	 * Its invoiced orders were in the NRA audit file while its "Enable N-18"
+	 * ({prefix}_settings_invoice_nra_n18) was on. A prefix that saved no choice changes nothing.
+	 *
+	 * @param string $old Old prefix.
+	 */
+	public static function invoice_settings( $old ) {
+		$invoices = get_option( $old . '_settings_invoice_invoices' );
+		$in_nra   = 'yes' === get_option( $old . '_settings_invoice_nra_n18' );
+
+		if ( false !== $invoices ) {
+			\Nashenski\Invoice\Mode::save( \Nashenski\Invoice\Mode::from_old( $invoices, $in_nra ) );
+		}
 	}
 
 	/**

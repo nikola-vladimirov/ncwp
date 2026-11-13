@@ -1,4 +1,4 @@
-<?php // phpcs:disable WordPress.Files.FileName, Universal.Files.SeparateFunctionsFromOO, Generic.Files.OneObjectStructurePerFile, WordPress.Security, WordPress.WP.GlobalVariablesOverride, Generic.CodeAnalysis.UnusedFunctionParameter, WordPress.NamingConventions, Squiz.Commenting -- offline test: WordPress and WooCommerce stubs and the test share one file.
+<?php // phpcs:disable WordPress.Files.FileName, Universal.Files.SeparateFunctionsFromOO, Generic.Files.OneObjectStructurePerFile, WordPress.Security, WordPress.WP.GlobalVariablesOverride, Generic.CodeAnalysis.UnusedFunctionParameter, WordPress.NamingConventions, Squiz.Commenting, WordPress.WP.AlternativeFunctions.strip_tags_strip_tags, Universal.NamingConventions.NoReservedKeywordParameterNames, PSR2.Methods.MethodDeclaration.Underscore -- offline test: WordPress and WooCommerce stubs (with their own names and signatures) and the test share one file.
 /**
  * Offline test: Setup_Wizard saves VAT, company, shipping and checkout choices without duplicates. Run: php tests/setup-wizard.php
  *
@@ -67,6 +67,8 @@ function wp_safe_redirect( $url ) {
 	throw new Redirected( $url ); }
 function add_query_arg( $key, $value, $url ) {
 	return $url . '&' . $key . '=' . $value; }
+function nashenski_notice_url( $url ) {
+	return $url; }
 function admin_url( $path = '' ) {
 	return '/wp-admin/' . $path; }
 function add_action() {}
@@ -250,7 +252,7 @@ $GLOBALS['nonce'] = true;
 $vat20 = array(
 	'vat'                => 'vat20',
 	'prices_include_tax' => 'yes',
-	'invoices'           => 'always',
+	'invoices'           => 'yes',
 	'nap'                => array(
 		'company_name' => 'Firma <b>OOD</b>',
 		'eik'          => '123 456 789',
@@ -265,7 +267,7 @@ $check( 'vat20 turns taxes on with prices shown with VAT', 'yes' === $o['woocomm
 $rate = $bg( '' );
 $check( 'vat20 adds one BG 20% standard rate named VAT, shipping taxed, priority 1', 1 === count( $rate ) && '20' === $rate[0]->tax_rate && 'VAT' === $rate[0]->tax_rate_name && 1 === $rate[0]->tax_rate_shipping && 1 === $rate[0]->tax_rate_priority );
 $check( 'company fields are sanitized and saved', 'Firma OOD' === $o['nashenski_settings_nap_company_name'] && '123456789' === $o['nashenski_settings_nap_eik'] && 'BG123456789' === $o['nashenski_settings_nap_dds_number'] && 'shop@example.com' === $o['nashenski_settings_nap_email'] );
-$check( 'invoices always turns documents on', 'always' === $o['nashenski_settings_invoice_invoices'] && 'yes' === $o['nashenski_settings_apis_enable_documents'] );
+$check( 'invoices on turns documents on', 'yes' === $o['nashenski_settings_invoice_enabled'] && 'yes' === $o['nashenski_settings_apis_enable_documents'] );
 $check( 'done flag is stored', is_array( $o[ Setup_Wizard::DONE_OPTION ] ) && ! $o[ Setup_Wizard::DONE_OPTION ]['reduced'] );
 
 $run( $vat20 );

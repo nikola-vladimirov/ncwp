@@ -1,8 +1,17 @@
 (function (window) {
     'use strict';
 
-    // Courier/CDN hosts can vary. Require an absolute remote web URL, never code
-    // or a navigation back into the authenticated WordPress site's origin.
+    // The only PDF address a courier sends is Econt's label, so a frame may show
+    // Econt's own hosts and nothing else: never code, another site, or a page of
+    // the WordPress site itself.
+    var HOSTS = ['econt.com'];
+
+    function known(hostname) {
+        return HOSTS.some(function (host) {
+            return hostname === host || hostname.slice(-host.length - 1) === '.' + host;
+        });
+    }
+
     window.nashenskiCourierPdf = {
         url: function (value, size) {
             if (typeof value !== 'string' || /[\x00-\x20\x7f\\]/.test(value) ||
@@ -11,8 +20,9 @@
             }
             try {
                 var url = new URL(value);
-                if (url.username || url.password || !url.hostname ||
-                    url.hostname.replace(/\.$/, '').toLowerCase() === window.location.hostname.replace(/\.$/, '').toLowerCase()) {
+                var hostname = url.hostname.replace(/\.$/, '').toLowerCase();
+                if (url.username || url.password || !known(hostname) ||
+                    hostname === window.location.hostname.replace(/\.$/, '').toLowerCase()) {
                     return '';
                 }
                 // The old scheme-stripping code also upgraded HTTP courier links

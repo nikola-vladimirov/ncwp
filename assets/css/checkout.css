@@ -756,3 +756,32 @@
 	color: #b32d2e;
 	font-size: 0.9em;
 }
+
+/*
+ * Block checkout: a text in place of a price ("Complete the fields to calculate", a delivery paid
+ * to the courier). pickers-block.js sets the attributes and the font size on the price element.
+ */
+[data-nashenski-text] {
+	font-size: 0 !important;
+}
+
+[data-nashenski-text] > * {
+	display: none !important;
+}
+
+[data-nashenski-text]::after {
+	content: attr(data-nashenski-text);
+	font-size: var(--nashenski-text-size, 0.875rem);
+}
+
+/* Cards: the price, then a short muted "to the courier". */
+[data-nashenski-price]::before {
+	content: attr(data-nashenski-price);
+	font-size: var(--nashenski-text-size, 0.875rem);
+}
+
+[data-nashenski-price]::after {
+	font-size: calc(var(--nashenski-text-size, 0.875rem) * 0.875);
+	color: var(--nashenski-muted);
+	white-space: pre;
+}

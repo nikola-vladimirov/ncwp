@@ -71,7 +71,20 @@ class Pickers {
 	 * that start with the text, then the rest. Latin text is read as Cyrillic too ("Varna").
 	 */
 	public static function search_towns() {
-		nashenski_check_picker_request();
+		// The checkout pickers send their own nonce, the order screen sends the label one.
+		$nonce    = isset( $_REQUEST['nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) : '';
+		$verified = false;
+
+		foreach ( array( 'nashenski_pickers', 'nashenski_admin_label' ) as $action ) {
+			if ( wp_verify_nonce( $nonce, $action ) ) {
+				$verified = true;
+				break;
+			}
+		}
+
+		if ( ! $verified ) {
+			wp_send_json_error( array( 'error' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ), 403 );
+		}
 
 		$text     = mb_strtolower( trim( nashenski_remove_city_prefix( nashenski_picker_request( 'query' ) ) ) );
 		$cyrillic = mb_strtolower( \Nashenski\Transliteration::latin2cyrillic( $text ) );
@@ -342,7 +355,7 @@ class Pickers {
 			$currency = (string) ( $meta[ Courier_Fee::CURRENCY_META ] ?? '' );
 			$price    = '<span class="nashenski-rate-price" data-nashenski-note="' . esc_attr( wp_strip_all_tags( Courier_Fee::text( $meta[ Courier_Fee::FEE_META ], $currency ) ) ) . '">' . wp_kses_post( wc_price( $meta[ Courier_Fee::FEE_META ], array( 'currency' => $currency ) ) ) . ' <span class="nashenski-rate-note">' . esc_html__( 'to the courier', 'nashenski-commerce' ) . '</span></span>';
 		} elseif ( (float) $rate->get_cost() <= 0 ) {
-			$price = '<span class="nashenski-rate-price nashenski-rate-free">' . esc_html__( 'Free', 'nashenski-commerce' ) . '</span>';
+			$price = '<span class="nashenski-rate-price nashenski-rate-free">' . esc_html_x( 'Free', 'delivery price', 'nashenski-commerce' ) . '</span>';
 		} else {
 			// WooCommerce and the builder pass "Name: price"; the price part keeps their tax display.
 			$price = 0 === strpos( $label, $name . ': ' ) ? substr( $label, strlen( $name ) + 2 ) : wc_price( (float) $rate->get_cost() + array_sum( (array) $rate->get_taxes() ) );
@@ -494,7 +507,7 @@ class Pickers {
 		};
 
 		wp_enqueue_style( 'nashenski-checkout', $url . 'css/checkout.css', array(), $ver( 'css/checkout.css' ) );
-		wp_add_inline_style( 'nashenski-checkout', Appearance::css() );
+		wp_add_inline_style( 'nashenski-checkout', wp_strip_all_tags( Appearance::css() ) );
 
 		// The block checkout ignores the "hidden" rule for the country, so hide it here when only Bulgaria is allowed.
 		if ( array( 'BG' ) === Countries::countries() ) {
@@ -505,7 +518,7 @@ class Pickers {
 		wp_localize_script( 'nashenski-pickers', 'nashenskiPickers', self::config() );
 
 		if ( self::is_block_checkout() ) {
-			wp_add_inline_style( 'nashenski-checkout', Field_Editor::block_css() );
+			wp_add_inline_style( 'nashenski-checkout', wp_strip_all_tags( Field_Editor::block_css() ) );
 			wp_enqueue_script( 'nashenski-pickers-block', $url . 'js/pickers-block.js', array( 'nashenski-pickers', 'wp-data', 'wp-plugins', 'wc-blocks-checkout', 'wc-blocks-data-store' ), $ver( 'js/pickers-block.js' ), true );
 		} else {
 			wp_enqueue_script( 'nashenski-pickers-classic', $url . 'js/pickers-classic.js', array( 'nashenski-pickers', 'jquery' ), $ver( 'js/pickers-classic.js' ), true );
@@ -568,7 +581,7 @@ class Pickers {
 				'change'       => __( 'Change', 'nashenski-commerce' ),
 				'map'          => __( 'Choose on the map', 'nashenski-commerce' ),
 				'mapTitle'     => __( 'Choose an office on the map', 'nashenski-commerce' ),
-				'close'        => __( 'Close', 'nashenski-commerce' ),
+				'close'        => _x( 'Close', 'button that closes a window', 'nashenski-commerce' ),
 				'loading'      => __( 'Loading...', 'nashenski-commerce' ),
 				'none'         => __( 'Nothing found. Check the town in the address above.', 'nashenski-commerce' ),
 				'noMatch'      => __( 'No match. Try another word.', 'nashenski-commerce' ),

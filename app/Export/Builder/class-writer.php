@@ -73,15 +73,15 @@ class Writer {
 	 * @param array  $rows   Raw values in column order.
 	 */
 	private static function csv( $path, $config, $labels, $kinds, $rows ) {
-		// phpcs:disable WordPress.WP.AlternativeFunctions -- streaming a temporary file.
-		$handle    = fopen( $path, 'w' );
+		// The rows are written one by one into the temporary file, so a large export is never held in memory; WP_Filesystem can only write a whole file at once.
+		$handle    = fopen( $path, 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- streams the rows into a temporary file; WP_Filesystem has no streaming write.
 		$separator = 'tab' === $config['separator'] ? "\t" : $config['separator'];
 		$convert   = function ( $text ) use ( $config ) {
 			return 'cp1251' === $config['encoding'] && function_exists( 'mb_convert_encoding' ) ? mb_convert_encoding( $text, 'Windows-1251', 'UTF-8' ) : $text;
 		};
 
 		if ( 'utf8bom' === $config['encoding'] ) {
-			fwrite( $handle, "\xEF\xBB\xBF" );
+			fwrite( $handle, "\xEF\xBB\xBF" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- the byte order mark at the start of the stream opened above.
 		}
 
 		if ( $config['header'] ) {
@@ -98,8 +98,7 @@ class Writer {
 			fputcsv( $handle, $line, $separator, '"', '' );
 		}
 
-		fclose( $handle );
-		// phpcs:enable
+		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the stream opened above.
 	}
 
 	/**
@@ -150,7 +149,7 @@ class Writer {
 			$data[] = $item;
 		}
 
-		file_put_contents( $path, wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+		\Nashenski\File::filesystem()->put_contents( $path, (string) wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ), 0600 );
 	}
 
 	/**

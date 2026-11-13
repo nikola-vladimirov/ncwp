@@ -86,7 +86,12 @@ class Email extends \WC_Email {
 	 * @return string
 	 */
 	public function get_default_message() {
-		return __( "Hello {name},\n\nYou left these items in your cart:\n\n{items}\n\nTotal: {cart_total}\n\n{coupon_line}\n\n<a href=\"{resume_link}\">Go back to your cart</a>\n\nDo not want these emails? <a href=\"{unsubscribe_link}\">Unsubscribe here</a>", 'nashenski-commerce' );
+		return sprintf(
+			/* translators: 1: link back to the cart, 2: link that stops the emails. The words in braces are filled in when the email is sent. */
+			__( "Hello {name},\n\nYou left these items in your cart:\n\n{items}\n\nTotal: {cart_total}\n\n{coupon_line}\n\n%1\$s\n\nDo not want these emails? %2\$s", 'nashenski-commerce' ),
+			'<a href="{resume_link}">' . esc_html__( 'Go back to your cart', 'nashenski-commerce' ) . '</a>',
+			'<a href="{unsubscribe_link}">' . esc_html__( 'Unsubscribe here', 'nashenski-commerce' ) . '</a>'
+		);
 	}
 
 	/**

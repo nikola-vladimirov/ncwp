@@ -31,24 +31,15 @@ class Export_Builder {
 	}
 
 	/**
-	 * Check.
-	 */
-	private static function check() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
-		}
-	}
-
-	/**
 	 * Posted config.
 	 */
 	private static function posted_config() {
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ?? '' ) ), self::NONCE ) ) {
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), self::NONCE ) ) {
 			return Builder::normalize( array() );
 		}
 
-		// Decode first, then sanitize every value (sanitizing the raw JSON would corrupt it); Builder::normalize() then validates each one.
-		$raw = isset( $_POST['config'] ) ? map_deep( json_decode( wp_unslash( $_POST['config'] ), true ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized by map_deep() after decoding.
+		// Sanitized as text before decoding (the script writes < > % as JSON escapes, so nothing is cut out of it) and value by value after; Builder::normalize() then validates each one.
+		$raw = isset( $_POST['config'] ) ? map_deep( json_decode( sanitize_text_field( wp_unslash( $_POST['config'] ) ), true ), 'sanitize_text_field' ) : array();
 
 		return Builder::normalize( $raw );
 	}
@@ -57,7 +48,13 @@ class Export_Builder {
 	 * Preview.
 	 */
 	public static function preview() {
-		self::check();
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), self::NONCE ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
 
 		$config = self::posted_config();
 
@@ -95,7 +92,13 @@ class Export_Builder {
 	 * Save.
 	 */
 	public static function save() {
-		self::check();
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), self::NONCE ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
 
 		$config = self::posted_config();
 
@@ -121,8 +124,13 @@ class Export_Builder {
 	 * Delete.
 	 */
 	public static function delete() {
-		self::check();
-		check_ajax_referer( self::NONCE, 'nonce' );
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), self::NONCE ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
 
 		$key       = isset( $_POST['key'] ) ? sanitize_title( wp_unslash( $_POST['key'] ) ) : '';
 		$templates = Builder::templates();
@@ -136,7 +144,9 @@ class Export_Builder {
 	 * Download.
 	 */
 	public static function download() {
-		if ( ! current_user_can( 'manage_woocommerce' ) || ! check_admin_referer( self::NONCE, 'nonce' ) ) {
+		check_admin_referer( self::NONCE, 'nonce' );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You do not have permission to do this.', 'nashenski-commerce' ), 403 );
 		}
 

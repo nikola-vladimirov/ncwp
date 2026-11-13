@@ -64,7 +64,15 @@ class NepoStop {
 			);
 		}
 
-		return json_decode( wp_remote_retrieve_body( $request ), 1 );
+		$status = (int) wp_remote_retrieve_response_code( $request );
+		$data   = json_decode( wp_remote_retrieve_body( $request ), 1 );
+
+		// NepoStop answers in JSON, errors too. Anything else (a gateway page) is an error with its HTTP status.
+		return is_array( $data ) ? $data : array(
+			'success' => false,
+			'found'   => false,
+			'error'   => 'HTTP ' . $status,
+		);
 	}
 
 	/**
@@ -88,7 +96,7 @@ class NepoStop {
 			)
 		);
 
-		if ( 200 === (int) wp_remote_retrieve_response_code( $request ) ) {
+		if ( ! is_wp_error( $request ) && 200 === (int) wp_remote_retrieve_response_code( $request ) ) {
 			$has_access = true;
 		}
 

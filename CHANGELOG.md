@@ -1,6 +1,47 @@
 # Nashenski Commerce changelog
 
-Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+Manual: https://nashenski.com/manual/
+
+## 0.21.10 (2026-11-13)
+
+### Changes
+- Security Audit: every function that reads a form, a link or an AJAX request checks its nonce first, on its own, and only then reads the fields; actions that change data also check the user's rights. This covers the checkout update, the checkout field rules, the Pigeon Express label payment, the order withdrawal form, the quick order, the abandoned carts screen and the export, report and price screens.
+- Security Audit: notices after an action (carts reminded or deleted, documents regenerated, import or setup done) show only when the link carries its nonce. The filter, page and edit links of the abandoned carts screen and the courier links in the settings carry one too; an old bookmark opens the default view.
+- Security Audit: CSS and scripts are escaped where they are printed. The quick order, withdrawal form and email settings scripts are now files in assets/js. The quick order button asks for a fresh security token on each click, so it also works on cached product pages.
+- Security Audit: the plugin no longer defines WordPress's FS_CHMOD_DIR and FS_CHMOD_FILE. Its own files get the permissions of their folder, as uploads do.
+- Security Audit: document and export download links carry a nonce besides their signature. A link on a page left open for more than a day needs a reload.
+- Security Audit: only standard file types in the plugin. Library licence files end in .txt, the NRA audit schema is dex-audit-schema.xml, and unused PDF library files (encoding maps, the PDF/A colour profile) are left out. The WordPress.org zip has no .pot file.
+- Security Audit: XML uploads are no longer allowed on the whole site. The plugin allows the type only while it saves its own NRA audit file.
+- Security Audit: deactivating or deleting the plugin clears every scheduled job, the daily export file cleanup and the 0.21.8 background step too. The jobs come back when the plugin is turned on again.
+- Security Audit: the courier choice cookie, the export settings and the delivery choice on the order screen are sanitized before and after they are decoded. The checkout form of "update order review" is taken from WooCommerce, not read from the request.
+- Security Audit: every file the plugin sends (an export, a stored document, a courier label) goes through one place, with its content type and "nosniff".
+- Security Audit: the settings, export builder and quick order scripts put texts on the page as text and build their rows and tables as elements, not as HTML strings. The Econt label preview opens only addresses on Econt's own hosts.
+- PDF documents: the logo is read from its file in the media library. A custom template that asks for Helvetica, Times, Courier or a generic font family now prints in the DejaVu font, which has Cyrillic letters; the unused built-in font metric files are left out of the plugin.
+- The libraries and fonts that come with the plugin, and the DejaVu font licence, are listed in assets/licenses/third-party-licenses.txt.
+- Abandoned carts: the cart table is read through the object cache, and every change clears it.
+- Security Audit: every request of the order screen label tools and of the checkout pickers checks its nonce itself, and the label tools also check the right to manage the store. A label request with a missing order or value answers with an error, with no PHP warning.
+- Security Audit: the quick order form is read from a public, read-only address of the REST API (nashenski/v1/quick-order/form) with a fresh security token in it. The request that only handed out a token is gone.
+- Security Audit: a courier login, key or secret is saved as typed, with any printable character. Only control characters and broken text are taken out.
+- Security Audit: list choices and rule values of the checkout fields are saved without HTML tags.
+- Security Audit: a label PDF from BOX NOW or Pigeon Express is sent only when the courier answers with a file. Courier requests that get no answer are handled as errors.
+- Security Audit: the label preview shows addresses on Econt's own hosts only.
+- The monthly exports (NRA file, Delta, invoice archive) send the chosen month as "period".
+- Deleting the plugin also deletes the options that only remember the state of a screen or notice. Settings, documents, numbering and import flags stay, as listed at the top of uninstall.php.
+- The suggested privacy policy text names every outside service: Econt, Speedy, BOX NOW, Pigeon Express, the office maps (Google Maps for Speedy), nekorekten.com, Connectix, NepoStop and VIES.
+- The hourly shipment check reads at most 500 open orders a run. The filter value -1 now means 500, not every order at once.
+- After the settings of a tab are saved, one action runs for every tab: nashenski_admin_settings_after_save_fields, with the tab class as its argument. The older names with the class in them still run.
+- New orders save the VAT number check under _nashenski_vat_number_is_validated and _nashenski_vat_number_is_valid. Older orders are read from the earlier names.
+- The quick order form and the block checkout price texts are styled from CSS files; scripts no longer add style elements to the page.
+- The withdrawal link in emails now carries the order number as nashenski_order. Links in emails sent before this version still open the form, without the order number filled in.
+- Old settings links (admin.php?page=nashenski&tab=...) open the Nashenski Commerce settings at the start.
+- Invoice settings: Documents > Invoices and documents has one checkbox, "Enable invoices", and one choice, "How to issue invoices". They replace "When to generate invoices?", "Invoice numbering" and the "Company invoice fields" checkbox.
+- Invoice settings: with "Enable invoices" on, the checkout shows "I want an invoice for a company" with the company fields, and the website makes the invoice of every order where it is ticked. Invoices are for companies only; "Always" is gone.
+- Invoice settings: "How to issue invoices" is "On request, not in the NRA audit file" (the default: orders with an invoice are left out of the file and the monthly audit email) or "On request, in the NRA audit file", which needs "Enable N-18" on.
+- Invoice settings: the website makes and numbers every invoice. The "Own invoicing program" choice is gone. "Make invoice" on the order screen still takes a number you type, and the next number continues after it.
+- Invoice settings: your old choices are carried over once. "Disable invoice generation" becomes off. Any other choice becomes on: in the NRA audit file with "Website invoices", out of it with "Own invoicing program". Documents and numbers already made do not change, and orders kept out of the NRA audit file stay out. A store that never saved "When to generate invoices?" keeps the company box it had: on while documents are on, unless "Company invoice fields" was off.
+- Invoice settings: check after the update. If invoices were disabled and only "Company invoice fields" was on, the company fields are off now; turn on "Enable invoices" to get them back. Stores on "Add only fields on checkout" now get an invoice for each order where the box is ticked.
+- Invoice settings: the imports from Bulgarisation for WooCommerce and from the mreja.net N-18 plugin set the two new settings from those plugins' invoice settings. The company fields keep their names and order data.
+- Invoice settings: the setup wizard asks "Only for companies" or "No invoices".
 
 ## 0.21.9 (2026-11-12)
 

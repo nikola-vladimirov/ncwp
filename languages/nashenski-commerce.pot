@@ -2,10 +2,10 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nashenski Commerce 0.21.8\n"
+"Project-Id-Version: Nashenski Commerce 0.21.10\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-11 22:06+0000\n"
-"PO-Revision-Date: 2026-11-11 22:06+0000\n"
+"POT-Creation-Date: 2026-11-13 12:30+0000\n"
+"PO-Revision-Date: 2026-11-13 12:30+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -28,269 +28,287 @@ msgstr ""
 msgid "You left something in your cart"
 msgstr ""
 
-#: app/Abandoned_Carts/class-email.php:89
-msgid "Hello {name},\n\nYou left these items in your cart:\n\n{items}\n\nTotal: {cart_total}\n\n{coupon_line}\n\n<a href=\"{resume_link}\">Go back to your cart</a>\n\nDo not want these emails? <a href=\"{unsubscribe_link}\">Unsubscribe here</a>"
+#. translators: 1: link back to the cart, 2: link that stops the emails. The words in braces are filled in when the email is sent.
+#: app/Abandoned_Carts/class-email.php:91
+#, php-format
+msgid "Hello {name},\n\nYou left these items in your cart:\n\n{items}\n\nTotal: {cart_total}\n\n{coupon_line}\n\n%1$s\n\nDo not want these emails? %2$s"
 msgstr ""
 
-#: app/Abandoned_Carts/class-email.php:99 app/Front_End/class-quick-order.php:247 app/Front_End/class-quick-order.php:784
+#: app/Abandoned_Carts/class-email.php:92
+msgid "Go back to your cart"
+msgstr ""
+
+#: app/Abandoned_Carts/class-email.php:93
+msgid "Unsubscribe here"
+msgstr ""
+
+#: app/Abandoned_Carts/class-email.php:104 app/Front_End/class-quick-order.php:248 app/Front_End/class-quick-order.php:762
 msgid "Message"
 msgstr ""
 
-#: app/Abandoned_Carts/class-email.php:102
+#: app/Abandoned_Carts/class-email.php:107
 msgid "The body of the reminder. Placeholders: {name}, {items}, {cart_total}, {coupon}, {coupon_line} (the whole sentence about the coupon, empty when there is none), {resume_link}, {unsubscribe_link}, {site_title}. Each line becomes a paragraph."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:145
+#: app/Abandoned_Carts/class-tracker.php:152
 msgid "Percentage off"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:146
+#: app/Abandoned_Carts/class-tracker.php:153
 msgid "Fixed amount off the cart"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:147
+#: app/Abandoned_Carts/class-tracker.php:154
 msgid "Fixed amount off each product"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:509
+#: app/Abandoned_Carts/class-tracker.php:574
 msgid "there"
 msgstr ""
 
 #. translators: %s: coupon code
-#: app/Abandoned_Carts/class-tracker.php:515
+#: app/Abandoned_Carts/class-tracker.php:580
 #, php-format
 msgid "Use the code %s when you order. It works once."
 msgstr ""
 
 #. translators: %s: shopper's first name
-#: app/Abandoned_Carts/class-tracker.php:534
+#: app/Abandoned_Carts/class-tracker.php:599
 #, php-format
 msgid "Hello %s,"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:536
+#: app/Abandoned_Carts/class-tracker.php:601
 msgid "You left these items in your cart:"
 msgstr ""
 
 #. translators: %s: cart total, with the currency
-#: app/Abandoned_Carts/class-tracker.php:540
+#: app/Abandoned_Carts/class-tracker.php:605
 #, php-format
 msgid "Total: %s"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:549
+#: app/Abandoned_Carts/class-tracker.php:614
 msgid "Go back to your cart:"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:552
+#: app/Abandoned_Carts/class-tracker.php:617
 msgid "Do not want these emails? Unsubscribe here:"
 msgstr ""
 
 #. translators: %s: site name
-#: app/Abandoned_Carts/class-tracker.php:558
+#: app/Abandoned_Carts/class-tracker.php:623
 #, php-format
 msgid "You left items in your cart at %s"
 msgstr ""
 
 #. translators: %s: shopper's email
-#: app/Abandoned_Carts/class-tracker.php:649
+#: app/Abandoned_Carts/class-tracker.php:714
 #, php-format
 msgid "Abandoned cart coupon for %s"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:727
+#: app/Abandoned_Carts/class-tracker.php:816
 msgid "We put the items back in your cart."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:729
+#: app/Abandoned_Carts/class-tracker.php:818
 msgid "The items from the reminder are no longer available."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:758
+#: app/Abandoned_Carts/class-tracker.php:863
 msgid "You will not get more reminders from this shop."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:759 app/Admin/class-abandoned-carts-page.php:71
+#: app/Abandoned_Carts/class-tracker.php:864 app/Admin/class-abandoned-carts-page.php:72
 msgid "Unsubscribed"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:791 app/Abandoned_Carts/class-tracker.php:806 app/Abandoned_Carts/class-tracker.php:850 app/Admin/class-abandoned-carts-page.php:55 app/Admin/class-abandoned-carts-page.php:56 app/Admin/class-abandoned-carts-page.php:244
+#: app/Abandoned_Carts/class-tracker.php:898 app/Abandoned_Carts/class-tracker.php:913 app/Abandoned_Carts/class-tracker.php:966 app/Admin/class-abandoned-carts-page.php:56 app/Admin/class-abandoned-carts-page.php:57 app/Admin/class-abandoned-carts-page.php:268
 msgid "Abandoned carts"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:826 app/Admin/class-abandoned-carts-page.php:455 app/Export/Builder/class-fields.php:63 app/Front_End/Checkout/class-field-editor.php:868 app/Front_End/class-quick-order.php:512
+#: app/Abandoned_Carts/class-tracker.php:942 app/Admin/class-abandoned-carts-page.php:469 app/Export/Builder/class-fields.php:63 app/Front_End/Checkout/class-field-editor.php:866 app/Front_End/class-quick-order.php:488
 msgid "Email"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:827 app/Admin/class-abandoned-carts-page.php:459 app/Export/Builder/class-fields.php:61 app/Front_End/Checkout/class-field-editor.php:175
+#: app/Abandoned_Carts/class-tracker.php:943 app/Admin/class-abandoned-carts-page.php:473 app/Export/Builder/class-fields.php:61 app/Front_End/Checkout/class-field-editor.php:172
 msgid "First name"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:828 app/Admin/class-abandoned-carts-page.php:463 app/Admin/Tabs/class-boxnow-tab.php:93 app/Admin/Tabs/class-econt-tab.php:107 app/Admin/Tabs/class-speedy-tab.php:87 app/Export/Builder/class-fields.php:64
+#: app/Abandoned_Carts/class-tracker.php:944 app/Admin/class-abandoned-carts-page.php:477 app/Admin/Tabs/class-boxnow-tab.php:93 app/Admin/Tabs/class-econt-tab.php:108 app/Admin/Tabs/class-speedy-tab.php:87 app/Export/Builder/class-fields.php:64
 msgid "Phone"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:829 app/Admin/class-abandoned-carts-page.php:352 app/Front_End/class-quick-order.php:88
+#: app/Abandoned_Carts/class-tracker.php:945 app/Admin/class-abandoned-carts-page.php:370 app/Front_End/class-quick-order.php:89
 msgid "Cart"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:830
+#: app/Abandoned_Carts/class-tracker.php:946
 msgid "Cart total"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:831 app/Export/Builder/class-fields.php:51
+#: app/Abandoned_Carts/class-tracker.php:947 app/Export/Builder/class-fields.php:51
 msgid "Currency"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:832 app/Admin/class-abandoned-carts-page.php:318 app/Admin/class-impossiblevatprice.php:174 app/Export/Builder/class-fields.php:47
+#: app/Abandoned_Carts/class-tracker.php:948 app/Admin/class-abandoned-carts-page.php:336 app/Admin/class-impossiblevatprice.php:174 app/Export/Builder/class-fields.php:47
 msgid "Status"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:833
+#: app/Abandoned_Carts/class-tracker.php:949
 msgid "Created"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:834
+#: app/Abandoned_Carts/class-tracker.php:950
 msgid "Last activity"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:895
+#: app/Abandoned_Carts/class-tracker.php:1027
 msgid "Cart reminder coupons already used on an order are kept for the store's accounts."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:909
+#: app/Abandoned_Carts/class-tracker.php:1041
 msgid "When abandoned carts are on, the store keeps the email, first name, phone and cart of shoppers who start the checkout and do not order. They are used only to send cart reminder emails."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:910
+#: app/Abandoned_Carts/class-tracker.php:1042
 msgid "A reminder coupon is made for the email of its cart and is deleted with the cart's personal data, unless it was already used on an order."
 msgstr ""
 
 #. translators: %d: number of days
-#: app/Abandoned_Carts/class-tracker.php:912
+#: app/Abandoned_Carts/class-tracker.php:1044
 #, php-format
 msgid "A cart is deleted %d days after its last change."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:913
-msgid "When the store turns on customer checks (nekorekten.com, Connectix, NepoStop), the phone number of the order is sent to them."
+#: app/Abandoned_Carts/class-tracker.php:1045
+msgid "The courier the customer chooses (Econt, Speedy, BOX NOW or Pigeon Express) gets the delivery details when a delivery price or a waybill is made: name, phone, address, office or locker, the parcel and the cash on delivery amount."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:914
-msgid "The courier of an order gets the delivery details: name, phone, address or office."
+#: app/Abandoned_Carts/class-tracker.php:1046
+msgid "When the customer opens the office map at checkout, the map page of Econt or Speedy loads with the town of the delivery. The Speedy map uses Google Maps."
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:68
-msgid "Open"
+#: app/Abandoned_Carts/class-tracker.php:1047
+msgid "When the store turns on customer checks, the phone number of the order is sent to the services it chose: nekorekten.com, Connectix or NepoStop. A report the store sends to nekorekten.com carries the name, phone and email of that order."
+msgstr ""
+
+#: app/Abandoned_Carts/class-tracker.php:1048
+msgid "A VAT number a company types at checkout is sent to the VIES service of the European Commission to be checked."
 msgstr ""
 
 #: app/Admin/class-abandoned-carts-page.php:69
-msgid "Ordered"
+msgid "Open"
 msgstr ""
 
 #: app/Admin/class-abandoned-carts-page.php:70
+msgid "Ordered"
+msgstr ""
+
+#: app/Admin/class-abandoned-carts-page.php:71
 msgid "Emptied"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:151 app/Admin/class-boxnow.php:711 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:306 app/Admin/class-import-sources.php:302 app/Admin/class-migration.php:126
+#: app/Admin/class-abandoned-carts-page.php:152 app/Admin/class-boxnow.php:731 app/Admin/class-checkout-fields-import.php:93 app/Admin/class-help-page.php:306 app/Admin/class-import-sources.php:283 app/Admin/class-import-sources.php:306
 msgid "You do not have permission to perform this action."
 msgstr ""
 
 #. translators: 1: number of open carts, 2: value of open carts, 3: number of carts ordered
-#: app/Admin/class-abandoned-carts-page.php:252
+#: app/Admin/class-abandoned-carts-page.php:276
 #, php-format
 msgid "Open carts: %1$d (%2$s). Ordered: %3$d."
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:264
+#: app/Admin/class-abandoned-carts-page.php:288
 msgid "All"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:297
+#: app/Admin/class-abandoned-carts-page.php:315
 msgid "Select bulk action"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:299
+#: app/Admin/class-abandoned-carts-page.php:317
 msgid "Bulk actions"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:300 app/Admin/class-abandoned-carts-page.php:372
+#: app/Admin/class-abandoned-carts-page.php:318 app/Admin/class-abandoned-carts-page.php:388
 msgid "Send reminder"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:301 app/Admin/class-abandoned-carts-page.php:374
+#: app/Admin/class-abandoned-carts-page.php:319 app/Admin/class-abandoned-carts-page.php:390
 msgid "Delete"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:303 app/Admin/class-help-page.php:350
+#: app/Admin/class-abandoned-carts-page.php:321 app/Admin/class-help-page.php:350
 msgid "Apply"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:311
+#: app/Admin/class-abandoned-carts-page.php:329
 msgid "Last change"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:312
+#: app/Admin/class-abandoned-carts-page.php:330
 msgid "Shopper"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:313
+#: app/Admin/class-abandoned-carts-page.php:331
 msgid "Items"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:314 app/Export/Builder/class-fields.php:120 app/Invoice/Order/class-order.php:323 app/Invoice/Order/class-order.php:328
+#: app/Admin/class-abandoned-carts-page.php:332 app/Export/Builder/class-fields.php:120 app/Invoice/Order/class-order.php:323 app/Invoice/Order/class-order.php:328
 msgid "Total"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:315
+#: app/Admin/class-abandoned-carts-page.php:333
 msgid "Coupon"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:316
+#: app/Admin/class-abandoned-carts-page.php:334
 msgid "Last step"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:317
+#: app/Admin/class-abandoned-carts-page.php:335
 msgid "Reminders"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:319 app/Admin/class-impossiblevatprice.php:175
+#: app/Admin/class-abandoned-carts-page.php:337 app/Admin/class-impossiblevatprice.php:175
 msgid "Actions"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:324
+#: app/Admin/class-abandoned-carts-page.php:342
 msgid "No carts found."
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:352 app/Admin/class-help-page.php:96 app/Admin/class-help-page.php:110 app/Admin/class-help-page.php:147 app/Admin/class-settings-page.php:141
+#: app/Admin/class-abandoned-carts-page.php:370 app/Admin/class-help-page.php:96 app/Admin/class-help-page.php:110 app/Admin/class-help-page.php:147 app/Admin/class-settings-page.php:159
 msgid "Checkout"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:370 app/Admin/class-impossiblevatprice.php:97
+#: app/Admin/class-abandoned-carts-page.php:386 app/Admin/class-impossiblevatprice.php:97
 msgid "Edit"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:374
+#: app/Admin/class-abandoned-carts-page.php:390
 msgid "Delete this cart?"
 msgstr ""
 
 #. translators: %d: number of carts
-#: app/Admin/class-abandoned-carts-page.php:387
+#: app/Admin/class-abandoned-carts-page.php:403
 #, php-format
 msgid "%d carts"
 msgstr ""
 
 #. translators: %d: cart id
-#: app/Admin/class-abandoned-carts-page.php:451
+#: app/Admin/class-abandoned-carts-page.php:465
 #, php-format
 msgid "Edit cart #%d"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:467
+#: app/Admin/class-abandoned-carts-page.php:481
 msgid "Save"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:480
+#: app/Admin/class-abandoned-carts-page.php:486
 msgid "Cancel"
 msgstr ""
 
@@ -322,7 +340,7 @@ msgstr[1] ""
 msgid "Cart updated."
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:505 app/Front_End/class-quick-order.php:600
+#: app/Admin/class-abandoned-carts-page.php:505 app/Front_End/class-quick-order.php:577
 msgid "Enter a valid email address."
 msgstr ""
 
@@ -335,16 +353,16 @@ msgid "Select at least one cart first."
 msgstr ""
 
 #. translators: 1: Nashenski Commerce, 2: five stars.
-#: app/Admin/class-admin-menus.php:110
+#: app/Admin/class-admin-menus.php:83
 #, php-format
 msgid "If you like %1$s please leave us a %2$s rating. A huge thanks in advance!"
 msgstr ""
 
-#: app/Admin/class-admin-menus.php:111 app/Admin/class-settings-page.php:57 app/Admin/class-settings-page.php:588
+#: app/Admin/class-admin-menus.php:84 app/Admin/class-settings-page.php:57 app/Admin/class-settings-page.php:577
 msgid "Nashenski Commerce"
 msgstr ""
 
-#: app/Admin/class-admin-menus.php:112
+#: app/Admin/class-admin-menus.php:88
 msgid "five star"
 msgstr ""
 
@@ -356,7 +374,7 @@ msgstr ""
 msgid "Send to"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:125 app/Admin/class-econt.php:169 app/Admin/class-pigeon.php:311 app/Admin/class-speedy.php:238 app/Admin/Tabs/class-econt-tab.php:164 app/Admin/Tabs/class-pigeon-tab.php:107
+#: app/Admin/class-boxnow.php:125 app/Admin/class-econt.php:169 app/Admin/class-pigeon.php:311 app/Admin/class-speedy.php:238 app/Admin/Tabs/class-econt-tab.php:165 app/Admin/Tabs/class-pigeon-tab.php:107
 msgid "Send From"
 msgstr ""
 
@@ -388,7 +406,7 @@ msgstr ""
 msgid "Delete label"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:133 app/Admin/class-econt.php:131 app/Admin/class-pigeon.php:275 app/Admin/class-speedy.php:198 app/Admin/Order/class-columns.php:45 app/Front_End/Checkout/class-field-editor.php:876
+#: app/Admin/class-boxnow.php:133 app/Admin/class-econt.php:131 app/Admin/class-pigeon.php:275 app/Admin/class-speedy.php:198 app/Admin/Order/class-columns.php:45 app/Front_End/Checkout/class-field-editor.php:874
 msgid "Label"
 msgstr ""
 
@@ -396,7 +414,7 @@ msgstr ""
 msgid "Selected"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:201 app/Admin/Order/class-delivery-box.php:207 app/Front_End/Checkout/class-pickers.php:590
+#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:201 app/Admin/Order/class-delivery-box.php:207 app/Front_End/Checkout/class-pickers.php:603
 msgid "Choose"
 msgstr ""
 
@@ -448,7 +466,7 @@ msgstr ""
 msgid "Price"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:148 app/Admin/Tabs/class-boxnow-tab.php:92 app/Admin/Tabs/class-econt-tab.php:106 app/Admin/Tabs/class-speedy-tab.php:86 app/Front_End/class-quick-order.php:502 app/Front_End/class-withdrawal.php:494
+#: app/Admin/class-boxnow.php:148 app/Admin/Tabs/class-boxnow-tab.php:92 app/Admin/Tabs/class-econt-tab.php:107 app/Admin/Tabs/class-speedy-tab.php:86 app/Front_End/class-quick-order.php:478 app/Front_End/class-withdrawal.php:513
 msgid "Name"
 msgstr ""
 
@@ -458,19 +476,27 @@ msgstr ""
 msgid "This order has more than %d units, so it is not packed into BOX NOW boxes automatically. Add the boxes by hand."
 msgstr ""
 
-#: app/Admin/class-boxnow.php:577
+#: app/Admin/class-boxnow.php:538 app/Admin/class-boxnow.php:672 app/Admin/class-econt.php:386 app/Admin/class-econt.php:424 app/Admin/class-econt.php:470 app/Admin/class-pigeon.php:383
+msgid "This page has expired. Reload it and try again."
+msgstr ""
+
+#: app/Admin/class-boxnow.php:542 app/Admin/class-boxnow.php:676 app/Admin/class-econt.php:390 app/Admin/class-econt.php:428 app/Admin/class-econt.php:474 app/Admin/class-pigeon.php:387
+msgid "You cannot create labels."
+msgstr ""
+
+#: app/Admin/class-boxnow.php:584
 msgid "Cash on delivery orders cannot be split into multiple packets."
 msgstr ""
 
-#: app/Admin/class-boxnow.php:652
+#: app/Admin/class-boxnow.php:659
 msgid "BOX NOW did not answer. Check the connection settings and try again."
 msgstr ""
 
-#: app/Admin/class-boxnow.php:716 app/Admin/class-pigeon.php:797 app/Admin/class-speedy.php:1163
+#: app/Admin/class-boxnow.php:727 app/Admin/class-pigeon.php:800 app/Admin/class-speedy.php:1189
 msgid "This link has expired. Reload the order page and try again."
 msgstr ""
 
-#: app/Admin/class-boxnow.php:723 app/Admin/class-speedy.php:414 app/Admin/class-speedy.php:1185
+#: app/Admin/class-boxnow.php:738 app/Admin/class-pigeon.php:813 app/Admin/class-pigeon.php:849 app/Admin/class-pigeon.php:884 app/Admin/class-speedy.php:392 app/Admin/class-speedy.php:432
 msgid "Invalid parcel number."
 msgstr ""
 
@@ -566,19 +592,19 @@ msgstr ""
 msgid "Street number"
 msgstr ""
 
-#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:583 app/Shipping/Econt/class-address.php:47
+#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:596 app/Shipping/Econt/class-address.php:47
 msgid "Block"
 msgstr ""
 
-#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:210 app/Front_End/Checkout/class-pickers.php:584 app/Shipping/Econt/class-address.php:48
+#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:210 app/Front_End/Checkout/class-pickers.php:597 app/Shipping/Econt/class-address.php:48
 msgid "Entrance"
 msgstr ""
 
-#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:211 app/Front_End/Checkout/class-pickers.php:585 app/Shipping/Econt/class-address.php:49
+#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:211 app/Front_End/Checkout/class-pickers.php:598 app/Shipping/Econt/class-address.php:49
 msgid "Floor"
 msgstr ""
 
-#: app/Admin/class-econt.php:145 app/Admin/class-speedy.php:212 app/Front_End/Checkout/class-pickers.php:586 app/Shipping/Econt/class-address.php:50
+#: app/Admin/class-econt.php:145 app/Admin/class-speedy.php:212 app/Front_End/Checkout/class-pickers.php:599 app/Shipping/Econt/class-address.php:50
 msgid "Apartment"
 msgstr ""
 
@@ -594,11 +620,11 @@ msgstr ""
 msgid "Street/Quarter"
 msgstr ""
 
-#: app/Admin/class-econt.php:149 app/Admin/class-pigeon.php:287 app/Admin/class-speedy.php:215 app/Admin/Tabs/class-econt-tab.php:156 app/Admin/Tabs/class-econt-tab.php:199 app/Admin/Tabs/class-pigeon-tab.php:99
+#: app/Admin/class-econt.php:149 app/Admin/class-pigeon.php:287 app/Admin/class-speedy.php:215 app/Admin/Tabs/class-econt-tab.php:157 app/Admin/Tabs/class-econt-tab.php:200 app/Admin/Tabs/class-pigeon-tab.php:99
 msgid "Office"
 msgstr ""
 
-#: app/Admin/class-econt.php:151 app/Admin/class-pigeon.php:288 app/Admin/class-speedy.php:217 app/Admin/Tabs/class-econt-tab.php:160 app/Admin/Tabs/class-pigeon-tab.php:103 app/Admin/Tabs/class-pigeon-tab.php:138
+#: app/Admin/class-econt.php:151 app/Admin/class-pigeon.php:288 app/Admin/class-speedy.php:217 app/Admin/Tabs/class-econt-tab.php:161 app/Admin/Tabs/class-pigeon-tab.php:103 app/Admin/Tabs/class-pigeon-tab.php:138
 msgid "Address"
 msgstr ""
 
@@ -642,7 +668,7 @@ msgstr ""
 msgid "Review and test"
 msgstr ""
 
-#: app/Admin/class-econt.php:165 app/Admin/class-pigeon.php:308 app/Admin/class-speedy.php:233 app/Admin/Tabs/class-econt-tab.php:110 app/Admin/Tabs/class-pigeon-tab.php:114 app/Admin/Tabs/class-speedy-tab.php:93
+#: app/Admin/class-econt.php:165 app/Admin/class-pigeon.php:308 app/Admin/class-speedy.php:233 app/Admin/Tabs/class-econt-tab.php:111 app/Admin/Tabs/class-pigeon-tab.php:114 app/Admin/Tabs/class-speedy-tab.php:93
 msgid "Declared value"
 msgstr ""
 
@@ -650,7 +676,7 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: app/Admin/class-econt.php:167 app/Admin/Order/class-metabox.php:95 app/Admin/Tabs/class-econt-tab.php:137 app/Export/Builder/class-fields.php:147
+#: app/Admin/class-econt.php:167 app/Admin/Order/class-metabox.php:94 app/Admin/Tabs/class-econt-tab.php:138 app/Export/Builder/class-fields.php:147
 msgid "Invoice number"
 msgstr ""
 
@@ -662,7 +688,7 @@ msgstr ""
 msgid "Length"
 msgstr ""
 
-#: app/Admin/class-econt.php:171 app/Admin/class-pigeon.php:313 app/Admin/class-speedy.php:240 app/Front_End/Checkout/class-field-editor.php:936
+#: app/Admin/class-econt.php:171 app/Admin/class-pigeon.php:313 app/Admin/class-speedy.php:240 app/Front_End/Checkout/class-field-editor.php:934
 msgid "Width"
 msgstr ""
 
@@ -702,7 +728,7 @@ msgstr ""
 msgid "This option tells the plugin which of your tax classes are for digital goods. This affects the taxable location of the user as of 1st Jan 2015."
 msgstr ""
 
-#: app/Admin/class-eu-vat.php:75 app/Admin/class-eu-vat.php:129 app/Export/Builder/class-fields.php:81 app/Front_End/Checkout/class-company-fields.php:123 app/Front_End/Checkout/class-eu-vat.php:131 app/Front_End/Checkout/class-eu-vat.php:333
+#: app/Admin/class-eu-vat.php:75 app/Admin/class-eu-vat.php:129 app/Export/Builder/class-fields.php:81 app/Front_End/Checkout/class-company-fields.php:108 app/Front_End/Checkout/class-eu-vat.php:131 app/Front_End/Checkout/class-eu-vat.php:333
 msgid "VAT number"
 msgstr ""
 
@@ -738,305 +764,305 @@ msgstr ""
 msgid "Billing Country"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:38 app/Admin/class-export-builder.php:140
+#: app/Admin/class-export-builder.php:52 app/Admin/class-export-builder.php:56 app/Admin/class-export-builder.php:96 app/Admin/class-export-builder.php:100 app/Admin/class-export-builder.php:128 app/Admin/class-export-builder.php:132
 msgid "You do not have permission to do this."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:65 app/Admin/class-export-builder.php:146
+#: app/Admin/class-export-builder.php:62 app/Admin/class-export-builder.php:156
 msgid "Add at least one column."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:103
+#: app/Admin/class-export-builder.php:106
 msgid "Give the export a name."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:150
+#: app/Admin/class-export-builder.php:160
 msgid "Excel files need the PHP Zip extension, which this server does not have. Choose CSV instead."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:202
+#: app/Admin/class-export-builder.php:212
 msgid "New export"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:203
+#: app/Admin/class-export-builder.php:213
 msgid "Ready-made"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:204
+#: app/Admin/class-export-builder.php:214
 msgid "Saved exports"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:205
+#: app/Admin/class-export-builder.php:215
 msgid "Add"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:206 app/Admin/class-settings-page.php:886 app/Admin/class-settings-page.php:1110 app/Admin/class-settings-page.php:1250 app/Front_End/Checkout/class-field-editor.php:904 app/Front_End/Checkout/class-field-editor.php:938
+#: app/Admin/class-export-builder.php:216 app/Admin/class-settings-page.php:873 app/Admin/class-settings-page.php:1108 app/Admin/class-settings-page.php:1248 app/Front_End/Checkout/class-field-editor.php:902 app/Front_End/Checkout/class-field-editor.php:936
 msgid "Remove"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:207 app/Front_End/Checkout/class-field-editor.php:890
+#: app/Admin/class-export-builder.php:217 app/Front_End/Checkout/class-field-editor.php:888
 msgid "Move up"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:208 app/Front_End/Checkout/class-field-editor.php:891
+#: app/Admin/class-export-builder.php:218 app/Front_End/Checkout/class-field-editor.php:889
 msgid "Move down"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:209
+#: app/Admin/class-export-builder.php:219
 msgid "Column heading"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:210
+#: app/Admin/class-export-builder.php:220
 msgid "No columns yet. Add fields from the list."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:211
+#: app/Admin/class-export-builder.php:221
 msgid "Saved."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:212
+#: app/Admin/class-export-builder.php:222
 msgid "Deleted."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:213
+#: app/Admin/class-export-builder.php:223
 msgid "Delete this saved export?"
 msgstr ""
 
 #. translators: 1: rows shown, 2: rows in the file, 3: file name
-#: app/Admin/class-export-builder.php:215
+#: app/Admin/class-export-builder.php:225
 #, php-format
 msgid "First %1$d of %2$d rows. File: %3$s"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:216
+#: app/Admin/class-export-builder.php:226
 msgid "Nothing matches these filters."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:217 app/class-plugin.php:393 app/Front_End/class-quick-order.php:375
+#: app/Admin/class-export-builder.php:227 app/class-plugin.php:378 app/Front_End/class-quick-order.php:390
 msgid "Something went wrong. Please try again."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:218
+#: app/Admin/class-export-builder.php:228
 msgid "Order meta key, for example _billing_company_eik"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:219 app/Export/Builder/class-fields.php:188
+#: app/Admin/class-export-builder.php:229 app/Export/Builder/class-fields.php:188
 msgid "Order meta"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:256
+#: app/Admin/class-export-builder.php:266
 msgid "Other shipping"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:259
+#: app/Admin/class-export-builder.php:269
 msgid "Custom export"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:260
+#: app/Admin/class-export-builder.php:270
 msgid "Build your own file: choose the records, the columns and their order, the format and the file name. Preview it, save it for next month and download it."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:263
+#: app/Admin/class-export-builder.php:273
 msgid "Start from"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:265
+#: app/Admin/class-export-builder.php:275
 msgid "Delete this saved export"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:270
+#: app/Admin/class-export-builder.php:280
 msgid "What to export"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:272
+#: app/Admin/class-export-builder.php:282
 msgid "Orders"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:272
+#: app/Admin/class-export-builder.php:282
 msgid "One row per order"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:273 app/Export/Builder/class-builder.php:89
+#: app/Admin/class-export-builder.php:283 app/Export/Builder/class-builder.php:89
 msgid "Products sold"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:273
+#: app/Admin/class-export-builder.php:283
 msgid "One row per product line"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:274 app/Admin/class-help-page.php:98 app/Admin/class-help-page.php:111 app/Admin/class-settings-page.php:155 app/Admin/Order/class-columns.php:42 app/Admin/Tabs/class-export-tab.php:44
+#: app/Admin/class-export-builder.php:284 app/Admin/class-help-page.php:98 app/Admin/class-help-page.php:111 app/Admin/class-settings-page.php:172 app/Admin/Order/class-columns.php:42 app/Admin/Tabs/class-export-tab.php:48
 msgid "Documents"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:274
+#: app/Admin/class-export-builder.php:284
 msgid "One row per invoice, credit note or order document"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:279
+#: app/Admin/class-export-builder.php:289
 msgid "Which records"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:281 app/Admin/class-settings-page.php:1094 app/Admin/class-settings-page.php:1094 app/Admin/class-settings-page.php:1095
+#: app/Admin/class-export-builder.php:291 app/Admin/class-settings-page.php:1092 app/Admin/class-settings-page.php:1092 app/Admin/class-settings-page.php:1093
 msgid "From"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:282 app/Admin/class-settings-page.php:1094 app/Admin/class-settings-page.php:1094 app/Admin/class-settings-page.php:1095
+#: app/Admin/class-export-builder.php:292 app/Admin/class-settings-page.php:1092 app/Admin/class-settings-page.php:1092 app/Admin/class-settings-page.php:1093
 msgid "To"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:283
+#: app/Admin/class-export-builder.php:293
 msgid "By"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:285
+#: app/Admin/class-export-builder.php:295
 msgid "order date"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:286
+#: app/Admin/class-export-builder.php:296
 msgid "payment date"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:287
+#: app/Admin/class-export-builder.php:297
 msgid "completion date"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:292
+#: app/Admin/class-export-builder.php:302
 msgid "This month"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:293
+#: app/Admin/class-export-builder.php:303
 msgid "Last month"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:294
+#: app/Admin/class-export-builder.php:304
 msgid "This year"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:295
+#: app/Admin/class-export-builder.php:305
 msgid "Last year"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:298
+#: app/Admin/class-export-builder.php:308
 msgid "Order status"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:302 app/Export/Builder/class-fields.php:110 app/Invoice/Document/class-basedocument.php:438
+#: app/Admin/class-export-builder.php:312 app/Export/Builder/class-fields.php:110 app/Invoice/Document/class-basedocument.php:438
 msgid "Payment method"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:306 app/Export/Builder/class-fields.php:101
+#: app/Admin/class-export-builder.php:316 app/Export/Builder/class-fields.php:101
 msgid "Courier"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:310 app/Export/Builder/class-fields.php:137
+#: app/Admin/class-export-builder.php:320 app/Export/Builder/class-fields.php:137
 msgid "Document type"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:313
+#: app/Admin/class-export-builder.php:323
 msgid "Only orders with a company invoice"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:314
+#: app/Admin/class-export-builder.php:324
 msgid "Leave a list empty to include everything."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:318
+#: app/Admin/class-export-builder.php:328
 msgid "Columns"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:321 app/Admin/class-export-builder.php:321
+#: app/Admin/class-export-builder.php:331 app/Admin/class-export-builder.php:331
 msgid "Find a field"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:323
+#: app/Admin/class-export-builder.php:333
 msgid "Add an order meta field"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:326
+#: app/Admin/class-export-builder.php:336
 msgid "Drag to reorder. Click a heading to rename it."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:333
+#: app/Admin/class-export-builder.php:343
 msgid "File"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:341
+#: app/Admin/class-export-builder.php:351
 msgid "Separator"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:343
+#: app/Admin/class-export-builder.php:353
 msgid "Semicolon ;"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:344
+#: app/Admin/class-export-builder.php:354
 msgid "Comma ,"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:345
+#: app/Admin/class-export-builder.php:355
 msgid "Tab"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:346
+#: app/Admin/class-export-builder.php:356
 msgid "Vertical bar |"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:349
+#: app/Admin/class-export-builder.php:359
 msgid "Encoding"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:351
+#: app/Admin/class-export-builder.php:361
 msgid "UTF-8 for Excel"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:353
+#: app/Admin/class-export-builder.php:363
 msgid "Windows-1251 (older accounting software)"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:356
+#: app/Admin/class-export-builder.php:366
 msgid "Decimal mark"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:362
+#: app/Admin/class-export-builder.php:372
 msgid "Dates"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:373
+#: app/Admin/class-export-builder.php:383
 msgid "File name"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:374
+#: app/Admin/class-export-builder.php:384
 msgid "Root element"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:375
+#: app/Admin/class-export-builder.php:385
 msgid "Row element"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:377
+#: app/Admin/class-export-builder.php:387
 msgid "In the file name, {from}, {to}, {today} and {source} are replaced with the dates and the record type."
 msgstr ""
 
-#: app/Admin/class-export-builder.php:378
+#: app/Admin/class-export-builder.php:388
 msgid "Headings in the first row"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:383
+#: app/Admin/class-export-builder.php:393
 msgid "Save as"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:383
+#: app/Admin/class-export-builder.php:393
 msgid "For example: Monthly sales for the accountant"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:384
+#: app/Admin/class-export-builder.php:394
 msgid "Save export"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:386
+#: app/Admin/class-export-builder.php:396
 msgid "Preview"
 msgstr ""
 
-#: app/Admin/class-export-builder.php:387
+#: app/Admin/class-export-builder.php:397
 msgid "Download file"
 msgstr ""
 
@@ -1048,7 +1074,7 @@ msgstr ""
 msgid "The setup asks a few questions and fills in your company details, VAT, shipping methods and the checkout look. You can run it again at any time; it never adds a tax rate or shipping method twice."
 msgstr ""
 
-#: app/Admin/class-help-page.php:31 app/Admin/class-setup-wizard.php:532
+#: app/Admin/class-help-page.php:31 app/Admin/class-setup-wizard.php:536
 msgid "Run the setup again"
 msgstr ""
 
@@ -1080,7 +1106,7 @@ msgstr ""
 msgid "In %s, turn on the couriers you work with, invoices and the customer checks you need, and save."
 msgstr ""
 
-#: app/Admin/class-help-page.php:90 app/Admin/class-help-page.php:108 app/Admin/class-settings-page.php:133
+#: app/Admin/class-help-page.php:90 app/Admin/class-help-page.php:108 app/Admin/class-settings-page.php:151
 msgid "Overview"
 msgstr ""
 
@@ -1090,7 +1116,7 @@ msgstr ""
 msgid "In %s, enter the login or API keys the courier gave you for online shops."
 msgstr ""
 
-#: app/Admin/class-help-page.php:92 app/Admin/class-help-page.php:109 app/Admin/class-settings-page.php:137 app/Admin/class-settings-page.php:658 app/Admin/class-setup-wizard.php:672 app/Admin/class-setup-wizard.php:675
+#: app/Admin/class-help-page.php:92 app/Admin/class-help-page.php:109 app/Admin/class-settings-page.php:155 app/Admin/class-settings-page.php:649 app/Admin/class-setup-wizard.php:675 app/Admin/class-setup-wizard.php:678
 msgid "Couriers"
 msgstr ""
 
@@ -1118,7 +1144,7 @@ msgstr ""
 msgid "Every month, create the NRA audit file in %s and submit it by the 15th, or have it emailed to your accountant."
 msgstr ""
 
-#: app/Admin/class-help-page.php:100 app/Admin/class-help-page.php:112 app/Admin/class-settings-page.php:163
+#: app/Admin/class-help-page.php:100 app/Admin/class-help-page.php:112 app/Admin/class-settings-page.php:180
 msgid "Exports"
 msgstr ""
 
@@ -1264,7 +1290,7 @@ msgstr ""
 msgid "\"Free shipping hint\" shows \"Free shipping over\" and the total under each option that is not free yet. \"Free shipping progress bar\" shows above the options how much more the customer needs to buy. Both use the \"Free shipping over\" total of the shipping methods."
 msgstr ""
 
-#: app/Admin/class-help-page.php:157 app/Admin/class-setup-wizard.php:386 app/Admin/class-setup-wizard.php:618 app/Export/Builder/class-fields.php:122
+#: app/Admin/class-help-page.php:157 app/Admin/class-setup-wizard.php:390 app/Admin/class-setup-wizard.php:622 app/Export/Builder/class-fields.php:122
 msgid "VAT"
 msgstr ""
 
@@ -1322,7 +1348,7 @@ msgstr ""
 msgid "Customers see \"Track your parcel\" with the waybill number on their order page, and get it in the order emails."
 msgstr ""
 
-#: app/Admin/class-help-page.php:174 app/Admin/class-settings-page.php:147 app/Admin/Tabs/class-quick-order-tab.php:23 app/Admin/Tabs/class-quick-order-tab.php:119 app/Admin/Tabs/class-settings-tab.php:41 app/Front_End/class-quick-order.php:340
+#: app/Admin/class-help-page.php:174 app/Admin/class-settings-page.php:164 app/Admin/Tabs/class-quick-order-tab.php:23 app/Admin/Tabs/class-quick-order-tab.php:119 app/Admin/Tabs/class-settings-tab.php:41 app/Front_End/class-quick-order.php:356
 msgid "Quick order"
 msgstr ""
 
@@ -1366,12 +1392,12 @@ msgstr ""
 msgid "See the carts in WooCommerce > Abandoned carts. Filter them by status, send a reminder by hand or delete carts. Old carts are deleted once the retention period ends."
 msgstr ""
 
-#: app/Admin/class-help-page.php:188 app/Admin/Tabs/class-nra-tab.php:309
+#: app/Admin/class-help-page.php:188 app/Admin/Tabs/class-nra-tab.php:306
 msgid "Invoices and documents"
 msgstr ""
 
 #: app/Admin/class-help-page.php:189
-msgid "The order document is made for every order. Invoices are made as set in \"When to generate invoices?\", and credit notes for refunds."
+msgid "The order document is made for every order. Invoices are made for customers who ask for one at checkout, when \"Enable invoices\" is on, and credit notes for refunds."
 msgstr ""
 
 #: app/Admin/class-help-page.php:190
@@ -1397,13 +1423,13 @@ msgstr ""
 #. translators: %s: link to the Documents section
 #: app/Admin/class-help-page.php:197
 #, php-format
-msgid "In %s > Company invoice, \"Company invoice fields\" adds \"I want an invoice for a company\" with company name, EIK, VAT number, MOL, town and address."
+msgid "In %s > Invoices and documents, \"Enable invoices\" adds \"I want an invoice for a company\" to the checkout, with company name, EIK, VAT number, MOL, town and address. The website makes the invoice of every order where it is ticked."
 msgstr ""
 
 #. translators: %s: link to the Documents section
 #: app/Admin/class-help-page.php:199
 #, php-format
-msgid "In %s > Invoices and documents, \"Invoice numbering\": \"Website invoices\" go into the NRA audit file. \"Own invoicing program\" keeps the invoice out of it; you type that program's number on the order."
+msgid "In %s > Invoices and documents, \"How to issue invoices\" says whether orders with an invoice are in the NRA audit file. By default they are left out of it. \"In the NRA audit file\" keeps them in and needs \"Enable N-18\" on."
 msgstr ""
 
 #: app/Admin/class-help-page.php:200
@@ -1468,7 +1494,7 @@ msgstr ""
 msgid "The VAT number is optional at checkout. Tick \"VAT number required on checkout?\" in Documents to make company customers enter it."
 msgstr ""
 
-#: app/Admin/class-help-page.php:219 app/Front_End/class-withdrawal.php:550 app/Front_End/class-withdrawal.php:564
+#: app/Admin/class-help-page.php:219 app/Front_End/class-withdrawal.php:569 app/Front_End/class-withdrawal.php:583
 msgid "EU withdrawal function"
 msgstr ""
 
@@ -1490,7 +1516,7 @@ msgstr ""
 msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
 msgstr ""
 
-#: app/Admin/class-help-page.php:226 app/Admin/class-settings-page.php:159 app/Admin/Tabs/class-settings-tab.php:72 app/Reports/class-reports.php:174
+#: app/Admin/class-help-page.php:226 app/Admin/class-settings-page.php:176 app/Admin/Tabs/class-settings-tab.php:72 app/Reports/class-reports.php:167
 msgid "Customer checks"
 msgstr ""
 
@@ -1547,7 +1573,7 @@ msgid "The order documents and invoices of Bulgarisation for WooCommerce move in
 msgstr ""
 
 #: app/Admin/class-help-page.php:242
-msgid "It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details and document numbers. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database."
+msgid "It takes over the courier logins, sender details, the waybill numbers of your orders, the shipping zone methods with the mreja.net free shipping totals and, from the N-18 plugin, the company details, whether invoices are on and the document numbers. Bulgarisation for WooCommerce passes its invoice settings on too. Then deactivate the old plugin on the Plugins screen. Its own data stays in the database."
 msgstr ""
 
 #: app/Admin/class-help-page.php:243
@@ -1640,7 +1666,7 @@ msgid_plural "%d settings changed."
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Admin/class-help-page.php:345 app/Admin/class-setup-wizard.php:727
+#: app/Admin/class-help-page.php:345 app/Admin/class-setup-wizard.php:730
 msgid "Recommended settings"
 msgstr ""
 
@@ -1652,7 +1678,7 @@ msgstr ""
 msgid "Setting"
 msgstr ""
 
-#: app/Admin/class-help-page.php:352 app/class-plugin.php:398
+#: app/Admin/class-help-page.php:352 app/class-plugin.php:383
 msgid "Now"
 msgstr ""
 
@@ -1724,11 +1750,11 @@ msgstr ""
 msgid "Go to the import"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:185 app/Admin/class-import-sources.php:673 app/Admin/class-import-sources.php:997
+#: app/Admin/class-import-sources.php:185 app/Admin/class-import-sources.php:678 app/Admin/class-import-sources.php:1025
 msgid "Go to Plugins"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:187 app/Admin/class-import-sources.php:994
+#: app/Admin/class-import-sources.php:187 app/Admin/class-import-sources.php:1022
 msgid "Ask an administrator to deactivate it."
 msgstr ""
 
@@ -1744,24 +1770,24 @@ msgstr ""
 msgid "Nashenski Commerce can take over the data of %s."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:248 app/Admin/class-setup-wizard.php:588
+#: app/Admin/class-import-sources.php:248 app/Admin/class-setup-wizard.php:592
 msgid "Review and import"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:250 app/Admin/class-settings-page.php:809 app/Admin/class-setup-wizard.php:166
+#: app/Admin/class-import-sources.php:250 app/Admin/class-settings-page.php:796 app/Admin/class-setup-wizard.php:166
 msgid "Dismiss"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:338 app/Admin/class-import-sources.php:991
+#: app/Admin/class-import-sources.php:343 app/Admin/class-import-sources.php:1019
 msgid "Deactivate the N-18 plugin first, then import."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:534 app/Admin/class-import-sources.php:563
+#: app/Admin/class-import-sources.php:539 app/Admin/class-import-sources.php:568
 msgid "The Econt key of that plugin works only with Econt's \"Deliver with Econt\" service. Enter your Econt username and password in Couriers > Econt."
 msgstr ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:589
+#: app/Admin/class-import-sources.php:594
 #, php-format
 msgid "%d setting"
 msgid_plural "%d settings"
@@ -1769,7 +1795,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:591
+#: app/Admin/class-import-sources.php:596
 #, php-format
 msgid "%d order waybill"
 msgid_plural "%d order waybills"
@@ -1777,7 +1803,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:593
+#: app/Admin/class-import-sources.php:598
 #, php-format
 msgid "%d shipping zone method"
 msgid_plural "%d shipping zone methods"
@@ -1785,7 +1811,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number
-#: app/Admin/class-import-sources.php:598
+#: app/Admin/class-import-sources.php:603
 #, php-format
 msgid "%d document number"
 msgid_plural "%d document numbers"
@@ -1794,7 +1820,7 @@ msgstr[1] ""
 
 #. translators: %d: number
 #. translators: %d: number of document numbers
-#: app/Admin/class-import-sources.php:603 app/Admin/class-migration.php:106
+#: app/Admin/class-import-sources.php:608 app/Admin/class-migration.php:106
 #, php-format
 msgid "%d document number skipped (conflict)"
 msgid_plural "%d document numbers skipped (conflict)"
@@ -1802,13 +1828,13 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of settings
-#: app/Admin/class-import-sources.php:608
+#: app/Admin/class-import-sources.php:613
 #, php-format
 msgid "Already set, kept as it is: %d"
 msgstr ""
 
 #. translators: %d: number of orders
-#: app/Admin/class-import-sources.php:615
+#: app/Admin/class-import-sources.php:620
 #, php-format
 msgid "%d order keeps everything the old plugin saved on it (see \"From earlier plugins\" on the order)"
 msgid_plural "%d orders keep everything the old plugin saved on them (see \"From earlier plugins\" on the order)"
@@ -1816,72 +1842,72 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: plugin names
-#: app/Admin/class-import-sources.php:668
+#: app/Admin/class-import-sources.php:673
 #, php-format
 msgid "The import is done. Please deactivate %s: Nashenski Commerce does its work now."
 msgstr ""
 
 #. translators: %s: document number
-#: app/Admin/class-import-sources.php:766
+#: app/Admin/class-import-sources.php:794
 #, php-format
 msgid "The old N-18 plugin gave this order document number %s, which clashes with a number Nashenski Commerce already gave out. Correct the documents of this order."
 msgstr ""
 
 #. translators: %s: order numbers
-#: app/Admin/class-import-sources.php:776
+#: app/Admin/class-import-sources.php:804
 #, php-format
 msgid "Orders whose N-18 number clashes; correct their documents: %s"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:975
+#: app/Admin/class-import-sources.php:1003
 msgid "Nashenski Commerce makes no invoices or other documents yet: the old N-18 plugin has its own document numbers. Deactivate it and run its import from the Help page first; numbering then continues after its numbers. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:976
+#: app/Admin/class-import-sources.php:1004
 msgid "Nashenski Commerce makes no invoices or other documents yet: the old N-18 plugin left its document numbers on this site. Run its import from the Help page first; numbering then continues after its numbers. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:980
+#: app/Admin/class-import-sources.php:1008
 msgid "The old N-18 plugin is active again and can reuse numbers Nashenski Commerce already gave out, so invoices and other documents are paused. Deactivate it at once, run its import again from the Help page and correct the orders it lists. Then use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:981
+#: app/Admin/class-import-sources.php:1009
 msgid "Invoices and other documents are paused until the import of the old N-18 plugin is run again from the Help page, because it was active again after its import. Then correct the orders the import lists and use \"Regenerate PDF's\" for orders without documents."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1121
+#: app/Admin/class-import-sources.php:1159
 msgid "From earlier plugins"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1134
+#: app/Admin/class-import-sources.php:1172
 msgid "What the earlier plugins saved on this order, kept when their data was imported."
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1177 app/Export/Builder/class-fields.php:338
+#: app/Admin/class-import-sources.php:1215 app/Export/Builder/class-fields.php:338
 msgid "Order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1178 app/Admin/Order/class-documents.php:314 app/Export/Builder/class-fields.php:339
+#: app/Admin/class-import-sources.php:1216 app/Admin/Order/class-documents.php:288 app/Export/Builder/class-fields.php:339
 msgid "Invoice"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1179 app/Export/Builder/class-fields.php:340
+#: app/Admin/class-import-sources.php:1217 app/Export/Builder/class-fields.php:340
 msgid "Credit note"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1180
+#: app/Admin/class-import-sources.php:1218
 msgid "Cancelled order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1506 app/Admin/class-settings-page.php:868 app/Admin/class-setup-wizard.php:687 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:556
+#: app/Admin/class-import-sources.php:1593 app/Admin/class-settings-page.php:855 app/Admin/class-setup-wizard.php:690 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:569
 msgid "To an office"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1507 app/Admin/class-import-sources.php:1508 app/Admin/class-setup-wizard.php:688 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
+#: app/Admin/class-import-sources.php:1594 app/Admin/class-import-sources.php:1595 app/Admin/class-setup-wizard.php:691 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
 msgid "To a parcel locker"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1509 app/Admin/class-settings-page.php:870 app/Admin/class-setup-wizard.php:689 app/Admin/Order/class-courier-info.php:46
+#: app/Admin/class-import-sources.php:1596 app/Admin/class-settings-page.php:857 app/Admin/class-setup-wizard.php:692 app/Admin/Order/class-courier-info.php:46
 msgid "To an address"
 msgstr ""
 
@@ -2041,7 +2067,7 @@ msgstr ""
 msgid "SKU"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:168 app/Front_End/Checkout/class-field-editor.php:934
+#: app/Admin/class-impossiblevatprice.php:168 app/Front_End/Checkout/class-field-editor.php:932
 msgid "Field"
 msgstr ""
 
@@ -2065,7 +2091,7 @@ msgstr ""
 msgid "Up"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:192 app/Admin/class-impossiblevatprice.php:258
+#: app/Admin/class-impossiblevatprice.php:194 app/Admin/class-impossiblevatprice.php:260
 msgid "You do not have permission."
 msgstr ""
 
@@ -2113,7 +2139,7 @@ msgstr ""
 msgid "Import finished: %1$d settings, %2$d shipping method settings, %3$d shipping zone methods, %4$d order shipping lines and %5$d order data rows."
 msgstr ""
 
-#: app/Admin/class-pigeon.php:51 app/Admin/class-setup-wizard.php:100 app/Admin/Tabs/class-pigeon-tab.php:39 app/Admin/Tabs/class-settings-tab.php:39 app/functions.php:806 app/Shipping/Pigeon/class-method.php:333
+#: app/Admin/class-pigeon.php:51 app/Admin/class-setup-wizard.php:100 app/Admin/Tabs/class-pigeon-tab.php:39 app/Admin/Tabs/class-settings-tab.php:39 app/functions.php:844 app/Shipping/Pigeon/class-method.php:333
 msgid "Pigeon Express"
 msgstr ""
 
@@ -2145,11 +2171,11 @@ msgstr ""
 msgid "Review and test before payment"
 msgstr ""
 
-#: app/Admin/class-pigeon.php:307 app/Admin/class-recommended-settings.php:140 app/Front_End/Checkout/class-field-editor.php:742 app/functions.php:312 app/Shipping/Econt/class-method.php:390 app/Shipping/Econt/class-method.php:402
+#: app/Admin/class-pigeon.php:307 app/Admin/class-recommended-settings.php:140 app/Front_End/Checkout/class-field-editor.php:740 app/functions.php:312 app/Shipping/Econt/class-method.php:390 app/Shipping/Econt/class-method.php:402
 msgid "No"
 msgstr ""
 
-#: app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:234 app/Front_End/Checkout/class-pickers.php:579
+#: app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:234 app/Front_End/Checkout/class-pickers.php:592
 msgid "Street or quarter"
 msgstr ""
 
@@ -2161,7 +2187,7 @@ msgstr ""
 msgid "Note for courier"
 msgstr ""
 
-#: app/Admin/class-pigeon.php:416
+#: app/Admin/class-pigeon.php:423
 msgid "The Pigeon Express label could not be made, and the order was not changed. Please try again."
 msgstr ""
 
@@ -2173,15 +2199,15 @@ msgstr ""
 msgid "Off"
 msgstr ""
 
-#: app/Admin/class-recommended-settings.php:38 app/Front_End/Checkout/class-field-editor.php:859
+#: app/Admin/class-recommended-settings.php:38 app/Front_End/Checkout/class-field-editor.php:857
 msgid "Required"
 msgstr ""
 
-#: app/Admin/class-recommended-settings.php:39 app/Front_End/Checkout/class-field-editor.php:860
+#: app/Admin/class-recommended-settings.php:39 app/Front_End/Checkout/class-field-editor.php:858
 msgid "Optional"
 msgstr ""
 
-#: app/Admin/class-recommended-settings.php:40 app/Admin/Tabs/class-fields-tab.php:64 app/Front_End/Checkout/class-field-editor.php:861
+#: app/Admin/class-recommended-settings.php:40 app/Admin/Tabs/class-fields-tab.php:44 app/Front_End/Checkout/class-field-editor.php:859
 msgid "Hidden"
 msgstr ""
 
@@ -2305,7 +2331,7 @@ msgstr ""
 msgid "Prices in Bulgaria are shown and entered with VAT included."
 msgstr ""
 
-#: app/Admin/class-recommended-settings.php:139 app/Front_End/Checkout/class-field-editor.php:742 app/Shipping/Econt/class-method.php:403
+#: app/Admin/class-recommended-settings.php:139 app/Front_End/Checkout/class-field-editor.php:740 app/Shipping/Econt/class-method.php:403
 msgid "Yes"
 msgstr ""
 
@@ -2518,600 +2544,592 @@ msgid "Names on the waybill then match the customer's ID card."
 msgstr ""
 
 #: app/Admin/class-setting-help.php:84
-msgid "The details go on the invoice and into the NRA audit file. In a builder checkout of single field elements, the fields come after the billing fields unless you place them."
-msgstr ""
-
-#: app/Admin/class-setting-help.php:85
-msgid "Changing it later does not move invoices already made in or out of the NRA audit file. Ask your accountant which one fits your shop."
-msgstr ""
-
-#: app/Admin/class-setting-help.php:86
 msgid "Hidden: customers cannot leave a note with the order."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:87
+#: app/Admin/class-setting-help.php:85
 msgid "Cards with a border, buttons side by side, or the plain list of your theme."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:87
+#: app/Admin/class-setting-help.php:85
 msgid "Cards make the chosen courier stand out. Side by side saves space when there are few options."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:88
+#: app/Admin/class-setting-help.php:86
 msgid "Shows \"To an office\", \"To a parcel locker\" or \"To your address\" under each option."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:89
+#: app/Admin/class-setting-help.php:87
 msgid "Uses the \"Free shipping over\" total of each shipping method. Customers see what they need to spend to ship for free."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:90
+#: app/Admin/class-setting-help.php:88
 msgid "On the cart and checkout. Uses the option offered that is closest to free shipping."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:91
+#: app/Admin/class-setting-help.php:89
 msgid "Empty: the colour of your design tokens or theme."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:91
+#: app/Admin/class-setting-help.php:89
 msgid "Any CSS colour, for example #1a7f37 or var(--primary)."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:92
+#: app/Admin/class-setting-help.php:90
 msgid "Empty: the size of your design tokens or theme."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:92
+#: app/Admin/class-setting-help.php:90
 msgid "Any CSS size, for example 8px, 0.5rem or var(--space-s)."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:93
+#: app/Admin/class-setting-help.php:91
 msgid "Required by EU law from 19 June 2026 for shops with online checkout."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:94
+#: app/Admin/class-setting-help.php:92
 msgid "Or place the link yourself with the shortcode [nashenski_withdrawal_link]."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:95
+#: app/Admin/class-setting-help.php:93
 msgid "14 days is the legal minimum; give more if your terms promise more."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:98
+#: app/Admin/class-setting-help.php:96
 msgid "As in the Commercial Register."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:99
+#: app/Admin/class-setting-help.php:97
 msgid "The person who represents the company."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:100
+#: app/Admin/class-setting-help.php:98
 msgid "9 or 13 digits. The NRA audit file cannot be made without it."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:101
+#: app/Admin/class-setting-help.php:99
 msgid "For a company that is not registered for VAT: invoices carry the note about Article 113(9), and invoices, proformas and credit notes show no VAT. Works while WooCommerce taxes are off."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:102
+#: app/Admin/class-setting-help.php:100
 msgid "Starts with BG. Leave empty if you are not registered for VAT."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:103
+#: app/Admin/class-setting-help.php:101
 msgid "Customers who ask for a company invoice must then enter the company VAT number."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:104 app/Admin/class-setting-help.php:107
+#: app/Admin/class-setting-help.php:102 app/Admin/class-setting-help.php:105
 msgid "Shown on your documents."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:105
+#: app/Admin/class-setting-help.php:103
 msgid "Town of the registered address."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:106
+#: app/Admin/class-setting-help.php:104
 msgid "Registered address, shown on invoices."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:107
+#: app/Admin/class-setting-help.php:105
 msgid "Customers and the NRA may write to this address about documents."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:108
+#: app/Admin/class-setting-help.php:106
 msgid "The NRA gives it when you register the online shop."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:109
+#: app/Admin/class-setting-help.php:107
 msgid "The shop address as registered with the NRA."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:110
+#: app/Admin/class-setting-help.php:108
 msgid "Needed by shops that take card or bank payments without a fiscal receipt (Ordinance N-18, Article 52o)."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:111
-msgid "Which orders get an invoice automatically."
+#: app/Admin/class-setting-help.php:109
+msgid "The customer fills in company name, EIK, VAT number, MOL, town and address. In a builder checkout of single field elements, the fields come after the billing fields unless you place them. Any order can also get an invoice by hand, on the order screen."
+msgstr ""
+
+#: app/Admin/class-setting-help.php:110
+msgid "Changing it later does not move invoices already made in or out of the NRA audit file. Ask your accountant which one fits your shop."
 msgstr ""
 
 #: app/Admin/class-setting-help.php:111
-msgid "\"Only for companies\" makes invoices for customers who ticked \"I want an invoice for a company\". Any order can also get one by hand."
-msgstr ""
-
-#: app/Admin/class-setting-help.php:112
 msgid "When the order document and invoice are made."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:112
+#: app/Admin/class-setting-help.php:111
 msgid "\"Order completed\" waits until you complete the order, so cancelled orders get no documents."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:113
+#: app/Admin/class-setting-help.php:112
 msgid "The number of the next order document, 10 digits."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:114
+#: app/Admin/class-setting-help.php:113
 msgid "Leave empty to number invoices together with order documents."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:114
+#: app/Admin/class-setting-help.php:113
 msgid "Also used when you make an invoice by hand."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:115
+#: app/Admin/class-setting-help.php:114
 msgid "Days from the invoice date to the payment due date."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:116
+#: app/Admin/class-setting-help.php:115
 msgid "Printed as the person who prepared the document."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:117
+#: app/Admin/class-setting-help.php:116
 msgid "Bulgarian invoices may carry an identification code instead of a signature."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:118
+#: app/Admin/class-setting-help.php:117
 msgid "Printed at the bottom of every document."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:118
+#: app/Admin/class-setting-help.php:117
 msgid "For example your bank account or a thank-you line."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:119
+#: app/Admin/class-setting-help.php:118
 msgid "Bulgarian invoices often show the total in words."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:120
+#: app/Admin/class-setting-help.php:119
 msgid "Turn on to send the copies to your accountant."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:121
+#: app/Admin/class-setting-help.php:120
 msgid "Your accountant's email address."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:122
+#: app/Admin/class-setting-help.php:121
 msgid "The file is due by the 15th of the next month. Your accountant gets it on the 1st."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:123
+#: app/Admin/class-setting-help.php:122
 msgid "Products in these tax classes count as digital goods for EU VAT: the customer's country rate applies."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:124
+#: app/Admin/class-setting-help.php:123
 msgid "The VAT group of your sales in the NRA audit file. Most shops sell in group B (20%)."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:125
+#: app/Admin/class-setting-help.php:124
 msgid "How you pay customers back for cancelled orders."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:125
+#: app/Admin/class-setting-help.php:124
 msgid "Goes into the NRA audit file for refunded orders."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:126
+#: app/Admin/class-setting-help.php:125
 msgid "For shipping methods of other plugins. Yes: with cash on delivery the courier collects the delivery and gives its own receipt, so it is left out of the order document and the NRA file. Econt, Speedy and Pigeon Express of Nashenski Commerce use \"Customer pays the courier\" on each method instead."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:127
+#: app/Admin/class-setting-help.php:126
 msgid "The NRA payment type of this payment method."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:127
+#: app/Admin/class-setting-help.php:126
 msgid "How the NRA audit file reports payments made with this method."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:128
+#: app/Admin/class-setting-help.php:127
 msgid "The number of the virtual POS terminal from your bank."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:128
+#: app/Admin/class-setting-help.php:127
 msgid "Needed in the NRA audit file for card payments."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:129
+#: app/Admin/class-setting-help.php:128
 msgid "The identifier of the payment provider, if it gave you one."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:129
+#: app/Admin/class-setting-help.php:128
 msgid "Goes into the NRA audit file with each payment."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:130
+#: app/Admin/class-setting-help.php:129
 msgid "A PNG or JPG about 600 pixels wide prints sharp."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:131
+#: app/Admin/class-setting-help.php:130
 msgid "How big the logo is at the top of the document."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:131
+#: app/Admin/class-setting-help.php:130
 msgid "Larger logos push the document down; Small keeps long orders on one page."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:132
+#: app/Admin/class-setting-help.php:131
 msgid "Turn off when your logo already has these details."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:133
+#: app/Admin/class-setting-help.php:132
 msgid "Documents then keep the colours of your site."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:134
+#: app/Admin/class-setting-help.php:133
 msgid "Pick a colour or type a hex code."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:134
+#: app/Admin/class-setting-help.php:133
 msgid "Dark text on a light table header prints best."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:135
+#: app/Admin/class-setting-help.php:134
 msgid "Both have Cyrillic letters."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:136
+#: app/Admin/class-setting-help.php:135
 msgid "Size of the document text."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:136
+#: app/Admin/class-setting-help.php:135
 msgid "Smaller text fits more products on a page."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:137
+#: app/Admin/class-setting-help.php:136
 msgid "The page size of the PDF documents."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:137
+#: app/Admin/class-setting-help.php:136
 msgid "A4 suits most office printers."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:138
+#: app/Admin/class-setting-help.php:137
 msgid "Compact fits long orders on one page."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:139
+#: app/Admin/class-setting-help.php:138
 msgid "How dates look on the documents."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:139
+#: app/Admin/class-setting-help.php:138
 msgid "Bulgarian documents usually use day.month.year."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:140
+#: app/Admin/class-setting-help.php:139
 msgid "Turn off to keep phone numbers and emails off printed documents."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:141
+#: app/Admin/class-setting-help.php:140
 msgid "The space where the customer signs on receipt."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:144
+#: app/Admin/class-setting-help.php:143
 msgid "A warning sign in the orders list for customers with reports."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:145
+#: app/Admin/class-setting-help.php:144
 msgid "Customers with refused parcels then pay online or by bank transfer."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:146
+#: app/Admin/class-setting-help.php:145
 msgid "From your account on the service's website."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:147
+#: app/Admin/class-setting-help.php:146
 msgid "Lower means stricter: more customers get a warning."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:148
+#: app/Admin/class-setting-help.php:147
 msgid "Shares your waybills with NepoStop, so its data about refused parcels grows. Tell your customers in your privacy policy."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:151
+#: app/Admin/class-setting-help.php:150
 msgid "The name customers see at checkout."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:151
+#: app/Admin/class-setting-help.php:150
 msgid "Short is best, for example \"To an office\". The courier logo is shown next to it."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:152
+#: app/Admin/class-setting-help.php:151
 msgid "Add one method per delivery type to the zone."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:152
+#: app/Admin/class-setting-help.php:151
 msgid "Office and parcel locker show a list and a map; address shows the street search."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:153
+#: app/Admin/class-setting-help.php:152
 msgid "Whether the customer may open or test the parcel before paying."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:153
+#: app/Admin/class-setting-help.php:152
 msgid "Not possible at parcel lockers. If the customer refuses after a test, the return is paid as your contract says."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:154
+#: app/Admin/class-setting-help.php:153
 msgid "The courier texts the customer about the delivery. It may cost extra."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:155
+#: app/Admin/class-setting-help.php:154
 msgid "Orders at or above this total ship for free with this method."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:155
+#: app/Admin/class-setting-help.php:154
 msgid "You still pay the courier; the customer sees \"Free\"."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:156
+#: app/Admin/class-setting-help.php:155
 msgid "Also deliver to customers in other countries. Prices come only from the courier."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:157
+#: app/Admin/class-setting-help.php:156
 msgid "Free shipping for customers abroad, per country: RO=150, GR=200."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:158
+#: app/Admin/class-setting-help.php:157
 msgid "A set delivery price instead of the courier's calculation."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:158
+#: app/Admin/class-setting-help.php:157
 msgid "The difference to the real courier price is yours."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:159
+#: app/Admin/class-setting-help.php:158
 msgid "With these payment methods the customer pays the delivery to the courier on delivery. It is then not in the order total, on your documents or in the NRA file."
 msgstr ""
 
-#: app/Admin/class-setting-help.php:159
+#: app/Admin/class-setting-help.php:158
 msgid "Otherwise you collect the delivery and the courier bills you: other payment methods, deliveries abroad, and Speedy or Pigeon Express with a fixed price. Free shipping is always yours."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:167 app/Admin/class-setup-wizard.php:529
+#: app/Admin/class-settings-page.php:184 app/Admin/class-setup-wizard.php:533
 msgid "Help"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:307
+#: app/Admin/class-settings-page.php:324
 msgid "Available once the courier login works."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:388
+#: app/Admin/class-settings-page.php:405
 msgid "Colours and sizes"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:438
+#: app/Admin/class-settings-page.php:427
 msgid "Available once the courier login works"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:477
+#: app/Admin/class-settings-page.php:466
 msgid "More options"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:520
+#: app/Admin/class-settings-page.php:509
 msgid "Enable"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:620
+#: app/Admin/class-settings-page.php:609
 msgid "Turn on documents in the Overview to also get the NRA audit file, the invoice archive and the Microinvest Delta file here."
 msgstr ""
 
 #. translators: %s: courier name
-#: app/Admin/class-settings-page.php:692
+#: app/Admin/class-settings-page.php:683
 #, php-format
 msgid "Connected to %s. Prices and labels use your account."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:700
+#: app/Admin/class-settings-page.php:691
 msgid "BOX NOW delivery is off. Click Save to choose how prices are set. After you save, BOX NOW delivery will work."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:718
+#: app/Admin/class-settings-page.php:700
 msgid "Reload offices and cities"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:719
+#: app/Admin/class-settings-page.php:701
 msgid "Downloads the latest cities, offices and lockers (and your profile) from the courier. They also update by themselves once a week."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:744
+#: app/Admin/class-settings-page.php:728
 msgid "Offices and cities will be downloaded again the next time they are needed."
 msgstr ""
 
 #. translators: %s: courier names with links
-#: app/Admin/class-settings-page.php:806
+#: app/Admin/class-settings-page.php:793
 #, php-format
 msgid "New published prices were found for %s. Open the courier, press \"Check the courier website\" and decide whether to use them."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:829
+#: app/Admin/class-settings-page.php:816
 msgid "Public prices"
 msgstr ""
 
 #. translators: 1: link to the courier price list, 2: date
-#: app/Admin/class-settings-page.php:832
+#: app/Admin/class-settings-page.php:819
 #, php-format
 msgid "Used to price orders when this courier is not connected or does not answer, so customers can always order. The built-in prices come from the %1$s (valid from %2$s). Edit them, or let Nashenski Commerce check the courier website for newer prices."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:833
+#: app/Admin/class-settings-page.php:820
 msgid "courier's published price list"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:834
+#: app/Admin/class-settings-page.php:821
 msgid "unknown"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:840
+#: app/Admin/class-settings-page.php:827
 msgid "Use public prices"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:841
+#: app/Admin/class-settings-page.php:828
 msgid "Price orders with this list when there is no working courier login"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:847
+#: app/Admin/class-settings-page.php:834
 msgid "Price list"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:869
+#: app/Admin/class-settings-page.php:856
 msgid "To a locker"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:882
+#: app/Admin/class-settings-page.php:869
 msgid "Up to (kg)"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:896 app/Admin/class-settings-page.php:1119 app/class-plugin.php:394
+#: app/Admin/class-settings-page.php:883 app/Admin/class-settings-page.php:1117 app/class-plugin.php:379
 msgid "Remove row"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:902
+#: app/Admin/class-settings-page.php:889
 msgid "Heavier: base"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:909
+#: app/Admin/class-settings-page.php:896
 msgid "+ per kg above the last row"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:917 app/Admin/class-settings-page.php:1124
+#: app/Admin/class-settings-page.php:904 app/Admin/class-settings-page.php:1122
 msgid "Add row"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:920
+#: app/Admin/class-settings-page.php:907
 msgid "Prices include VAT"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:921
+#: app/Admin/class-settings-page.php:908
 msgid "Extra surcharge (fuel, toll) %"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:922
+#: app/Admin/class-settings-page.php:909
 msgid "Cash on delivery fee %"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:923
+#: app/Admin/class-settings-page.php:910
 msgid "at least"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:924 app/Pricing/class-updater.php:546
+#: app/Admin/class-settings-page.php:911 app/Pricing/class-updater.php:544
 msgid "Valid from"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:929
+#: app/Admin/class-settings-page.php:916
 msgid "Check the courier website"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:930
+#: app/Admin/class-settings-page.php:917
 msgid "Restore the built-in prices"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:934
+#: app/Admin/class-settings-page.php:921
 msgid "Prices are for parcels you hand in at a courier office. Changes take effect after you save."
 msgstr ""
 
 #. translators: %s: name of the setting
-#: app/Admin/class-settings-page.php:998
+#: app/Admin/class-settings-page.php:995
 #, php-format
 msgid "\"%s\" was not saved: the value is not valid, so the earlier one stays."
 msgstr ""
 
 #. translators: %s: name of the setting
-#: app/Admin/class-settings-page.php:1171
+#: app/Admin/class-settings-page.php:1169
 #, php-format
 msgid "\"%s\" was not saved: a weight or price must be a number from zero up, and every band needs a price, so the earlier list stays."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1201
+#: app/Admin/class-settings-page.php:1199
 msgid "No payment method is turned on in WooCommerce yet."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1249
+#: app/Admin/class-settings-page.php:1247
 msgid "Choose image"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1289
+#: app/Admin/class-settings-page.php:1287
 msgid "Standardised audit file (Annex 38)"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1290
+#: app/Admin/class-settings-page.php:1288
 msgid "The monthly XML file for the NRA under Ordinance N-18. There is no limit on the number of orders."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1291
+#: app/Admin/class-settings-page.php:1289
 msgid "Create XML file"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1298
+#: app/Admin/class-settings-page.php:1296
 msgid "Invoice archive"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1299
+#: app/Admin/class-settings-page.php:1297
 msgid "A ZIP file with all invoices and credit notes of the month."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1300
+#: app/Admin/class-settings-page.php:1298
 msgid "Download archive"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1305
+#: app/Admin/class-settings-page.php:1303
 msgid "Microinvest Delta"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1306
+#: app/Admin/class-settings-page.php:1304
 msgid "The documents of the month in the import format of Microinvest Delta."
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1307
+#: app/Admin/class-settings-page.php:1305
 msgid "Create file"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1311
+#: app/Admin/class-settings-page.php:1309
 msgid "Ready-made files"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1323
+#: app/Admin/class-settings-page.php:1321
 msgid "Month"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1328
+#: app/Admin/class-settings-page.php:1326
 msgid "Older orders"
 msgstr ""
 
-#: app/Admin/class-settings-page.php:1330
+#: app/Admin/class-settings-page.php:1328
 msgid "Create missing documents for orders placed before the plugin was installed"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:80 app/Admin/class-setup-wizard.php:80 app/Admin/class-setup-wizard.php:472
+#: app/Admin/class-setup-wizard.php:80 app/Admin/class-setup-wizard.php:80 app/Admin/class-setup-wizard.php:476
 msgid "Set up Nashenski Commerce"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:97 app/Admin/Tabs/class-econt-tab.php:39 app/functions.php:803 app/Shipping/Econt/class-method.php:363
+#: app/Admin/class-setup-wizard.php:97 app/Admin/Tabs/class-econt-tab.php:39 app/functions.php:841 app/Shipping/Econt/class-method.php:363 app/Shipping/Econt/class-method.php:992
 msgid "Econt"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:98 app/Admin/Tabs/class-settings-tab.php:37 app/Admin/Tabs/class-speedy-tab.php:39 app/functions.php:804 app/Shipping/Speedy/class-method.php:356
+#: app/Admin/class-setup-wizard.php:98 app/Admin/Tabs/class-settings-tab.php:37 app/Admin/Tabs/class-speedy-tab.php:39 app/functions.php:842 app/Shipping/Speedy/class-method.php:356
 msgid "Speedy"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:99 app/Admin/Tabs/class-boxnow-tab.php:39 app/Admin/Tabs/class-settings-tab.php:38 app/functions.php:805 app/Shipping/BoxNow/class-method.php:231
+#: app/Admin/class-setup-wizard.php:99 app/Admin/Tabs/class-boxnow-tab.php:39 app/Admin/Tabs/class-settings-tab.php:38 app/functions.php:843 app/Shipping/BoxNow/class-method.php:231
 msgid "BOX NOW"
 msgstr ""
 
@@ -3123,7 +3141,7 @@ msgstr ""
 msgid "MOL"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:113 app/Admin/Tabs/class-nra-tab.php:36 app/Export/Builder/class-fields.php:80 app/Front_End/Checkout/class-company-fields.php:122 app/Front_End/Checkout/class-company.php:76 app/Front_End/Checkout/class-company.php:150
+#: app/Admin/class-setup-wizard.php:113 app/Admin/Tabs/class-nra-tab.php:36 app/Export/Builder/class-fields.php:80 app/Front_End/Checkout/class-company-fields.php:107 app/Front_End/Checkout/class-company.php:76 app/Front_End/Checkout/class-company.php:150
 msgid "EIK"
 msgstr ""
 
@@ -3178,43 +3196,43 @@ msgid "Start the setup"
 msgstr ""
 
 #. translators: %s: field name
-#: app/Admin/class-setup-wizard.php:218
+#: app/Admin/class-setup-wizard.php:222
 #, php-format
 msgid "Not saved, please check it: %s"
 msgstr ""
 
 #. translators: %d: number of settings
-#: app/Admin/class-setup-wizard.php:239
+#: app/Admin/class-setup-wizard.php:243
 #, php-format
 msgid "%d recommended setting applied"
 msgid_plural "%d recommended settings applied"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Admin/class-setup-wizard.php:295 app/Admin/class-setup-wizard.php:745
+#: app/Admin/class-setup-wizard.php:299 app/Admin/class-setup-wizard.php:748
 msgid "Reduced rate"
 msgstr ""
 
 #. translators: %s: tax class name
-#: app/Admin/class-setup-wizard.php:303
+#: app/Admin/class-setup-wizard.php:307
 #, php-format
 msgid "Tax class added: %s"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:324
+#: app/Admin/class-setup-wizard.php:328
 msgid "Invoices and N-18 documents turned on."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:334 app/Admin/class-setup-wizard.php:695 app/Admin/Tabs/class-boxnow-tab.php:185 app/Shipping/Econt/class-method.php:408 app/Shipping/Pigeon/class-method.php:361 app/Shipping/Speedy/class-method.php:390
+#: app/Admin/class-setup-wizard.php:338 app/Admin/class-setup-wizard.php:698 app/Admin/Tabs/class-boxnow-tab.php:185 app/Shipping/Econt/class-method.php:408 app/Shipping/Pigeon/class-method.php:361 app/Shipping/Speedy/class-method.php:390
 msgid "Free shipping over"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:341
+#: app/Admin/class-setup-wizard.php:345
 msgid "Choose at least one delivery type to add shipping methods."
 msgstr ""
 
 #. translators: %d: number of settings
-#: app/Admin/class-setup-wizard.php:356
+#: app/Admin/class-setup-wizard.php:360
 #, php-format
 msgid "%d setting saved"
 msgid_plural "%d settings saved"
@@ -3222,218 +3240,214 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: VAT percent
-#: app/Admin/class-setup-wizard.php:378
+#: app/Admin/class-setup-wizard.php:382
 #, php-format
 msgid "A tax rate for Bulgaria was there already, so no %s%% rate was added."
 msgstr ""
 
 #. translators: %s: VAT percent
-#: app/Admin/class-setup-wizard.php:396
+#: app/Admin/class-setup-wizard.php:400
 #, php-format
 msgid "Tax rate added: %s%% VAT for Bulgaria"
 msgstr ""
 
 #. translators: %s: courier name
-#: app/Admin/class-setup-wizard.php:415
+#: app/Admin/class-setup-wizard.php:419
 #, php-format
 msgid "%s turned on."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:423
+#: app/Admin/class-setup-wizard.php:427
 msgid "Bulgaria"
 msgstr ""
 
 #. translators: %s: zone name
-#: app/Admin/class-setup-wizard.php:428
+#: app/Admin/class-setup-wizard.php:432
 #, php-format
 msgid "Shipping zone added: %s"
 msgstr ""
 
 #. translators: %s: shipping method title
-#: app/Admin/class-setup-wizard.php:445
+#: app/Admin/class-setup-wizard.php:449
 #, php-format
 msgid "Shipping method added: %s"
 msgstr ""
 
 #. translators: %s: order total
-#: app/Admin/class-setup-wizard.php:452
+#: app/Admin/class-setup-wizard.php:456
 #, php-format
 msgid "BOX NOW free shipping over %s"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:495
+#: app/Admin/class-setup-wizard.php:499
 msgid "What changed"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:503
+#: app/Admin/class-setup-wizard.php:507
 msgid "Nothing needed to change."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:506
+#: app/Admin/class-setup-wizard.php:510
 msgid "Next steps"
 msgstr ""
 
 #. translators: %s: courier name
-#: app/Admin/class-setup-wizard.php:514
+#: app/Admin/class-setup-wizard.php:518
 #, php-format
 msgid "Enter your %s login."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:517
+#: app/Admin/class-setup-wizard.php:521
 msgid "The shipping methods cannot calculate prices without it."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:523
+#: app/Admin/class-setup-wizard.php:527
 msgid "Set the tax class \"Reduced rate\" on the products you sell at 9% VAT."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:524
+#: app/Admin/class-setup-wizard.php:528
 msgid "Products"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:528
+#: app/Admin/class-setup-wizard.php:532
 msgid "Check the other settings and the Help page."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:574
+#: app/Admin/class-setup-wizard.php:578
 msgid "Fill in what you know; you can change everything later in the settings. Running the setup again never adds a tax rate or shipping method twice."
 msgstr ""
 
 #. translators: %s: plugin names
-#: app/Admin/class-setup-wizard.php:583
+#: app/Admin/class-setup-wizard.php:587
 #, php-format
 msgid "Moving from another plugin (%s)? Import first. It brings your courier logins, shipping methods and company details."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:602 app/Front_End/Checkout/class-company.php:138
+#: app/Admin/class-setup-wizard.php:606 app/Front_End/Checkout/class-company.php:138
 msgid "Company"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:603 app/Admin/Tabs/class-nra-tab.php:306
+#: app/Admin/class-setup-wizard.php:607 app/Admin/Tabs/class-nra-tab.php:303
 msgid "Printed on invoices and used in the NRA audit file."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:621 app/Admin/class-setup-wizard.php:624
+#: app/Admin/class-setup-wizard.php:625 app/Admin/class-setup-wizard.php:628
 msgid "VAT registration"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:625
+#: app/Admin/class-setup-wizard.php:629
 msgid "Registered for VAT, 20%"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:626
+#: app/Admin/class-setup-wizard.php:630
 msgid "Registered for VAT, some goods at 9%"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:627
+#: app/Admin/class-setup-wizard.php:631
 msgid "Not registered for VAT"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:628
+#: app/Admin/class-setup-wizard.php:632
 msgid "Registered: WooCommerce taxes are turned on, prices are shown with VAT and a 20% rate for Bulgaria is added. With 9%, the tax class \"Reduced rate\" also gets a 9% rate. Not registered: taxes are turned off and your tax rates are kept."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:633
+#: app/Admin/class-setup-wizard.php:637
 msgid "Prices"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:634
+#: app/Admin/class-setup-wizard.php:638
 msgid "Prices are entered with VAT"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:640
+#: app/Admin/class-setup-wizard.php:644
 msgid "Only when registered for VAT, for example BG123456789."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:644 app/Admin/class-setup-wizard.php:647
+#: app/Admin/class-setup-wizard.php:648 app/Admin/class-setup-wizard.php:651
 msgid "Invoices"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:648 app/Admin/Tabs/class-nra-tab.php:65
-msgid "Always"
-msgstr ""
-
-#: app/Admin/class-setup-wizard.php:649 app/Admin/Tabs/class-nra-tab.php:61
+#: app/Admin/class-setup-wizard.php:652
 msgid "Only for companies"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:650
+#: app/Admin/class-setup-wizard.php:653
 msgid "No invoices"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:656 app/Admin/Tabs/class-shipping-tab.php:21 app/Export/Builder/class-fields.php:125 app/Shipping/class-checkoutlayout.php:29
+#: app/Admin/class-setup-wizard.php:659 app/Admin/Tabs/class-shipping-tab.php:21 app/Export/Builder/class-fields.php:125 app/Shipping/class-checkoutlayout.php:29
 msgid "Shipping"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:660
+#: app/Admin/class-setup-wizard.php:663
 msgid "No shipping zone covers Bulgaria yet. A zone \"Bulgaria\" will be added."
 msgstr ""
 
 #. translators: 1: zone name, 2: shipping method titles
-#: app/Admin/class-setup-wizard.php:663
+#: app/Admin/class-setup-wizard.php:666
 #, php-format
 msgid "Already in the zone %1$s: %2$s. These are not added again."
 msgstr ""
 
 #. translators: %s: zone name
-#: app/Admin/class-setup-wizard.php:666
+#: app/Admin/class-setup-wizard.php:669
 #, php-format
 msgid "The methods are added to the zone %s."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:683 app/Admin/class-setup-wizard.php:686
+#: app/Admin/class-setup-wizard.php:686 app/Admin/class-setup-wizard.php:689
 msgid "Delivery types"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:690
+#: app/Admin/class-setup-wizard.php:693
 msgid "One shipping method per courier and type. BOX NOW delivers to parcel lockers only."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:698
+#: app/Admin/class-setup-wizard.php:701
 msgid "Optional. Orders at or above this total ship for free with the new methods. Leave empty for no free shipping."
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:703
+#: app/Admin/class-setup-wizard.php:706
 msgid "Checkout look"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:706
+#: app/Admin/class-setup-wizard.php:709
 msgid "Shipping options"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:709 app/Front_End/Checkout/class-appearance.php:205
+#: app/Admin/class-setup-wizard.php:712 app/Front_End/Checkout/class-appearance.php:205
 msgid "Plain: keep the look of the theme or builder"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:710 app/Front_End/Checkout/class-appearance.php:203
+#: app/Admin/class-setup-wizard.php:713 app/Front_End/Checkout/class-appearance.php:203
 msgid "Cards: each option in its own box, the chosen one opens its office or address fields"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:711 app/Front_End/Checkout/class-appearance.php:204
+#: app/Admin/class-setup-wizard.php:714 app/Front_End/Checkout/class-appearance.php:204
 msgid "Side by side: the options as buttons in a row, the fields of the chosen one below them"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:716 app/Admin/class-setup-wizard.php:719 app/Front_End/Checkout/class-pickers.php:316
+#: app/Admin/class-setup-wizard.php:719 app/Admin/class-setup-wizard.php:722 app/Front_End/Checkout/class-pickers.php:329
 msgid "Free shipping"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:720
+#: app/Admin/class-setup-wizard.php:723
 msgid "Show \"Free shipping over\" under each option"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:721
+#: app/Admin/class-setup-wizard.php:724
 msgid "Show a free shipping progress bar"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:729
+#: app/Admin/class-setup-wizard.php:732
 msgid "Apply the recommended WooCommerce settings"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:730
+#: app/Admin/class-setup-wizard.php:733
 msgid "See the list"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:733
+#: app/Admin/class-setup-wizard.php:736
 msgid "Save and finish"
 msgstr ""
 
@@ -3491,7 +3505,7 @@ msgstr ""
 msgid "Please find attached the document copies for order #%s."
 msgstr ""
 
-#: app/Admin/Order/class-actions.php:72 app/Admin/Order/class-actions.php:180
+#: app/Admin/Order/class-actions.php:72 app/Admin/Order/class-actions.php:175
 msgid "Regenerate PDF's"
 msgstr ""
 
@@ -3523,16 +3537,16 @@ msgstr ""
 msgid "English"
 msgstr ""
 
-#: app/Admin/Order/class-actions.php:177
+#: app/Admin/Order/class-actions.php:172
 msgid "Generate Invoice"
 msgstr ""
 
-#: app/Admin/Order/class-actions.php:257
+#: app/Admin/Order/class-actions.php:256
 msgid "The invoice number must be 1 to 10 digits."
 msgstr ""
 
 #. translators: %s: the error message
-#: app/Admin/Order/class-actions.php:280 app/Admin/Order/class-documents.php:122 app/Admin/Order/class-documents.php:158 app/Admin/Order/class-documents.php:182 app/Admin/Order/class-subscriptions.php:62
+#: app/Admin/Order/class-actions.php:279 app/Admin/Order/class-documents.php:104 app/Admin/Order/class-documents.php:140 app/Admin/Order/class-documents.php:164 app/Admin/Order/class-subscriptions.php:62
 #, php-format
 msgid "Some documents were not generated: %s"
 msgstr ""
@@ -3575,12 +3589,12 @@ msgstr ""
 msgid "Save delivery"
 msgstr ""
 
-#: app/Admin/Order/class-delivery-box.php:249
+#: app/Admin/Order/class-delivery-box.php:254
 msgid "Delivery was not saved: choose the town and the office, locker or address first."
 msgstr ""
 
 #. translators: 1: shipping option, 2: office, locker or address
-#: app/Admin/Order/class-delivery-box.php:294
+#: app/Admin/Order/class-delivery-box.php:299
 #, php-format
 msgid "Delivery set on the order screen: %1$s, %2$s. The price comes with the label."
 msgstr ""
@@ -3591,31 +3605,32 @@ msgstr ""
 msgid "No documents were made. %s"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:313 app/Export/Builder/class-fields.php:43 app/Reports/class-reports.php:159
+#: app/Admin/Order/class-documents.php:287
+msgctxt "name of the order document"
 msgid "Order"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:315
+#: app/Admin/Order/class-documents.php:289
 msgid "Invoice Copy"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:316
+#: app/Admin/Order/class-documents.php:290
 msgid "Refunded Order"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:317
+#: app/Admin/Order/class-documents.php:291
 msgid "Refunded Invoice"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:318
+#: app/Admin/Order/class-documents.php:292
 msgid "Refunded Invoice Copy"
 msgstr ""
 
-#: app/Admin/Order/class-documents.php:319 app/Invoice/Document/class-proforma.php:24
+#: app/Admin/Order/class-documents.php:293 app/Invoice/Document/class-proforma.php:24
 msgid "Pro forma"
 msgstr ""
 
-#: app/Admin/Order/class-labels.php:59
+#: app/Admin/Order/class-labels.php:66
 msgid "No label was made. Open the order and make the label in the courier box."
 msgstr ""
 
@@ -3623,11 +3638,11 @@ msgstr ""
 msgid "PDF Files"
 msgstr ""
 
-#: app/Admin/Order/class-metabox.php:100
+#: app/Admin/Order/class-metabox.php:99
 msgid "Make invoice"
 msgstr ""
 
-#: app/Admin/Order/class-metabox.php:101
+#: app/Admin/Order/class-metabox.php:100
 msgid "Uses the PDF look you set under Documents. Saves the order too."
 msgstr ""
 
@@ -3735,11 +3750,11 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
-#: app/Admin/Tabs/class-boxnow-tab.php:101 app/Admin/Tabs/class-econt-tab.php:109 app/Admin/Tabs/class-pigeon-tab.php:93 app/Admin/Tabs/class-speedy-tab.php:92
+#: app/Admin/Tabs/class-boxnow-tab.php:101 app/Admin/Tabs/class-econt-tab.php:110 app/Admin/Tabs/class-pigeon-tab.php:93 app/Admin/Tabs/class-speedy-tab.php:92
 msgid "Generate label after checkout"
 msgstr ""
 
-#: app/Admin/Tabs/class-boxnow-tab.php:101 app/Admin/Tabs/class-econt-tab.php:109 app/Admin/Tabs/class-pigeon-tab.php:93 app/Admin/Tabs/class-speedy-tab.php:92
+#: app/Admin/Tabs/class-boxnow-tab.php:101 app/Admin/Tabs/class-econt-tab.php:110 app/Admin/Tabs/class-pigeon-tab.php:93 app/Admin/Tabs/class-speedy-tab.php:92
 msgid "This option will try to generate your label immediately after user checkout. Also, will add the tracking number in the order email."
 msgstr ""
 
@@ -3768,14 +3783,15 @@ msgid "kg"
 msgstr ""
 
 #: app/Admin/Tabs/class-boxnow-tab.php:133 app/Admin/Tabs/class-boxnow-tab.php:150 app/Admin/Tabs/class-boxnow-tab.php:167
-msgid " to "
+msgctxt "between the two numbers of a range"
+msgid "to"
 msgstr ""
 
 #: app/Admin/Tabs/class-boxnow-tab.php:135 app/Admin/Tabs/class-boxnow-tab.php:151 app/Admin/Tabs/class-boxnow-tab.php:169
 msgid "+ Add new row"
 msgstr ""
 
-#: app/Admin/Tabs/class-boxnow-tab.php:166 app/Front_End/Checkout/class-field-editor.php:979
+#: app/Admin/Tabs/class-boxnow-tab.php:166 app/Front_End/Checkout/class-field-editor.php:977
 msgid "and"
 msgstr ""
 
@@ -3807,7 +3823,7 @@ msgstr ""
 msgid "Where you hand over parcels"
 msgstr ""
 
-#: app/Admin/Tabs/class-boxnow-tab.php:231 app/Admin/Tabs/class-econt-tab.php:246 app/Admin/Tabs/class-pigeon-tab.php:169 app/Admin/Tabs/class-speedy-tab.php:159
+#: app/Admin/Tabs/class-boxnow-tab.php:231 app/Admin/Tabs/class-econt-tab.php:247 app/Admin/Tabs/class-pigeon-tab.php:169 app/Admin/Tabs/class-speedy-tab.php:159
 msgid "The sender details on your labels and the place you send parcels from."
 msgstr ""
 
@@ -3839,19 +3855,19 @@ msgstr ""
 msgid "Enter the provided token from connectix.bg."
 msgstr ""
 
-#: app/Admin/Tabs/class-connectix-tab.php:74 app/Client/class-connectix.php:207
+#: app/Admin/Tabs/class-connectix-tab.php:74 app/Client/class-connectix.php:214
 msgid "Low"
 msgstr ""
 
-#: app/Admin/Tabs/class-connectix-tab.php:78 app/Admin/Tabs/class-nra-tab.php:160 app/Client/class-connectix.php:211
+#: app/Admin/Tabs/class-connectix-tab.php:78 app/Admin/Tabs/class-nra-tab.php:157 app/Client/class-connectix.php:218
 msgid "Medium"
 msgstr ""
 
-#: app/Admin/Tabs/class-connectix-tab.php:82 app/Client/class-connectix.php:215
+#: app/Admin/Tabs/class-connectix-tab.php:82 app/Client/class-connectix.php:222
 msgid "High"
 msgstr ""
 
-#: app/Admin/Tabs/class-connectix-tab.php:86 app/Client/class-connectix.php:219
+#: app/Admin/Tabs/class-connectix-tab.php:86 app/Client/class-connectix.php:226
 msgid "Ultra high"
 msgstr ""
 
@@ -3875,127 +3891,129 @@ msgstr ""
 msgid "Token is incorrect."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:68
-msgid "Select used environment. For demo you can use Username: \"iasp-dev\" and Password: \"1Asp-dev\". For live environment use your credentials or create a registration at <a target=\"_blank\" href=\"https://login.econt.com/register/\">Econt Delivery</a>"
+#. translators: %s: link to the Econt registration page
+#: app/Admin/Tabs/class-econt-tab.php:69
+#, php-format
+msgid "Select used environment. For demo you can use Username: \"iasp-dev\" and Password: \"1Asp-dev\". For live environment use your credentials or create a registration at %s"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:70 app/Admin/Tabs/class-speedy-tab.php:53
+#: app/Admin/Tabs/class-econt-tab.php:71 app/Admin/Tabs/class-speedy-tab.php:53
 msgid "Username"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:70 app/Admin/Tabs/class-speedy-tab.php:53
+#: app/Admin/Tabs/class-econt-tab.php:71 app/Admin/Tabs/class-speedy-tab.php:53
 msgid "Enter your username."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:71 app/Admin/Tabs/class-speedy-tab.php:54
+#: app/Admin/Tabs/class-econt-tab.php:72 app/Admin/Tabs/class-speedy-tab.php:54
 msgid "Password"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:71 app/Admin/Tabs/class-speedy-tab.php:54
+#: app/Admin/Tabs/class-econt-tab.php:72 app/Admin/Tabs/class-speedy-tab.php:54
 msgid "Enter your password."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:101 app/Admin/Tabs/class-speedy-tab.php:81
+#: app/Admin/Tabs/class-econt-tab.php:102 app/Admin/Tabs/class-speedy-tab.php:81
 msgid "Select profile"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:104 app/Admin/Tabs/class-speedy-tab.php:84
+#: app/Admin/Tabs/class-econt-tab.php:105 app/Admin/Tabs/class-speedy-tab.php:84
 msgid "Select the profile you want to use and save to show or update the other options."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:108 app/Admin/Tabs/class-speedy-tab.php:91
+#: app/Admin/Tabs/class-econt-tab.php:109 app/Admin/Tabs/class-speedy-tab.php:91
 msgid "Force variations in label"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:108 app/Admin/Tabs/class-speedy-tab.php:91
+#: app/Admin/Tabs/class-econt-tab.php:109 app/Admin/Tabs/class-speedy-tab.php:91
 msgid "Add additional variations information. Please use this option only if you want the variation data to be available in the label print and it's missing."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:110 app/Admin/Tabs/class-pigeon-tab.php:114 app/Admin/Tabs/class-speedy-tab.php:93
+#: app/Admin/Tabs/class-econt-tab.php:111 app/Admin/Tabs/class-pigeon-tab.php:114 app/Admin/Tabs/class-speedy-tab.php:93
 msgid "Adds declared value to the label if payment is COD."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:111 app/Admin/Tabs/class-pigeon-tab.php:94 app/Admin/Tabs/class-speedy-tab.php:94
+#: app/Admin/Tabs/class-econt-tab.php:112 app/Admin/Tabs/class-pigeon-tab.php:94 app/Admin/Tabs/class-speedy-tab.php:94
 msgid "Automatically calculate box size"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:111 app/Admin/Tabs/class-pigeon-tab.php:94 app/Admin/Tabs/class-speedy-tab.php:94
+#: app/Admin/Tabs/class-econt-tab.php:112 app/Admin/Tabs/class-pigeon-tab.php:94 app/Admin/Tabs/class-speedy-tab.php:94
 msgid "Automatically calculate LxWxH of the box for the parcel."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:112
+#: app/Admin/Tabs/class-econt-tab.php:113
 msgid "Cash on delivery agreement"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:112
+#: app/Admin/Tabs/class-econt-tab.php:113
 msgid "Choose cash on delivery agreement"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:119
+#: app/Admin/Tabs/class-econt-tab.php:120
 msgid "Credit"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:123 app/functions.php:125
+#: app/Admin/Tabs/class-econt-tab.php:124 app/functions.php:125
 msgid "Cash"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:127
+#: app/Admin/Tabs/class-econt-tab.php:128
 msgid "Sender payment type"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:130
+#: app/Admin/Tabs/class-econt-tab.php:131
 msgid "Select how you will pay for the shipments."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:141
+#: app/Admin/Tabs/class-econt-tab.php:142
 msgid "Packing list"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:145
+#: app/Admin/Tabs/class-econt-tab.php:146
 msgid "Packing list or invoice number"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:148
+#: app/Admin/Tabs/class-econt-tab.php:149
 msgid "Select if you want to have packing list or invoice number in the label."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:167 app/Admin/Tabs/class-pigeon-tab.php:110 app/Admin/Tabs/class-speedy-tab.php:110
+#: app/Admin/Tabs/class-econt-tab.php:168 app/Admin/Tabs/class-pigeon-tab.php:110 app/Admin/Tabs/class-speedy-tab.php:110
 msgid "Select from where you will send the packages and save to show more options."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:188
+#: app/Admin/Tabs/class-econt-tab.php:189
 msgid "Select Address"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:192 app/Admin/Tabs/class-pigeon-tab.php:137 app/Admin/Tabs/class-speedy-tab.php:126
+#: app/Admin/Tabs/class-econt-tab.php:193 app/Admin/Tabs/class-pigeon-tab.php:137 app/Admin/Tabs/class-speedy-tab.php:126
 msgid "City"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:202 app/Admin/Tabs/class-pigeon-tab.php:148 app/Admin/Tabs/class-speedy-tab.php:137
+#: app/Admin/Tabs/class-econt-tab.php:203 app/Admin/Tabs/class-pigeon-tab.php:148 app/Admin/Tabs/class-speedy-tab.php:137
 msgid "Choose a city and save in order to show offices."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:216
+#: app/Admin/Tabs/class-econt-tab.php:217
 msgid "No agreement"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:241
+#: app/Admin/Tabs/class-econt-tab.php:242
 msgid "Econt account"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:242
+#: app/Admin/Tabs/class-econt-tab.php:243
 msgid "Use the user and password of an Econt e-shop integration. The other options unlock once Econt accepts the login."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:245 app/Admin/Tabs/class-pigeon-tab.php:168 app/Admin/Tabs/class-speedy-tab.php:158
+#: app/Admin/Tabs/class-econt-tab.php:246 app/Admin/Tabs/class-pigeon-tab.php:168 app/Admin/Tabs/class-speedy-tab.php:158
 msgid "Where you send from"
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:292
+#: app/Admin/Tabs/class-econt-tab.php:299
 msgid "Username and password are incorrect. Create API keys in your Econt account under \"Integration for online shops\"."
 msgstr ""
 
-#: app/Admin/Tabs/class-econt-tab.php:300
+#: app/Admin/Tabs/class-econt-tab.php:307
 msgid "No profiles was found. Please contact with Econt."
 msgstr ""
 
@@ -4004,80 +4022,53 @@ msgid "Export"
 msgstr ""
 
 #. translators: %s: link to the Documents settings
-#: app/Admin/Tabs/class-export-tab.php:43
+#: app/Admin/Tabs/class-export-tab.php:47
 #, php-format
 msgid "Fill in the company EIK (9 or 13 digits) in %s and save, then create the file again."
 msgstr ""
 
-#: app/Admin/Tabs/class-export-tab.php:60 app/Admin/Tabs/class-export-tab.php:123 app/Admin/Tabs/class-export-tab.php:152
+#: app/Admin/Tabs/class-export-tab.php:68 app/Admin/Tabs/class-export-tab.php:139 app/Admin/Tabs/class-export-tab.php:176
 msgid "No orders found for this month."
 msgstr ""
 
 #. translators: %s: comma separated order IDs
-#: app/Admin/Tabs/class-export-tab.php:76
+#: app/Admin/Tabs/class-export-tab.php:84
 #, php-format
 msgid "Some of the orders was not included because the payment method options was not found or the payment method was disabled. List of orders id's: %s"
 msgstr ""
 
-#: app/Admin/Tabs/class-export-tab.php:88
+#: app/Admin/Tabs/class-export-tab.php:96
 msgid "Found errors in file:"
 msgstr ""
 
-#. translators: %s: file address
-#: app/Admin/Tabs/class-export-tab.php:103 app/Admin/Tabs/class-export-tab.php:131
+#. translators: %s: link that downloads the file
+#: app/Admin/Tabs/class-export-tab.php:111 app/Admin/Tabs/class-export-tab.php:147
 #, php-format
-msgid "File generated successfully! <a href=\"%s\" download target=\"_blank\">Download</a>"
+msgid "File generated successfully! %s"
 msgstr ""
 
-#: app/Admin/Tabs/class-fields-tab.php:23 app/Front_End/Checkout/class-field-editor.php:812
+#: app/Admin/Tabs/class-export-tab.php:111 app/Admin/Tabs/class-export-tab.php:147
+msgctxt "link that downloads a file"
+msgid "Download"
+msgstr ""
+
+#: app/Admin/Tabs/class-fields-tab.php:23 app/Front_End/Checkout/class-field-editor.php:810
 msgid "Checkout fields"
 msgstr ""
 
-#: app/Admin/Tabs/class-fields-tab.php:36
-msgid "Company invoice fields"
-msgstr ""
-
-#: app/Admin/Tabs/class-fields-tab.php:36
-msgid "Add \"I want an invoice for a company\" to the checkout. When ticked, the customer fills in company name, EIK, VAT number, MOL, town and address."
-msgstr ""
-
-#: app/Admin/Tabs/class-fields-tab.php:41
-msgid "Website invoices: in the NRA audit file"
-msgstr ""
-
-#: app/Admin/Tabs/class-fields-tab.php:45
-msgid "Own invoicing program: custom number, not in the NRA audit file"
-msgstr ""
-
-#: app/Admin/Tabs/class-fields-tab.php:49
-msgid "Invoice numbering"
-msgstr ""
-
-#: app/Admin/Tabs/class-fields-tab.php:52
-msgid "Own invoicing program: no invoice is made automatically. Type the number from your program on the order screen and press \"Make invoice\". Those orders stay out of the NRA audit file and the monthly audit email."
-msgstr ""
-
-#: app/Admin/Tabs/class-fields-tab.php:60 app/Front_End/Checkout/class-field-editor.php:858
+#: app/Admin/Tabs/class-fields-tab.php:40 app/Front_End/Checkout/class-field-editor.php:856
 msgid "Default (as WooCommerce shows it)"
 msgstr ""
 
-#: app/Admin/Tabs/class-fields-tab.php:68 app/Admin/Tabs/class-fields-tab.php:92
+#: app/Admin/Tabs/class-fields-tab.php:48 app/Admin/Tabs/class-fields-tab.php:68
 msgid "Order notes"
 msgstr ""
 
-#: app/Admin/Tabs/class-fields-tab.php:71
+#: app/Admin/Tabs/class-fields-tab.php:51
 msgid "Classic checkout only. In the block checkout, turn order notes on or off in the Checkout block settings."
 msgstr ""
 
-#: app/Admin/Tabs/class-fields-tab.php:88 app/Export/Builder/class-fields.php:76
-msgid "Company invoice"
-msgstr ""
-
-#: app/Admin/Tabs/class-fields-tab.php:89
-msgid "Lets customers ask for an invoice made out to their company. Works in every checkout."
-msgstr ""
-
-#: app/Admin/Tabs/class-fields-tab.php:93
+#: app/Admin/Tabs/class-fields-tab.php:69
 msgid "The box where customers can leave a note with the order."
 msgstr ""
 
@@ -4211,334 +4202,346 @@ msgstr ""
 msgid "Turn on the NRA audit file (XML) in Exports. The order document is made for every order either way."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:53
-msgid "Disable invoice generation"
+#: app/Admin/Tabs/class-nra-tab.php:50
+msgid "Enable invoices"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:57
-msgid "Add only fields on checkout"
+#: app/Admin/Tabs/class-nra-tab.php:50
+msgid "Add \"I want an invoice for a company\" to the checkout and make an invoice for every order where it is ticked."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:69
-msgid "When to generate invoices?"
+#: app/Admin/Tabs/class-nra-tab.php:55
+msgid "On request, not in the NRA audit file"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:75
+#: app/Admin/Tabs/class-nra-tab.php:59
+msgid "On request, in the NRA audit file"
+msgstr ""
+
+#: app/Admin/Tabs/class-nra-tab.php:63
+msgid "How to issue invoices"
+msgstr ""
+
+#: app/Admin/Tabs/class-nra-tab.php:66
+msgid "Not in the NRA audit file: orders with an invoice are left out of the file and the monthly audit email. In the NRA audit file: they stay in it. That choice needs \"Enable N-18\" on."
+msgstr ""
+
+#: app/Admin/Tabs/class-nra-tab.php:72
 msgid "Order created"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:79
+#: app/Admin/Tabs/class-nra-tab.php:76
 msgid "Order completed"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:83
+#: app/Admin/Tabs/class-nra-tab.php:80
 msgid "When to generate documents?"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:85
+#: app/Admin/Tabs/class-nra-tab.php:82
 msgid "Next NRA Document Number"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:85
+#: app/Admin/Tabs/class-nra-tab.php:82
 msgid "The document number of the next order."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:86
+#: app/Admin/Tabs/class-nra-tab.php:83
 msgid "Next Invoice/Credit notice Number"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:86
+#: app/Admin/Tabs/class-nra-tab.php:83
 msgid "If it' filled the invoices will have different number than the NRA documents."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:87
+#: app/Admin/Tabs/class-nra-tab.php:84
 msgid "Due days"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:87
+#: app/Admin/Tabs/class-nra-tab.php:84
 msgid "Days added to documents due date."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:88
+#: app/Admin/Tabs/class-nra-tab.php:85
 msgid "Prepared by"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:88
+#: app/Admin/Tabs/class-nra-tab.php:85
 msgid "Enter the name of the compiler of the automatically generated documents, which will be displayed in them."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:89
+#: app/Admin/Tabs/class-nra-tab.php:86
 msgid "Identification code"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:89
+#: app/Admin/Tabs/class-nra-tab.php:86
 msgid "Enter an ID in the invoices and credit memos that replace the compiler's signature."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:90
+#: app/Admin/Tabs/class-nra-tab.php:87
 msgid "Footer text"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:91
+#: app/Admin/Tabs/class-nra-tab.php:88
 msgid "Total in words"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:91
+#: app/Admin/Tabs/class-nra-tab.php:88
 msgid "Print the total in Bulgarian words under the table, in euro. Older orders in leva stay in leva."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:92
+#: app/Admin/Tabs/class-nra-tab.php:89
 msgid "Generate separate copy documents"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:92
+#: app/Admin/Tabs/class-nra-tab.php:89
 msgid "When enabled, invoice and credit notice copies will be generated as separate documents instead of being merged with the original. The copies can be sent to an accountant email."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:93
+#: app/Admin/Tabs/class-nra-tab.php:90
 msgid "Accountant email"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:93
+#: app/Admin/Tabs/class-nra-tab.php:90
 msgid "Separate several addresses with commas. Gets the invoice and credit notice copies when separate copy documents are on, and the monthly audit file when that is on."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:94
+#: app/Admin/Tabs/class-nra-tab.php:91
 msgid "Email the audit file every month"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:94
+#: app/Admin/Tabs/class-nra-tab.php:91
 msgid "On the 1st of each month, the NRA audit file (XML, Ordinance N-18) of the month before goes to the accountant email."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:97
+#: app/Admin/Tabs/class-nra-tab.php:94
 msgid "Delete order documents after (days)"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:98
+#: app/Admin/Tabs/class-nra-tab.php:95
 msgid "Saves disk space: the order document PDFs (Bulgarian and English) of older orders are deleted once a day. Invoices, credit notes and refund documents are kept. The document number stays on the order, so the document can be made again. Leave 0 to keep them all."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:103
+#: app/Admin/Tabs/class-nra-tab.php:100
 msgid "Delete all order documents now"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:104
+#: app/Admin/Tabs/class-nra-tab.php:101
 msgid "The order document PDFs of all orders are deleted. Invoices stay."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:106
+#: app/Admin/Tabs/class-nra-tab.php:103
 msgid "Yes, delete them"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:116
+#: app/Admin/Tabs/class-nra-tab.php:113
 msgid "Group - A"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:120
+#: app/Admin/Tabs/class-nra-tab.php:117
 msgid "Group - B"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:124
+#: app/Admin/Tabs/class-nra-tab.php:121
 msgid "Group - G"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:128
+#: app/Admin/Tabs/class-nra-tab.php:125
 msgid "Vat Group"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:131
+#: app/Admin/Tabs/class-nra-tab.php:128
 msgid "group \"A\" - for goods and services, the sales of which are exempt from taxation, for goods and services, the sales of which are subject to 0% VAT, as well as for sales, for which VAT is not charged; group \"B\" - for goods and services, the sales of which are subject to 20% value added tax; group \"D\" - for goods and services, the sales of which are subject to 9% value added tax; combined - the group is determined for each product in the store separately."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:133
+#: app/Admin/Tabs/class-nra-tab.php:130
 msgid "Return method"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:133
+#: app/Admin/Tabs/class-nra-tab.php:130
 msgid "How to return the amount when the client cancel the order."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:151
+#: app/Admin/Tabs/class-nra-tab.php:148
 msgid "Logo"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:151
+#: app/Admin/Tabs/class-nra-tab.php:148
 msgid "Shown at the top of every document. Without one, the site logo from the theme or the site icon is used."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:156 app/Admin/Tabs/class-nra-tab.php:202
+#: app/Admin/Tabs/class-nra-tab.php:153 app/Admin/Tabs/class-nra-tab.php:199
 msgid "Small"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:164 app/Admin/Tabs/class-nra-tab.php:210
+#: app/Admin/Tabs/class-nra-tab.php:161 app/Admin/Tabs/class-nra-tab.php:207
 msgid "Large"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:168
+#: app/Admin/Tabs/class-nra-tab.php:165
 msgid "Logo size"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:170
+#: app/Admin/Tabs/class-nra-tab.php:167
 msgid "Website details"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:170
+#: app/Admin/Tabs/class-nra-tab.php:167
 msgid "Show the website name, address, email and phone under the logo"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:174
+#: app/Admin/Tabs/class-nra-tab.php:171
 msgid "Follow TokenForge colours"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:174
+#: app/Admin/Tabs/class-nra-tab.php:171
 msgid "Use the TokenForge palette for the colours below, now and after you change it"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:177
+#: app/Admin/Tabs/class-nra-tab.php:174
 msgid "Title colour"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:177
+#: app/Admin/Tabs/class-nra-tab.php:174
 msgid "Document title and website name."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:178 app/Front_End/Checkout/class-appearance.php:229
+#: app/Admin/Tabs/class-nra-tab.php:175 app/Front_End/Checkout/class-appearance.php:229
 msgid "Accent colour"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:178
+#: app/Admin/Tabs/class-nra-tab.php:175
 msgid "Lines under the header and above the footer."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:179
+#: app/Admin/Tabs/class-nra-tab.php:176
 msgid "Text colour"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:180
+#: app/Admin/Tabs/class-nra-tab.php:177
 msgid "Table header background"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:185
+#: app/Admin/Tabs/class-nra-tab.php:182
 msgid "Sans serif (DejaVu Sans)"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:189
+#: app/Admin/Tabs/class-nra-tab.php:186
 msgid "Serif (DejaVu Serif)"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:193
+#: app/Admin/Tabs/class-nra-tab.php:190
 msgid "Font"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:196
+#: app/Admin/Tabs/class-nra-tab.php:193
 msgid "Both fonts print Cyrillic and Latin."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:206 app/Admin/Tabs/class-nra-tab.php:238
+#: app/Admin/Tabs/class-nra-tab.php:203 app/Admin/Tabs/class-nra-tab.php:235
 msgid "Normal"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:214
+#: app/Admin/Tabs/class-nra-tab.php:211
 msgid "Text size"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:220
+#: app/Admin/Tabs/class-nra-tab.php:217
 msgid "A4"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:224
+#: app/Admin/Tabs/class-nra-tab.php:221
 msgid "Letter"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:228
+#: app/Admin/Tabs/class-nra-tab.php:225
 msgid "Paper size"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:234
+#: app/Admin/Tabs/class-nra-tab.php:231
 msgid "Compact"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:242
+#: app/Admin/Tabs/class-nra-tab.php:239
 msgid "Spacious"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:246 app/Front_End/Checkout/class-appearance.php:237
+#: app/Admin/Tabs/class-nra-tab.php:243 app/Front_End/Checkout/class-appearance.php:237
 msgid "Spacing"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:249
+#: app/Admin/Tabs/class-nra-tab.php:246
 msgid "Line spacing of the supplier and customer boxes and padding of the tables."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:259
+#: app/Admin/Tabs/class-nra-tab.php:256
 msgid "Date format"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:261
+#: app/Admin/Tabs/class-nra-tab.php:258
 msgid "Phone and email"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:261
+#: app/Admin/Tabs/class-nra-tab.php:258
 msgid "Show the phone and email of the supplier and the customer"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:262
+#: app/Admin/Tabs/class-nra-tab.php:259
 msgid "Received by"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:262
+#: app/Admin/Tabs/class-nra-tab.php:259
 msgid "Show the \"Received\" box with the customer name"
 msgstr ""
 
 #. translators: %s: payment method name
-#: app/Admin/Tabs/class-nra-tab.php:284
+#: app/Admin/Tabs/class-nra-tab.php:281
 #, php-format
 msgid "Payment method: %s"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:305
+#: app/Admin/Tabs/class-nra-tab.php:302
 msgid "Company details"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:312
+#: app/Admin/Tabs/class-nra-tab.php:309
 msgid "VAT and refunds"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:315
+#: app/Admin/Tabs/class-nra-tab.php:312
 msgid "Shipping on documents"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:318
+#: app/Admin/Tabs/class-nra-tab.php:315
 msgid "PDF appearance"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:320
+#: app/Admin/Tabs/class-nra-tab.php:317
 msgid "TokenForge is active: its colours fill in the fields below, and with \"Follow TokenForge colours\" on, documents keep matching the website."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:321
+#: app/Admin/Tabs/class-nra-tab.php:318
 msgid "Logo, colours, font and paper of invoices, credit notes and order documents."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:342
+#: app/Admin/Tabs/class-nra-tab.php:339
 msgid "Payment Type"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:342
+#: app/Admin/Tabs/class-nra-tab.php:339
 msgid "Manner of payment of the order according to the NRA system."
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:343
+#: app/Admin/Tabs/class-nra-tab.php:340
 msgid "Virtual POS №"
 msgstr ""
 
-#: app/Admin/Tabs/class-nra-tab.php:344
+#: app/Admin/Tabs/class-nra-tab.php:341
 msgid "Identifier"
 msgstr ""
 
 #. translators: %s: shipping method name
-#: app/Admin/Tabs/class-nra-tab.php:370
+#: app/Admin/Tabs/class-nra-tab.php:367
 #, php-format
 msgid "Is %s courier?"
 msgstr ""
@@ -4619,13 +4622,17 @@ msgstr ""
 msgid "Extra services on labels"
 msgstr ""
 
-#. translators: %s: Pigeon Express price page address
+#. translators: %s: link to the Pigeon Express price page
 #: app/Admin/Tabs/class-pigeon-tab.php:174
 #, php-format
-msgid "You can see the current prices on the <a href=\"%s\" target=\"_blank\">Pigeon Express website</a> or according to your agreed upon terms."
+msgid "You can see the current prices on the %s or according to your agreed upon terms."
 msgstr ""
 
-#: app/Admin/Tabs/class-pigeon-tab.php:198
+#: app/Admin/Tabs/class-pigeon-tab.php:174
+msgid "Pigeon Express website"
+msgstr ""
+
+#: app/Admin/Tabs/class-pigeon-tab.php:204
 msgid "API Key and API Secret are incorrect."
 msgstr ""
 
@@ -4685,7 +4692,7 @@ msgstr ""
 msgid "A short form for shoppers who do not want to check out. The shopper sends name, phone and email, and the order waits for you to confirm it. No stock is reserved until you do. Change the order status to Pending payment to send the payment link."
 msgstr ""
 
-#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:183 app/class-plugin.php:336
+#: app/Admin/Tabs/class-settings-tab.php:22 app/class-plugin.php:187 app/class-plugin.php:340
 msgid "Settings"
 msgstr ""
 
@@ -4833,133 +4840,133 @@ msgstr ""
 msgid "The user and password of your Speedy API account. The other options unlock once Speedy accepts the login."
 msgstr ""
 
-#: app/Admin/Tabs/class-speedy-tab.php:207
+#: app/Admin/Tabs/class-speedy-tab.php:213
 msgid "Username and password are incorrect."
 msgstr ""
 
-#: app/Admin/Tabs/class-speedy-tab.php:212
+#: app/Admin/Tabs/class-speedy-tab.php:218
 msgid "No profiles was found. Please contact with Speedy."
 msgstr ""
 
-#: app/class-document-storage.php:261
+#: app/class-document-storage.php:265
 msgid "You cannot do this."
 msgstr ""
 
-#: app/class-document-storage.php:286
+#: app/class-document-storage.php:288
 msgid "Order documents are being deleted in the background."
 msgstr ""
 
-#: app/class-document-storage.php:462
+#: app/class-document-storage.php:457 app/class-document-storage.php:483
 msgid "The document was not found or you do not have access to it."
 msgstr ""
 
 #. translators: %s: link to the settings
-#: app/class-plugin.php:183
+#: app/class-plugin.php:187
 #, php-format
 msgid "Nashenski Commerce - Please review the options and save them again from \"%s\"."
 msgstr ""
 
-#: app/class-plugin.php:392
+#: app/class-plugin.php:377
 msgid "The file was downloaded."
 msgstr ""
 
-#: app/class-plugin.php:395
+#: app/class-plugin.php:380
 msgid "Built-in prices restored. Save to keep them."
 msgstr ""
 
-#: app/class-plugin.php:396
+#: app/class-plugin.php:381
 msgid "Your prices match the courier website."
 msgstr ""
 
-#: app/class-plugin.php:397
+#: app/class-plugin.php:382
 msgid "The courier website has different prices:"
 msgstr ""
 
-#: app/class-plugin.php:399 app/Front_End/class-quick-order.php:500
+#: app/class-plugin.php:384 app/Front_End/class-quick-order.php:476
 msgid "Website"
 msgstr ""
 
-#: app/class-plugin.php:400
+#: app/class-plugin.php:385
 msgid "Use these prices"
 msgstr ""
 
-#: app/class-plugin.php:401
+#: app/class-plugin.php:386
 msgid "New prices filled in. Check them and save."
 msgstr ""
 
-#: app/class-plugin.php:435
+#: app/class-plugin.php:420
 msgid "The request failed. Reload the page and try again."
 msgstr ""
 
-#: app/Client/class-boxnow.php:150
+#: app/Client/class-boxnow.php:163
 msgid "Some label data is not valid."
 msgstr ""
 
-#: app/Client/class-boxnow.php:151
+#: app/Client/class-boxnow.php:164
 msgid "The sending warehouse or locker is not valid. Choose one from the list."
 msgstr ""
 
-#: app/Client/class-boxnow.php:152
+#: app/Client/class-boxnow.php:165
 msgid "The destination locker is not valid. Choose one from the list."
 msgstr ""
 
-#: app/Client/class-boxnow.php:153
+#: app/Client/class-boxnow.php:166
 msgid "Your BOX NOW account cannot send from any locker (AnyAPM). Contact BOX NOW."
 msgstr ""
 
-#: app/Client/class-boxnow.php:154
+#: app/Client/class-boxnow.php:167
 msgid "The phone number is not valid. Use the full international format, for example +359 88 123 4567."
 msgstr ""
 
-#: app/Client/class-boxnow.php:155
+#: app/Client/class-boxnow.php:168
 msgid "Choose a box size: small, medium or large."
 msgstr ""
 
-#: app/Client/class-boxnow.php:156
+#: app/Client/class-boxnow.php:169
 msgid "The country code is not valid."
 msgstr ""
 
-#: app/Client/class-boxnow.php:157
+#: app/Client/class-boxnow.php:170
 msgid "The cash on delivery amount must be more than 0 and less than 5000."
 msgstr ""
 
-#: app/Client/class-boxnow.php:158
+#: app/Client/class-boxnow.php:171
 msgid "BOX NOW already has a label for this order number."
 msgstr ""
 
-#: app/Client/class-boxnow.php:159
+#: app/Client/class-boxnow.php:172
 msgid "Your BOX NOW account cannot use cash on delivery. Contact BOX NOW."
 msgstr ""
 
-#: app/Client/class-boxnow.php:160
+#: app/Client/class-boxnow.php:173
 msgid "The return warehouse is not valid."
 msgstr ""
 
-#: app/Client/class-boxnow.php:161
+#: app/Client/class-boxnow.php:174
 msgid "Your BOX NOW account cannot deliver to an address. Contact BOX NOW."
 msgstr ""
 
-#: app/Client/class-boxnow.php:162
+#: app/Client/class-boxnow.php:175
 msgid "Your BOX NOW account cannot use cash on delivery to an address. Contact BOX NOW."
 msgstr ""
 
-#: app/Client/class-boxnow.php:163
+#: app/Client/class-boxnow.php:176
 msgid "This parcel can no longer be cancelled."
 msgstr ""
 
-#: app/Client/class-boxnow.php:164
+#: app/Client/class-boxnow.php:177
 msgid "The parcel weight is not valid."
 msgstr ""
 
-#: app/Client/class-boxnow.php:165
+#: app/Client/class-boxnow.php:178
 msgid "BOX NOW does not accept new labels because your account has an overdue payment."
 msgstr ""
 
-#: app/Client/class-boxnow.php:166
+#: app/Client/class-boxnow.php:179
 msgid "BOX NOW could not reach the locker. Try again later."
 msgstr ""
 
-#: app/Client/class-connectix.php:203
+#: app/Client/class-connectix.php:210
 msgid "No Info"
 msgstr ""
 
@@ -4985,11 +4992,16 @@ msgstr ""
 msgid "Shipments"
 msgstr ""
 
+#: app/Export/Builder/class-fields.php:43 app/Reports/class-reports.php:152
+msgctxt "a store order"
+msgid "Order"
+msgstr ""
+
 #: app/Export/Builder/class-fields.php:45
 msgid "Order ID"
 msgstr ""
 
-#: app/Export/Builder/class-fields.php:46 app/Front_End/class-withdrawal.php:496
+#: app/Export/Builder/class-fields.php:46 app/Front_End/class-withdrawal.php:515
 msgid "Order number"
 msgstr ""
 
@@ -5021,7 +5033,7 @@ msgstr ""
 msgid "Customer name"
 msgstr ""
 
-#: app/Export/Builder/class-fields.php:62 app/Front_End/Checkout/class-field-editor.php:176
+#: app/Export/Builder/class-fields.php:62 app/Front_End/Checkout/class-field-editor.php:173
 msgid "Last name"
 msgstr ""
 
@@ -5053,11 +5065,15 @@ msgstr ""
 msgid "Billing country"
 msgstr ""
 
+#: app/Export/Builder/class-fields.php:76
+msgid "Company invoice"
+msgstr ""
+
 #: app/Export/Builder/class-fields.php:78
 msgid "Company invoice (yes/no)"
 msgstr ""
 
-#: app/Export/Builder/class-fields.php:79 app/Front_End/Checkout/class-company-fields.php:121 app/Front_End/Checkout/class-company.php:46 app/Front_End/Checkout/class-field-editor.php:177
+#: app/Export/Builder/class-fields.php:79 app/Front_End/Checkout/class-company-fields.php:106 app/Front_End/Checkout/class-company.php:46 app/Front_End/Checkout/class-field-editor.php:174
 msgid "Company name"
 msgstr ""
 
@@ -5185,7 +5201,7 @@ msgstr ""
 msgid "Variation ID"
 msgstr ""
 
-#: app/Export/Builder/class-fields.php:159 app/Front_End/class-quick-order.php:244
+#: app/Export/Builder/class-fields.php:159 app/Front_End/class-quick-order.php:245
 msgid "Quantity"
 msgstr ""
 
@@ -5221,17 +5237,17 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-#: app/Export/Builder/class-fields.php:428 app/Export/Builder/class-fields.php:429 app/Front_End/Checkout/class-pickers.php:564 app/Front_End/Checkout/class-pickers.php:565 app/Front_End/Checkout/class-pickers.php:566
+#: app/Export/Builder/class-fields.php:428 app/Export/Builder/class-fields.php:429 app/Front_End/Checkout/class-pickers.php:577 app/Front_End/Checkout/class-pickers.php:578 app/Front_End/Checkout/class-pickers.php:579
 msgid "Parcel locker"
 msgstr ""
 
 #. translators: 1: total, 2: VAT, 3: refunded total
-#: app/Export/Nra/class-export.php:349
+#: app/Export/Nra/class-export.php:356
 #, php-format
 msgid "Total: %1$s | Total vat: %2$s | Returned Total: %3$s"
 msgstr ""
 
-#: app/Export/Nra/class-export.php:397
+#: app/Export/Nra/class-export.php:409
 msgid "The PHP XMLWriter extension is required to create the NRA XML file."
 msgstr ""
 
@@ -5341,27 +5357,27 @@ msgstr ""
 msgid "Logo height"
 msgstr ""
 
-#: app/Front_End/Checkout/class-company-fields.php:111 app/Front_End/Checkout/class-company-fields.php:113 app/Front_End/Checkout/class-company.php:56
+#: app/Front_End/Checkout/class-company-fields.php:96 app/Front_End/Checkout/class-company-fields.php:98 app/Front_End/Checkout/class-company.php:56
 msgid "I want an invoice for a company"
 msgstr ""
 
-#: app/Front_End/Checkout/class-company-fields.php:124 app/Front_End/Checkout/class-company.php:65
+#: app/Front_End/Checkout/class-company-fields.php:109 app/Front_End/Checkout/class-company.php:65
 msgid "MOL (responsible person)"
 msgstr ""
 
-#: app/Front_End/Checkout/class-company-fields.php:125 app/Front_End/Checkout/class-company.php:87
+#: app/Front_End/Checkout/class-company-fields.php:110 app/Front_End/Checkout/class-company.php:87
 msgid "Registered town"
 msgstr ""
 
-#: app/Front_End/Checkout/class-company-fields.php:126 app/Front_End/Checkout/class-company.php:98
+#: app/Front_End/Checkout/class-company-fields.php:111 app/Front_End/Checkout/class-company.php:98
 msgid "Registered address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-company-fields.php:133 app/Front_End/Checkout/class-field-editor.php:678
+#: app/Front_End/Checkout/class-company-fields.php:118 app/Front_End/Checkout/class-field-editor.php:676
 msgid "(optional)"
 msgstr ""
 
-#: app/Front_End/Checkout/class-company-fields.php:160
+#: app/Front_End/Checkout/class-company-fields.php:145
 msgid "The EIK has 9 or 13 digits."
 msgstr ""
 
@@ -5389,351 +5405,353 @@ msgstr ""
 msgid "You have entered an invalid VAT number (%1$s) for your billing country (%2$s)."
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:178
+#: app/Front_End/Checkout/class-field-editor.php:175
 msgid "Street address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:179
+#: app/Front_End/Checkout/class-field-editor.php:176
 msgid "Apartment, suite, unit (address line 2)"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:180
+#: app/Front_End/Checkout/class-field-editor.php:177
 msgid "Town / City"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:181
+#: app/Front_End/Checkout/class-field-editor.php:178
 msgid "Region / State"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:182
+#: app/Front_End/Checkout/class-field-editor.php:179
 msgid "Postcode"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:609
+#: app/Front_End/Checkout/class-field-editor.php:607
 msgid "Choose an option"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:813
+#: app/Front_End/Checkout/class-field-editor.php:811
 msgid "Show, require or hide each field, set its width and order, and add your own fields."
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:818
+#: app/Front_End/Checkout/class-field-editor.php:816
 msgid "Fields"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:855 app/Front_End/class-withdrawal.php:495
+#: app/Front_End/Checkout/class-field-editor.php:853 app/Front_End/class-withdrawal.php:514
 msgid "Email address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:864
+#: app/Front_End/Checkout/class-field-editor.php:862
 msgid "Text"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:865
+#: app/Front_End/Checkout/class-field-editor.php:863
 msgid "Text area"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:866
+#: app/Front_End/Checkout/class-field-editor.php:864
 msgid "List"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:867
+#: app/Front_End/Checkout/class-field-editor.php:865
 msgid "Checkbox"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:870 app/Front_End/Checkout/class-pickers.php:582
+#: app/Front_End/Checkout/class-field-editor.php:868 app/Front_End/Checkout/class-pickers.php:595
 msgid "Number"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:871
+#: app/Front_End/Checkout/class-field-editor.php:869
 msgid "Date"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:878
+#: app/Front_End/Checkout/class-field-editor.php:876
 msgid "One choice per line"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:899
+#: app/Front_End/Checkout/class-field-editor.php:897
 msgid "Full width"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:900
+#: app/Front_End/Checkout/class-field-editor.php:898
 msgid "Half width"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:905 app/Front_End/Checkout/class-field-editor.php:937
+#: app/Front_End/Checkout/class-field-editor.php:903 app/Front_End/Checkout/class-field-editor.php:935
 msgid "Condition"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:909
+#: app/Front_End/Checkout/class-field-editor.php:907
 msgid "Always shown"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:911
+#: app/Front_End/Checkout/class-field-editor.php:909
 msgid "Show when..."
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:913
+#: app/Front_End/Checkout/class-field-editor.php:911
 msgid "Hide when..."
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:915
+#: app/Front_End/Checkout/class-field-editor.php:913
 msgid "Edit condition"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:933
+#: app/Front_End/Checkout/class-field-editor.php:931
 msgid "Position"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:935
+#: app/Front_End/Checkout/class-field-editor.php:933
 msgid "Show"
 msgstr ""
 
 #. translators: %s: the field, the operator and the value
-#: app/Front_End/Checkout/class-field-editor.php:970
+#: app/Front_End/Checkout/class-field-editor.php:968
 #, php-format
 msgid "Shown when: %s"
 msgstr ""
 
 #. translators: %s: the field, the operator and the value
-#: app/Front_End/Checkout/class-field-editor.php:976
+#: app/Front_End/Checkout/class-field-editor.php:974
 #, php-format
 msgid "Hidden when: %s"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:980 app/Front_End/Checkout/class-field-editor.php:1006
+#: app/Front_End/Checkout/class-field-editor.php:978 app/Front_End/Checkout/class-field-editor.php:1004
 msgid "or"
 msgstr ""
 
 #. translators: %s: field label
-#: app/Front_End/Checkout/class-field-editor.php:984
+#: app/Front_End/Checkout/class-field-editor.php:982
 #, php-format
 msgid "%s is hidden, so its value always counts as empty."
 msgstr ""
 
 #. translators: %s: field key
-#: app/Front_End/Checkout/class-field-editor.php:990
+#: app/Front_End/Checkout/class-field-editor.php:988
 #, php-format
 msgid "%s is not in the table any more. The rule is dropped on save."
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:993
+#: app/Front_End/Checkout/class-field-editor.php:991
 msgid "ticked"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:994
+#: app/Front_End/Checkout/class-field-editor.php:992
 msgid "not ticked"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:995
+#: app/Front_End/Checkout/class-field-editor.php:993
 msgid "Choose a field"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:999
+#: app/Front_End/Checkout/class-field-editor.php:997
 msgid "Show this field when:"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1000
+#: app/Front_End/Checkout/class-field-editor.php:998
 msgid "Hide this field when:"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1003
+#: app/Front_End/Checkout/class-field-editor.php:1001
 msgid "Add alternative (or)"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1003 app/Front_End/Checkout/class-pickers.php:571 app/Front_End/class-quick-order.php:376
+#: app/Front_End/Checkout/class-field-editor.php:1001 app/Front_End/Checkout/class-pickers.php:584 app/Front_End/class-quick-order.php:391
+msgctxt "button that closes a window"
 msgid "Close"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1007
+#: app/Front_End/Checkout/class-field-editor.php:1005
 msgid "All of these are true:"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1009
+#: app/Front_End/Checkout/class-field-editor.php:1007
 msgid "Add condition"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1014
+#: app/Front_End/Checkout/class-field-editor.php:1012
 msgid "is"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1015
+#: app/Front_End/Checkout/class-field-editor.php:1013
 msgid "is not"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1016
+#: app/Front_End/Checkout/class-field-editor.php:1014
 msgid "is greater than"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1017
+#: app/Front_End/Checkout/class-field-editor.php:1015
 msgid "is less than"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1018
+#: app/Front_End/Checkout/class-field-editor.php:1016
 msgid "is empty"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1019
+#: app/Front_End/Checkout/class-field-editor.php:1017
 msgid "is not empty"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1026
+#: app/Front_End/Checkout/class-field-editor.php:1024
 msgid "Add your own field"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1027
-msgid "Use the arrows to change the order. Two half-width fields next to each other share a line. With company invoice fields on, the company name belongs to them."
+#: app/Front_End/Checkout/class-field-editor.php:1025
+msgid "Use the arrows to change the order. Two half-width fields next to each other share a line. With invoices on, the company name belongs to the company invoice fields."
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1030
+#: app/Front_End/Checkout/class-field-editor.php:1028
 msgid "Which checkouts follow what"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1031
+#: app/Front_End/Checkout/class-field-editor.php:1029
 msgid "Show, required and hidden apply to the billing and shipping address in every checkout. Order and width also apply to the address in the block checkout, where the email always comes first and your own fields come after it. The place of the email applies to the classic checkout and to builder checkouts that show WooCommerce's billing fields. Builder checkouts made of single field elements keep the order you placed them in. When the town or region is hidden, the courier fields ask for the town (from Econt's list of towns when Econt is on)."
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1032
+#: app/Front_End/Checkout/class-field-editor.php:1030
 msgid "Conditions: the classic checkout follows all of them. The block checkout follows conditions on your own fields that read your own fields, and not \"greater\" or \"less\"; other conditions are ignored there."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:294
+#: app/Front_End/Checkout/class-pickers.php:307
 msgid "Complete the fields to calculate"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:340
+#: app/Front_End/Checkout/class-pickers.php:353
 msgid "Choose your office, locker or address to see the delivery price."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:340 app/Front_End/Checkout/class-pickers.php:538
+#: app/Front_End/Checkout/class-pickers.php:353 app/Front_End/Checkout/class-pickers.php:551
 msgid "Price after address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:343 app/Front_End/Checkout/class-pickers.php:539
+#: app/Front_End/Checkout/class-pickers.php:356 app/Front_End/Checkout/class-pickers.php:552
 msgid "to the courier"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:345
+#: app/Front_End/Checkout/class-pickers.php:358
+msgctxt "delivery price"
 msgid "Free"
 msgstr ""
 
 #. translators: %s: delivery price, for example 6,50 €
-#: app/Front_End/Checkout/class-pickers.php:542 app/Shipping/class-courier-fee.php:524
+#: app/Front_End/Checkout/class-pickers.php:555 app/Shipping/class-courier-fee.php:524
 #, php-format
 msgid "%s, paid to the courier on delivery, not included in the total"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:560
+#: app/Front_End/Checkout/class-pickers.php:573
 msgid "To your address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:567
+#: app/Front_End/Checkout/class-pickers.php:580
 msgid "Search by town, name or address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:568
+#: app/Front_End/Checkout/class-pickers.php:581
 msgid "Change"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:569
+#: app/Front_End/Checkout/class-pickers.php:582
 msgid "Choose on the map"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:570
+#: app/Front_End/Checkout/class-pickers.php:583
 msgid "Choose an office on the map"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:572
+#: app/Front_End/Checkout/class-pickers.php:585
 msgid "Loading..."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:573
+#: app/Front_End/Checkout/class-pickers.php:586
 msgid "Nothing found. Check the town in the address above."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:574
+#: app/Front_End/Checkout/class-pickers.php:587
 msgid "No match. Try another word."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:575
+#: app/Front_End/Checkout/class-pickers.php:588
 msgid "Enter your town in the address above to see the list."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:576
+#: app/Front_End/Checkout/class-pickers.php:589
 msgid "Choose it on the map. The price comes from the courier's public price list."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:577
+#: app/Front_End/Checkout/class-pickers.php:590
 msgid "This is an office. Choose a parcel locker, or pick the office delivery option."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:578
+#: app/Front_End/Checkout/class-pickers.php:591
 msgid "This is a parcel locker. Choose an office, or pick the parcel locker delivery option."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:580
+#: app/Front_End/Checkout/class-pickers.php:593
 msgid "Start typing the street or quarter"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:581
+#: app/Front_End/Checkout/class-pickers.php:594
 msgid "Street and number"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:587
+#: app/Front_End/Checkout/class-pickers.php:600
 msgid "Note for the courier (optional)"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:588
+#: app/Front_End/Checkout/class-pickers.php:601
 msgid "The list could not be loaded. Please try again."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:589
+#: app/Front_End/Checkout/class-pickers.php:602
 msgid "Try again"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:591
+#: app/Front_End/Checkout/class-pickers.php:604
 msgid "Town or village"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:592
+#: app/Front_End/Checkout/class-pickers.php:605
 msgid "Start typing your town or village"
 msgstr ""
 
 #. translators: %s: order total for free shipping, for example 50,00 €
-#: app/Front_End/Checkout/class-pickers.php:594
+#: app/Front_End/Checkout/class-pickers.php:607
 #, php-format
 msgid "Free shipping over %s"
 msgstr ""
 
 #. translators: %s: amount still missing, for example 23,40 €
-#: app/Front_End/Checkout/class-pickers.php:596
+#: app/Front_End/Checkout/class-pickers.php:609
 #, php-format
 msgid "Add %s more for free shipping."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:597
+#: app/Front_End/Checkout/class-pickers.php:610
 msgid "Your order ships for free."
 msgstr ""
 
 #. translators: %s: region name
-#: app/Front_End/Checkout/class-pickers.php:599
+#: app/Front_End/Checkout/class-pickers.php:612
 #, php-format
 msgid "%s region"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:629
+#: app/Front_End/Checkout/class-pickers.php:642
 msgid "bl."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:630
+#: app/Front_End/Checkout/class-pickers.php:643
 msgid "entr."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:631
+#: app/Front_End/Checkout/class-pickers.php:644
 msgid "fl."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:632
+#: app/Front_End/Checkout/class-pickers.php:645
 msgid "ap."
 msgstr ""
 
@@ -5745,270 +5763,270 @@ msgstr ""
 msgid "Addresses transliterated."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:87
+#: app/Front_End/class-quick-order.php:88
 msgid "Product page"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:89
+#: app/Front_End/class-quick-order.php:90
 msgid "Product page and cart"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:98
+#: app/Front_End/class-quick-order.php:99
 msgid "Dialog window (a pop-up in the middle)"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:99
+#: app/Front_End/class-quick-order.php:100
 msgid "Inline, under the button"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:100
+#: app/Front_End/class-quick-order.php:101
 msgid "Sliding panel from the right"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:112
+#: app/Front_End/class-quick-order.php:113
 msgid "Minimal (name, phone, email)"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:116
+#: app/Front_End/class-quick-order.php:117
 msgid "Callback request"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:120 app/functions.php:195
+#: app/Front_End/class-quick-order.php:121 app/functions.php:195
 msgid "Standard"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:124
+#: app/Front_End/class-quick-order.php:125
 msgid "Full order (every field)"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:128
+#: app/Front_End/class-quick-order.php:129
 msgid "Custom (choose the fields below)"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:139
+#: app/Front_End/class-quick-order.php:140
 msgid "National (0888 123 456)"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:140
+#: app/Front_End/class-quick-order.php:141
 msgid "International (+359 88 123 4567)"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:243
+#: app/Front_End/class-quick-order.php:244
 msgid "Town"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:245 app/Front_End/class-quick-order.php:782
+#: app/Front_End/class-quick-order.php:246 app/Front_End/class-quick-order.php:760
 msgid "Product notes"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:246 app/Front_End/class-quick-order.php:783
+#: app/Front_End/class-quick-order.php:247 app/Front_End/class-quick-order.php:761
 msgid "Preferred delivery time"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:290 app/Front_End/class-quick-order.php:308
+#: app/Front_End/class-quick-order.php:291 app/Front_End/class-quick-order.php:309
 msgctxt "Order status"
 msgid "Quick order"
 msgstr ""
 
 #. translators: %s: number of quick orders
-#: app/Front_End/class-quick-order.php:296
+#: app/Front_End/class-quick-order.php:297
 #, php-format
-msgid "Quick order <span class=\"count\">(%s)</span>"
-msgid_plural "Quick orders <span class=\"count\">(%s)</span>"
+msgid "Quick order (%s)"
+msgid_plural "Quick orders (%s)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Front_End/class-quick-order.php:491 app/Front_End/class-quick-order.php:491
+#: app/Front_End/class-quick-order.php:441 app/Front_End/class-quick-order.php:535
+msgid "Quick orders are turned off."
+msgstr ""
+
+#: app/Front_End/class-quick-order.php:467 app/Front_End/class-quick-order.php:467
 msgid "privacy policy"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:497
+#: app/Front_End/class-quick-order.php:473
 msgid "Leave your details and we will contact you to confirm the order."
 msgstr ""
 
 #. translators: %s: example phone number
-#: app/Front_End/class-quick-order.php:509
+#: app/Front_End/class-quick-order.php:485
 #, php-format
 msgid "Phone number, for example %s."
 msgstr ""
 
 #. translators: %s: link to the privacy policy
-#: app/Front_End/class-quick-order.php:539
+#: app/Front_End/class-quick-order.php:515
 #, php-format
 msgid "I agree that the store may contact me about this order. I have read the %s."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:548
+#: app/Front_End/class-quick-order.php:524
 msgid "Send"
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:559
-msgid "Quick orders are turned off."
-msgstr ""
-
-#: app/Front_End/class-quick-order.php:565
+#: app/Front_End/class-quick-order.php:539
 msgid "The form has expired. Reload the page and try again."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:582
+#: app/Front_End/class-quick-order.php:559
 msgid "Too many requests. Try again in a few minutes."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:592
+#: app/Front_End/class-quick-order.php:569
 msgid "Enter your name."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:604
+#: app/Front_End/class-quick-order.php:581
 msgid "Tick the box to agree to be contacted."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:615
+#: app/Front_End/class-quick-order.php:592
 msgid "Your cart is empty."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:625
+#: app/Front_End/class-quick-order.php:602
 msgid "This product cannot be ordered now."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:634
+#: app/Front_End/class-quick-order.php:611
 msgid "The order could not be saved. Please try again."
 msgstr ""
 
 #. translators: %s: example phone number
-#: app/Front_End/class-quick-order.php:723
+#: app/Front_End/class-quick-order.php:700
 #, php-format
 msgid "Enter a valid phone number, for example %s."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:734
+#: app/Front_End/class-quick-order.php:712
 msgid "Thank you. We have your details and will contact you to confirm the order."
 msgstr ""
 
-#: app/Front_End/class-quick-order.php:796
+#: app/Front_End/class-quick-order.php:774
 msgid "Quick order from the shop. No stock is reserved and no payment link is sent until the status is changed to Pending payment."
 msgstr ""
 
 #. translators: %s: order number
-#: app/Front_End/class-quick-order.php:823
+#: app/Front_End/class-quick-order.php:801
 #, php-format
 msgid "New quick order #%s"
 msgstr ""
 
 #. translators: 1: shopper name, 2: phone, 3: email, 4: link to the order
-#: app/Front_End/class-quick-order.php:826
+#: app/Front_End/class-quick-order.php:804
 #, php-format
 msgid "A shopper asked for a quick order.\n\nName: %1$s\nPhone: %2$s\nEmail: %3$s\n\nOpen the order: %4$s"
 msgstr ""
 
 #. translators: 1: site name, 2: order number
-#: app/Front_End/class-quick-order.php:844
+#: app/Front_End/class-quick-order.php:822
 #, php-format
 msgid "%1$s: we received your quick order #%2$s"
 msgstr ""
 
 #. translators: %s: shopper name
-#: app/Front_End/class-quick-order.php:847
+#: app/Front_End/class-quick-order.php:825
 #, php-format
 msgid "Hello %s,\n\nThank you. We have your quick order and will contact you to confirm it.\n\nNo payment is needed now."
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:100
+#: app/Front_End/class-withdrawal.php:116
 msgid "Withdraw from contract here"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:206
+#: app/Front_End/class-withdrawal.php:222
 msgid "Ordered without an account?"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:369
+#: app/Front_End/class-withdrawal.php:388
 msgid "The full order"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:370
+#: app/Front_End/class-withdrawal.php:389
 msgid "Specific items only"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:392
+#: app/Front_End/class-withdrawal.php:411
 msgid "Withdrawal requested"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:408
+#: app/Front_End/class-withdrawal.php:427
 msgid "Withdrawal"
 msgstr ""
 
 #. translators: %s: date and time
-#: app/Front_End/class-withdrawal.php:459
+#: app/Front_End/class-withdrawal.php:478
 #, php-format
 msgid "The customer withdrew from the contract on %s. See the \"Withdrawal from contract\" box."
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:479
+#: app/Front_End/class-withdrawal.php:498
 msgid "Withdrawal from contract"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:491
+#: app/Front_End/class-withdrawal.php:510
 msgid "None provided"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:493
+#: app/Front_End/class-withdrawal.php:512
 msgid "Submitted"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:497
+#: app/Front_End/class-withdrawal.php:516
 msgid "Withdrawing"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:498
+#: app/Front_End/class-withdrawal.php:517
 msgid "Additional details"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:511
+#: app/Front_End/class-withdrawal.php:530
 msgid "The customer received an acknowledgement by email with these details and the date and time of submission."
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:512
+#: app/Front_End/class-withdrawal.php:531
 msgid "This withdrawal was sent before Nashenski Commerce kept the submitted details. The date and the choice come from the order note; the full details are in the emails WooCommerce sent to you and to the customer."
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:543
+#: app/Front_End/class-withdrawal.php:562
 msgid "Lets customers withdraw from an order online, as EU law asks from 19 June 2026 (Directive 2011/83/EU, Article 11a). The customer gets a dated email and so do you. Mention it in your terms."
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:551
+#: app/Front_End/class-withdrawal.php:570
 msgid "Needs WooCommerce 11.1 or newer."
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:570
+#: app/Front_End/class-withdrawal.php:589
 msgid "Withdrawal function"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:571
+#: app/Front_End/class-withdrawal.php:590
 msgid "Turn on the withdrawal form and the \"Withdraw from contract here\" links"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:577
+#: app/Front_End/class-withdrawal.php:596
 msgid "Link on every page"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:582
+#: app/Front_End/class-withdrawal.php:601
 msgid "At the bottom of every page"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:583
+#: app/Front_End/class-withdrawal.php:602
 msgid "I place it myself (menu, footer template or shortcode)"
 msgstr ""
 
 #. translators: 1: shortcode, 2: address of the withdrawal form
-#: app/Front_End/class-withdrawal.php:587
+#: app/Front_End/class-withdrawal.php:606
 #, php-format
 msgid "Shortcode for any page or builder: %1$s (add button=\"yes\" for a button). Address for menus: %2$s"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:595
+#: app/Front_End/class-withdrawal.php:614
 msgid "Withdrawal period (days)"
 msgstr ""
 
-#: app/Front_End/class-withdrawal.php:596
+#: app/Front_End/class-withdrawal.php:615
 msgid "The link shows on an order (My Account, order page, order emails) until this many days after the order is completed. The form itself is always open."
 msgstr ""
 
@@ -6044,28 +6062,24 @@ msgstr ""
 msgid "Review only"
 msgstr ""
 
-#: app/functions.php:576 app/functions.php:615 app/Shipping/Pigeon/class-payment.php:231
-msgid "This page has expired. Reload it and try again."
+#: app/functions.php:604
+msgid "The request is not complete. Reload the page and try again."
 msgstr ""
 
-#: app/functions.php:580
-msgid "You cannot create labels."
-msgstr ""
-
-#: app/functions.php:907
+#: app/functions.php:955
 msgid "Label created."
 msgstr ""
 
-#: app/functions.php:908
+#: app/functions.php:956
 msgid "Label updated."
 msgstr ""
 
-#: app/functions.php:909
+#: app/functions.php:957
 msgid "Label deleted."
 msgstr ""
 
 #. translators: %s: waybill number
-#: app/functions.php:926
+#: app/functions.php:974
 #, php-format
 msgid "Label number: %s."
 msgstr ""
@@ -6174,7 +6188,7 @@ msgstr ""
 msgid "Sale Invoice - Original"
 msgstr ""
 
-#: app/Invoice/Document/class-invoice.php:45 app/Invoice/Document/class-invoicecopy.php:31
+#: app/Invoice/Document/class-invoice.php:55 app/Invoice/Document/class-invoicecopy.php:31
 msgid "Sale Invoice - Copy"
 msgstr ""
 
@@ -6232,67 +6246,67 @@ msgstr ""
 msgid "The price list on the courier website has changed and could not be read safely. Your prices were not changed."
 msgstr ""
 
-#: app/Pricing/class-updater.php:547
+#: app/Pricing/class-updater.php:545
 msgid "Extra surcharge %"
 msgstr ""
 
-#: app/Pricing/class-updater.php:548
+#: app/Pricing/class-updater.php:546
 msgid "Cash on delivery %"
 msgstr ""
 
-#: app/Pricing/class-updater.php:549
+#: app/Pricing/class-updater.php:547
 msgid "Cash on delivery minimum"
 msgstr ""
 
 #. translators: 1: weight in kg, 2: office, locker or address
-#: app/Pricing/class-updater.php:560
+#: app/Pricing/class-updater.php:558
 #, php-format
 msgid "Up to %1$s kg, %2$s"
 msgstr ""
 
-#: app/Pricing/class-updater.php:578
+#: app/Pricing/class-updater.php:580
 msgid "Unknown courier."
 msgstr ""
 
-#: app/Reports/class-reports.php:139 app/Reports/class-reports.php:311
+#: app/Reports/class-reports.php:139 app/Reports/class-reports.php:304
 msgid "Reports"
 msgstr ""
 
-#: app/Reports/class-reports.php:163
+#: app/Reports/class-reports.php:156
 msgid "Refresh data"
 msgstr ""
 
 #. translators: %s: link to the Customer checks settings
-#: app/Reports/class-reports.php:173
+#: app/Reports/class-reports.php:166
 #, php-format
 msgid "Not checked: turned on without an API key or token. Add it in %s, or turn the service off there."
 msgstr ""
 
-#: app/Reports/class-reports.php:216
+#: app/Reports/class-reports.php:209
 msgid "Customer has reports for refused parcels. See the Reports box."
 msgstr ""
 
-#: app/Reports/class-reports.php:217
+#: app/Reports/class-reports.php:210
 msgid "No reports for this customer."
 msgstr ""
 
-#: app/Reports/class-reports.php:235
+#: app/Reports/class-reports.php:228
 msgid "Not checked"
 msgstr ""
 
-#: app/Reports/class-reports.php:239
+#: app/Reports/class-reports.php:232
 msgid "No reports"
 msgstr ""
 
 #. translators: %d: number of reports
-#: app/Reports/class-reports.php:243
+#: app/Reports/class-reports.php:236
 #, php-format
 msgid "%d report"
 msgid_plural "%d reports"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Reports/class-reports.php:396
+#: app/Reports/class-reports.php:389
 msgid "Cash on delivery is not available for this order. Please choose another payment method."
 msgstr ""
 
@@ -6370,50 +6384,50 @@ msgstr ""
 msgid "Send report"
 msgstr ""
 
-#: app/Reports/Providers/class-nekorekten.php:254
+#: app/Reports/Providers/class-nekorekten.php:258
 msgid "Report not sent: write what happened first."
 msgstr ""
 
-#: app/Reports/Providers/class-nekorekten.php:268
+#: app/Reports/Providers/class-nekorekten.php:272
 msgid "Report not sent: the order has no phone or email."
 msgstr ""
 
 #. translators: %s: reason from nekorekten.com
-#: app/Reports/Providers/class-nekorekten.php:277
+#: app/Reports/Providers/class-nekorekten.php:281
 #, php-format
 msgid "nekorekten.com did not take the report: %s"
 msgstr ""
 
 #. translators: %s: report text
-#: app/Reports/Providers/class-nekorekten.php:291
+#: app/Reports/Providers/class-nekorekten.php:295
 #, php-format
 msgid "Report sent to nekorekten.com: %s"
 msgstr ""
 
-#: app/Reports/Providers/class-nekorekten.php:305
+#: app/Reports/Providers/class-nekorekten.php:309
 msgid "Report not saved: the text is empty. Use Delete report to remove it."
 msgstr ""
 
 #. translators: %s: reason from nekorekten.com
-#: app/Reports/Providers/class-nekorekten.php:318
+#: app/Reports/Providers/class-nekorekten.php:322
 #, php-format
 msgid "nekorekten.com did not save the report: %s"
 msgstr ""
 
 #. translators: %s: new report text
-#: app/Reports/Providers/class-nekorekten.php:328
+#: app/Reports/Providers/class-nekorekten.php:332
 #, php-format
 msgid "Report on nekorekten.com changed to: %s"
 msgstr ""
 
 #. translators: %s: reason from nekorekten.com
-#: app/Reports/Providers/class-nekorekten.php:343
+#: app/Reports/Providers/class-nekorekten.php:347
 #, php-format
 msgid "nekorekten.com did not delete the report: %s"
 msgstr ""
 
 #. translators: %s: deleted report text
-#: app/Reports/Providers/class-nekorekten.php:355
+#: app/Reports/Providers/class-nekorekten.php:359
 #, php-format
 msgid "Report deleted from nekorekten.com: %s"
 msgstr ""
@@ -6482,161 +6496,161 @@ msgstr ""
 msgid "Track your order."
 msgstr ""
 
-#: app/Shipping/class-automation.php:98
+#: app/Shipping/class-automation.php:101
 msgid "Create waybill"
 msgstr ""
 
-#: app/Shipping/class-automation.php:99
+#: app/Shipping/class-automation.php:102
 msgid "Request a courier (Econt, Speedy)"
 msgstr ""
 
-#: app/Shipping/class-automation.php:100
+#: app/Shipping/class-automation.php:103
 msgid "Check the shipment now"
 msgstr ""
 
-#: app/Shipping/class-automation.php:108
+#: app/Shipping/class-automation.php:111
 msgid "Do not change"
 msgstr ""
 
-#: app/Shipping/class-automation.php:114
+#: app/Shipping/class-automation.php:117
 msgid "Waybills and order statuses"
 msgstr ""
 
-#: app/Shipping/class-automation.php:115
+#: app/Shipping/class-automation.php:118
 msgid "For every courier you use. On each order, and for many orders at once in the orders list, you also get \"Create waybill\", \"Request a courier\" and \"Check the shipment now\"."
 msgstr ""
 
-#: app/Shipping/class-automation.php:120
+#: app/Shipping/class-automation.php:123
 msgid "Order number on the waybill"
 msgstr ""
 
-#: app/Shipping/class-automation.php:121
+#: app/Shipping/class-automation.php:124
 msgid "Econt and Speedy get it in their reference field, BOX NOW on the label and Pigeon Express in the note for the courier."
 msgstr ""
 
-#: app/Shipping/class-automation.php:127
+#: app/Shipping/class-automation.php:130
 msgid "When the parcel is delivered"
 msgstr ""
 
-#: app/Shipping/class-automation.php:134
+#: app/Shipping/class-automation.php:137
 msgid "When the parcel goes back to you"
 msgstr ""
 
-#: app/Shipping/class-automation.php:135
+#: app/Shipping/class-automation.php:138
 msgid "Refused by the customer or returned. Orders that are processing or on hold and have an Econt, Speedy or BOX NOW waybill are checked every hour, and each change is noted on the order. Pigeon Express does not publish its statuses yet."
 msgstr ""
 
 #. translators: %s: order number
-#: app/Shipping/class-automation.php:159
+#: app/Shipping/class-automation.php:162
 #, php-format
 msgid "Order %s"
 msgstr ""
 
-#: app/Shipping/class-automation.php:221
+#: app/Shipping/class-automation.php:224
 msgid "Track your parcel:"
 msgstr ""
 
-#: app/Shipping/class-automation.php:391
+#: app/Shipping/class-automation.php:407
 msgid "This order has no waybill yet."
 msgstr ""
 
-#: app/Shipping/class-automation.php:395
+#: app/Shipping/class-automation.php:411
 msgid "The shipment status can only be read for Econt, Speedy and BOX NOW, with their login."
 msgstr ""
 
 #. translators: %s: waybill number
-#: app/Shipping/class-automation.php:407
+#: app/Shipping/class-automation.php:423
 #, php-format
 msgid "The courier delivered parcel %s."
 msgstr ""
 
 #. translators: %s: waybill number
-#: app/Shipping/class-automation.php:409
+#: app/Shipping/class-automation.php:425
 #, php-format
 msgid "Parcel %s is going back to you (refused or returned)."
 msgstr ""
 
-#: app/Shipping/class-automation.php:523
+#: app/Shipping/class-automation.php:539
 msgid "delivered"
 msgstr ""
 
-#: app/Shipping/class-automation.php:523
+#: app/Shipping/class-automation.php:539
 msgid "going back to you"
 msgstr ""
 
-#: app/Shipping/class-automation.php:523
+#: app/Shipping/class-automation.php:539
 msgid "still on its way"
 msgstr ""
 
 #. translators: 1: order number, 2: result
-#: app/Shipping/class-automation.php:527
+#: app/Shipping/class-automation.php:543
 #, php-format
 msgid "Order %1$s: %2$s"
 msgstr ""
 
 #. translators: %s: waybill number
-#: app/Shipping/class-automation.php:543
+#: app/Shipping/class-automation.php:559
 #, php-format
 msgid "already has waybill %s"
 msgstr ""
 
-#: app/Shipping/class-automation.php:547
+#: app/Shipping/class-automation.php:563
 msgid "not sent with a courier that has a login"
 msgstr ""
 
 #. translators: %s: error message
-#: app/Shipping/class-automation.php:555
+#: app/Shipping/class-automation.php:571
 #, php-format
 msgid "could not be sent: %s"
 msgstr ""
 
 #. translators: %s: waybill number
-#: app/Shipping/class-automation.php:562
+#: app/Shipping/class-automation.php:578
 #, php-format
 msgid "waybill %s created"
 msgstr ""
 
-#: app/Shipping/class-automation.php:563
+#: app/Shipping/class-automation.php:579
 msgid "the courier did not create the waybill; open the order to see why"
 msgstr ""
 
 #. translators: %s: order number
-#: app/Shipping/class-automation.php:582
+#: app/Shipping/class-automation.php:598
 #, php-format
 msgid "Order %s: only Econt and Speedy waybills can get a courier request here."
 msgstr ""
 
 #. translators: 1: waybill number, 2: the courier's answer
-#: app/Shipping/class-automation.php:594
+#: app/Shipping/class-automation.php:610
 #, php-format
 msgid "Courier request for waybill %1$s failed: %2$s"
 msgstr ""
 
 #. translators: %s: waybill number
-#: app/Shipping/class-automation.php:596
+#: app/Shipping/class-automation.php:612
 #, php-format
 msgid "Courier requested for waybill %s."
 msgstr ""
 
 #. translators: 1: courier, 2: waybill numbers, 3: result
-#: app/Shipping/class-automation.php:601
+#: app/Shipping/class-automation.php:617
 #, php-format
 msgid "%1$s, waybills %2$s: %3$s"
 msgstr ""
 
-#: app/Shipping/class-automation.php:601
+#: app/Shipping/class-automation.php:617
 msgid "courier requested"
 msgstr ""
 
-#: app/Shipping/class-automation.php:620
+#: app/Shipping/class-automation.php:636
 msgid "you send from an Econt office, so no courier comes to you"
 msgstr ""
 
-#: app/Shipping/class-automation.php:653
+#: app/Shipping/class-automation.php:669
 msgid "Econt did not accept the request."
 msgstr ""
 
-#: app/Shipping/class-automation.php:687
+#: app/Shipping/class-automation.php:703
 msgid "Speedy did not accept the request."
 msgstr ""
 
@@ -6720,10 +6734,6 @@ msgstr ""
 msgid "Calculation failed. Please try again."
 msgstr ""
 
-#: app/Shipping/Econt/class-method.php:992
-msgid "Econt - "
-msgstr ""
-
 #: app/Shipping/Econt/class-method.php:995 app/Shipping/Speedy/class-method.php:1270
 msgid "Please fill in your delivery address."
 msgstr ""
@@ -6741,34 +6751,34 @@ msgid "Please choose address."
 msgstr ""
 
 #. translators: %s: town
-#: app/Shipping/Econt/class-office.php:51 app/Shipping/Speedy/class-office.php:53
+#: app/Shipping/Econt/class-office.php:64 app/Shipping/Speedy/class-office.php:66
 #, php-format
 msgid "No automats were found at %s."
 msgstr ""
 
 #. translators: %s: town
-#: app/Shipping/Econt/class-office.php:54 app/Shipping/Pigeon/class-office.php:79 app/Shipping/Speedy/class-office.php:56
+#: app/Shipping/Econt/class-office.php:67 app/Shipping/Pigeon/class-office.php:92 app/Shipping/Speedy/class-office.php:69
 #, php-format
 msgid "No offices were found at %s."
 msgstr ""
 
-#: app/Shipping/Econt/class-office.php:61 app/Shipping/Pigeon/class-locker.php:65 app/Shipping/Pigeon/class-office.php:66 app/Shipping/Speedy/class-office.php:63
+#: app/Shipping/Econt/class-office.php:74 app/Shipping/Pigeon/class-locker.php:78 app/Shipping/Pigeon/class-office.php:79 app/Shipping/Speedy/class-office.php:76
 msgid "Please select region."
 msgstr ""
 
-#: app/Shipping/Econt/class-office.php:63 app/Shipping/Pigeon/class-locker.php:67 app/Shipping/Pigeon/class-office.php:68 app/Shipping/Speedy/class-office.php:65
+#: app/Shipping/Econt/class-office.php:76 app/Shipping/Pigeon/class-locker.php:80 app/Shipping/Pigeon/class-office.php:81 app/Shipping/Speedy/class-office.php:78
 msgid "Please enter a city."
 msgstr ""
 
 #. translators: 1: town, 2: region
 #. translators: %1$s is the city and %2$s is the state
-#: app/Shipping/Econt/class-office.php:66 app/Shipping/Pigeon/class-locker.php:70 app/Shipping/Pigeon/class-office.php:71 app/Shipping/Speedy/class-office.php:68
+#: app/Shipping/Econt/class-office.php:79 app/Shipping/Pigeon/class-locker.php:83 app/Shipping/Pigeon/class-office.php:84 app/Shipping/Speedy/class-office.php:81
 #, php-format
 msgid "%1$s is not found in %2$s region."
 msgstr ""
 
 #. translators: %s: town
-#: app/Shipping/Pigeon/class-locker.php:78
+#: app/Shipping/Pigeon/class-locker.php:91
 #, php-format
 msgid "No lockers were found at %s."
 msgstr ""
@@ -6797,10 +6807,6 @@ msgstr ""
 msgid "An error occurred while calculating the shipping price. Please try again later."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-method.php:792
-msgid "Pigeon Express - "
-msgstr ""
-
 #: app/Shipping/Pigeon/class-method.php:806
 msgid "Please choose an office."
 msgstr ""
@@ -6817,19 +6823,19 @@ msgstr ""
 msgid "Enter a finite, nonnegative shipping or COD amount."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:121 app/Shipping/Pigeon/class-payment.php:239
+#: app/Shipping/Pigeon/class-payment.php:121 app/Shipping/Pigeon/class-payment.php:241
 msgid "Choose a valid shipping payer."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:234
+#: app/Shipping/Pigeon/class-payment.php:236
 msgid "Reload this order before generating a Pigeon label."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:245
+#: app/Shipping/Pigeon/class-payment.php:247
 msgid "This order has no Pigeon shipping charge."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-payment.php:251
+#: app/Shipping/Pigeon/class-payment.php:253
 msgid "COD is available only for cash-on-delivery orders."
 msgstr ""
 
@@ -6860,20 +6866,20 @@ msgid "Speedy - %s"
 msgstr ""
 
 #. translators: %1$s is minimum php version and %2$s is minimum WP version
-#: nashenski-commerce.php:145
+#: nashenski-commerce.php:160
 #, php-format
 msgid "Nashenski Commerce requires PHP version %1$s+ and WP version %2$s+, plugin is currently NOT RUNNING."
 msgstr ""
 
-#: nashenski-commerce.php:162
+#: nashenski-commerce.php:177
 msgid "Nashenski Commerce is paused: please deactivate Bulgarisation for WooCommerce first. Your settings and orders can be imported afterwards."
 msgstr ""
 
-#: nashenski-commerce.php:177
+#: nashenski-commerce.php:192
 msgid "Nashenski Commerce - Please enable WooCommerce first."
 msgstr ""
 
-#: nashenski-commerce.php:195
+#: nashenski-commerce.php:210
 msgid "Please run `composer install` in the plugin folder `nashenski-commerce`"
 msgstr ""
 

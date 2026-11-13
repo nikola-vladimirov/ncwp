@@ -45,7 +45,7 @@ class NRA extends BaseDocument {
 		$qr_code = new QRCode();
 		ob_start();
 		?>
-		<img src="<?php echo esc_attr( $qr_code->render( implode( '*', $qr_code_pieces ) ) ); ?>" alt="">
+		<img src="<?php echo esc_url( $qr_code->render( implode( '*', $qr_code_pieces ) ), array( 'data' ) ); ?>" alt="">
 		<?php
 
 		$this->qr = ob_get_clean();

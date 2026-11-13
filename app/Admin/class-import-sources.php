@@ -16,8 +16,8 @@ defined( 'ABSPATH' ) || exit;
  * Taken over: courier logins that work with Nashenski Commerce, sender name and phone, the
  * waybill numbers of old orders (so tracking, status checks and courier requests work),
  * shipping zone methods (one Nashenski method per delivery type, the old one is turned off),
- * the mreja.net free shipping totals, and from the N-18 plugin the company details and the
- * document numbers.
+ * the mreja.net free shipping totals, and from the N-18 plugin the company details, whether
+ * invoices are on and the document numbers.
  */
 class Import_Sources {
 	const ACTION         = 'nashenski_import_source';
@@ -187,7 +187,7 @@ class Import_Sources {
 			$action = esc_html__( 'Ask an administrator to deactivate it.', 'nashenski-commerce' );
 		}
 
-		printf( '<div class="notice notice-error"><p>%s %s</p></div>', esc_html( self::paused_reason() ), $action ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $action is built from escaped parts above.
+		printf( '<div class="notice notice-error"><p>%s %s</p></div>', esc_html( self::paused_reason() ), wp_kses( $action, array( 'a' => array( 'href' => array() ) ) ) );
 	}
 
 	/**
@@ -277,9 +277,13 @@ class Import_Sources {
 	 * Dismiss.
 	 */
 	public static function dismiss() {
-		if ( current_user_can( 'manage_woocommerce' ) && check_admin_referer( self::DISMISS ) ) {
-			update_option( self::DISMISS_OPTION, array_keys( self::open_names() ), false );
+		check_admin_referer( self::DISMISS );
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
+
+		update_option( self::DISMISS_OPTION, array_keys( self::open_names() ), false );
 
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url() );
 		exit;
@@ -303,7 +307,8 @@ class Import_Sources {
 		}
 
 		check_admin_referer( self::ACTION );
-		$slug = sanitize_key( (string) nashenski_query_arg( 'source' ) );
+		// The import link carries this nonce (url()), checked on the line above.
+		$slug = isset( $_GET['source'] ) ? sanitize_key( wp_unslash( $_GET['source'] ) ) : '';
 
 		// While the N-18 plugin is active, both would give out the same numbers after the import.
 		if ( 'mreja_n18' === $slug && self::n18_active() ) {
@@ -322,7 +327,7 @@ class Import_Sources {
 		}
 
 		$back = wp_get_referer() ? wp_get_referer() : Settings::url();
-		wp_safe_redirect( add_query_arg( 'nashenski_source_imported', $slug, $back ) );
+		wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_source_imported', $slug, $back ) ) );
 		exit;
 	}
 
@@ -675,7 +680,20 @@ class Import_Sources {
 	}
 
 	/**
-	 * Company details and document numbers of the N-18 plugin.
+	 * "Фактури?" of the N-18 plugin (notasuptooptions[document_type]: "invoice" or "purchase_order")
+	 * as "Enable invoices" and "How to issue invoices". Its invoiced orders were all in its NRA file.
+	 * "Издаване на фактури" (manual_invoice: every order, by hand, or orders with invoice details)
+	 * has no setting here: the invoice is made when the customer asks for one.
+	 *
+	 * @param array $o The plugin's options.
+	 * @return array enabled (yes or no) and mode.
+	 */
+	public static function n18_invoices( $o ) {
+		return \Nashenski\Invoice\Mode::from_old( 'invoice' === ( $o['document_type'] ?? '' ) ? 'only_for_company' : 'disable', true );
+	}
+
+	/**
+	 * Company details, invoice settings and document numbers of the N-18 plugin.
 	 *
 	 * @param mixed $o     O.
 	 * @param mixed $count Count.
@@ -707,6 +725,16 @@ class Import_Sources {
 			foreach ( $fields as $ours => $theirs ) {
 				self::fill( $group, $ours, is_string( $o[ $theirs ] ?? null ) ? $o[ $theirs ] : '', $count );
 			}
+		}
+
+		// Invoices are only turned on here, never off: a choice already made in Nashenski stays.
+		$pair = self::n18_invoices( $o );
+
+		if ( 'yes' === $pair['enabled'] && 'yes' === nashenski_get_option( 'invoice', 'enabled' ) ) {
+			++$count['kept'];
+		} elseif ( 'yes' === $pair['enabled'] ) {
+			\Nashenski\Invoice\Mode::save( $pair );
+			$count['settings'] += 2;
 		}
 
 		// Order documents keep their numbers; the next numbers continue after the highest one.
@@ -1036,11 +1064,10 @@ class Import_Sources {
 
 		foreach ( $spec['meta'] ?? array() as $prefix ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import; no WordPress API finds meta by key prefix.
-			$rows = (array) $wpdb->get_results( $wpdb->prepare( 'SELECT %i AS id, meta_key, meta_value FROM %i WHERE meta_key LIKE %s', $hpos ? 'order_id' : 'post_id', $meta_table, $wpdb->esc_like( $prefix ) . '%' ), ARRAY_A );
+			$ids = (array) $wpdb->get_col( $wpdb->prepare( 'SELECT DISTINCT %i FROM %i WHERE meta_key LIKE %s', $hpos ? 'order_id' : 'post_id', $meta_table, $wpdb->esc_like( $prefix ) . '%' ) );
 
-			foreach ( $rows as $row ) {
-				$data[ $row['id'] ][ $row['meta_key'] ] = self::safe_unserialize( $row['meta_value'] );
-			}
+			// Only which orders have such meta is read here. The values come from the order below: WooCommerce has them ready.
+			$data += array_fill_keys( $ids, array() );
 		}
 
 		$tracking = array();
@@ -1077,8 +1104,19 @@ class Import_Sources {
 				continue;
 			}
 
+			$meta = array();
+
+			foreach ( $order->get_meta_data() as $entry ) {
+				foreach ( $spec['meta'] ?? array() as $prefix ) {
+					// As the LIKE above: the start of the key, in any letter case.
+					if ( 0 === stripos( (string) $entry->key, $prefix ) ) {
+						$meta[ $entry->key ] = self::plain( $entry->value );
+					}
+				}
+			}
+
 			$legacy          = (array) $order->get_meta( self::LEGACY_META );
-			$legacy[ $slug ] = $values;
+			$legacy[ $slug ] = $meta + $values;
 			$order->update_meta_data( self::LEGACY_META, $legacy );
 			$order->save();
 			++$count;
@@ -1242,12 +1280,48 @@ class Import_Sources {
 	}
 
 	/**
-	 * Like maybe_unserialize(), but never builds objects from legacy rows.
+	 * The econt_order.data column of the old Econt plugin, which it stored serialized: read as
+	 * plain data only. A damaged row, or one with an object in it, comes back as false.
 	 *
-	 * @param mixed $value Value.
+	 * @param mixed $value Column value.
+	 * @return mixed
 	 */
 	private static function safe_unserialize( $value ) {
-		return is_serialized( $value ) ? @unserialize( trim( $value ), array( 'allowed_classes' => false ) ) : $value; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- legacy rows, classes are not allowed.
+		if ( ! is_serialized( $value ) ) {
+			return $value;
+		}
+
+		$limits = array(
+			'allowed_classes' => false,
+			'max_depth'       => 64,
+		);
+
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- a column the old plugin stored serialized; no class is built and the nesting is capped, and plain() drops whatever is not plain data.
+		return self::plain( unserialize( trim( $value ), $limits ) );
+	}
+
+	/**
+	 * The value when it is plain data (null, booleans, numbers, strings and arrays of them), else
+	 * false: an object, also the placeholder PHP makes for a class it may not build, is never
+	 * copied to the order.
+	 *
+	 * @param mixed $value Value.
+	 * @return mixed
+	 */
+	private static function plain( $value ) {
+		$left = array( $value );
+
+		while ( $left ) {
+			$item = array_pop( $left );
+
+			if ( is_array( $item ) ) {
+				$left = array_merge( $left, array_values( $item ) );
+			} elseif ( null !== $item && ! is_scalar( $item ) ) {
+				return false;
+			}
+		}
+
+		return $value;
 	}
 
 	/**
@@ -1275,13 +1349,26 @@ class Import_Sources {
 	 * @param mixed $meta_key Meta key.
 	 */
 	private static function orders_with( $meta_key ) {
-		return wc_get_orders(
-			array(
-				'limit'    => -1,
-				'meta_key' => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-			'meta_compare' => 'EXISTS',
-			)
-		);
+		$orders = array();
+		$page   = 0;
+
+		// 500 orders a query, page after page, until a page comes back short: the import keeps the meta key, so the pages do not shift.
+		do {
+			$found  = wc_get_orders(
+				array(
+					'limit'        => 500,
+					'paged'        => ++$page,
+					'orderby'      => 'ID',
+					'order'        => 'ASC',
+					'meta_key'     => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- the one-time import finds the old plugin's orders by the meta key it left; an admin starts it by hand.
+					'meta_compare' => 'EXISTS',
+				)
+			);
+			$orders = array_merge( $orders, $found );
+			$full   = 500 === count( $found );
+		} while ( $full );
+
+		return $orders;
 	}
 
 	/**

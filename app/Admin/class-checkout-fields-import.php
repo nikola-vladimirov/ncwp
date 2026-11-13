@@ -100,7 +100,7 @@ class Checkout_Fields_Import {
 		$back = wp_get_referer() ? wp_get_referer() : Settings::url();
 
 		if ( is_array( $sections ) && ! self::readable( $sections ) ) {
-			wp_safe_redirect( add_query_arg( 'nashenski_import_failed', 1, $back ) );
+			wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_import_failed', 1, $back ) ) );
 			exit;
 		}
 
@@ -108,14 +108,14 @@ class Checkout_Fields_Import {
 			$report = self::run( $sections );
 
 			if ( null === $report ) {
-				wp_safe_redirect( add_query_arg( 'nashenski_import_not_saved', 1, $back ) );
+				wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_import_not_saved', 1, $back ) ) );
 				exit;
 			}
 
 			update_option( self::DONE_OPTION, $report, false );
 		}
 
-		wp_safe_redirect( add_query_arg( 'nashenski_imported_fields', 1, $back ) );
+		wp_safe_redirect( nashenski_notice_url( add_query_arg( 'nashenski_imported_fields', 1, $back ) ) );
 		exit;
 	}
 
@@ -191,7 +191,8 @@ class Checkout_Fields_Import {
 		}
 
 		// The table goes first: when it cannot be saved, the standard field rules go back to what they were.
-		if ( ! update_option( Field_Editor::LAYOUT_OPTION, $rows, false ) && get_option( Field_Editor::LAYOUT_OPTION ) != $rows ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual -- the stored copy comes back with string values.
+		// update_option() also answers false when nothing changed, so the stored copy is compared, every value as text (it comes back with string values).
+		if ( ! update_option( Field_Editor::LAYOUT_OPTION, $rows, false ) && map_deep( get_option( Field_Editor::LAYOUT_OPTION ), 'strval' ) !== map_deep( $rows, 'strval' ) ) {
 			foreach ( $rules_before as $field => $rule ) {
 				nashenski_set_option( $group( $field ), $field, $rule );
 			}

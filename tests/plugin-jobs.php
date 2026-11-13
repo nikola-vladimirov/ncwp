@@ -42,8 +42,6 @@ namespace {
 		}
 	);
 	define( 'WP_CONTENT_DIR', $GLOBALS['scratch'] . 'wp-content' );
-	define( 'FS_CHMOD_DIR', 0755 );
-	define( 'FS_CHMOD_FILE', 0644 );
 	define( 'HOUR_IN_SECONDS', 3600 );
 	define( 'DAY_IN_SECONDS', 86400 );
 
@@ -70,6 +68,14 @@ namespace {
 	 * Add filter.
 	 */
 	function add_filter() {}
+	/**
+	 * Register activation hook.
+	 *
+	 * @param mixed $file File.
+	 * @param mixed $cb Cb.
+	 */
+	function register_activation_hook( $file, $cb ) {
+		$GLOBALS['activate'] = $cb; }
 	/**
 	 * Register deactivation hook.
 	 *
@@ -210,6 +216,19 @@ namespace {
 
 	check( is_callable( $GLOBALS['deactivate'] ), 'the plugin registers a deactivation hook' );
 
+	// Turning the plugin on schedules the one-off 0.21.8 step again only while it is still due: its retired option exists and 0.21.8 was reached.
+	check( is_callable( $GLOBALS['activate'] ), 'the plugin registers an activation hook' );
+	$GLOBALS['single_events'] = array();
+	( $GLOBALS['activate'] )();
+	check( array() === $GLOBALS['single_events'], 'activation schedules nothing when the retired option is gone' );
+	$GLOBALS['options'] = array( 'nashenski_settings_invoice_remove_shipping' => 'yes' );
+	( $GLOBALS['activate'] )();
+	check( array() === $GLOBALS['single_events'], 'activation leaves the step to the upgrade on a site that never reached 0.21.8' );
+	$GLOBALS['options']['nashenski_version'] = '0.21.9';
+	( $GLOBALS['activate'] )();
+	check( array( 'nashenski/upgrade/remove_shipping' ) === $GLOBALS['single_events'] && Nashenski\Plugin::REMOVE_SHIPPING_JOB === $GLOBALS['single_events'][0], 'activation schedules the step again while its option exists' );
+	$GLOBALS['single_events'] = array();
+
 	// A site with the abandoned carts tracker installed, the documents migration marked done and the daily receipt cleanup on.
 	$GLOBALS['options']   = array(
 		Nashenski\Abandoned_Carts\Tracker::DB_OPTION       => Nashenski\Abandoned_Carts\Tracker::DB_VERSION,
@@ -222,6 +241,28 @@ namespace {
 
 	check( in_array( array( '', 'nashenski' ), $GLOBALS['unscheduled'], true ), 'deactivation unschedules every action of the nashenski group' );
 	check( array() === $GLOBALS['scheduled'], 'no job of the group is left pending' );
+
+	// Every WP-Cron event the plugin schedules (wp_schedule_event and wp_schedule_single_event in app/) is cleared, on deactivation and on uninstall.
+	$cron      = array(
+		'nashenski/boxnow/clear_cache_folder',
+		'nashenski/econt/clear_cache_folder',
+		'nashenski/pigeon/clear_cache_folder',
+		'nashenski/speedy/clear_cache_folder',
+		'nashenski/prices/check',
+		Nashenski\Document_Storage::EXPORT_CLEANUP_HOOK,
+		Nashenski\Plugin::REMOVE_SHIPPING_JOB,
+	);
+	$uninstall = file_get_contents( __DIR__ . '/../uninstall.php' );
+	check( array() === array_diff( $cron, $GLOBALS['cleared'] ), 'deactivation clears every WP-Cron event of the plugin' );
+	check(
+		array() === array_filter(
+			$cron,
+			function ( $hook ) use ( $uninstall ) {
+				return false === strpos( $uninstall, "'" . $hook . "'" );
+			}
+		),
+		'uninstall clears the same WP-Cron events'
+	);
 	check( Nashenski\Abandoned_Carts\Tracker::DB_VERSION !== get_option( Nashenski\Abandoned_Carts\Tracker::DB_OPTION ), 'the abandoned carts flag is reset, so install() schedules its jobs again' );
 	check( Nashenski\Document_Storage::MIGRATE_VERSION > (int) get_option( Nashenski\Document_Storage::MIGRATE_VERSION_OPTION ), 'the documents migration flag is reset, so schedule_migration() runs again' );
 	check( 30 === get_option( Nashenski\Document_Storage::CLEANUP_OPTION ), 'the settings stay' );
@@ -299,13 +340,21 @@ namespace {
 		 */
 		public function rmdir( $path ) {
 			$GLOBALS['removed_dirs'][] = $path; }
+
+		/**
+		 * The content folder, with a trailing slash as WordPress returns it.
+		 *
+		 * @return string
+		 */
+		public function wp_content_dir() {
+			return WP_CONTENT_DIR . '/'; }
 	}
 	$plugin = ( new ReflectionClass( Nashenski\Plugin::class ) )->newInstanceWithoutConstructor();
 	( new ReflectionMethod( $plugin, 'maybe_upgrade' ) )->invoke( $plugin );
 	check( array( array( 'nashenski_documents_migration_version', true ) ) === $GLOBALS['autoload_set'], 'the upgrade step switches the documents migration flag to autoload' );
 	check( Nashenski\Plugin::VERSION === get_option( 'nashenski_version' ), 'the upgrade step saves the new version' );
 	check( array( Nashenski\Plugin::REMOVE_SHIPPING_JOB ) === $GLOBALS['single_events'], 'the 0.21.8 step leaves the order lines to a one-off background job' );
-	check( array( WP_CONTENT_DIR . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'nashenski' ) === $GLOBALS['removed_dirs'], 'the upgrade step removes the cache folder used before 0.21.7, and nothing else' );
+	check( array( WP_CONTENT_DIR . '/cache/nashenski' ) === $GLOBALS['removed_dirs'], 'the upgrade step removes the cache folder used before 0.21.7, and nothing else' );
 
 	// The receipt cleanup is checked again in the admin, so a site that lost the job gets it back.
 	new Nashenski\Document_Storage();

@@ -141,23 +141,16 @@ class Reports {
 
 	/**
 	 * Prints the Reports meta box.
+	 *
+	 * @param \WP_Post|\WC_Order $post_or_order What the order screen passes: the order (HPOS) or its post.
 	 */
-	public static function meta_box() {
-		$theorder = isset( $GLOBALS['theorder'] ) ? $GLOBALS['theorder'] : null;
-
-		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
-			$post = get_post( absint( nashenski_query_arg( 'id' ) ) );
-		} else {
-			global $post;
-		}
-
-		if ( ! is_object( $theorder ) ) {
-			$theorder = wc_get_order( $post->ID );
-		}
+	public static function meta_box( $post_or_order ) {
+		$theorder = $post_or_order instanceof \WC_Order ? $post_or_order : wc_get_order( $post_or_order->ID );
+		$post     = $post_or_order instanceof \WP_Post ? $post_or_order : get_post( $theorder->get_id() );
 		?>
 		<div class="panel-wrap woocommerce">
-			<input name="post_title" type="hidden" value="<?php echo empty( $post->post_title ) ? esc_html__( 'Order', 'nashenski-commerce' ) : esc_attr( $post->post_title ); ?>" />
-			<input name="post_status" type="hidden" value="<?php echo esc_attr( $post->post_status ); ?>" />
+			<input name="post_title" type="hidden" value="<?php echo empty( $post->post_title ) ? esc_attr_x( 'Order', 'a store order', 'nashenski-commerce' ) : esc_attr( $post->post_title ); ?>" />
+			<input name="post_status" type="hidden" value="<?php echo esc_attr( $post ? $post->post_status : '' ); ?>" />
 
 			<div id="order_data" class="panel woocommerce-order-data">
 				<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'nashenski--reports-refresh', 1 ), 'nashenski_reports_refresh', 'nashenski_reports_nonce' ) ); ?>"><?php esc_html_e( 'Refresh data', 'nashenski-commerce' ); ?></a>
@@ -202,8 +195,8 @@ class Reports {
 		$refresh = false;
 
 		// "Refresh data" asks the services again (it carries its own nonce).
-		if ( isset( $_GET['nashenski--reports-refresh'], $_GET['nashenski_reports_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nashenski_reports_nonce'] ) ), 'nashenski_reports_refresh' ) && current_user_can( 'manage_woocommerce' ) ) {
-			$refresh = true;
+		if ( isset( $_GET['nashenski_reports_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nashenski_reports_nonce'] ) ), 'nashenski_reports_refresh' ) ) {
+			$refresh = current_user_can( 'manage_woocommerce' );
 		}
 		$reports = self::get_all_reports( $order, $refresh );
 		?>

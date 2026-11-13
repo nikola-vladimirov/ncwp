@@ -7,7 +7,7 @@
 
 namespace Nashenski\Export\Nra;
 
-use Nashenski\Admin\Order\Documents;
+use Nashenski\Invoice\Mode;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -112,7 +112,7 @@ class Export {
 				is_a( $order, 'WC_Order_Refund' )
 				) {
 					return;
-				} elseif ( ! Documents::own_invoice( $order ) ) {
+				} elseif ( ! Mode::out_of_nra( $order ) ) {
 					$this->completed_orders_ids[] = $order->get_id();
 				}
 			}
@@ -131,8 +131,8 @@ class Export {
 						$parent_order = $order;
 					}
 
-					// Invoiced in the shop's own program: left out of the NRA audit file (setting Invoice numbering).
-					if ( ! $parent_order || Documents::own_invoice( $parent_order ) ) {
+					// Invoiced out of the NRA audit file ("How to issue invoices"): its refunds stay out too.
+					if ( ! $parent_order || Mode::out_of_nra( $parent_order ) ) {
 						return;
 					}
 
@@ -274,6 +274,13 @@ class Export {
 
 			$order = new Order( $woo_order, $this->generate_files );
 
+			// The documents made just now may include an invoice that stays out of the file.
+			if ( Mode::out_of_nra( $order->woo_order ) ) {
+				unset( $order, $woo_order );
+				$this->maybe_flush_runtime_cache( $index );
+				continue;
+			}
+
 			if ( ! $order->payment_method_type ) {
 				$this->not_included_orders[] = $order->order_id_to_show;
 				unset( $order, $woo_order );
@@ -375,12 +382,17 @@ class Export {
 	 */
 	protected function get_file_errors( $attach_id ) {
 		if ( ! empty( $this->completed_orders_ids ) || ! empty( $this->refunded_orders_ids ) ) {
-			libxml_use_internal_errors( true );
-			$doc = new \DOMDocument();
+			$previous = libxml_use_internal_errors( true );
+			$doc      = new \DOMDocument();
 			$doc->load( get_attached_file( $attach_id ) );
 
-			if ( ! $doc->schemaValidate( __DIR__ . '/dex_audit.xsd' ) ) {
-				return wp_list_pluck( libxml_get_errors(), 'message' );
+			$valid  = $doc->schemaValidate( __DIR__ . '/dex-audit-schema.xml' );
+			$errors = wp_list_pluck( libxml_get_errors(), 'message' );
+			libxml_clear_errors();
+			libxml_use_internal_errors( $previous );
+
+			if ( ! $valid ) {
+				return $errors;
 			}
 		}
 	}

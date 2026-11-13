@@ -329,8 +329,8 @@ namespace {
 		}
 		$r = array_slice( $r, $a['offset'] ?? 0, $a['limit'] > 0 ? $a['limit'] : null );
 		return array_map(
-			function ( $o ) {
-				return wc_get_order( $o->id );
+			function ( $o ) use ( $a ) {
+				return 'ids' === ( $a['return'] ?? '' ) ? $o->id : wc_get_order( $o->id );
 			},
 			$r
 		);
@@ -629,7 +629,7 @@ namespace {
 	check( ! array_key_exists( 'meta_query', $q ), 'legacy: no meta_query argument' );
 	check( not_exists( $GLOBALS['wp_args'][0]['meta_query'][0] ), 'legacy: the datastore filter adds NOT EXISTS' );
 	check( empty( $GLOBALS['filters'][ $hook ] ), 'legacy: the filter is removed after the query' );
-	check( array( 'processing', 'on-hold' ) === $q['status'] && 'ASC' === $q['order'] && 100 === $q['limit'], 'status, order direction and limit unchanged' );
+	check( array( 'processing', 'on-hold' ) === $q['status'] && 'ASC' === $q['order'] && 500 === $q['limit'] && 'ids' === $q['return'], 'status and order direction unchanged; one page of order IDs is asked for, never more' );
 	check( abs( qfrom( 0 ) - ( $before - 60 * 86400 ) ) <= 2 && ! isset( $q['date_modified'] ), 'the window starts now - 60 days (date_created), not date_modified' );
 	// Note 23: the legacy store filters on post_date_gmt with the six-key array form (no timezone step) and sorts by post_date_gmt, so a clock change cannot skip an order.
 	$dq                               = $GLOBALS['wp_args'][0]['date_query'] ?? null;
@@ -658,19 +658,26 @@ namespace {
 	check( 'date' === $q['orderby'] && ! isset( $q['offset'] ), 'oldest first by creation date, no offset' );
 	check( abs( cursor() - ( $before - 60 * 86400 ) ) <= 2, 'a short page resets the cursor to the window start' );
 
-	// The limit passes through as main did: -1 stays -1, with no offset and none saved.
+	// Limit -1 is the largest run: one page of IDs, with the cursor like any other value. No value asks for every order at once.
 	$GLOBALS['limit'] = -1;
 	run();
 	$q = end( $GLOBALS['queries'] );
-	check( -1 === $q['limit'] && ! isset( $q['offset'] ) && abs( cursor() - ( $before - 60 * 86400 ) ) <= 2, 'limit -1 is passed through unchanged, no paging, the cursor is not touched' );
+	check( 500 === $q['limit'] && ! isset( $q['offset'] ) && abs( cursor() - ( $before - 60 * 86400 ) ) <= 2, 'limit -1 asks for one page of IDs; a short page resets the cursor' );
 
-	// Note 29: a limit below 1 other than -1 (0, negative, null, text) becomes the default 100, never -1 (no time budget, every order at once).
+	// Note 29: a limit below 1 other than -1 (0, negative, null, text) becomes the default 100.
+	$kept = $GLOBALS['result'];
 	foreach ( array( 0, -2, -50, null, 'abc' ) as $bad ) {
-		$GLOBALS['limit'] = $bad;
-		run();
-		check( 100 === end( $GLOBALS['queries'] )['limit'], 'limit ' . json_encode( $bad ) . ' is read as 100' );
+		$GLOBALS['limit']   = $bad;
+		$GLOBALS['options'] = array();
+		orders( ...range( 1, 120 ) );
+		check( 100 === count( run() ) && 500 === end( $GLOBALS['queries'] )['limit'], 'limit ' . json_encode( $bad ) . ' is read as 100 orders a run' );
 	}
-	$GLOBALS['limit'] = 100;
+	$GLOBALS['limit']   = -1;
+	$GLOBALS['options'] = array();
+	check( 120 === count( run() ), 'limit -1 reads as many orders as the page holds' );
+	$GLOBALS['result']  = $kept;
+	$GLOBALS['options'] = array();
+	$GLOBALS['limit']   = 100;
 
 	// A throwing query still removes the filter.
 	$GLOBALS['throw'] = true;
@@ -709,7 +716,7 @@ namespace {
 	check( array( 1, 2 ) === run() && day( 2 ) === cursor() && array( 2 ) === cursor_ids(), 'cursor: the first batch is 1, 2 and the cursor is the date of order 2 with its ID' );
 	check( array( 3, 4 ) === run() && day( 4 ) === cursor() && array( 4 ) === cursor_ids(), 'cursor: the next batch starts at the cursor and skips order 2 (3, 4)' );
 	$q = $GLOBALS['queries'][ count( $GLOBALS['queries'] ) - 1 ];
-	check( day( 2 ) === qfrom() && array( 2 ) === $q['exclude'], 'cursor: the query asks for orders created at or after the cursor, excluding the stored IDs' );
+	check( day( 2 ) === qfrom() && ! isset( $q['exclude'] ) && 500 === $q['limit'], 'cursor: the query asks for a page of IDs created at or after the cursor, with no exclude list; the stored ID is dropped after the query' );
 	check( array( 5 ) === run() && abs( cursor() - ( time() - 60 * 86400 ) ) <= 2 && array() === cursor_ids(), 'reset: a short page ends the cycle and the cursor goes back to the window start with no IDs' );
 	check( array( 1, 2 ) === run(), 'reset: the next cycle starts at the oldest order again' );
 	foreach ( $GLOBALS['result'] as $o ) {
@@ -817,9 +824,9 @@ namespace {
 	check( array( 5 ) === run() && abs( cursor() - ( time() - 60 * 86400 ) ) <= 2 && array() === cursor_ids(), 'time budget: the last order ends the cycle and the cursor goes back to the window start' );
 	foreach ( $GLOBALS['result'] as $o ) {
 		check( 0 === $o->saves, "time budget: unchanged order {$o->id} not saved" ); }
-	// With limit -1 (no cursor) the budget does not cut the run: every order is still read.
+	// Limit -1 keeps the time budget too.
 	$GLOBALS['limit'] = -1;
-	check( array( 1, 2, 3, 4, 5 ) === run(), 'time budget: limit -1 reads every order, the budget is not used' );
+	check( array( 1 ) === run(), 'time budget: limit -1 is cut by the budget like any other limit' );
 	$GLOBALS['seconds']   = 20;
 	$GLOBALS['limit']     = 2;
 	$GLOBALS['mid_batch'] = null;

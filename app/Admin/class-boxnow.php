@@ -533,12 +533,19 @@ class BoxNow {
 	 * @param int|string $order_id Order ID when no request value is sent.
 	 */
 	public static function generate_label_ajax( $order_id = '' ) {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
 
 		$order_id = ( ( null !== nashenski_label_request( 'orderId', null ) ) ) ? absint( nashenski_label_request( 'orderId' ) ) : $order_id;
 
-		if ( ! $order_id ) {
-			return;
+		if ( ! wc_get_order( $order_id ) ) {
+			nashenski_label_incomplete();
 		}
 
 		wp_send_json_success( self::generate_label_for_order( $order_id, true ) );
@@ -660,16 +667,24 @@ class BoxNow {
 	 * AJAX: cancels the parcels of an order.
 	 */
 	public static function delete_label() {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
 
 		$container       = nashenski()->container();
-		$order_id        = nashenski_label_request( 'orderId' );
+		$order           = nashenski_label_order();
+		$order_id        = $order->get_id();
 		$shipment_status = nashenski_label_request( 'shipmentStatus', array() );
-		$order           = wc_get_order( $order_id );
-		$parcel_numbers  = wp_list_pluck( $shipment_status['parcels'] ?? array(), 'id' );
 
-		foreach ( $shipment_status['parcels'] as $parcel ) {
-			if ( ! preg_match( '/^[A-Za-z0-9_-]+$/', (string) $parcel['id'] ) ) {
+		$parcel_numbers = wp_list_pluck( $shipment_status['parcels'] ?? array(), 'id' );
+
+		foreach ( (array) ( $shipment_status['parcels'] ?? array() ) as $parcel ) {
+			if ( ! preg_match( '/^[A-Za-z0-9_-]+$/', (string) ( $parcel['id'] ?? '' ) ) ) {
 				continue;
 			}
 
@@ -707,13 +722,13 @@ class BoxNow {
 	 * AJAX: streams the label PDF of a parcel.
 	 */
 	public static function print_label_endpoint() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
+		// The print links carry the label nonce of the order screen.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_die( esc_html__( 'This link has expired. Reload the order page and try again.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
-		// The print links carry the label nonce of the order screen.
-		if ( null === nashenski_label_request( 'nonce', null ) ) {
-			wp_die( esc_html__( 'This link has expired. Reload the order page and try again.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
 		$container = nashenski()->container();
@@ -725,15 +740,9 @@ class BoxNow {
 
 		$url = '/api/v1/parcels/' . $parcel . '/label.pdf';
 
-		$pdf_escaped = $container[ Client::BOXNOW ]->api_call( $url, array(), 'GET', true );
+		$pdf = $container[ Client::BOXNOW ]->api_call( $url, array(), 'GET', true );
 
-		header( 'Content-Type: application/pdf' );
-		header( 'Content-Length: ' . strlen( $pdf_escaped ) );
-		header( 'Content-disposition: inline; filename="' . $parcel . '.pdf"' );
-
-		echo $pdf_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PDF file from the courier, sent as application/pdf.
-
-		wp_die();
+		nashenski_send_download( '', $parcel . '.pdf', 'application/pdf', true, (string) $pdf );
 	}
 
 	/**

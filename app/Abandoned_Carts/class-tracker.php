@@ -9,8 +9,6 @@ namespace Nashenski\Abandoned_Carts;
 
 defined( 'ABSPATH' ) || exit;
 
-// Custom table: every query names the table with %i and prepares its values.
-// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- the cart table is read and written on every change, so caching would show stale rows.
 /**
  * Abandoned carts: keeps the carts that were not ordered in a table of the site's own, and sends up to
  * three reminders to a shopper who typed an email. The email is recorded at checkout even for a
@@ -23,6 +21,10 @@ defined( 'ABSPATH' ) || exit;
  * Cart row states: open (counts and can get reminders), recovered (an order was placed from it),
  * emptied (the shopper emptied the cart), unsubscribed (the shopper clicked the link in a reminder).
  * A row keeps its session key only while it is open, so each finished cart frees the key for the next one.
+ *
+ * The carts live in a table of the plugin's own, which WordPress has no API for: every query names the
+ * table with %i and prepares its values. Reads go through the object cache (see cache_key()), and every
+ * write clears them.
  */
 class Tracker {
 	const TABLE           = 'nashenski_carts';
@@ -34,6 +36,10 @@ class Tracker {
 	const UNSUBSCRIBE_VAR = 'nashenski_unsubscribe';
 	const RESUME_VAR      = 'nashenski_resume';
 	const EMAIL_ID        = 'nashenski_abandoned_cart';
+
+	/** Object cache group of the cart table reads, and how long one read is kept. */
+	const CACHE_GROUP = 'nashenski_carts';
+	const CACHE_TTL   = HOUR_IN_SECONDS;
 
 	/** Reminders are not sent between these hours (site time). */
 	const QUIET_FROM = 22;
@@ -49,7 +55,8 @@ class Tracker {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'init', array( __CLASS__, 'unsubscribe' ) );
+		add_filter( 'query_vars', array( __CLASS__, 'query_vars' ) );
+		add_action( 'template_redirect', array( __CLASS__, 'unsubscribe' ) );
 		add_action( 'template_redirect', array( __CLASS__, 'resume' ) );
 		add_action( self::SEND_HOOK, array( __CLASS__, 'send_due' ) );
 		add_action( self::CLEAN_HOOK, array( __CLASS__, 'clean_old' ) );
@@ -203,6 +210,18 @@ class Tracker {
 	}
 
 	/**
+	 * Cache key of one read of the cart table. It ends with the time of the last write to the table,
+	 * and every write deletes that time (`wp_cache_delete( 'last_changed', self::CACHE_GROUP )`), so no
+	 * read is ever answered from before a write.
+	 *
+	 * @param mixed ...$args The read and its arguments.
+	 * @return string
+	 */
+	private static function cache_key( ...$args ) {
+		return md5( (string) wp_json_encode( $args ) ) . ':' . wp_cache_get_last_changed( self::CACHE_GROUP );
+	}
+
+	/**
 	 * Session key.
 	 *
 	 * @return mixed
@@ -259,24 +278,33 @@ class Tracker {
 
 		global $wpdb;
 		$table = self::table();
-		$id    = $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM %i WHERE session_key = %s', $table, $key ) );
+		$cache = self::cache_key( 'session', $key );
+		$id    = wp_cache_get( $cache, self::CACHE_GROUP );
 
-		if ( $id ) {
-			$wpdb->update( $table, self::cart_data(), array( 'id' => (int) $id ) );
-
-			return;
+		if ( false === $id ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$id = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM %i WHERE session_key = %s', $table, $key ) );
+			wp_cache_set( $cache, $id, self::CACHE_GROUP, self::CACHE_TTL );
 		}
 
-		$wpdb->insert(
-			$table,
-			self::cart_data() + array(
-				'session_key' => $key,
-				'status'      => 'open',
-				'step'        => 'cart',
-				'token'       => wp_generate_password( 32, false ),
-				'created_at'  => current_time( 'mysql', true ),
-			)
-		);
+		if ( $id ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$wpdb->update( $table, self::cart_data(), array( 'id' => (int) $id ) );
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$wpdb->insert(
+				$table,
+				self::cart_data() + array(
+					'session_key' => $key,
+					'status'      => 'open',
+					'step'        => 'cart',
+					'token'       => wp_generate_password( 32, false ),
+					'created_at'  => current_time( 'mysql', true ),
+				)
+			);
+		}
+
+		wp_cache_delete( 'last_changed', self::CACHE_GROUP );
 	}
 
 	/**
@@ -293,9 +321,34 @@ class Tracker {
 			return;
 		}
 
+		self::close_open( $key, 'emptied' );
+	}
+
+	/**
+	 * Closes the open cart of a session: it gets its final status and frees the session key.
+	 *
+	 * @param string $key    Session key.
+	 * @param string $status New status: emptied or recovered.
+	 */
+	private static function close_open( $key, $status ) {
 		global $wpdb;
 
-		$wpdb->query( $wpdb->prepare( 'UPDATE %i SET status = %s, session_key = NULL WHERE session_key = %s AND status = %s', self::table(), 'emptied', $key, 'open' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+		$wpdb->query( $wpdb->prepare( 'UPDATE %i SET status = %s, session_key = NULL WHERE session_key = %s AND status = %s', self::table(), $status, $key, 'open' ) );
+		wp_cache_delete( 'last_changed', self::CACHE_GROUP );
+	}
+
+	/**
+	 * One more reminder was sent for the cart.
+	 *
+	 * @param int $id Row id.
+	 */
+	private static function count_reminder( $id ) {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+		$wpdb->query( $wpdb->prepare( 'UPDATE %i SET emails_sent = emails_sent + 1, last_email = %s WHERE id = %d', self::table(), current_time( 'mysql', true ), (int) $id ) );
+		wp_cache_delete( 'last_changed', self::CACHE_GROUP );
 	}
 
 	/**
@@ -356,7 +409,14 @@ class Tracker {
 		global $wpdb;
 		$table = self::table();
 
-		$id = $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM %i WHERE session_key = %s AND status = %s', $table, $key, 'open' ) );
+		$cache = self::cache_key( 'open_session', $key );
+		$id    = wp_cache_get( $cache, self::CACHE_GROUP );
+
+		if ( false === $id ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$id = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM %i WHERE session_key = %s AND status = %s', $table, $key, 'open' ) );
+			wp_cache_set( $cache, $id, self::CACHE_GROUP, self::CACHE_TTL );
+		}
 
 		$contact = array(
 			'email'      => $email,
@@ -366,21 +426,23 @@ class Tracker {
 		);
 
 		if ( $id ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
 			$wpdb->update( $table, $contact, array( 'id' => (int) $id ) );
-
-			return;
+		} else {
+			// No open row for this session: make one from the current cart so the email is kept.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$wpdb->insert(
+				$table,
+				self::cart_data() + $contact + array(
+					'session_key' => $key,
+					'status'      => 'open',
+					'token'       => wp_generate_password( 32, false ),
+					'created_at'  => current_time( 'mysql', true ),
+				)
+			);
 		}
 
-		// No open row for this session: make one from the current cart so the email is kept.
-		$wpdb->insert(
-			$table,
-			self::cart_data() + $contact + array(
-				'session_key' => $key,
-				'status'      => 'open',
-				'token'       => wp_generate_password( 32, false ),
-				'created_at'  => current_time( 'mysql', true ),
-			)
-		);
+		wp_cache_delete( 'last_changed', self::CACHE_GROUP );
 	}
 
 	/**
@@ -394,9 +456,7 @@ class Tracker {
 			return;
 		}
 
-		global $wpdb;
-
-		$wpdb->query( $wpdb->prepare( 'UPDATE %i SET status = %s, session_key = NULL WHERE session_key = %s AND status = %s', self::table(), 'recovered', $key, 'open' ) );
+		self::close_open( $key, 'recovered' );
 	}
 
 	/**
@@ -416,21 +476,28 @@ class Tracker {
 		global $wpdb;
 		$table = self::table();
 		$steps = self::steps();
+		$until = gmdate( 'Y-m-d H:i:s', time() - min( $steps ) * HOUR_IN_SECONDS );
+		$cache = self::cache_key( 'due', count( $steps ), $until );
+		$rows  = wp_cache_get( $cache, self::CACHE_GROUP );
 
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				'SELECT * FROM %i WHERE status = %s AND email <> %s AND emails_sent < %d AND last_activity <= %s
-			AND email NOT IN (SELECT email FROM %i WHERE status = %s) ORDER BY last_activity LIMIT %d',
-				$table,
-				'open',
-				'',
-				count( $steps ),
-				gmdate( 'Y-m-d H:i:s', time() - min( $steps ) * HOUR_IN_SECONDS ),
-				$table,
-				'unsubscribed',
-				self::BATCH
-			)
-		);
+		if ( false === $rows ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT * FROM %i WHERE status = %s AND email <> %s AND emails_sent < %d AND last_activity <= %s
+				AND email NOT IN (SELECT email FROM %i WHERE status = %s) ORDER BY last_activity LIMIT %d',
+					$table,
+					'open',
+					'',
+					count( $steps ),
+					$until,
+					$table,
+					'unsubscribed',
+					self::BATCH
+				)
+			);
+			wp_cache_set( $cache, $rows, self::CACHE_GROUP, self::CACHE_TTL );
+		}
 
 		foreach ( (array) $rows as $row ) {
 			// Each reminder waits its own number of hours after the last cart change.
@@ -441,7 +508,7 @@ class Tracker {
 				continue;
 			}
 
-			$wpdb->query( $wpdb->prepare( 'UPDATE %i SET emails_sent = emails_sent + 1, last_email = %s WHERE id = %d', $table, current_time( 'mysql', true ), (int) $row->id ) );
+			self::count_reminder( $row->id );
 		}
 	}
 
@@ -462,9 +529,7 @@ class Tracker {
 			return false;
 		}
 
-		global $wpdb;
-
-		$wpdb->query( $wpdb->prepare( 'UPDATE %i SET emails_sent = emails_sent + 1, last_email = %s WHERE id = %d', self::table(), current_time( 'mysql', true ), (int) $row->id ) );
+		self::count_reminder( $row->id );
 
 		return true;
 	}
@@ -657,6 +722,7 @@ class Tracker {
 
 			global $wpdb;
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
 			$wpdb->update(
 				self::table(),
 				array(
@@ -665,6 +731,7 @@ class Tracker {
 				),
 				array( 'id' => (int) $row->id )
 			);
+			wp_cache_delete( 'last_changed', self::CACHE_GROUP );
 
 			$row->coupon_code = $code;
 
@@ -675,27 +742,49 @@ class Tracker {
 	}
 
 	/**
+	 * Registers the two links of a reminder email as public query vars, so WordPress parses them.
+	 *
+	 * @param array $vars Public query vars.
+	 * @return array
+	 */
+	public static function query_vars( $vars ) {
+		$vars[] = self::RESUME_VAR;
+		$vars[] = self::UNSUBSCRIBE_VAR;
+
+		return $vars;
+	}
+
+	/**
 	 * The link in a reminder that refills the cart from the row and applies its coupon.
 	 */
 	public static function resume() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the token is the check; a link in an email cannot carry a nonce.
-		if ( empty( $_GET[ self::RESUME_VAR ] ) || ! get_option( self::DB_OPTION ) ) {
+		// A link in an email cannot carry a nonce (guests, days later): the cart's secret token is the check.
+		$token = get_query_var( self::RESUME_VAR );
+
+		if ( '' === $token ) {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- see above.
-		$token = sanitize_text_field( wp_unslash( $_GET[ self::RESUME_VAR ] ) );
+		$token = is_scalar( $token ) ? sanitize_text_field( (string) $token ) : '';
+		$row   = null;
 
-		if ( '' === $token || ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->session ) {
-			return;
+		if ( '' !== $token && get_option( self::DB_OPTION ) && function_exists( 'WC' ) && WC()->cart && WC()->session ) {
+			global $wpdb;
+
+			$cache = self::cache_key( 'token', $token );
+			$row   = wp_cache_get( $cache, self::CACHE_GROUP );
+
+			if ( false === $row ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+				$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE token = %s', self::table(), $token ) );
+				wp_cache_set( $cache, $row, self::CACHE_GROUP, self::CACHE_TTL );
+			}
 		}
 
-		global $wpdb;
-
-		$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE token = %s', self::table(), $token ) );
-
+		// A link we cannot use goes to the home page: with a registered query var in the address WordPress would show the posts list, not the static front page.
 		if ( ! $row ) {
-			return;
+			wp_safe_redirect( home_url( '/' ) );
+			exit;
 		}
 
 		if ( ! WC()->cart->is_empty() ) {
@@ -737,20 +826,36 @@ class Tracker {
 	 * The one-click link in a reminder. Stops all reminders to that email.
 	 */
 	public static function unsubscribe() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the token is the check; a link in an email cannot carry a nonce.
-		if ( empty( $_GET[ self::UNSUBSCRIBE_VAR ] ) || ! get_option( self::DB_OPTION ) ) {
+		// A link in an email cannot carry a nonce (guests, days later): the cart's secret token is the check.
+		$token = get_query_var( self::UNSUBSCRIBE_VAR );
+
+		if ( '' === $token ) {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- see above.
-		$token = sanitize_text_field( wp_unslash( $_GET[ self::UNSUBSCRIBE_VAR ] ) );
+		$token = is_scalar( $token ) ? sanitize_text_field( (string) $token ) : '';
+
+		// Not usable (feature never set up): to the home page, see resume().
+		if ( '' === $token || ! get_option( self::DB_OPTION ) ) {
+			wp_safe_redirect( home_url( '/' ) );
+			exit;
+		}
 
 		global $wpdb;
 		$table = self::table();
-		$email = $wpdb->get_var( $wpdb->prepare( 'SELECT email FROM %i WHERE token = %s', $table, $token ) );
+		$cache = self::cache_key( 'token_email', $token );
+		$email = wp_cache_get( $cache, self::CACHE_GROUP );
+
+		if ( false === $email ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$email = (string) $wpdb->get_var( $wpdb->prepare( 'SELECT email FROM %i WHERE token = %s', $table, $token ) );
+			wp_cache_set( $cache, $email, self::CACHE_GROUP, self::CACHE_TTL );
+		}
 
 		if ( $email ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
 			$wpdb->query( $wpdb->prepare( 'UPDATE %i SET status = %s, session_key = NULL WHERE (email = %s AND status = %s) OR token = %s', $table, 'unsubscribed', $email, 'open', $token ) );
+			wp_cache_delete( 'last_changed', self::CACHE_GROUP );
 		}
 
 		// The same answer whether or not the token exists, so the link reveals nothing.
@@ -771,6 +876,7 @@ class Tracker {
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
 		$wpdb->query(
 			$wpdb->prepare(
 				'DELETE FROM %i WHERE last_activity < %s',
@@ -778,6 +884,7 @@ class Tracker {
 				gmdate( 'Y-m-d H:i:s', time() - self::retention_days() * DAY_IN_SECONDS )
 			)
 		);
+		wp_cache_delete( 'last_changed', self::CACHE_GROUP );
 	}
 
 	/**
@@ -821,7 +928,16 @@ class Tracker {
 		global $wpdb;
 
 		// No table yet: the feature was never turned on.
-		$rows   = get_option( self::DB_OPTION ) ? $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i WHERE email = %s ORDER BY id LIMIT %d OFFSET %d', self::table(), $email, self::PRIVACY_PAGE, ( max( 1, (int) $page ) - 1 ) * self::PRIVACY_PAGE ) ) : array();
+		$offset = ( max( 1, (int) $page ) - 1 ) * self::PRIVACY_PAGE;
+		$cache  = self::cache_key( 'export', $email, $offset );
+		$rows   = get_option( self::DB_OPTION ) ? wp_cache_get( $cache, self::CACHE_GROUP ) : array();
+
+		if ( false === $rows ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$rows = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i WHERE email = %s ORDER BY id LIMIT %d OFFSET %d', self::table(), $email, self::PRIVACY_PAGE, $offset ) );
+			wp_cache_set( $cache, $rows, self::CACHE_GROUP, self::CACHE_TTL );
+		}
+
 		$fields = array(
 			'email'         => __( 'Email', 'nashenski-commerce' ),
 			'first_name'    => __( 'First name', 'nashenski-commerce' ),
@@ -871,9 +987,25 @@ class Tracker {
 	public static function erase_personal_data( $email ) {
 		global $wpdb;
 
-		$coupons  = get_option( self::DB_OPTION ) ? $wpdb->get_col( $wpdb->prepare( 'SELECT coupon_id FROM %i WHERE email = %s ORDER BY id LIMIT %d', self::table(), $email, self::PRIVACY_PAGE ) ) : array();
-		$removed  = get_option( self::DB_OPTION ) ? (int) $wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE email = %s ORDER BY id LIMIT %d', self::table(), $email, self::PRIVACY_PAGE ) ) : 0;
+		$coupons  = array();
+		$removed  = 0;
 		$retained = false;
+
+		// No table yet: the feature was never turned on.
+		if ( get_option( self::DB_OPTION ) ) {
+			$cache   = self::cache_key( 'coupons', $email );
+			$coupons = wp_cache_get( $cache, self::CACHE_GROUP );
+
+			if ( false === $coupons ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+				$coupons = $wpdb->get_col( $wpdb->prepare( 'SELECT coupon_id FROM %i WHERE email = %s ORDER BY id LIMIT %d', self::table(), $email, self::PRIVACY_PAGE ) );
+				wp_cache_set( $cache, $coupons, self::CACHE_GROUP, self::CACHE_TTL );
+			}
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$removed = (int) $wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE email = %s ORDER BY id LIMIT %d', self::table(), $email, self::PRIVACY_PAGE ) );
+			wp_cache_delete( 'last_changed', self::CACHE_GROUP );
+		}
 
 		foreach ( array_filter( array_map( 'absint', (array) $coupons ) ) as $coupon_id ) {
 			if ( 'shop_coupon' !== get_post_type( $coupon_id ) ) {
@@ -910,8 +1042,10 @@ class Tracker {
 			__( 'A reminder coupon is made for the email of its cart and is deleted with the cart\'s personal data, unless it was already used on an order.', 'nashenski-commerce' ),
 			/* translators: %d: number of days */
 			sprintf( __( 'A cart is deleted %d days after its last change.', 'nashenski-commerce' ), self::retention_days() ),
-			__( 'When the store turns on customer checks (nekorekten.com, Connectix, NepoStop), the phone number of the order is sent to them.', 'nashenski-commerce' ),
-			__( 'The courier of an order gets the delivery details: name, phone, address or office.', 'nashenski-commerce' ),
+			__( 'The courier the customer chooses (Econt, Speedy, BOX NOW or Pigeon Express) gets the delivery details when a delivery price or a waybill is made: name, phone, address, office or locker, the parcel and the cash on delivery amount.', 'nashenski-commerce' ),
+			__( 'When the customer opens the office map at checkout, the map page of Econt or Speedy loads with the town of the delivery. The Speedy map uses Google Maps.', 'nashenski-commerce' ),
+			__( 'When the store turns on customer checks, the phone number of the order is sent to the services it chose: nekorekten.com, Connectix or NepoStop. A report the store sends to nekorekten.com carries the name, phone and email of that order.', 'nashenski-commerce' ),
+			__( 'A VAT number a company types at checkout is sent to the VIES service of the European Commission to be checked.', 'nashenski-commerce' ),
 		);
 
 		wp_add_privacy_policy_content( 'Nashenski Commerce', '<p>' . implode( '</p><p>', array_map( 'esc_html', $lines ) ) . '</p>' );
@@ -928,7 +1062,16 @@ class Tracker {
 	public static function get_row( $id ) {
 		global $wpdb;
 
-		return $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', self::table(), (int) $id ) );
+		$cache = self::cache_key( 'row', (int) $id );
+		$row   = wp_cache_get( $cache, self::CACHE_GROUP );
+
+		if ( false === $row ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', self::table(), (int) $id ) );
+			wp_cache_set( $cache, $row, self::CACHE_GROUP, self::CACHE_TTL );
+		}
+
+		return $row;
 	}
 
 	/**
@@ -940,13 +1083,17 @@ class Tracker {
 	 */
 	public static function get_rows( $status = '', $limit = 20, $offset = 0 ) {
 		global $wpdb;
-		$table = self::table();
 
-		if ( '' !== $status ) {
-			return $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i WHERE status = %s ORDER BY last_activity DESC LIMIT %d OFFSET %d', $table, $status, $limit, $offset ) );
+		$cache = self::cache_key( 'rows', $status, (int) $limit, (int) $offset );
+		$rows  = wp_cache_get( $cache, self::CACHE_GROUP );
+
+		if ( false === $rows ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$rows = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i WHERE ( %s = %s OR status = %s ) ORDER BY last_activity DESC LIMIT %d OFFSET %d', self::table(), $status, '', $status, $limit, $offset ) );
+			wp_cache_set( $cache, $rows, self::CACHE_GROUP, self::CACHE_TTL );
 		}
 
-		return $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY last_activity DESC LIMIT %d OFFSET %d', $table, $limit, $offset ) );
+		return $rows;
 	}
 
 	/**
@@ -957,13 +1104,17 @@ class Tracker {
 	 */
 	public static function count_rows( $status = '' ) {
 		global $wpdb;
-		$table = self::table();
 
-		if ( '' !== $status ) {
-			return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE status = %s', $table, $status ) );
+		$cache = self::cache_key( 'count', $status );
+		$count = wp_cache_get( $cache, self::CACHE_GROUP );
+
+		if ( false === $count ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE ( %s = %s OR status = %s )', self::table(), $status, '', $status ) );
+			wp_cache_set( $cache, $count, self::CACHE_GROUP, self::CACHE_TTL );
 		}
 
-		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) );
+		return (int) $count;
 	}
 
 	/**
@@ -972,7 +1123,16 @@ class Tracker {
 	public static function open_value() {
 		global $wpdb;
 
-		return (float) $wpdb->get_var( $wpdb->prepare( 'SELECT COALESCE(SUM(cart_total),0) FROM %i WHERE status = %s', self::table(), 'open' ) );
+		$cache = self::cache_key( 'open_value' );
+		$value = wp_cache_get( $cache, self::CACHE_GROUP );
+
+		if ( false === $value ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$value = (float) $wpdb->get_var( $wpdb->prepare( 'SELECT COALESCE(SUM(cart_total),0) FROM %i WHERE status = %s', self::table(), 'open' ) );
+			wp_cache_set( $cache, $value, self::CACHE_GROUP, self::CACHE_TTL );
+		}
+
+		return (float) $value;
 	}
 
 	/**
@@ -981,12 +1141,22 @@ class Tracker {
 	public static function counts_by_status() {
 		global $wpdb;
 
+		$cache  = self::cache_key( 'counts' );
+		$counts = wp_cache_get( $cache, self::CACHE_GROUP );
+
+		if ( is_array( $counts ) ) {
+			return $counts;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
 		$rows   = $wpdb->get_results( $wpdb->prepare( 'SELECT status, COUNT(*) AS found FROM %i GROUP BY status', self::table() ) );
 		$counts = array();
 
 		foreach ( (array) $rows as $row ) {
 			$counts[ $row->status ] = (int) $row->found;
 		}
+
+		wp_cache_set( $cache, $counts, self::CACHE_GROUP, self::CACHE_TTL );
 
 		return $counts;
 	}
@@ -1003,7 +1173,8 @@ class Tracker {
 	public static function update_contact( $id, $email, $name, $phone ) {
 		global $wpdb;
 
-		return (bool) $wpdb->update(
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+		$updated = (bool) $wpdb->update(
 			self::table(),
 			array(
 				'email'      => sanitize_email( (string) $email ),
@@ -1012,6 +1183,9 @@ class Tracker {
 			),
 			array( 'id' => (int) $id )
 		);
+		wp_cache_delete( 'last_changed', self::CACHE_GROUP );
+
+		return $updated;
 	}
 
 	/**
@@ -1023,7 +1197,11 @@ class Tracker {
 	public static function delete_row( $id ) {
 		global $wpdb;
 
-		return (bool) $wpdb->delete( self::table(), array( 'id' => (int) $id ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+		$deleted = (bool) $wpdb->delete( self::table(), array( 'id' => (int) $id ) );
+		wp_cache_delete( 'last_changed', self::CACHE_GROUP );
+
+		return $deleted;
 	}
 
 	/**
@@ -1040,10 +1218,11 @@ class Tracker {
 		}
 
 		global $wpdb;
-		$table = self::table();
-		$in    = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $in holds only %d placeholders, filled by prepare().
-		return (int) $wpdb->query( $wpdb->prepare( "DELETE FROM %i WHERE id IN ($in)", array_merge( array( $table ), $ids ) ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+		$deleted = (int) $wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE id IN (' . implode( ',', array_fill( 0, count( $ids ), '%d' ) ) . ')', array_merge( array( self::table() ), $ids ) ) );
+		wp_cache_delete( 'last_changed', self::CACHE_GROUP );
+
+		return $deleted;
 	}
 }

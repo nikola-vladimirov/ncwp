@@ -95,11 +95,18 @@ class Speedy {
 			)
 		);
 
+		// No answer at all (no connection, a timeout): nothing to read.
+		if ( is_wp_error( $request ) ) {
+			return $return_plain ? '' : null;
+		}
+
+		$status = (int) wp_remote_retrieve_response_code( $request );
+
 		if ( $return_plain ) {
 			$body = wp_remote_retrieve_body( $request );
 
 			// Lists come as CSV; an error page or an error message must not end up in the cache.
-			if ( 200 !== (int) wp_remote_retrieve_response_code( $request ) || preg_match( '/^\s*(<|\{\s*"error)/i', $body ) ) {
+			if ( 200 !== $status || preg_match( '/^\s*(<|\{\s*"error)/i', $body ) ) {
 				return '';
 			}
 

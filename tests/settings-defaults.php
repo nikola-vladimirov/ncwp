@@ -42,6 +42,30 @@ namespace {
 		return $text;
 	}
 	/**
+	 * Esc url.
+	 *
+	 * @param string $url URL.
+	 */
+	function esc_url( $url ) {
+		return $url;
+	}
+	/**
+	 * Translate with context.
+	 *
+	 * @param string $text Text.
+	 */
+	function _x( $text ) {
+		return $text;
+	}
+	/**
+	 * Translate with context, escaped.
+	 *
+	 * @param string $text Text.
+	 */
+	function esc_html_x( $text ) {
+		return $text;
+	}
+	/**
 	 * Sanitize title with dashes.
 	 *
 	 * @param string $text Text.

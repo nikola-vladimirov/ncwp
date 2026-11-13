@@ -201,7 +201,11 @@ class Nekorekten extends Provider_Base {
 	 * @param mixed $order_id Order id.
 	 */
 	public static function handle_form( $order_id ) {
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_nk_nonce'] ?? '' ) ), 'nashenski_nk_report' ) || ! current_user_can( 'edit_shop_orders' ) ) {
+		if ( ! isset( $_POST['nashenski_nk_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nashenski_nk_nonce'] ) ), 'nashenski_nk_report' ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_shop_orders' ) ) {
 			return;
 		}
 

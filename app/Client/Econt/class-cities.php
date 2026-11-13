@@ -314,6 +314,6 @@ class Cities {
 			)
 		);
 
-		return $regions[ $country_code ];
+		return $regions[ $country_code ] ?? array();
 	}
 }

@@ -31,14 +31,23 @@ class Conditions {
 	}
 
 	/**
-	 * A typed or imported condition value or list choice: invalid UTF-8 out, then the plain rule above.
-	 * Tags are kept as text (the value is only compared and escaped on output), so "&lt;18" stays as typed.
+	 * A typed or imported condition value or list choice: invalid UTF-8 and whole HTML tags out, then
+	 * the plain rule above. A "<" or ">" that is no tag stays as typed, so "<18" and "a > b" are kept
+	 * (the value is only compared, and escaped on output); wp_strip_all_tags() would cut them.
 	 *
 	 * @param mixed $text Text to clean.
 	 * @return string
 	 */
 	public static function clean_value( $text ) {
-		return self::clean_text( wp_check_invalid_utf8( (string) $text ) );
+		$text = wp_check_invalid_utf8( (string) $text );
+
+		// Again while something was removed: taking a tag out can join the pieces around it into a new one.
+		do {
+			$before = $text;
+			$text   = (string) preg_replace( '#</?[a-z!][^<>]*>#i', '', $text );
+		} while ( $text !== $before );
+
+		return self::clean_text( $text );
 	}
 
 	/**

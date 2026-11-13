@@ -39,15 +39,26 @@ class File {
 			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 		}
 
-		// WP_Filesystem() sets these only after it connects; the direct class reads them for new files.
-		if ( ! defined( 'FS_CHMOD_DIR' ) ) {
-			define( 'FS_CHMOD_DIR', ( fileperms( ABSPATH ) & 0777 | 0755 ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- WordPress's own constant, set the way WP_Filesystem() sets it.
-		}
-		if ( ! defined( 'FS_CHMOD_FILE' ) ) {
-			define( 'FS_CHMOD_FILE', ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- WordPress's own constant, set the way WP_Filesystem() sets it.
+		return new \WP_Filesystem_Direct( null );
+	}
+
+	/**
+	 * The mode for a file we write, the way wp_handle_upload() sets it: the read and write bits of
+	 * its folder. A site's own FS_CHMOD_FILE wins. WP_Filesystem_Direct reads that constant when no
+	 * mode is passed, and it is only defined after WP_Filesystem() connects, so every write of ours
+	 * passes a mode.
+	 *
+	 * @param string $file Full path of the file.
+	 * @return int
+	 */
+	private static function file_mode( $file ) {
+		if ( defined( 'FS_CHMOD_FILE' ) ) {
+			return FS_CHMOD_FILE;
 		}
 
-		return new \WP_Filesystem_Direct( null );
+		$mode = (int) fileperms( dirname( $file ) ) & 0666;
+
+		return $mode ? $mode : 0600; // Never 0: the direct class would read the constant then.
 	}
 
 	/**
@@ -59,17 +70,25 @@ class File {
 	 */
 	public static function put_to_file( $file, $data ) {
 		$filesystem = self::filesystem();
+		$mode       = self::file_mode( $file );
 
-		// Write beside the target, then rename, so a reader never sees a half-written file.
+		// Write beside the target, then put it in place, so a reader never sees a half-written file.
 		$tmp = $file . '.' . wp_generate_password( 8, false ) . '.tmp';
 
-		if ( ! $filesystem->put_contents( $tmp, $data, FS_CHMOD_FILE ) ) {
+		if ( ! $filesystem->put_contents( $tmp, $data, $mode ) ) {
 			return false;
 		}
 
-		if ( ! @rename( $tmp, $file ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename -- the rename replaces the file in one step; WP_Filesystem::move() deletes the target first, so a reader could see no file. Windows may refuse; the fallback below writes it directly.
+		if ( '\\' === DIRECTORY_SEPARATOR ) {
+			// Windows refuses, with a warning, to rename over a file another request has open. WordPress's move() deletes the target first and warns about nothing: a reader may find no file for a moment (a cache miss), never half of one.
+			$placed = $filesystem->move( $tmp, $file, true );
+		} else {
+			$placed = rename( $tmp, $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- the rename replaces the file in one step; WP_Filesystem::move() deletes the target first, so a reader could see no file.
+		}
+
+		if ( ! $placed ) {
 			$filesystem->delete( $tmp );
-			return $filesystem->put_contents( $file, $data, FS_CHMOD_FILE );
+			return $filesystem->put_contents( $file, $data, $mode );
 		}
 
 		return true;

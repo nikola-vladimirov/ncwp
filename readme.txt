@@ -1,11 +1,11 @@
 === Nashenski Commerce ===
-Contributors: pristadigital
+Contributors: pristadigital, milenfrom
 Tags: woocommerce, bulgaria, shipping, invoice, econt
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.2
 Requires Plugins: woocommerce
-Stable tag: 0.21.9
+Stable tag: 0.21.10
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -13,7 +13,7 @@ WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shipping, invoices a
 
 == Description ==
 
-Manual (Bulgarian and English): https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+Manual (Bulgarian and English): https://nashenski.com/manual/
 
 Nashenski Commerce adds what a Bulgarian online store needs to WooCommerce. Everything runs on your own site: prices, labels and documents are made by your site and sent only to the services you turn on.
 
@@ -92,35 +92,34 @@ Yes, see "Moving from another plugin". Import the mreja.net N-18 plugin while it
 == Screenshots ==
 
 1. Couriers: turn on the couriers you work with, each with its account and sender.
-2. Checkout: countries, courier logos, address transliteration and the company invoice fields.
-3. Invoice numbering: website invoices go into the NRA audit file. Your own invoicing program keeps its orders out of it.
+2. Checkout: countries, courier logos and address transliteration.
+3. Invoices: on request for companies, in the NRA audit file or left out of it.
 4. Customer checks: nekorekten.com, Connectix and NepoStop, and when cash on delivery is held back.
 5. Quick order: a short form for shoppers who do not want to check out. The order waits for your confirmation.
 6. Order screen: the courier line on the order, with the customer's history and checks beside it.
 
 == External services ==
 
-The plugin contacts a service only for a feature you turn on (a courier, a customer check, the VAT number check). Most need your account; the public price lists and BOX NOW and Pigeon Express location lists do not.
+The plugin contacts a service only for a feature you turn on (a courier, a customer check, the VAT number check). Most need your account; the public price lists and BOX NOW and Pigeon Express location lists do not. A courier's public price list is read only when you press "Check the courier website" and once a week, with a normal page request that sends nothing else.
 
-* Courier websites (public price lists, only when you press "Check the courier website" and once a week): admin-ee.econt.com (Econt tariff PDF), services.speedy.bg/pricelist, pigeonexpress.com/prices-and-taxes. Nothing is sent except a normal page request.
-* Econt (shipping): prices, labels, offices, cities, shipment status and courier requests. Sends the receiver's name, phone, address or office, the parcel details and the cash on delivery amount when prices or labels are made. Hosts: ee.econt.com, demo.econt.com. Terms: https://www.econt.com/econt-express/terms-of-use Privacy policy: https://www.econt.com/econt-express/privacy-policy
+* Econt (shipping): prices, labels, offices, cities, shipment status and courier requests. Sends the receiver's name, phone, address or office, the parcel details and the cash on delivery amount when prices or labels are made. Hosts: ee.econt.com, demo.econt.com. Price list: admin-ee.econt.com (tariff PDF). Terms: https://www.econt.com/econt-express/terms-of-use Privacy policy: https://www.econt.com/econt-express/privacy-policy
 * Econt office map: shown at checkout only when the customer presses "Choose on the map". The map page loads from officelocator.econt.com with the customer's town and the store address. Terms: https://www.econt.com/econt-express/terms-of-use Privacy policy: https://www.econt.com/econt-express/privacy-policy
 * Speedy office map: like the Econt map, from services.speedy.bg, with Google Maps. Only the Speedy town number is sent. Terms: https://www.speedy.bg/en/terms-and-conditions-cookies Privacy policy: https://www.speedy.bg/en/gdpr Google Maps terms: https://maps.google.com/help/terms_maps/ Google privacy: https://policies.google.com/privacy
-* Speedy (shipping): same purpose and data. Hosts: api.speedy.bg, services.speedy.bg. Terms: https://api.speedy.bg/api/docs/#href-terms Privacy policy: https://www.speedy.bg/en/gdpr
-* BOX NOW (locker shipping): lockers, labels and status. Hosts: api-production.boxnow.bg, api-stage.boxnow.bg, locationapi-production.boxnow.bg, locationapi-stage.boxnow.bg (public locker list). Website: https://boxnow.bg/ Terms: https://boxnow.bg/terms-of-use-for-shipping-services Privacy policy: https://boxnow.bg/personal-data-processing-notice
-* Pigeon Express (shipping): offices, lockers, prices, labels and status. Hosts: api.pigeonexpress.com, api-demo.pigeonexpress.com. Without a login, checkout loads the public office and locker list from pigeonexpress.com/api/locations (nothing about the customer is sent). Website: https://pigeonexpress.com/ Terms: https://pigeonexpress.com/terms Privacy policy: https://pigeonexpress.com/privacy
+* Speedy (shipping): same purpose and data. Hosts: api.speedy.bg, services.speedy.bg. Price list: services.speedy.bg/pricelist. Terms: https://api.speedy.bg/api/docs/#href-terms Privacy policy: https://www.speedy.bg/en/gdpr
+* BOX NOW (locker shipping): lockers, labels and status. Sends the receiver's name, phone, email and locker, the parcel details and the cash on delivery amount when a label is made. Hosts: api-production.boxnow.bg, api-stage.boxnow.bg, locationapi-production.boxnow.bg, locationapi-stage.boxnow.bg (locker list, nothing sent). Terms: https://boxnow.bg/terms-of-use-for-shipping-services Privacy policy: https://boxnow.bg/personal-data-processing-notice
+* Pigeon Express (shipping): offices, lockers, prices, labels and status. Hosts: api.pigeonexpress.com, api-demo.pigeonexpress.com. Without a login, checkout loads the public office and locker list from pigeonexpress.com/api/locations (nothing about the customer is sent). Price list: pigeonexpress.com/prices-and-taxes. Terms: https://pigeonexpress.com/terms Privacy policy: https://pigeonexpress.com/privacy
 * nekorekten.com (customer check): sends the customer's phone number to look up reports, and, only when you click "Send report" on an order, the report with that order's name, phone and email (later edits and deletes too). Host: api.nekorekten.com. Terms: https://nekorekten.com/terms Privacy policy: https://nekorekten.com/privacy
-* Connectix (customer check): sends the customer's phone number to check their delivery record, and shipment data when tracking is on. Hosts: api.connectix.bg, api-sandbox.connectix.bg. Website: https://connectix.bg/ Terms: https://connectix.bg/bg/terms Privacy policy: https://connectix.bg/bg/privacy
-* NepoStop (customer check): sends the customer's phone number, and labels when that option is on. Host: nepostop.com. Website: https://nepostop.com/ Terms: https://nepostop.com/terms Privacy policy: https://nepostop.com/gdpr
+* Connectix (customer check): sends the customer's phone number to check their delivery record, and shipment data when tracking is on. Hosts: api.connectix.bg, api-sandbox.connectix.bg. Terms: https://connectix.bg/bg/terms Privacy policy: https://connectix.bg/bg/privacy
+* NepoStop (customer check): sends the customer's phone number, and labels when that option is on. Host: nepostop.com. Terms: https://nepostop.com/terms Privacy policy: https://nepostop.com/gdpr
 * EU VIES (VAT number check): sends the VAT number a company customer enters at checkout. Host: ec.europa.eu. Website: https://ec.europa.eu/taxation_customs/vies/ Legal notice: https://commission.europa.eu/legal-notice_en Privacy policy: https://commission.europa.eu/privacy-policy-websites-managed-european-commission_en
 
 == Third-party libraries ==
 
-Vendor libraries: LGPL, MIT or Apache-2.0 (GPL-compatible). Licences are in each library's folder.
+Vendor libraries: LGPL, MIT or Apache-2.0. DejaVu fonts: Bitstream Vera licence. All GPL-compatible. List and font licence: assets/licenses/third-party-licenses.txt; each library has its licence in its folder.
 
 == Changelog ==
 
 All versions: CHANGELOG.md in the plugin folder (Plugins screen > Changelog).
 
-= 0.21.9 =
-* Changes: Changelog wording only. No code changes from 0.21.8.
+= 0.21.10 =
+* Changes: Security Audit: nonces checked first in every request, output escaped where printed, no global file permission settings, only standard file types. Invoice settings: one checkbox and one choice.

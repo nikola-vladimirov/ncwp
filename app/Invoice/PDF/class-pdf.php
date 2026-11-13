@@ -70,6 +70,33 @@ class PDF {
 		return $this->template;
 	}
 
+
+	/**
+	 * Folders Dompdf may open local files in, besides its own.
+	 *
+	 * @var string[]
+	 */
+	private static $folders = array();
+
+	/**
+	 * Lets the PDF open local files (the logo) in a folder.
+	 *
+	 * @param string $folder Folder path.
+	 */
+	public static function allow_folder( $folder ) {
+		self::$folders[ $folder ] = $folder;
+	}
+
+	/**
+	 * Nothing to do, kept for add-ons that call it. The font list of the bundled Dompdf
+	 * (installed-fonts.dist.json, set by bin/vendor-licenses.php) already prints the built-in
+	 * families (Helvetica, Times, Courier and the generic names) in the DejaVu fonts, for every
+	 * Dompdf made from it: their own metric files are not in the plugin, and they have no Cyrillic.
+	 * An add-on passes its Dompdf; it is not needed.
+	 */
+	public static function use_dejavu() {
+	}
+
 	/**
 	 * Renders the PDF.
 	 *
@@ -80,16 +107,20 @@ class PDF {
 		$options->set( 'defaultFont', 'dejavu sans' );
 		$options->set( 'isHtml5ParserEnabled', true );
 		// Documents print customer-entered text: never run PHP from them and never fetch remote files.
-		// Logos and QR codes are embedded as data URIs; page numbers are added after rendering.
+		// The logo is read from its file in uploads and QR codes are embedded as data URIs; page numbers are added after rendering.
 		$options->set( 'isPhpEnabled', false );
 		$options->set( 'isRemoteEnabled', false );
-		// Font metrics cache and fonts a custom template installs (@font-face, with installed-fonts.json) go to uploads, never the plugin folder. Dompdf skips the cache when the folder is missing; its bundled DejaVu still loads from the library folder.
+		// Font metrics cache and fonts a custom template installs (@font-face, with installed-fonts.json) go to uploads, never the plugin folder. When that folder cannot be made, Dompdf keeps its own; the bundled DejaVu loads from the library folder either way.
 		$font_cache = \Nashenski\File::cache_folder( 'fonts' );
-		wp_mkdir_p( $font_cache );
-		$options->set( 'fontCache', $font_cache );
-		$options->set( 'fontDir', $font_cache );
+
+		if ( wp_mkdir_p( $font_cache ) ) {
+			$options->set( 'fontCache', $font_cache );
+			$options->set( 'fontDir', $font_cache );
+		}
 
 		$dompdf = new Dompdf( $options );
+		// A file named without a folder (the logo copy) is looked for in the plugin's logo folder in uploads.
+		$dompdf->setBasePath( \Nashenski\File::cache_folder( 'logo' ) );
 		$dompdf->setPaper( 'letter' === Style::get()['paper'] ? 'letter' : 'A4' );
 
 		\Nashenski\Hooks::action( 'nashenski_invoice_pdf_dompdf', 'nashenski/invoice/pdf/dompdf', $dompdf, $options );
@@ -97,6 +128,8 @@ class PDF {
 		ob_start();
 		$this->render_template();
 		$html = ob_get_clean();
+		// Dompdf opens local files only inside its own folder and the folders the template asked for (the logo's).
+		$options->setChroot( array_merge( $options->getChroot(), array_values( self::$folders ) ) );
 		// Pass the encoding: for large HTML on PHP 8.3+ dompdf's guess is ASCII and Cyrillic prints as "?".
 		$dompdf->loadHtml( $html, 'UTF-8' );
 

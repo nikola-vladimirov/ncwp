@@ -128,16 +128,13 @@ class Field_Editor {
 		$file = nashenski()->plugin_dir_path() . 'assets/js/checkout-conditions.js';
 
 		wp_enqueue_script( 'nashenski-checkout-conditions', $url . 'js/checkout-conditions.js', array( 'jquery' ), \Nashenski\Plugin::VERSION . '-' . filemtime( $file ), true );
-		wp_add_inline_script(
+		wp_localize_script(
 			'nashenski-checkout-conditions',
-			'window.nashenskiConditions = ' . wp_json_encode(
-				array(
-					'names'   => $names,
-					'targets' => $targets,
-				),
-				JSON_HEX_TAG | JSON_HEX_AMP
-			) . ';',
-			'before'
+			'nashenskiConditions',
+			array(
+				'names'   => $names,
+				'targets' => $targets,
+			)
 		);
 	}
 
@@ -149,8 +146,8 @@ class Field_Editor {
 	 * @return mixed
 	 */
 	public static function hide_rendered_field( $html, $key ) {
-		// With company invoice fields on, the company name belongs to them.
-		if ( 'billing_company' === $key && Company_Fields::enabled() ) {
+		// With invoices on, the company name belongs to the company invoice fields.
+		if ( 'billing_company' === $key && \Nashenski\Invoice\Mode::enabled() ) {
 			return $html;
 		}
 
@@ -430,7 +427,7 @@ class Field_Editor {
 			foreach ( self::KEYS as $key ) {
 				$name = $type . '_' . $key;
 
-				if ( ! isset( $fields[ $type ][ $name ] ) || ( 'billing_company' === $name && Company_Fields::enabled() ) ) {
+				if ( ! isset( $fields[ $type ][ $name ] ) || ( 'billing_company' === $name && \Nashenski\Invoice\Mode::enabled() ) ) {
 					continue;
 				}
 
@@ -469,13 +466,14 @@ class Field_Editor {
 	 */
 	private static function remove_unshown( $section, $type ) {
 		// Only the checkout submit removes fields. Another POST (a failed login, a cart update) keeps the form as it is.
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only tells which request this is; WooCommerce checks the nonce.
-		$ajax = isset( $_GET['wc-ajax'] ) ? sanitize_key( wp_unslash( $_GET['wc-ajax'] ) ) : '';
+		if ( ! isset( $_POST['woocommerce-process-checkout-nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woocommerce-process-checkout-nonce'] ) ), 'woocommerce-process_checkout' ) ) {
+			return $section;
+		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- the nonce is verified on the next line.
-		$nonce = sanitize_text_field( wp_unslash( $_POST['woocommerce-process-checkout-nonce'] ?? '' ) );
+		// WooCommerce keeps the name of its AJAX request in this query var; empty on a submit without JavaScript.
+		$ajax = (string) get_query_var( 'wc-ajax' );
 
-		if ( ! wp_verify_nonce( $nonce, 'woocommerce-process_checkout' ) || ( '' !== $ajax && 'checkout' !== $ajax ) ) {
+		if ( '' !== $ajax && 'checkout' !== $ajax ) {
 			return $section;
 		}
 
@@ -549,8 +547,8 @@ class Field_Editor {
 				$section[ $name ] = self::custom_definition( $row );
 			}
 
-			// With company invoice fields on, the company name belongs to them.
-			if ( isset( $section[ $name ] ) && ! ( 'billing_company' === $name && Company_Fields::enabled() ) ) {
+			// With invoices on, the company name belongs to the company invoice fields.
+			if ( isset( $section[ $name ] ) && ! ( 'billing_company' === $name && \Nashenski\Invoice\Mode::enabled() ) ) {
 				$section[ $name ]['priority'] = $priorities[ $row['key'] ];
 				$widths[ $name ]              = $row['width'];
 			}
@@ -1000,7 +998,7 @@ class Field_Editor {
 									<option value="hide"><?php esc_html_e( 'Hide this field when:', 'nashenski-commerce' ); ?></option>
 								</select></p>
 								<div class="nashenski-when__groups"></div>
-								<p><button type="button" class="button nashenski-when__addgroup"><?php esc_html_e( 'Add alternative (or)', 'nashenski-commerce' ); ?></button> <button type="button" class="button-link nashenski-when__close"><?php esc_html_e( 'Close', 'nashenski-commerce' ); ?></button></p>
+								<p><button type="button" class="button nashenski-when__addgroup"><?php esc_html_e( 'Add alternative (or)', 'nashenski-commerce' ); ?></button> <button type="button" class="button-link nashenski-when__close"><?php echo esc_html_x( 'Close', 'button that closes a window', 'nashenski-commerce' ); ?></button></p>
 							</div>
 							<div class="nashenski-when__group">
 								<p class="nashenski-when__or"><strong><?php esc_html_e( 'or', 'nashenski-commerce' ); ?></strong></p>
@@ -1024,7 +1022,7 @@ class Field_Editor {
 						</div>
 					</template>
 					<p><button type="button" class="button nashenski-layout__add"><?php esc_html_e( 'Add your own field', 'nashenski-commerce' ); ?></button></p>
-				<p class="description"><?php esc_html_e( 'Use the arrows to change the order. Two half-width fields next to each other share a line. With company invoice fields on, the company name belongs to them.', 'nashenski-commerce' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Use the arrows to change the order. Two half-width fields next to each other share a line. With invoices on, the company name belongs to the company invoice fields.', 'nashenski-commerce' ); ?></p>
 				<?php echo wp_kses( \Nashenski\Admin\Checkout_Fields_Import::html(), nashenski_allowed_html() ); ?>
 				<details class="nashenski-more">
 					<summary><?php esc_html_e( 'Which checkouts follow what', 'nashenski-commerce' ); ?></summary>
