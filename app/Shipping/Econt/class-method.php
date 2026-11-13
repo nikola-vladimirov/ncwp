@@ -989,7 +989,7 @@ class Method extends \WC_Shipping_Method {
 					$meta_data = $data->get_meta_data();
 
 					if ( ! empty( $meta_data['errors'] ) && ! empty( array_filter( $meta_data['errors'] ) ) ) {
-						$message = array_merge( array( __( 'Econt - ', 'nashenski-commerce' ) ), nashenski()->container()[ Client::ECONT ]::add_error_message( $meta_data['errors'] ) );
+						$message = array_merge( array( __( 'Econt', 'nashenski-commerce' ) . ' -' ), nashenski()->container()[ Client::ECONT ]::add_error_message( $meta_data['errors'] ) );
 						$errors->add( 'validation', implode( ' ', $message ) );
 					} elseif ( ! empty( $meta_data['address_missing'] ) ) {
 						$errors->add( 'validation', __( 'Please fill in your delivery address.', 'nashenski-commerce' ) );
@@ -1150,12 +1150,12 @@ class Method extends \WC_Shipping_Method {
 
 		$track_number_text = sprintf(
 			/* translators: 1: waybill number, 2: tracking link */
-			__( 'Label number: %1$s. %2$s', 'nashenski-commerce' ),
-			$number,
+			esc_html__( 'Label number: %1$s. %2$s', 'nashenski-commerce' ),
+			esc_html( $number ),
 			sprintf(
 				'<a href="%s" target="_blank">%s</a>',
-				$url,
-				__( 'Track your order.', 'nashenski-commerce' )
+				esc_url( $url ),
+				esc_html__( 'Track your order.', 'nashenski-commerce' )
 			)
 		);
 

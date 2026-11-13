@@ -31,6 +31,14 @@ function esc_html__( $text ) {
  * @param string $text Text.
  * @return string
  */
+function esc_html_x( $text ) {
+	return $text; }
+/**
+ * Translation stub.
+ *
+ * @param string $text Text.
+ * @return string
+ */
 function esc_attr__( $text ) {
 	return $text; }
 /**

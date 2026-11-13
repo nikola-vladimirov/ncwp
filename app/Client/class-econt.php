@@ -109,11 +109,12 @@ class Econt {
 			);
 		}
 
-		$data = json_decode( wp_remote_retrieve_body( $request ), true );
+		$status = (int) wp_remote_retrieve_response_code( $request );
+		$data   = json_decode( wp_remote_retrieve_body( $request ), true );
 
 		return is_array( $data ) ? $data : array(
 			'success' => false,
-			'error'   => 'HTTP ' . wp_remote_retrieve_response_code( $request ),
+			'error'   => 'HTTP ' . $status,
 		);
 	}
 

@@ -39,7 +39,7 @@ class Econt_Tab extends Base_Tab {
 		$this->set_name( __( 'Econt', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'econt' );
 
-		add_action( 'nashenski_admin_settings_after_save_fields_' . $this->tab_name, array( $this, 'after_save_fields' ) );
+		add_action( 'nashenski_admin_settings_after_save_fields', array( $this, 'after_save_fields' ) );
 		add_filter( 'nashenski_admin_settings_econt_fields', array( $this, 'add_profile_data_fields' ), 10 );
 		add_filter( 'nashenski_admin_settings_econt_fields', array( $this, 'add_send_from_fields' ), 20 );
 	}
@@ -65,7 +65,8 @@ class Econt_Tab extends Base_Tab {
 					__( 'Environment', 'nashenski-commerce' ),
 					null,
 					null,
-					__( 'Select used environment. For demo you can use Username: "iasp-dev" and Password: "1Asp-dev". For live environment use your credentials or create a registration at <a target="_blank" href="https://login.econt.com/register/">Econt Delivery</a>', 'nashenski-commerce' )
+					/* translators: %s: link to the Econt registration page */
+					sprintf( __( 'Select used environment. For demo you can use Username: "iasp-dev" and Password: "1Asp-dev". For live environment use your credentials or create a registration at %s', 'nashenski-commerce' ), '<a target="_blank" href="' . esc_url( 'https://login.econt.com/register/' ) . '">Econt Delivery</a>' )
 				),
 				new Fields\Text_Field( 'user', __( 'Username', 'nashenski-commerce' ), __( 'Enter your username.', 'nashenski-commerce' ), 'required' ),
 				new Fields\Text_Field( 'password', __( 'Password', 'nashenski-commerce' ), __( 'Enter your password.', 'nashenski-commerce' ), 'required', null, 'password' ),
@@ -252,9 +253,15 @@ class Econt_Tab extends Base_Tab {
 	}
 
 	/**
-	 * After save fields.
+	 * After the settings are saved: only when it was this tab.
+	 *
+	 * @param string $tab_class Class of the tab that was saved.
 	 */
-	public function after_save_fields() {
+	public function after_save_fields( $tab_class = '' ) {
+		if ( $tab_class !== $this->tab_name ) {
+			return;
+		}
+
 		$is_valid_profile = $this->container[ Client::ECONT_PROFILE ]->check_credentials( true );
 
 		nashenski_set_option( 'econt', 'is_valid_profile', $is_valid_profile );
@@ -273,11 +280,11 @@ class Econt_Tab extends Base_Tab {
 		$name  = nashenski_get_option( 'econt', 'name' );
 		$phone = nashenski_get_option( 'econt', 'phone' );
 
-		if ( ! $name ) {
+		if ( ! $name && ! empty( $profile_data['client']['molName'] ) ) {
 			nashenski_set_option( 'econt', 'name', $profile_data['client']['molName'] );
 		}
 
-		if ( ! $phone ) {
+		if ( ! $phone && ! empty( $profile_data['client']['phones'][0] ) ) {
 			nashenski_set_option( 'econt', 'phone', $profile_data['client']['phones'][0] );
 		}
 	}

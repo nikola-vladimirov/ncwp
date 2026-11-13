@@ -31,19 +31,6 @@ class Export_Builder {
 	}
 
 	/**
-	 * Check.
-	 */
-	private static function check() {
-		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), self::NONCE ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
-		}
-
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
-		}
-	}
-
-	/**
 	 * Posted config.
 	 */
 	private static function posted_config() {
@@ -61,7 +48,13 @@ class Export_Builder {
 	 * Preview.
 	 */
 	public static function preview() {
-		self::check();
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), self::NONCE ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
 
 		$config = self::posted_config();
 
@@ -99,7 +92,13 @@ class Export_Builder {
 	 * Save.
 	 */
 	public static function save() {
-		self::check();
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), self::NONCE ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
 
 		$config = self::posted_config();
 
@@ -125,8 +124,13 @@ class Export_Builder {
 	 * Delete.
 	 */
 	public static function delete() {
-		check_ajax_referer( self::NONCE, 'nonce' );
-		self::check();
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), self::NONCE ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do this.', 'nashenski-commerce' ) ), 403 );
+		}
 
 		$key       = isset( $_POST['key'] ) ? sanitize_title( wp_unslash( $_POST['key'] ) ) : '';
 		$templates = Builder::templates();

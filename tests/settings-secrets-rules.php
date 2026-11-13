@@ -64,6 +64,14 @@ namespace {
 	 */
 	function add_filter() {}
 	/**
+	 * Stub: as WordPress, text that is not valid UTF-8 becomes empty.
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
+	function wp_check_invalid_utf8( $text ) {
+		return mb_check_encoding( (string) $text, 'UTF-8' ) ? (string) $text : ''; }
+	/**
 	 * .
 	 *
 	 * @param mixed $text Text.
@@ -181,6 +189,11 @@ namespace {
 	expect( 'hunter2' === Settings_Page::keep_secret( '********', $option, '********' ), 'the mask keeps the saved secret' );
 	expect( 'new' === Settings_Page::keep_secret( 'new', $option, 'new' ), 'a new secret is saved' );
 	expect( '' === Settings_Page::keep_secret( '', $option, '' ), 'an empty value clears the secret' );
+	// A real password may hold any printable character: nothing of it is cut or encoded. Only control characters and broken UTF-8 go.
+	$hard = 'p<a>ss "w&rd\' %41 100% <b>x</b> парола';
+	expect( Settings_Page::keep_secret( $hard, $option, $hard ) === $hard, 'a password with < > " & % and Cyrillic is saved exactly as typed' );
+	expect( 'ab c' === Settings_Page::keep_secret( " a\x00b\x1F c\x7F\n", $option, " a\x00b\x1F c\x7F\n" ), 'control characters and the spaces around are taken out' );
+	expect( '' === Settings_Page::keep_secret( "bad\xC3\x28", $option, "bad\xC3\x28" ), 'text that is not valid UTF-8 is not saved' );
 	expect(
 		'********' === Settings_Page::keep_secret(
 			'********',

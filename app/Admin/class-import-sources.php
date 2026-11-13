@@ -279,9 +279,11 @@ class Import_Sources {
 	public static function dismiss() {
 		check_admin_referer( self::DISMISS );
 
-		if ( current_user_can( 'manage_woocommerce' ) ) {
-			update_option( self::DISMISS_OPTION, array_keys( self::open_names() ), false );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
+
+		update_option( self::DISMISS_OPTION, array_keys( self::open_names() ), false );
 
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url() );
 		exit;
@@ -1324,13 +1326,26 @@ class Import_Sources {
 	 * @param mixed $meta_key Meta key.
 	 */
 	private static function orders_with( $meta_key ) {
-		return wc_get_orders(
-			array(
-				'limit'    => -1,
-				'meta_key' => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- the one-time import finds the old plugin's orders by the meta key it left; an admin starts it by hand.
-			'meta_compare' => 'EXISTS',
-			)
-		);
+		$orders = array();
+		$page   = 0;
+
+		// 500 orders a query, page after page, until a page comes back short: the import keeps the meta key, so the pages do not shift.
+		do {
+			$found  = wc_get_orders(
+				array(
+					'limit'        => 500,
+					'paged'        => ++$page,
+					'orderby'      => 'ID',
+					'order'        => 'ASC',
+					'meta_key'     => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- the one-time import finds the old plugin's orders by the meta key it left; an admin starts it by hand.
+					'meta_compare' => 'EXISTS',
+				)
+			);
+			$orders = array_merge( $orders, $found );
+			$full   = 500 === count( $found );
+		} while ( $full );
+
+		return $orders;
 	}
 
 	/**

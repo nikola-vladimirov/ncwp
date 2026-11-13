@@ -14,6 +14,12 @@ defined( 'ABSPATH' ) || exit;
  */
 class Courier_Pdf {
 	/**
+	 * The only PDF address a courier sends is Econt's label, so only Econt's own hosts are let through,
+	 * as assets/js/courier-pdf.js does in the browser.
+	 */
+	const HOSTS = array( 'econt.com' );
+
+	/**
 	 * Cleans a courier preview URL.
 	 *
 	 * @param mixed       $value URL from the courier.
@@ -29,6 +35,17 @@ class Courier_Pdf {
 		if ( ! $parts || empty( $parts['host'] ) || isset( $parts['user'] ) || isset( $parts['pass'] ) || strtolower( rtrim( $parts['host'], '.' ) ) === strtolower( rtrim( (string) $admin_host, '.' ) ) ) {
 			return '';
 		}
+		$host  = strtolower( rtrim( $parts['host'], '.' ) );
+		$known = false;
+
+		foreach ( self::HOSTS as $allowed ) {
+			$known = $known || $allowed === $host || str_ends_with( $host, '.' . $allowed );
+		}
+
+		if ( ! $known ) {
+			return '';
+		}
+
 		$url = 'https://' . strtolower( $parts['host'] );
 		if ( isset( $parts['port'] ) && 443 !== $parts['port'] && ! ( strtolower( $parts['scheme'] ) === 'http' && 80 === $parts['port'] ) ) {
 			$url .= ':' . $parts['port'];

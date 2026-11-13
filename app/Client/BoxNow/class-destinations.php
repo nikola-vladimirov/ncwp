@@ -76,7 +76,7 @@ class Destinations {
 			// request fails anyway until the login works.
 			if ( ! $list ) {
 				$response = wp_remote_get( sprintf( self::PUBLIC_URL, 'live' === $box->get_env() ? 'production' : 'stage' ), array( 'timeout' => 20 ) );
-				$public   = json_decode( wp_remote_retrieve_body( $response ), true );
+				$public   = ! is_wp_error( $response ) && 200 === (int) wp_remote_retrieve_response_code( $response ) ? json_decode( wp_remote_retrieve_body( $response ), true ) : null;
 				$list     = is_array( $public ) && ! empty( $public['data'] ) ? $public['data'] : array();
 			}
 

@@ -1042,8 +1042,10 @@ class Tracker {
 			__( 'A reminder coupon is made for the email of its cart and is deleted with the cart\'s personal data, unless it was already used on an order.', 'nashenski-commerce' ),
 			/* translators: %d: number of days */
 			sprintf( __( 'A cart is deleted %d days after its last change.', 'nashenski-commerce' ), self::retention_days() ),
-			__( 'When the store turns on customer checks (nekorekten.com, Connectix, NepoStop), the phone number of the order is sent to them.', 'nashenski-commerce' ),
-			__( 'The courier of an order gets the delivery details: name, phone, address or office.', 'nashenski-commerce' ),
+			__( 'The courier the customer chooses (Econt, Speedy, BOX NOW or Pigeon Express) gets the delivery details when a delivery price or a waybill is made: name, phone, address, office or locker, the parcel and the cash on delivery amount.', 'nashenski-commerce' ),
+			__( 'When the customer opens the office map at checkout, the map page of Econt or Speedy loads with the town of the delivery. The Speedy map uses Google Maps.', 'nashenski-commerce' ),
+			__( 'When the store turns on customer checks, the phone number of the order is sent to the services it chose: nekorekten.com, Connectix or NepoStop. A report the store sends to nekorekten.com carries the name, phone and email of that order.', 'nashenski-commerce' ),
+			__( 'A VAT number a company types at checkout is sent to the VIES service of the European Commission to be checked.', 'nashenski-commerce' ),
 		);
 
 		wp_add_privacy_policy_content( 'Nashenski Commerce', '<p>' . implode( '</p><p>', array_map( 'esc_html', $lines ) ) . '</p>' );

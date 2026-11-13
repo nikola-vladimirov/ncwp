@@ -181,7 +181,7 @@ class Plugin {
 				'admin_notices',
 				function () {
 					/* translators: %s: link to the settings */
-					$message = sprintf( __( 'Nashenski Commerce - Please review the options and save them again from "%s".', 'nashenski-commerce' ), sprintf( '<a href="%s">%s</a>', \Nashenski\Admin\Settings::url(), __( 'Settings', 'nashenski-commerce' ) ) );
+					$message = sprintf( __( 'Nashenski Commerce - Please review the options and save them again from "%s".', 'nashenski-commerce' ), sprintf( '<a href="%s">%s</a>', esc_url( \Nashenski\Admin\Settings::url() ), esc_html__( 'Settings', 'nashenski-commerce' ) ) );
 
 					echo wp_kses_post( sprintf( '<div class="error">%s</div>', wpautop( $message ) ) );
 				}
@@ -334,7 +334,7 @@ class Plugin {
 	 */
 	public static function plugin_action_links( $actions ) {
 		$custom_actions = array(
-			'settings' => sprintf( '<a href="%s">%s</a>', \Nashenski\Admin\Settings::url(), __( 'Settings', 'nashenski-commerce' ) ),
+			'settings' => sprintf( '<a href="%s">%s</a>', esc_url( \Nashenski\Admin\Settings::url() ), esc_html__( 'Settings', 'nashenski-commerce' ) ),
 		);
 		return array_merge( $custom_actions, $actions );
 	}

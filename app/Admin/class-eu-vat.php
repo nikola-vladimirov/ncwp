@@ -184,8 +184,9 @@ class EU_Vat {
 	protected static function get_order_vat_data( $order ) {
 		return (object) array(
 			'vat_number'      => nashenski_get_vat_from_order( $order ),
-			'valid'           => wc_string_to_bool( $order->get_meta( '_vat_number_is_valid', true ) ),
-			'validated'       => wc_string_to_bool( $order->get_meta( '_vat_number_is_validated', true ) ),
+			// The plugin's own names first; orders made before 0.21.10 have the older ones.
+			'valid'           => wc_string_to_bool( $order->get_meta( $order->meta_exists( '_nashenski_vat_number_is_valid' ) ? '_nashenski_vat_number_is_valid' : '_vat_number_is_valid', true ) ),
+			'validated'       => wc_string_to_bool( $order->get_meta( $order->meta_exists( '_nashenski_vat_number_is_validated' ) ? '_nashenski_vat_number_is_validated' : '_vat_number_is_validated', true ) ),
 			'billing_country' => $order->get_billing_country(),
 			'ip_address'      => $order->get_customer_ip_address(),
 			'ip_country'      => $order->get_meta( '_customer_ip_country', true ),

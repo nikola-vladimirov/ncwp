@@ -175,9 +175,11 @@ class Setup_Wizard {
 	public static function dismiss() {
 		check_admin_referer( self::DISMISS );
 
-		if ( current_user_can( 'manage_woocommerce' ) ) {
-			update_option( self::DISMISS_OPTION, 1, false );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
+
+		update_option( self::DISMISS_OPTION, 1, false );
 
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url() );
 		exit;

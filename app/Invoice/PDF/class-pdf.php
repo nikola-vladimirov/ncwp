@@ -119,6 +119,8 @@ class PDF {
 		}
 
 		$dompdf = new Dompdf( $options );
+		// A file named without a folder (the logo copy) is looked for in the plugin's logo folder in uploads.
+		$dompdf->setBasePath( \Nashenski\File::cache_folder( 'logo' ) );
 		$dompdf->setPaper( 'letter' === Style::get()['paper'] ? 'letter' : 'A4' );
 
 		\Nashenski\Hooks::action( 'nashenski_invoice_pdf_dompdf', 'nashenski/invoice/pdf/dompdf', $dompdf, $options );

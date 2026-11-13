@@ -583,30 +583,6 @@ function nashenski_verified_request( $key, $fallback, $field, $actions ) {
 }
 
 /**
- * Order screen label actions: stop with a JSON error when the label nonce is wrong or the user
- * may not manage the store.
- */
-function nashenski_check_admin_label_actions() {
-	$errors = array();
-
-	if ( null === nashenski_label_request( 'nonce', null ) ) {
-		$errors[] = __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' );
-	}
-
-	if ( ! current_user_can( 'manage_woocommerce' ) ) {
-		$errors[] = __( 'You cannot create labels.', 'nashenski-commerce' );
-	}
-
-	if ( ! empty( $errors ) ) {
-		wp_send_json_error(
-			array(
-				'message' => implode( ' ', $errors ),
-			)
-		);
-	}
-}
-
-/**
  * A value sent by the order screen label tools (nonce nashenski_admin_label). Arrays are
  * sanitized all the way down. With no key, the whole sanitized request.
  *
@@ -622,18 +598,27 @@ function nashenski_label_request( $key = null, $fallback = '' ) {
 }
 
 /**
- * Office, locker and street lists for the checkout pickers: stop with a JSON error unless the
- * request carries the pickers nonce (or the label nonce of the order screen).
+ * Ends an order screen label request with a JSON error: something it needs is missing.
  */
-function nashenski_check_picker_request() {
-	if ( null === nashenski_picker_request( 'nonce', null ) ) {
-		wp_send_json_error(
-			array(
-				'error' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ),
-			),
-			403
-		);
+function nashenski_label_incomplete() {
+	wp_send_json_error( array( 'message' => __( 'The request is not complete. Reload the page and try again.', 'nashenski-commerce' ) ), 400 );
+}
+
+/**
+ * The order of an order screen label request (its nonce is checked by nashenski_label_request()).
+ * A request without a real order ends here with a JSON error.
+ *
+ * @return WC_Order
+ */
+function nashenski_label_order() {
+	$id    = nashenski_label_request( 'orderId', 0 );
+	$order = is_scalar( $id ) ? wc_get_order( absint( $id ) ) : false;
+
+	if ( ! $order instanceof WC_Order ) {
+		nashenski_label_incomplete();
 	}
+
+	return $order;
 }
 
 /**
@@ -901,7 +886,18 @@ function nashenski_save_checkout_label( $order_id, $courier ) {
 		}
 
 		if ( $label ) {
-			$order->update_meta_data( "nashenski_{$courier}_label", \Nashenski\Hooks::filter( "nashenski_{$courier}_label_before_save", "nashenski/{$courier}/label_before_save", $label, $order ) );
+			// One filter per courier, each with its own name.
+			if ( 'econt' === $courier ) {
+				$label = \Nashenski\Hooks::filter( 'nashenski_econt_label_before_save', 'nashenski/econt/label_before_save', $label, $order );
+			} elseif ( 'speedy' === $courier ) {
+				$label = \Nashenski\Hooks::filter( 'nashenski_speedy_label_before_save', 'nashenski/speedy/label_before_save', $label, $order );
+			} elseif ( 'boxnow' === $courier ) {
+				$label = \Nashenski\Hooks::filter( 'nashenski_boxnow_label_before_save', 'nashenski/boxnow/label_before_save', $label, $order );
+			} elseif ( 'pigeon' === $courier ) {
+				$label = \Nashenski\Hooks::filter( 'nashenski_pigeon_label_before_save', 'nashenski/pigeon/label_before_save', $label, $order );
+			}
+
+			$order->update_meta_data( "nashenski_{$courier}_label", $label );
 			WC()->session->__unset( "nashenski-{$courier}-label" );
 		}
 
@@ -993,6 +989,10 @@ function nashenski_get_order_label( $order_id ) {
 	$label_data = array();
 	$method     = '';
 
+	if ( ! $order ) {
+		return $data;
+	}
+
 	if ( ! empty( $order->get_items( 'shipping' ) ) ) {
 		$items         = $order->get_items( 'shipping' );
 		$method_object = array_shift( $items );
@@ -1005,7 +1005,13 @@ function nashenski_get_order_label( $order_id ) {
 		}
 	}
 
-	$print = admin_url( 'admin-ajax.php' ) . '?cache-buster=' . wp_rand() . '&nonce=' . wp_create_nonce( 'nashenski_admin_label' ) . '&action=';
+	$print = add_query_arg(
+		array(
+			'cache-buster' => wp_rand(),
+			'nonce'        => wp_create_nonce( 'nashenski_admin_label' ),
+		),
+		admin_url( 'admin-ajax.php' )
+	) . '&action=';
 
 	if ( ! empty( $label_data ) ) {
 		switch ( $method ) {

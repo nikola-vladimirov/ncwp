@@ -310,7 +310,7 @@ class Documents {
 	 */
 	public static function get_order_documents( $main_order ) {
 		$names = array(
-			'nashenski_order_document'                 => __( 'Order', 'nashenski-commerce' ),
+			'nashenski_order_document'                 => _x( 'Order', 'name of the order document', 'nashenski-commerce' ),
 			'nashenski_invoice_document'               => __( 'Invoice', 'nashenski-commerce' ),
 			'nashenski_invoice_copy_document'          => __( 'Invoice Copy', 'nashenski-commerce' ),
 			'nashenski_refunded_order_document'        => __( 'Refunded Order', 'nashenski-commerce' ),

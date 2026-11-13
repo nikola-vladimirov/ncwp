@@ -110,11 +110,24 @@ class BoxNow {
 			$request = wp_remote_post( $url, $request_args );
 		}
 
+		// No answer at all (no connection, a timeout): nothing to read.
+		if ( is_wp_error( $request ) ) {
+			return $return_plain ? '' : null;
+		}
+
+		$status = (int) wp_remote_retrieve_response_code( $request );
+
+		// A file (a label PDF) only when BOX NOW says it is one: an error answer is not a file.
 		if ( $return_plain ) {
-			return wp_remote_retrieve_body( $request );
+			return 200 === $status ? wp_remote_retrieve_body( $request ) : '';
 		}
 
 		$response = json_decode( wp_remote_retrieve_body( $request ), 1 );
+
+		// An error with no JSON in it (a gateway page) still gets a code, for the message below.
+		if ( ! is_array( $response ) && $status >= 400 ) {
+			$response = array( 'code' => 'HTTP ' . $status );
+		}
 
 		// An error answer carries BOX NOW's code and sometimes its own (English) text.
 		if ( isset( $response['code'] ) ) {

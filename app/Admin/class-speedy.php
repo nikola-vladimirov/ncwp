@@ -374,12 +374,23 @@ class Speedy {
 	 * Delete label.
 	 */
 	public static function delete_label() {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
 
 		$container       = nashenski()->container();
-		$order_id        = nashenski_label_request( 'orderId' );
+		$order           = nashenski_label_order();
+		$order_id        = $order->get_id();
 		$shipment_status = nashenski_label_request( 'shipmentStatus', array() );
-		$order           = wc_get_order( $order_id );
+
+		if ( ! preg_match( '/^[A-Za-z0-9_-]+$/', (string) ( $shipment_status['id'] ?? '' ) ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid parcel number.', 'nashenski-commerce' ) ), 400 );
+		}
 
 		$response = $container[ Client::SPEEDY ]->label_request(
 			'delete',
@@ -402,11 +413,18 @@ class Speedy {
 	 * Update shipment status.
 	 */
 	public static function update_shipment_status() {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
 
 		$container       = nashenski()->container();
-		$order_id        = nashenski_label_request( 'orderId' );
-		$order           = wc_get_order( $order_id );
+		$order           = nashenski_label_order();
+		$order_id        = $order->get_id();
 		$shipment_status = nashenski_label_request( 'shipmentStatus', array() );
 		$data            = array();
 
@@ -421,7 +439,12 @@ class Speedy {
 			)
 		);
 
-		$order_shipment_status = $response['parcels'][0]['operations'];
+		$order_shipment_status = $response['parcels'][0]['operations'] ?? null;
+
+		// An error reply has no operations: send it back as an error.
+		if ( ! is_array( $order_shipment_status ) ) {
+			wp_send_json_error( $response );
+		}
 
 		$order->update_meta_data( 'nashenski_speedy_operations', $order_shipment_status );
 		$order->save();
@@ -456,9 +479,16 @@ class Speedy {
 	 * Generate label.
 	 */
 	public static function generate_label() {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
 
-		$order   = wc_get_order( nashenski_label_request( 'orderId' ) );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
+
+		$order   = nashenski_label_order();
 		$label   = nashenski_label_request( 'label_data', array() );
 		$refusal = Courier_Fee::label_refusal( $order, self::label_mode( $order ) );
 
@@ -509,7 +539,7 @@ class Speedy {
 		$container = nashenski()->container();
 		$send_from = nashenski_get_option( 'speedy', 'send_from' );
 		$sender    = array(
-			'clientId'    => $container[ Client::SPEEDY_PROFILE ]->get_profile_data()['clientId'],
+			'clientId'    => $container[ Client::SPEEDY_PROFILE ]->get_profile_data()['clientId'] ?? '',
 			'contactName' => nashenski_get_option( 'speedy', 'name' ),
 			'phone1'      => array(
 				'number' => nashenski_get_option( 'speedy', 'phone' ),
@@ -795,8 +825,8 @@ class Speedy {
 	 * @return mixed Result.
 	 */
 	protected static function update_recipient_data( $label ) {
-		$order_id            = nashenski_label_request( 'orderId' );
-		$order               = wc_get_order( $order_id );
+		$order               = nashenski_label_order();
+		$order_id            = $order->get_id();
 		$type                = nashenski_label_request( 'type', array() );
 		$cookie_data         = nashenski_label_request( 'cookie_data', array() );
 		$cookie_data['type'] = $type['id'];
@@ -1155,7 +1185,7 @@ class Speedy {
 	 */
 	public static function print_labels_endpoint() {
 		// The print links carry the label nonce of the order screen.
-		if ( null === nashenski_label_request( 'nonce', null ) ) {
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
 			wp_die( esc_html__( 'This link has expired. Reload the order page and try again.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 

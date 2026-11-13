@@ -1,6 +1,6 @@
 # Nashenski Commerce changelog
 
-Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
+Manual: https://nashenski.com/manual/
 
 ## 0.21.10 (2026-11-13)
 
@@ -15,9 +15,22 @@ Manual: https://nikola-vladimirov.github.io/nashenski-commerce-assets/manual/
 - Security Audit: deactivating or deleting the plugin clears every scheduled job, the daily export file cleanup and the 0.21.8 background step too. The jobs come back when the plugin is turned on again.
 - Security Audit: the courier choice cookie, the export settings and the delivery choice on the order screen are sanitized before and after they are decoded. The checkout form of "update order review" is taken from WooCommerce, not read from the request.
 - Security Audit: every file the plugin sends (an export, a stored document, a courier label) goes through one place, with its content type and "nosniff".
+- Security Audit: the settings, export builder and quick order scripts put texts on the page as text and build their rows and tables as elements, not as HTML strings. The Econt label preview opens only addresses on Econt's own hosts.
 - PDF documents: the logo is read from its file in the media library. A custom template that asks for Helvetica, Times, Courier or a generic font family now prints in the DejaVu font, which has Cyrillic letters; the unused built-in font metric files are left out of the plugin.
-- The libraries and fonts that come with the plugin, and the DejaVu font licence, are listed in third-party-licenses.txt.
+- The libraries and fonts that come with the plugin, and the DejaVu font licence, are listed in assets/licenses/third-party-licenses.txt.
 - Abandoned carts: the cart table is read through the object cache, and every change clears it.
+- Security Audit: every request of the order screen label tools and of the checkout pickers checks its nonce itself, and the label tools also check the right to manage the store. A label request with a missing order or value answers with an error, with no PHP warning.
+- Security Audit: the quick order form is read from a public, read-only address of the REST API (nashenski/v1/quick-order/form) with a fresh security token in it. The request that only handed out a token is gone.
+- Security Audit: a courier login, key or secret is saved as typed, with any printable character. Only control characters and broken text are taken out.
+- Security Audit: list choices and rule values of the checkout fields are saved without HTML tags.
+- Security Audit: a label PDF from BOX NOW or Pigeon Express is sent only when the courier answers with a file. Courier requests that get no answer are handled as errors.
+- Security Audit: the label preview shows addresses on Econt's own hosts only.
+- The monthly exports (NRA file, Delta, invoice archive) send the chosen month as "period".
+- Deleting the plugin also deletes the options that only remember the state of a screen or notice. Settings, documents, numbering and import flags stay, as listed at the top of uninstall.php.
+- The suggested privacy policy text names every outside service: Econt, Speedy, BOX NOW, Pigeon Express, the office maps (Google Maps for Speedy), nekorekten.com, Connectix, NepoStop and VIES.
+- The hourly shipment check reads at most 500 open orders a run. The filter value -1 now means 500, not every order at once.
+- After the settings of a tab are saved, one action runs for every tab: nashenski_admin_settings_after_save_fields, with the tab class as its argument. The older names with the class in them still run.
+- New orders save the VAT number check under _nashenski_vat_number_is_validated and _nashenski_vat_number_is_valid. Older orders are read from the earlier names.
 - The quick order form and the block checkout price texts are styled from CSS files; scripts no longer add style elements to the page.
 - The withdrawal link in emails now carries the order number as nashenski_order. Links in emails sent before this version still open the form, without the order number filled in.
 - Old settings links (admin.php?page=nashenski&tab=...) open the Nashenski Commerce settings at the start.

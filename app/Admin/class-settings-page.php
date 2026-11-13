@@ -954,13 +954,16 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 
 	/**
-	 * Runs the after-save hook of a tab: the current name, and the old misspelt one for add-ons still listening on it.
+	 * Runs the after-save hook: one name for every tab, with the tab's class as its argument. The older
+	 * names had the class in them; they still run for add-ons listening on those.
 	 *
 	 * @param string $tab_class Tab class name.
 	 */
 	public static function run_after_save_fields( $tab_class ) {
-		\Nashenski\Hooks::action( 'nashenski_admin_settings_after_save_fields_' . $tab_class, 'nashenski/admin/settings/after_save_fields/' . $tab_class );
-		do_action_deprecated( 'nashenski/admin/settings/afte_save_fields/' . $tab_class, array(), '0.19.9', 'nashenski_admin_settings_after_save_fields_' . $tab_class );
+		\Nashenski\Hooks::action( 'nashenski_admin_settings_after_save_fields', 'nashenski/admin/settings/after_save_fields', $tab_class );
+		do_action_deprecated( 'nashenski_admin_settings_after_save_fields_' . $tab_class, array(), '0.21.10', 'nashenski_admin_settings_after_save_fields' );
+		do_action_deprecated( 'nashenski/admin/settings/after_save_fields/' . $tab_class, array(), '0.19.9', 'nashenski_admin_settings_after_save_fields' );
+		do_action_deprecated( 'nashenski/admin/settings/afte_save_fields/' . $tab_class, array(), '0.19.9', 'nashenski_admin_settings_after_save_fields' );
 	}
 
 	/**
@@ -980,7 +983,10 @@ class Settings_Page extends \WC_Settings_Page {
 	}
 
 	/**
-	 * The mask posted back unchanged means "keep the saved value".
+	 * A login, key or secret: the mask posted back unchanged means "keep the saved value". A new value is
+	 * kept as typed, as WooCommerce keeps a password field (it only trims it): a real password may hold any
+	 * printable character, "<" and "%" too. Only what no password has is taken out: control characters and
+	 * text that is not valid UTF-8. The value goes to the courier or service it belongs to and is shown masked.
 	 *
 	 * @param mixed $value     Value.
 	 * @param array $option    Setting definition.
@@ -988,11 +994,15 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @return mixed
 	 */
 	public static function keep_secret( $value, $option, $raw_value ) {
-		if ( self::SECRET_MASK === $raw_value && self::is_secret( (string) ( $option['id'] ?? '' ), (string) ( $option['type'] ?? '' ) ) ) {
+		if ( ! self::is_secret( (string) ( $option['id'] ?? '' ), (string) ( $option['type'] ?? '' ) ) ) {
+			return $value;
+		}
+
+		if ( self::SECRET_MASK === $raw_value ) {
 			return get_option( $option['id'], '' );
 		}
 
-		return $value;
+		return is_string( $value ) ? trim( (string) preg_replace( '/[\x00-\x1F\x7F]/', '', wp_check_invalid_utf8( $value ) ) ) : $value;
 	}
 
 	/**
@@ -1061,6 +1071,7 @@ class Settings_Page extends \WC_Settings_Page {
 	 * @return mixed
 	 */
 	public static function sanitize_value( $value, $option ) {
+		$value = self::keep_secret( $value, $option, $value );
 		$value = self::sanitize_rules_field( $value, $option, $value );
 		$value = self::sanitize_rows_field( $value, $option, $value );
 		$value = self::sanitize_methods_field( $value, $option, $value );

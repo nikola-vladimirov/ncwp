@@ -2,8 +2,16 @@
 /**
  * Runs when the plugin is deleted from the Plugins screen.
  *
- * Removes scheduled jobs, the abandoned carts table (customer emails and phones), transients and the courier cache,
- * on every site of a network. Settings, order data and documents stay: invoices and store data are legal records.
+ * Removes scheduled jobs, the abandoned carts table (customer emails and phones), transients, the courier cache
+ * and the options that only remember the state of a screen, on every site of a network.
+ *
+ * What stays, because invoices and store data are legal records:
+ * - the settings (nashenski_settings_*, the shipping method settings WooCommerce keeps, nashenski_export_templates);
+ * - order data and the document files, with nashenski_documents_dir, the name of their folder;
+ * - document numbering: the next numbers in the settings and nashenski_n18_state, so no number repeats;
+ * - nashenski_version and the flags of what was already migrated or imported from another plugin
+ *   (nashenski_documents_migration*, nashenski_migrated_from_woo_bg, nashenski_imported_sources,
+ *   nashenski_imported_checkout_fields), so a reinstall does not migrate or import twice.
  *
  * @package Nashenski_Commerce
  */
@@ -43,7 +51,20 @@ foreach ( $nashenski_sites as $nashenski_site ) {
 		as_unschedule_all_actions( '', array(), 'nashenski' );
 	}
 
-	delete_option( 'nashenski_shipments_cursor' );
+	// The state of screens and notices, and the flag of the dropped table. No record depends on them.
+	foreach ( array(
+		'nashenski_shipments_cursor',
+		'nashenski_carts_db_version',
+		'nashenski_price_updates',
+		'nashenski_price_updates_seen',
+		'nashenski_setup_done',
+		'nashenski_setup_dismissed',
+		'nashenski_import_notice_dismissed',
+		'nashenski_boxnow_message_dismiss',
+		'nashenski_pigeon_express_message_dismiss',
+	) as $nashenski_option ) {
+		delete_option( $nashenski_option );
+	}
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- uninstall drops the plugin's own table; WordPress has no API for that.
 	$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $wpdb->prefix . 'nashenski_carts' ) );

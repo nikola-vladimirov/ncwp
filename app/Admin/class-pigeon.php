@@ -378,9 +378,16 @@ class Pigeon {
 	 * @return void
 	 */
 	public static function generate_label() {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
 
-		$order = wc_get_order( nashenski_label_request( 'orderId' ) );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
+
+		$order = nashenski_label_order();
 		try {
 			$payment = Payment::request( $order );
 		} catch ( \InvalidArgumentException $error ) {
@@ -484,8 +491,8 @@ class Pigeon {
 	 * @return array
 	 */
 	public static function update_receiver_data( $label ) {
-		$order_id = nashenski_label_request( 'orderId' );
-		$order    = wc_get_order( $order_id );
+		$order    = nashenski_label_order();
+		$order_id = $order->get_id();
 		$type     = nashenski_label_request( 'type', array() );
 
 		$phone = '';
@@ -789,7 +796,7 @@ class Pigeon {
 	 */
 	public static function print_labels_endpoint() {
 		// The print links carry the label nonce of the order screen.
-		if ( null === nashenski_label_request( 'nonce', null ) ) {
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
 			wp_die( esc_html__( 'This link has expired. Reload the order page and try again.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
@@ -799,10 +806,15 @@ class Pigeon {
 
 		$container       = nashenski()->container();
 		$order_id        = nashenski_label_request( 'order-id' );
-		$order           = wc_get_order( $order_id );
-		$shipment_status = $order->get_meta( 'nashenski_pigeon_shipment_status' );
-		$size            = ( null !== nashenski_label_request( 'size', null ) ) ? sanitize_key( nashenski_label_request( 'size' ) ) : '';
-		$request_args    = array();
+		$order           = is_scalar( $order_id ) ? wc_get_order( absint( $order_id ) ) : false;
+		$shipment_status = $order ? $order->get_meta( 'nashenski_pigeon_shipment_status' ) : array();
+
+		if ( empty( $shipment_status['data']['reference_number'] ) ) {
+			wp_die( esc_html__( 'Invalid parcel number.', 'nashenski-commerce' ), '', array( 'response' => 400 ) );
+		}
+
+		$size         = ( null !== nashenski_label_request( 'size', null ) ) ? sanitize_key( nashenski_label_request( 'size' ) ) : '';
+		$request_args = array();
 
 		if ( 'a4' === $size ) {
 			$request_args['format'] = 'a4';
@@ -819,14 +831,25 @@ class Pigeon {
 	 * @return void
 	 */
 	public static function delete_label() {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
 
 		$container       = nashenski()->container();
-		$order_id        = nashenski_label_request( 'orderId' );
+		$order           = nashenski_label_order();
+		$order_id        = $order->get_id();
 		$shipment_status = nashenski_label_request( 'shipmentStatus', array() );
-		$order           = wc_get_order( $order_id );
 
-		$response = $container[ Client::PIGEON ]->api_call( $container[ Client::PIGEON ]::CREATE_LABEL_ENDPOINT . '/' . $shipment_status['data']['reference_number'] . '/cancel', array(), 'POST' );
+		if ( empty( $shipment_status['data']['reference_number'] ) || ! is_scalar( $shipment_status['data']['reference_number'] ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid parcel number.', 'nashenski-commerce' ) ), 400 );
+		}
+
+		$response = $container[ Client::PIGEON ]->api_call( $container[ Client::PIGEON ]::CREATE_LABEL_ENDPOINT . '/' . rawurlencode( (string) $shipment_status['data']['reference_number'] ) . '/cancel', array(), 'POST' );
 
 		$order->update_meta_data( 'nashenski_pigeon_shipment_status', '' );
 		$order->update_meta_data( 'nashenski_pigeon_operations', '' );
@@ -843,16 +866,32 @@ class Pigeon {
 	 * @return void
 	 */
 	public static function update_shipment_status() {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
 
 		$container       = nashenski()->container();
-		$order_id        = nashenski_label_request( 'orderId' );
-		$order           = wc_get_order( $order_id );
+		$order           = nashenski_label_order();
+		$order_id        = $order->get_id();
 		$shipment_status = nashenski_label_request( 'shipmentStatus', array() );
 
-		$response = $container[ Client::PIGEON ]->api_call( $container[ Client::PIGEON ]::CREATE_LABEL_ENDPOINT . '/' . $shipment_status['data']['reference_number'] . '/track', array() );
+		if ( empty( $shipment_status['data']['reference_number'] ) || ! is_scalar( $shipment_status['data']['reference_number'] ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid parcel number.', 'nashenski-commerce' ) ), 400 );
+		}
 
-		$order_shipment_status = $response['data']['tracking'];
+		$response = $container[ Client::PIGEON ]->api_call( $container[ Client::PIGEON ]::CREATE_LABEL_ENDPOINT . '/' . rawurlencode( (string) $shipment_status['data']['reference_number'] ) . '/track', array() );
+
+		$order_shipment_status = $response['data']['tracking'] ?? null;
+
+		// An error reply has no tracking: send it back as an error.
+		if ( ! is_array( $order_shipment_status ) ) {
+			wp_send_json_error( $response );
+		}
 
 		$order->update_meta_data( 'nashenski_pigeon_operations', $order_shipment_status );
 		$order->save();

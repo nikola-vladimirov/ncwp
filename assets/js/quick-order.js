@@ -26,13 +26,36 @@
 		box = null;
 	}
 
-	// The form is our own escaped fragment from the server; a message (a text node in a paragraph) is added as an element.
+	/*
+	 * The form is our own escaped fragment from the server. It is parsed in a separate document, script
+	 * elements and inline event handlers are dropped, and the nodes are moved into the box. A message
+	 * (a text node in a paragraph) is added as an element.
+	 */
 	function fill( content ) {
-		if ( 'string' === typeof content ) {
-			box.innerHTML = content;
-		} else {
-			box.textContent = '';
+		box.textContent = '';
+
+		if ( 'string' !== typeof content ) {
 			box.appendChild( content );
+			return;
+		}
+
+		var parsed = new DOMParser().parseFromString( content, 'text/html' );
+
+		Array.prototype.forEach.call( parsed.body.querySelectorAll( '*' ), function ( node ) {
+			if ( 'SCRIPT' === node.tagName ) {
+				node.remove();
+				return;
+			}
+
+			Array.prototype.slice.call( node.attributes ).forEach( function ( attr ) {
+				if ( 0 === attr.name.toLowerCase().indexOf( 'on' ) ) {
+					node.removeAttribute( attr.name );
+				}
+			} );
+		} );
+
+		while ( parsed.body.firstChild ) {
+			box.appendChild( parsed.body.firstChild );
 		}
 	}
 
@@ -155,23 +178,19 @@
 
 		var qty = document.querySelector( 'form.cart input.qty' );
 		var data = {
-			action: 'nashenski_quick_order_form',
 			context: button.getAttribute( 'data-context' ) || 'product',
 			product_id: button.getAttribute( 'data-product-id' ) || '0',
 			quantity: qty ? qty.value : '1',
 		};
 
-		// The nonce is asked for now: one printed in a cached page would be stale.
-		post( { action: 'nashenski_quick_order_nonce' } ).then( function ( reply ) {
+		// The form is read now, with its own nonce in it: one printed in a cached page would be stale.
+		fetch( cfg.formUrl + ( cfg.formUrl.indexOf( '?' ) < 0 ? '?' : '&' ) + new URLSearchParams( data ), {
+			credentials: 'same-origin',
+			headers: cfg.restNonce ? { 'X-WP-Nonce': cfg.restNonce } : {},
+		} ).then( function ( reply ) {
 			return reply.json();
 		} ).then( function ( result ) {
-			data._nonce = result && result.success ? result.data : '';
-
-			return post( data );
-		} ).then( function ( reply ) {
-			return reply.text();
-		} ).then( function ( html ) {
-			show( html, button );
+			show( result && result.html ? result.html : para( result && result.message ? result.message : cfg.errorText ), button );
 		} ).catch( function () {
 			show( para( cfg.errorText ), button );
 		} );

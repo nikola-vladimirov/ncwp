@@ -174,7 +174,8 @@ foreach ( array( $bad, 'data:text/html,<script>alert(1)</script>', '//ee.econt.c
 	}
 }
 pdf_check( Courier_Pdf::url( 'http://ee.econt.com/api_export.php?key=abc' ) === 'https://ee.econt.com/api_export.php?key=abc', 'Legacy HTTP URL upgraded' );
-pdf_check( Courier_Pdf::url( 'https://courier-cdn.example/file.pdf' ) === 'https://courier-cdn.example/file.pdf', 'External PDF CDN preserved' );
+pdf_check( Courier_Pdf::url( 'https://courier-cdn.example/file.pdf' ) === '' && Courier_Pdf::url( 'https://noteecont.com/file.pdf' ) === '' && Courier_Pdf::url( 'https://econt.com.evil.example/file.pdf' ) === '', 'A host that is not Econt\'s is refused' );
+pdf_check( Courier_Pdf::url( 'https://econt.com/file.pdf' ) === 'https://econt.com/file.pdf' && Courier_Pdf::url( 'https://Delivery.Econt.com/file.pdf' ) === 'https://delivery.econt.com/file.pdf', 'Econt\'s own hosts pass' );
 $query = Courier_Pdf::url( 'https://ee.econt.com/file.pdf?key=a%2Bb&label=old#page=2', '10x9' );
 parse_str( wp_parse_url( $query, PHP_URL_QUERY ), $params );
 pdf_check(
@@ -272,6 +273,8 @@ if ( PHP_VERSION_ID < 80100 ) {
 $args = array( $imported, 'econt', array( '123' ), $bad, array(), &$count );
 $method->invokeArgs( null, $args );
 pdf_check( '' === $imported->get_meta( 'nashenski_econt_shipment_status' )['label']['pdfURL'], 'Legacy waybill import excludes executable URL' );
+// Turned on for the check below and put back at the end: the test site stays as it was.
+$pdf_econt_was = get_option( 'nashenski_settings_apis_enable_econt', null );
 nashenski_set_option( 'apis', 'enable_econt', 'yes' );
 // Main enqueues label scripts only on order screens.
 require_once ABSPATH . 'wp-admin/includes/class-wp-screen.php';
@@ -280,6 +283,11 @@ WP_Screen::get( 'shop_order' )->set_current_screen();
 \Nashenski\Plugin::admin_enqueue_scripts();
 foreach ( array( 'econt' ) as $courier ) { // Main removed CVC (0.17.0).
 	pdf_check( in_array( 'nashenski-courier-pdf', wp_scripts()->registered[ 'nashenski-js-' . $courier ]->deps, true ), 'Helper loads before courier entry' );
+}
+if ( null === $pdf_econt_was ) {
+	delete_option( 'nashenski_settings_apis_enable_econt' );
+} else {
+	nashenski_set_option( 'apis', 'enable_econt', $pdf_econt_was );
 }
 foreach ( $orders as $test_order ) {
 	$test_order->delete( true ); }

@@ -62,10 +62,7 @@ class Quick_Order {
 			add_action( 'woocommerce_after_cart_totals', array( __CLASS__, 'button' ) );
 		}
 
-		add_action( 'wp_ajax_nashenski_quick_order_nonce', array( __CLASS__, 'nonce_ajax' ) );
-		add_action( 'wp_ajax_nopriv_nashenski_quick_order_nonce', array( __CLASS__, 'nonce_ajax' ) );
-		add_action( 'wp_ajax_nashenski_quick_order_form', array( __CLASS__, 'form_ajax' ) );
-		add_action( 'wp_ajax_nopriv_nashenski_quick_order_form', array( __CLASS__, 'form_ajax' ) );
+		add_action( 'rest_api_init', array( __CLASS__, 'register_route' ) );
 		add_action( 'wp_ajax_nashenski_quick_order_submit', array( __CLASS__, 'submit_ajax' ) );
 		add_action( 'wp_ajax_nopriv_nashenski_quick_order_submit', array( __CLASS__, 'submit_ajax' ) );
 	}
@@ -295,7 +292,7 @@ class Quick_Order {
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
 				/* translators: %s: number of quick orders */
-				'label_count'               => _n_noop( 'Quick order <span class="count">(%s)</span>', 'Quick orders <span class="count">(%s)</span>', 'nashenski-commerce' ),
+				'label_count'               => _n_noop( 'Quick order (%s)', 'Quick orders (%s)', 'nashenski-commerce' ),
 			)
 		);
 	}
@@ -367,42 +364,75 @@ class Quick_Order {
 	private static function config() {
 		return array(
 			'ajax'        => admin_url( 'admin-ajax.php' ),
+			'formUrl'     => esc_url_raw( rest_url( 'nashenski/v1/quick-order/form' ) ),
+			// A logged-in shopper's request needs it to stay logged in (the form is then filled in from the account). A guest sends none.
+			'restNonce'   => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
 			'appearance'  => nashenski_get_choice( 'quick_order', 'appearance', self::appearances() ),
 			'phoneFormat' => self::phone_format(),
 			'phoneDial'   => self::phone_dial(),
 			'errorText'   => __( 'Something went wrong. Please try again.', 'nashenski-commerce' ),
-			'closeText'   => __( 'Close', 'nashenski-commerce' ),
+			'closeText'   => _x( 'Close', 'button that closes a window', 'nashenski-commerce' ),
 		);
 	}
 
 	/**
-	 * A fresh nonce for the form request. The script asks for it on each click, because a nonce
-	 * printed in a cached page goes stale. Reads no input and changes nothing.
+	 * The route the script reads the form from on each click, so a cached page still gets a form
+	 * with a fresh nonce in it (the one submit_ajax() checks).
 	 */
-	public static function nonce_ajax() {
-		wp_send_json_success( wp_create_nonce( self::NONCE ) );
+	public static function register_route() {
+		register_rest_route(
+			'nashenski/v1',
+			'/quick-order/form',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( __CLASS__, 'form_rest' ),
+				// Public and read-only: the order form every visitor may open. It reads three values, changes nothing and stores nothing.
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'context'    => array(
+						'type'              => 'string',
+						'enum'              => array( 'product', 'cart' ),
+						'default'           => 'product',
+						'sanitize_callback' => 'sanitize_key',
+						'validate_callback' => 'rest_validate_request_arg',
+					),
+					'product_id' => array(
+						'type'              => 'integer',
+						'minimum'           => 0,
+						'default'           => 0,
+						'sanitize_callback' => 'absint',
+						'validate_callback' => 'rest_validate_request_arg',
+					),
+					'quantity'   => array(
+						'type'              => 'integer',
+						'minimum'           => 1,
+						'default'           => 1,
+						'sanitize_callback' => 'absint',
+						'validate_callback' => 'rest_validate_request_arg',
+					),
+				),
+			)
+		);
 	}
 
 	/**
 	 * The form, as an HTML fragment for the dialog.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response|\WP_Error
 	 */
-	public static function form_ajax() {
+	public static function form_rest( $request ) {
 		if ( ! self::enabled() ) {
-			wp_die( '', '', array( 'response' => 404 ) );
+			return new \WP_Error( 'nashenski_quick_order_off', __( 'Quick orders are turned off.', 'nashenski-commerce' ), array( 'status' => 404 ) );
 		}
-
-		if ( ! isset( $_POST['_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_nonce'] ) ), self::NONCE ) ) {
-			// The script shows this text in place of the form.
-			wp_die( esc_html__( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
-		}
-
-		$context    = isset( $_POST['context'] ) && 'cart' === sanitize_key( wp_unslash( $_POST['context'] ) ) ? 'cart' : 'product';
-		$product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
-		$quantity   = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
 
 		// The fragment is escaped in its template; wp_kses_post would strip the form tags.
-		echo wp_kses( self::form_html( $context, $product_id, $quantity ), nashenski_allowed_html() );
-		wp_die();
+		$response = new \WP_REST_Response( array( 'html' => wp_kses( self::form_html( $request['context'], $request['product_id'], $request['quantity'] ), nashenski_allowed_html() ) ) );
+
+		// The form carries a nonce: no cache may keep it.
+		$response->header( 'Cache-Control', 'no-store, private' );
+
+		return $response;
 	}
 
 	/**

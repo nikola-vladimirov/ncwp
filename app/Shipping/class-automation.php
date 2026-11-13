@@ -25,6 +25,9 @@ class Automation {
 	const CHECK    = 'nashenski/shipments/check';
 	const AS_GROUP = 'nashenski';
 
+	/** The most open orders one run of the hourly check asks the database for (IDs only). */
+	const PAGE = 500;
+
 	/** Set once the shipment was delivered or went back, so the hourly check leaves the order alone. */
 	const STATE_META = '_nashenski_shipment_state';
 
@@ -253,10 +256,12 @@ class Automation {
 		// ponytail: 100 open orders per hour, created in the last 60 days; a busier store can raise it.
 		$limit = (int) \Nashenski\Hooks::filter( 'nashenski_shipments_check_limit', 'nashenski/shipments/check_limit', 100 );
 
-		// A value below 1 other than -1 (0, negative, null, text) becomes the default 100: -1 would drop the time budget and load every open order at once.
-		if ( $limit < 1 && -1 !== $limit ) {
-			$limit = 100;
+		// -1 means as many as one run may read (PAGE). Any other value below 1 (0, negative, null, text) becomes the default 100, and no value goes over PAGE.
+		if ( $limit < 1 ) {
+			$limit = -1 === $limit ? self::PAGE : 100;
 		}
+
+		$limit = min( $limit, self::PAGE );
 
 		// Each run reads the open orders from the creation second the last run reached, oldest first, skipping the IDs already read in that second:
 		// an unchanged order is never saved just to move it back, an order that leaves the list cannot make another one be skipped,
@@ -272,11 +277,12 @@ class Automation {
 			$seen = array_map( 'intval', $cursor['ids'] );
 		}
 
-		// The orders already read in the cursor's second come back again (they are the first ones of the window) and are dropped after the query,
-		// so that many more are asked for: a full page of unread orders is still there. No exclude list goes into the query.
+		// One page of order IDs, never more. The orders already read in the cursor's second come back again (they are the first ones of the window)
+		// and are dropped after the query: no exclude list goes into it. The orders themselves are loaded one by one below.
 		$args   = array(
 			'status'       => array( 'processing', 'on-hold' ),
-			'limit'        => $limit > 0 ? $limit + count( $seen ) : $limit,
+			'limit'        => self::PAGE,
+			'return'       => 'ids',
 			'date_created' => '>=' . $from,
 			'orderby'      => 'date',
 			'order'        => 'ASC',
@@ -323,7 +329,7 @@ class Automation {
 		}
 
 		try {
-			$orders = wc_get_orders( $args );
+			$found = wc_get_orders( $args );
 		} finally {
 			if ( $legacy ) {
 				remove_filter( 'woocommerce_order_data_store_cpt_get_orders_query', $add );
@@ -331,38 +337,37 @@ class Automation {
 			}
 		}
 
-		if ( $seen ) {
-			$orders = array_slice(
-				array_filter(
-					$orders,
-					function ( $order ) use ( $seen ) {
-						return ! in_array( $order->get_id(), $seen, true );
-					}
-				),
-				0,
-				$limit
-			);
-		}
-
-		$dates = array();
+		$unread = array_values( array_diff( array_map( 'intval', (array) $found ), $seen ) );
+		// The end of the list: fewer unread orders than a run takes, and the page was not cut off.
+		$short  = count( $unread ) < $limit && count( $found ) < self::PAGE;
+		$unread = array_slice( $unread, 0, $limit );
+		$dates  = array();
 		// Each order is one courier call (up to 60 s when the courier is slow), so a run stops after this many seconds and the next one goes on from there.
 		$budget = (float) \Nashenski\Hooks::filter( 'nashenski_shipments_check_seconds', 'nashenski/shipments/check_seconds', 20 );
 		$began  = microtime( true );
 
-		foreach ( $orders as $order ) {
+		foreach ( $unread as $id ) {
+			$order        = wc_get_order( $id );
+			$dates[ $id ] = $from;
+
+			// An order deleted since the query counts as read.
+			if ( ! $order ) {
+				continue;
+			}
+
 			// check_order() saves an order only when its shipment changed (delivered or returned); the others are left alone.
 			// A change-only save writes the order's meta and its new status, never a stale copy of the rest of the row.
 			self::check_order( $order );
-			$dates[ $order->get_id() ] = $order->get_date_created() ? $order->get_date_created()->getTimestamp() : $from;
+			$dates[ $id ] = $order->get_date_created() ? $order->get_date_created()->getTimestamp() : $from;
 
-			if ( $limit > 0 && microtime( true ) - $began > $budget ) {
+			if ( microtime( true ) - $began > $budget ) {
 				break;
 			}
 		}
 
 		if ( $limit > 0 ) {
 			// Orders left unread (out of time) make the page a full one: the cursor moves to the last order read, not back to the start.
-			if ( count( $orders ) < $limit && count( $dates ) === count( $orders ) ) {
+			if ( $short && count( $dates ) === count( $unread ) ) {
 				// A short page is the end of the list, so start again at the window start.
 				$next = array(
 					'from' => $start,

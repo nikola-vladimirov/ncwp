@@ -445,8 +445,9 @@ class EU_Vat {
 		}
 
 		if ( isset( self::$data['validation']['valid'] ) ) {
-			$order->update_meta_data( '_vat_number_is_validated', ! is_null( self::$data['validation']['valid'] ) ? 'true' : 'false' );
-			$order->update_meta_data( '_vat_number_is_valid', true === self::$data['validation']['valid'] ? 'true' : 'false' );
+			// Orders made before 0.21.10 have these two under the names without "nashenski" (see Admin\EU_VAT::get_order_vat_data()).
+			$order->update_meta_data( '_nashenski_vat_number_is_validated', ! is_null( self::$data['validation']['valid'] ) ? 'true' : 'false' );
+			$order->update_meta_data( '_nashenski_vat_number_is_valid', true === self::$data['validation']['valid'] ? 'true' : 'false' );
 		}
 
 		if ( false !== self::get_ip_country() ) {

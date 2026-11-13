@@ -381,12 +381,19 @@ class Econt {
 	 * Ajax: deletes the label at Econt.
 	 */
 	public static function delete_label() {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
 
 		$container       = nashenski()->container();
-		$order_id        = nashenski_label_request( 'orderId' );
+		$order           = nashenski_label_order();
+		$order_id        = $order->get_id();
 		$shipment_status = nashenski_label_request( 'shipmentStatus', array() );
-		$order           = wc_get_order( $order_id );
 
 		if ( isset( $shipment_status['label']['shipmentNumber'] ) ) {
 			$shipment_number = $shipment_status['label']['shipmentNumber'];
@@ -412,11 +419,18 @@ class Econt {
 	 * Ajax: asks Econt for the status of the shipment.
 	 */
 	public static function update_shipment_status() {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
 
 		$container             = nashenski()->container();
-		$order_id              = nashenski_label_request( 'orderId' );
-		$order                 = wc_get_order( $order_id );
+		$order                 = nashenski_label_order();
+		$order_id              = $order->get_id();
 		$shipment_status       = nashenski_label_request( 'shipmentStatus', array() );
 		$data                  = array();
 		$order_shipment_status = $order->get_meta( 'nashenski_econt_shipment_status' );
@@ -424,7 +438,7 @@ class Econt {
 		$response = $container[ Client::ECONT ]->api_call(
 			$container[ Client::ECONT ]::SHIPMENT_STATUS_ENDPOINT,
 			array(
-				'shipmentNumbers' => array( $shipment_status['label']['shipmentNumber'] ),
+				'shipmentNumbers' => array( $shipment_status['label']['shipmentNumber'] ?? '' ),
 			)
 		);
 
@@ -451,9 +465,16 @@ class Econt {
 	 * Ajax: builds the label from the box and sends it to Econt.
 	 */
 	public static function generate_label() {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
 
-		$order_id = nashenski_label_request( 'orderId' );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
+
+		$order_id = nashenski_label_order()->get_id();
 		$label    = nashenski_label_request( 'label_data', array() );
 
 		$label = self::update_sender( $label );
@@ -579,7 +600,7 @@ class Econt {
 	public static function update_sender( $label ) {
 		$container = nashenski()->container();
 
-		$label['senderClient']  = $container[ Client::ECONT_PROFILE ]->get_profile_data()['client'];
+		$label['senderClient']  = $container[ Client::ECONT_PROFILE ]->get_profile_data()['client'] ?? array();
 		$label['senderAgent']   = array(
 			'name'   => nashenski_get_option( 'econt', 'name' ),
 			'phones' => array( nashenski_get_option( 'econt', 'phone' ) ),
@@ -699,6 +720,7 @@ class Econt {
 		$order               = wc_get_order( nashenski_label_request( 'orderId' ) );
 		$type                = nashenski_label_request( 'type', array() );
 		$cookie_data         = nashenski_label_request( 'cookie_data', array() );
+		$type                = array( 'id' => (string) ( $type['id'] ?? '' ) ) + (array) $type;
 		$cookie_data['type'] = $type['id'];
 
 		if ( in_array( $type['id'], array( 'office', 'automat' ), true ) ) {

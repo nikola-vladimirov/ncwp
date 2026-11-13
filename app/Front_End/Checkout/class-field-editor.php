@@ -998,7 +998,7 @@ class Field_Editor {
 									<option value="hide"><?php esc_html_e( 'Hide this field when:', 'nashenski-commerce' ); ?></option>
 								</select></p>
 								<div class="nashenski-when__groups"></div>
-								<p><button type="button" class="button nashenski-when__addgroup"><?php esc_html_e( 'Add alternative (or)', 'nashenski-commerce' ); ?></button> <button type="button" class="button-link nashenski-when__close"><?php esc_html_e( 'Close', 'nashenski-commerce' ); ?></button></p>
+								<p><button type="button" class="button nashenski-when__addgroup"><?php esc_html_e( 'Add alternative (or)', 'nashenski-commerce' ); ?></button> <button type="button" class="button-link nashenski-when__close"><?php echo esc_html_x( 'Close', 'button that closes a window', 'nashenski-commerce' ); ?></button></p>
 							</div>
 							<div class="nashenski-when__group">
 								<p class="nashenski-when__or"><strong><?php esc_html_e( 'or', 'nashenski-commerce' ); ?></strong></p>

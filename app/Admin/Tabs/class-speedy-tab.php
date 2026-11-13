@@ -39,7 +39,7 @@ class Speedy_Tab extends Base_Tab {
 		$this->set_name( __( 'Speedy', 'nashenski-commerce' ) );
 		$this->set_tab_slug( 'speedy' );
 
-		add_action( 'nashenski_admin_settings_after_save_fields_' . $this->tab_name, array( $this, 'after_save_fields' ) );
+		add_action( 'nashenski_admin_settings_after_save_fields', array( $this, 'after_save_fields' ) );
 		add_filter( 'nashenski_admin_settings_speedy_fields', array( $this, 'add_profile_data_fields' ), 10 );
 		add_filter( 'nashenski_admin_settings_speedy_fields', array( $this, 'add_send_from_fields' ), 20 );
 	}
@@ -165,9 +165,15 @@ class Speedy_Tab extends Base_Tab {
 	}
 
 	/**
-	 * After save fields.
+	 * After the settings are saved: only when it was this tab.
+	 *
+	 * @param string $tab_class Class of the tab that was saved.
 	 */
-	public function after_save_fields() {
+	public function after_save_fields( $tab_class = '' ) {
+		if ( $tab_class !== $this->tab_name ) {
+			return;
+		}
+
 		$is_valid_profile = $this->container[ Client::SPEEDY_PROFILE ]->check_credentials( true );
 
 		nashenski_set_option( 'speedy', 'is_valid_profile', $is_valid_profile );

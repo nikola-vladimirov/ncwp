@@ -23,11 +23,18 @@ class Labels {
 	 * Generate label from listing page callback.
 	 */
 	public static function generate_label_from_listing_page_callback() {
-		nashenski_check_admin_label_actions();
+		// The order screen label tools: the nonce first, then the right to manage the store, each on its own.
+		if ( ! isset( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'nashenski_admin_label' ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page has expired. Reload it and try again.', 'nashenski-commerce' ) ) );
+		}
 
-		$order_id = nashenski_label_request( 'orderId' );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You cannot create labels.', 'nashenski-commerce' ) ) );
+		}
+
+		$order    = nashenski_label_order();
+		$order_id = $order->get_id();
 		$method   = nashenski_label_request( 'method' );
-		$order    = wc_get_order( $order_id );
 
 		$result = null;
 

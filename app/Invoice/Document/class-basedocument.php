@@ -682,37 +682,36 @@ class BaseDocument {
 	}
 
 	/**
-	 * The logo file with its size, fitted to the logo box. Dompdf reads the file from the disk
-	 * (PDF::allow_folder() lets it open the logo's folder), so the PDF never loads files over the web.
+	 * The logo with its size, fitted to the logo box. Dompdf prints it from a copy in the plugin's
+	 * cache folder in uploads, named by the file name alone (PDF::generate() resolves names against
+	 * that folder), so the PDF never loads files over the web, a path with spaces or a file kept
+	 * outside the server (s3:// and the like) works, and the name is safe in a URL.
 	 */
 	public static function get_logo_img() {
 		$id   = self::get_logo_id();
 		$file = $id ? (string) get_attached_file( $id ) : '';
 
-		// Media kept outside the server (s3:// and the like): Dompdf opens local files only, so the logo is copied into the plugin's cache folder in uploads.
-		if ( '' !== $file && wp_is_stream( $file ) ) {
-			// Named after the file and the time the attachment last changed, so a replaced logo gets a new copy.
-			$copy = File::cache_folder( 'logo' ) . md5( $file . '|' . get_post_field( 'post_modified_gmt', $id ) ) . '-' . sanitize_file_name( wp_basename( $file ) );
-			$svg  = 'image/svg+xml' === wp_check_filetype( $copy )['type'];
-
-			// Fetched when there is no copy yet, and again when the copy is not an image (a download that was cut short).
-			if ( ! is_readable( $copy ) || ( ! $svg && ! wp_getimagesize( $copy ) ) ) {
-				$data = (string) File::get_file( $file );
-
-				if ( '' === $data || ! wp_mkdir_p( dirname( $copy ) ) || ! File::put_to_file( $copy, $data ) ) {
-					return array();
-				}
-			}
-
-			$file = $copy;
-		}
-
-		if ( ! $file || ! is_readable( $file ) ) {
+		if ( '' === $file ) {
 			return array();
 		}
 
-		$type                  = wp_check_filetype( $file );
-		$size                  = 'image/svg+xml' === $type['type'] ? false : wp_getimagesize( $file );
+		// The copy is named after the file, the time the attachment last changed and, for a local file, the time the file did: a replaced logo gets a new copy.
+		$local = ! wp_is_stream( $file );
+		$stamp = $local && is_readable( $file ) ? (string) filemtime( $file ) : '';
+		$type  = strtolower( (string) pathinfo( wp_basename( $file ), PATHINFO_EXTENSION ) );
+		$name  = md5( $file . '|' . get_post_field( 'post_modified_gmt', $id ) . '|' . $stamp ) . ( preg_match( '/^[a-z0-9]{2,5}$/', $type ) ? '.' . $type : '' );
+		$copy  = File::cache_folder( 'logo' ) . $name;
+
+		// Made when there is no copy yet, and again when the copy is not an image (a download that was cut short).
+		if ( ! is_readable( $copy ) || ( 'svg' !== $type && ! wp_getimagesize( $copy ) ) ) {
+			$data = $local && ! is_readable( $file ) ? '' : (string) File::get_file( $file );
+
+			if ( '' === $data || ! wp_mkdir_p( dirname( $copy ) ) || ! File::put_to_file( $copy, $data ) ) {
+				return array();
+			}
+		}
+
+		$size                  = 'svg' === $type ? false : wp_getimagesize( $copy );
 		list( $box_w, $box_h ) = \Nashenski\Invoice\PDF\Style::logo_box();
 		$width                 = 0;
 
@@ -722,12 +721,10 @@ class BaseDocument {
 			$box_h = round( $size[1] * $scale );
 		}
 
-		// Forward slashes: Dompdf reads the path as a URL.
-		$file = wp_normalize_path( $file );
-		PDF::allow_folder( dirname( $file ) );
+		PDF::allow_folder( dirname( $copy ) );
 
 		return array(
-			'src'    => $file,
+			'src'    => $name,
 			'width'  => $width,
 			'height' => $box_h,
 		);
@@ -766,10 +763,9 @@ class BaseDocument {
 		$details = $this->get_site_details();
 
 		if ( $logo ) {
-			// Not wp_kses: its regex fails on a multi-megabyte data URI and prints nothing.
 			printf(
 				'<img class="site-logo" src="%1$s"%2$s height="%3$d" alt="">',
-				esc_attr( $logo['src'] ),
+				esc_url( $logo['src'] ),
 				$logo['width'] ? ' width="' . absint( $logo['width'] ) . '"' : '',
 				absint( $logo['height'] )
 			);
