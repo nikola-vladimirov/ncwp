@@ -668,6 +668,6 @@ class Method extends \WC_Shipping_Method {
 		$track_number_text = implode( '<br>', $track_numbers );
 		$track_number_text = \Nashenski\Hooks::filter( 'nashenski_boxnow_track_number_text_in_email', 'nashenski/boxnow/track_number_text_in_email', $track_number_text, $order );
 
-		echo wp_kses_post( wpautop( $track_number_text ) );
+		echo $plain_text ? esc_html( nashenski_plain_email_text( $track_number_text ) ) . "\n\n" : wp_kses_post( wpautop( $track_number_text ) );
 	}
 }

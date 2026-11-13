@@ -500,7 +500,12 @@ class Method extends \WC_Shipping_Method {
 			} else {
 				$data['errors'] = $request['error']['message'];
 			}
-		} elseif ( isset( $request['calculations'] ) ) {
+		} elseif ( ! isset( $request['calculations'][0]['price']['total'], $request['calculations'][0]['price']['amount'] ) ) {
+			// A reply without a price is an error, never a free delivery (one that is free anyway needs no price).
+			if ( ! $this->free_shipping ) {
+				$data['errors'] = __( 'Calculation failed. Please try again.', 'nashenski-commerce' );
+			}
+		} else {
 			$calc_data                 = $request['calculations'][0];
 			$data['price_with_vat']    = number_format( $calc_data['price']['total'], 2 );
 			$data['price_without_vat'] = number_format( $calc_data['price']['amount'], 2 );
@@ -1345,6 +1350,6 @@ class Method extends \WC_Shipping_Method {
 
 		$track_number_text = \Nashenski\Hooks::filter( 'nashenski_speedy_track_number_text_in_email', 'nashenski/speedy/track_number_text_in_email', $track_number_text, $url, $order );
 
-		echo wp_kses_post( wpautop( $track_number_text ) );
+		echo $plain_text ? esc_html( nashenski_plain_email_text( $track_number_text ) ) . "\n\n" : wp_kses_post( wpautop( $track_number_text ) );
 	}
 }

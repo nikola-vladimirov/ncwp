@@ -154,7 +154,7 @@ class Nekorekten extends Provider_Base {
 					</p>
 					<p>
 						<button type="submit" class="button" name="nashenski_nk_edit" value="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Save report', 'nashenski-commerce' ); ?></button>
-						<button type="submit" class="button button-link-delete" name="nashenski_nk_delete" value="<?php echo esc_attr( $id ); ?>" onclick="return confirm( <?php echo esc_attr( wp_json_encode( __( 'Delete this report from nekorekten.com?', 'nashenski-commerce' ) ) ); ?> );"><?php esc_html_e( 'Delete report', 'nashenski-commerce' ); ?></button>
+						<button type="submit" class="button button-link-delete" name="nashenski_nk_delete" value="<?php echo esc_attr( $id ); ?>" data-nashenski-confirm="<?php esc_attr_e( 'Delete this report from nekorekten.com?', 'nashenski-commerce' ); ?>"><?php esc_html_e( 'Delete report', 'nashenski-commerce' ); ?></button>
 					</p>
 				</div>
 			<?php endforeach; ?>

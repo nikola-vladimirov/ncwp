@@ -97,7 +97,7 @@ class Documents {
 					self::generate_refunded_documents( $refund->get_id(), $refund->get_parent_id() );
 				}
 			}
-		} catch ( \Exception $e ) {
+		} catch ( \Throwable $e ) {
 			wc_get_logger()->error( 'Documents for order #' . $order_id . ' were not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
 			try { // The note must not throw out of the hook either.
 				/* translators: %s: the error message */
@@ -157,7 +157,7 @@ class Documents {
 			if ( self::documents_on() && self::maybe_generate_proforma( $order ) && $order->get_payment_method() === 'bacs' && ! self::paused( $order ) ) {
 				( new Document\Proforma( $order ) )->generate_file();
 			}
-		} catch ( \Exception $e ) {
+		} catch ( \Throwable $e ) {
 			wc_get_logger()->error( 'Proforma for order #' . $order_id . ' was not generated: ' . $e->getMessage(), array( 'source' => 'nashenski' ) );
 			try { // The note must not throw out of the hook either.
 				/* translators: %s: the error message */

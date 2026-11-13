@@ -146,13 +146,9 @@ class Reports {
 	 */
 	public static function meta_box( $post_or_order ) {
 		$theorder = $post_or_order instanceof \WC_Order ? $post_or_order : wc_get_order( $post_or_order->ID );
-		$post     = $post_or_order instanceof \WP_Post ? $post_or_order : get_post( $theorder->get_id() );
 		?>
 		<div class="panel-wrap woocommerce">
-			<input name="post_title" type="hidden" value="<?php echo empty( $post->post_title ) ? esc_attr_x( 'Order', 'a store order', 'nashenski-commerce' ) : esc_attr( $post->post_title ); ?>" />
-			<input name="post_status" type="hidden" value="<?php echo esc_attr( $post ? $post->post_status : '' ); ?>" />
-
-			<div id="order_data" class="panel woocommerce-order-data">
+			<div class="panel woocommerce-order-data nashenski-reports-data">
 				<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'nashenski--reports-refresh', 1 ), 'nashenski_reports_refresh', 'nashenski_reports_nonce' ) ); ?>"><?php esc_html_e( 'Refresh data', 'nashenski-commerce' ); ?></a>
 
 				<?php if ( self::missing_logins() ) : ?>

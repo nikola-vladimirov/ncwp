@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * Plugin.
  */
 class Plugin {
-	const VERSION = '0.21.10';
+	const VERSION = '0.21.11';
 
 	/** Cron hook: the one-off 0.21.8 job that turns "Remove delivery from documents" into "Is ... courier?". */
 	const REMOVE_SHIPPING_JOB = 'nashenski/upgrade/remove_shipping';
@@ -431,35 +431,30 @@ class Plugin {
 	}
 
 	/**
-	 * Robots txt.
+	 * Keeps crawlers out of the folder documents were public in before 0.11.1. The plugin's own
+	 * folder stays open: search engines need its CSS and JS to render the checkout.
 	 *
 	 * @param mixed $output Output.
 	 * @return mixed Result.
 	 */
 	public static function robots_txt( $output ) {
-		$plugin_dir_url = str_replace( site_url(), '', nashenski()->plugin_dir_url() );
-		$upload_dir     = wp_upload_dir();
-		$upload_dir     = str_replace( site_url(), '', $upload_dir['baseurl'] );
+		$upload_dir = wp_upload_dir();
+		// The path from the domain root, which is what robots.txt reads (WordPress may live in a subfolder).
+		$path = (string) wp_parse_url( $upload_dir['baseurl'], PHP_URL_PATH );
 
 		$output .= "\n";
-		$output .= 'Disallow: ' . $plugin_dir_url . "\n";
-		$output .= 'Disallow: ' . $upload_dir . "/nashenski/\n";
+		$output .= 'Disallow: ' . $path . '/' . Document_Storage::LEGACY_SUBDIR . "/\n";
 
 		return $output;
 	}
 
 	/**
-	 * Exclude pdf from rest.
+	 * Keeps the private documents out of the REST media list. The site's own PDF, XML and text files stay listed.
 	 *
 	 * @param mixed $args Args.
 	 * @return mixed Result.
 	 */
 	public static function exclude_pdf_from_rest( $args ) {
-		$unsupported_mimes      = array( 'application/pdf', 'application/xml', 'text/plain' );
-		$all_mimes              = get_allowed_mime_types();
-		$accepted_mimes         = array_diff( $all_mimes, $unsupported_mimes );
-		$args['post_mime_type'] = $accepted_mimes;
-
-		return $args;
+		return Document_Storage::hide_from_media_grid( $args );
 	}
 }

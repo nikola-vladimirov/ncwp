@@ -41,6 +41,9 @@ class Tracker {
 	const CACHE_GROUP = 'nashenski_carts';
 	const CACHE_TTL   = HOUR_IN_SECONDS;
 
+	/** Option with the SHA-256 hashes of the unsubscribed emails: they outlive the cart rows, and no address is kept. */
+	const UNSUBSCRIBED_OPTION = 'nashenski_carts_unsubscribed';
+
 	/** Reminders are not sent between these hours (site time). */
 	const QUIET_FROM = 22;
 	const QUIET_TO   = 8;
@@ -270,22 +273,21 @@ class Tracker {
 			return;
 		}
 
+		global $wpdb;
+		$table = self::table();
+
 		if ( WC()->cart->is_empty() ) {
-			self::mark_emptied();
+			// WooCommerce fires cart_updated on every page view of a visitor with an empty cart: write only when this session has a cart row.
+			$has_session = ! is_callable( array( WC()->session, 'has_session' ) ) || WC()->session->has_session();
+
+			if ( $has_session && self::session_row( $key ) ) {
+				self::mark_emptied();
+			}
 
 			return;
 		}
 
-		global $wpdb;
-		$table = self::table();
-		$cache = self::cache_key( 'session', $key );
-		$id    = wp_cache_get( $cache, self::CACHE_GROUP );
-
-		if ( false === $id ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
-			$id = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM %i WHERE session_key = %s', $table, $key ) );
-			wp_cache_set( $cache, $id, self::CACHE_GROUP, self::CACHE_TTL );
-		}
+		$id = self::session_row( $key );
 
 		if ( $id ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
@@ -305,6 +307,27 @@ class Tracker {
 		}
 
 		wp_cache_delete( 'last_changed', self::CACHE_GROUP );
+	}
+
+	/**
+	 * The id of the cart row of a session, 0 when it has none.
+	 *
+	 * @param string $key Session key.
+	 * @return int
+	 */
+	private static function session_row( $key ) {
+		global $wpdb;
+
+		$cache = self::cache_key( 'session', $key );
+		$id    = wp_cache_get( $cache, self::CACHE_GROUP );
+
+		if ( false === $id ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+			$id = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT id FROM %i WHERE session_key = %s', self::table(), $key ) );
+			wp_cache_set( $cache, $id, self::CACHE_GROUP, self::CACHE_TTL );
+		}
+
+		return (int) $id;
 	}
 
 	/**
@@ -504,6 +527,21 @@ class Tracker {
 			// ponytail: the wait runs from the last cart change, not the first abandonment; add a column when that matters.
 			$due = strtotime( $row->last_activity . ' UTC' ) + $steps[ (int) $row->emails_sent ] * HOUR_IN_SECONDS;
 
+			// Unsubscribed earlier, and that cart row is already cleaned up: this cart gets the status too.
+			if ( self::is_unsubscribed( $row->email ) ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
+				$wpdb->update(
+					$table,
+					array(
+						'status'      => 'unsubscribed',
+						'session_key' => null,
+					),
+					array( 'id' => (int) $row->id )
+				);
+				wp_cache_delete( 'last_changed', self::CACHE_GROUP );
+				continue;
+			}
+
 			if ( time() < $due || ! self::send( $row ) ) {
 				continue;
 			}
@@ -521,7 +559,7 @@ class Tracker {
 		$row = self::get_row( $id );
 
 		// Only open carts: a shopper who ordered, emptied the cart or unsubscribed is not reminded, not even by hand.
-		if ( ! $row || 'open' !== $row->status || ! is_email( $row->email ) ) {
+		if ( ! $row || 'open' !== $row->status || ! is_email( $row->email ) || self::is_unsubscribed( $row->email ) ) {
 			return false;
 		}
 
@@ -571,7 +609,8 @@ class Tracker {
 		$total = html_entity_decode( wp_strip_all_tags( wc_price( $row->cart_total, array( 'currency' => $row->currency ) ) ), ENT_QUOTES, 'UTF-8' );
 
 		return array(
-			'name'             => '' !== $row->first_name ? $row->first_name : __( 'there', 'nashenski-commerce' ),
+			// The name is typed by anyone at checkout: no web addresses in a mail the shop sends.
+			'name'             => '' !== nashenski_strip_urls( $row->first_name ) ? nashenski_strip_urls( $row->first_name ) : __( 'there', 'nashenski-commerce' ),
 			'items'            => implode( "\n", $lines ),
 			'cart_total'       => $total,
 			'coupon'           => $coupon,
@@ -856,6 +895,14 @@ class Tracker {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- the plugin's own carts table; WordPress has no API for it.
 			$wpdb->query( $wpdb->prepare( 'UPDATE %i SET status = %s, session_key = NULL WHERE (email = %s AND status = %s) OR token = %s', $table, 'unsubscribed', $email, 'open', $token ) );
 			wp_cache_delete( 'last_changed', self::CACHE_GROUP );
+
+			// The row is deleted after the retention period; the hash keeps the email unsubscribed.
+			$hashes = (array) get_option( self::UNSUBSCRIBED_OPTION, array() );
+
+			if ( ! in_array( self::email_hash( $email ), $hashes, true ) ) {
+				$hashes[] = self::email_hash( $email );
+				update_option( self::UNSUBSCRIBED_OPTION, $hashes, false );
+			}
 		}
 
 		// The same answer whether or not the token exists, so the link reveals nothing.
@@ -867,7 +914,28 @@ class Tracker {
 	}
 
 	/**
+	 * The hash an unsubscribed email is remembered by.
+	 *
+	 * @param string $email Email.
+	 * @return string
+	 */
+	private static function email_hash( $email ) {
+		return hash( 'sha256', strtolower( trim( (string) $email ) ) );
+	}
+
+	/**
+	 * Whether the email unsubscribed from the reminders, also after its cart rows were deleted.
+	 *
+	 * @param string $email Email.
+	 * @return bool
+	 */
+	public static function is_unsubscribed( $email ) {
+		return in_array( self::email_hash( $email ), (array) get_option( self::UNSUBSCRIBED_OPTION, array() ), true );
+	}
+
+	/**
 	 * Deletes carts whose last change is older than the retention setting. Runs even with the feature off.
+	 * Unsubscribed rows go too: UNSUBSCRIBED_OPTION keeps their emails unsubscribed.
 	 */
 	public static function clean_old() {
 		if ( ! get_option( self::DB_OPTION ) ) {
@@ -1042,6 +1110,7 @@ class Tracker {
 			__( 'A reminder coupon is made for the email of its cart and is deleted with the cart\'s personal data, unless it was already used on an order.', 'nashenski-commerce' ),
 			/* translators: %d: number of days */
 			sprintf( __( 'A cart is deleted %d days after its last change.', 'nashenski-commerce' ), self::retention_days() ),
+			__( 'When a shopper unsubscribes from the reminders, the store keeps a code made from the email, not the email itself, so no reminder goes to it again.', 'nashenski-commerce' ),
 			__( 'The courier the customer chooses (Econt, Speedy, BOX NOW or Pigeon Express) gets the delivery details when a delivery price or a waybill is made: name, phone, address, office or locker, the parcel and the cash on delivery amount.', 'nashenski-commerce' ),
 			__( 'When the customer opens the office map at checkout, the map page of Econt or Speedy loads with the town of the delivery. The Speedy map uses Google Maps.', 'nashenski-commerce' ),
 			__( 'When the store turns on customer checks, the phone number of the order is sent to the services it chose: nekorekten.com, Connectix or NepoStop. A report the store sends to nekorekten.com carries the name, phone and email of that order.', 'nashenski-commerce' ),

@@ -32,7 +32,10 @@ class ImpossibleVatPrice {
 	 * @param mixed $classes Classes.
 	 */
 	public static function add_body_class( $classes ) {
-		$classes .= ' woocommerce_nashenski-impossible-vat-price';
+		// Only where the admin script runs: the order and product screens and the scan page.
+		if ( wp_script_is( 'nashenski-js-admin', 'enqueued' ) ) {
+			$classes .= ' woocommerce_nashenski-impossible-vat-price';
+		}
 
 		return $classes;
 	}
@@ -55,6 +58,11 @@ class ImpossibleVatPrice {
 	 * Enqueue admin assets.
 	 */
 	public static function enqueue_admin_assets() {
+		// The data is for the admin script, which Plugin::admin_enqueue_scripts() loads on its screens only.
+		if ( ! wp_script_is( 'nashenski-js-admin', 'enqueued' ) ) {
+			return;
+		}
+
 		$vat_group       = nashenski_get_option( 'shop', 'vat_group' );
 		$vat_percentages = nashenski_get_vat_groups();
 		$rate            = ( isset( $vat_percentages[ $vat_group ] ) ) ? $vat_percentages[ $vat_group ] : 0;

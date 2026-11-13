@@ -169,7 +169,7 @@ class Export_Tab extends Base_Tab {
 		$generated_file = $export->get_file();
 
 		if ( is_wp_error( $generated_file ) ) {
-			wp_send_json_error( $generated_file, 400 );
+			wp_send_json_error( array( 'message' => $generated_file->get_error_message() ), 400 );
 		} elseif ( empty( $generated_file['documents'] ) ) {
 			wp_send_json_success(
 				array(

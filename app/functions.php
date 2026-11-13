@@ -1157,6 +1157,32 @@ function nashenski_is_different_shipping_address( $order ) {
 }
 
 /**
+ * A text typed by a shopper without web addresses ("http://...", "www...." and anything like
+ * "name.tld"), for mails the shop sends: nobody can make the shop mail a link to someone else.
+ *
+ * @param string $text Text.
+ * @return string
+ */
+function nashenski_strip_urls( $text ) {
+	// A bare domain is Latin with at least three characters before the first dot ("evil.com", "Evil.COM"),
+	// so initials such as "Д.Петров", "Mr.Smith" or "J.R.R." stay.
+	return trim( (string) preg_replace( '~(?:https?://|www\.)\S*|(?<![\p{L}\p{N}.])(?:[^\s@]+@)?[a-z0-9-]{3,}(?:\.[a-z0-9-]+)*\.[a-z]{2,24}\b\S*~iu', '', (string) $text ) );
+}
+
+/**
+ * A short HTML text for a plain text email: no tags, each link as its text and then its address.
+ *
+ * @param string $html HTML.
+ * @return string
+ */
+function nashenski_plain_email_text( $html ) {
+	$html = preg_replace( '~<br\s*/?>~i', "\n", (string) $html );
+	$html = preg_replace( '~<a\s[^>]*href="([^"]*)"[^>]*>(.*?)</a>~is', '$2 $1', (string) $html );
+
+	return trim( wp_strip_all_tags( (string) $html ) );
+}
+
+/**
  * A street without its "ул.", "бул." and similar prefix.
  *
  * @param string $street Street.

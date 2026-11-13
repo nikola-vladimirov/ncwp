@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Nashenski Commerce 0.21.10\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nashenski-commerce\n"
-"POT-Creation-Date: 2026-11-13 12:30+0000\n"
-"PO-Revision-Date: 2026-11-13 12:30+0000\n"
+"POT-Creation-Date: 2026-11-13 13:28+0000\n"
+"PO-Revision-Date: 2026-11-13 13:28+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -50,151 +50,155 @@ msgstr ""
 msgid "The body of the reminder. Placeholders: {name}, {items}, {cart_total}, {coupon}, {coupon_line} (the whole sentence about the coupon, empty when there is none), {resume_link}, {unsubscribe_link}, {site_title}. Each line becomes a paragraph."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:152
+#: app/Abandoned_Carts/class-tracker.php:155
 msgid "Percentage off"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:153
+#: app/Abandoned_Carts/class-tracker.php:156
 msgid "Fixed amount off the cart"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:154
+#: app/Abandoned_Carts/class-tracker.php:157
 msgid "Fixed amount off each product"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:574
+#: app/Abandoned_Carts/class-tracker.php:613
 msgid "there"
 msgstr ""
 
 #. translators: %s: coupon code
-#: app/Abandoned_Carts/class-tracker.php:580
+#: app/Abandoned_Carts/class-tracker.php:619
 #, php-format
 msgid "Use the code %s when you order. It works once."
 msgstr ""
 
 #. translators: %s: shopper's first name
-#: app/Abandoned_Carts/class-tracker.php:599
+#: app/Abandoned_Carts/class-tracker.php:638
 #, php-format
 msgid "Hello %s,"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:601
+#: app/Abandoned_Carts/class-tracker.php:640
 msgid "You left these items in your cart:"
 msgstr ""
 
 #. translators: %s: cart total, with the currency
-#: app/Abandoned_Carts/class-tracker.php:605
+#: app/Abandoned_Carts/class-tracker.php:644
 #, php-format
 msgid "Total: %s"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:614
+#: app/Abandoned_Carts/class-tracker.php:653
 msgid "Go back to your cart:"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:617
+#: app/Abandoned_Carts/class-tracker.php:656
 msgid "Do not want these emails? Unsubscribe here:"
 msgstr ""
 
 #. translators: %s: site name
-#: app/Abandoned_Carts/class-tracker.php:623
+#: app/Abandoned_Carts/class-tracker.php:662
 #, php-format
 msgid "You left items in your cart at %s"
 msgstr ""
 
 #. translators: %s: shopper's email
-#: app/Abandoned_Carts/class-tracker.php:714
+#: app/Abandoned_Carts/class-tracker.php:753
 #, php-format
 msgid "Abandoned cart coupon for %s"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:816
+#: app/Abandoned_Carts/class-tracker.php:855
 msgid "We put the items back in your cart."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:818
+#: app/Abandoned_Carts/class-tracker.php:857
 msgid "The items from the reminder are no longer available."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:863
+#: app/Abandoned_Carts/class-tracker.php:910
 msgid "You will not get more reminders from this shop."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:864 app/Admin/class-abandoned-carts-page.php:72
+#: app/Abandoned_Carts/class-tracker.php:911 app/Admin/class-abandoned-carts-page.php:72
 msgid "Unsubscribed"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:898 app/Abandoned_Carts/class-tracker.php:913 app/Abandoned_Carts/class-tracker.php:966 app/Admin/class-abandoned-carts-page.php:56 app/Admin/class-abandoned-carts-page.php:57 app/Admin/class-abandoned-carts-page.php:268
+#: app/Abandoned_Carts/class-tracker.php:966 app/Abandoned_Carts/class-tracker.php:981 app/Abandoned_Carts/class-tracker.php:1034 app/Admin/class-abandoned-carts-page.php:56 app/Admin/class-abandoned-carts-page.php:57 app/Admin/class-abandoned-carts-page.php:268
 msgid "Abandoned carts"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:942 app/Admin/class-abandoned-carts-page.php:469 app/Export/Builder/class-fields.php:63 app/Front_End/Checkout/class-field-editor.php:866 app/Front_End/class-quick-order.php:488
+#: app/Abandoned_Carts/class-tracker.php:1010 app/Admin/class-abandoned-carts-page.php:469 app/Export/Builder/class-fields.php:63 app/Front_End/Checkout/class-field-editor.php:866 app/Front_End/class-quick-order.php:488
 msgid "Email"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:943 app/Admin/class-abandoned-carts-page.php:473 app/Export/Builder/class-fields.php:61 app/Front_End/Checkout/class-field-editor.php:172
+#: app/Abandoned_Carts/class-tracker.php:1011 app/Admin/class-abandoned-carts-page.php:473 app/Export/Builder/class-fields.php:61 app/Front_End/Checkout/class-field-editor.php:172
 msgid "First name"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:944 app/Admin/class-abandoned-carts-page.php:477 app/Admin/Tabs/class-boxnow-tab.php:93 app/Admin/Tabs/class-econt-tab.php:108 app/Admin/Tabs/class-speedy-tab.php:87 app/Export/Builder/class-fields.php:64
+#: app/Abandoned_Carts/class-tracker.php:1012 app/Admin/class-abandoned-carts-page.php:477 app/Admin/Tabs/class-boxnow-tab.php:93 app/Admin/Tabs/class-econt-tab.php:108 app/Admin/Tabs/class-speedy-tab.php:87 app/Export/Builder/class-fields.php:64
 msgid "Phone"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:945 app/Admin/class-abandoned-carts-page.php:370 app/Front_End/class-quick-order.php:89
+#: app/Abandoned_Carts/class-tracker.php:1013 app/Admin/class-abandoned-carts-page.php:370 app/Front_End/class-quick-order.php:89
 msgid "Cart"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:946
+#: app/Abandoned_Carts/class-tracker.php:1014
 msgid "Cart total"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:947 app/Export/Builder/class-fields.php:51
+#: app/Abandoned_Carts/class-tracker.php:1015 app/Export/Builder/class-fields.php:51
 msgid "Currency"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:948 app/Admin/class-abandoned-carts-page.php:336 app/Admin/class-impossiblevatprice.php:174 app/Export/Builder/class-fields.php:47
+#: app/Abandoned_Carts/class-tracker.php:1016 app/Admin/class-abandoned-carts-page.php:336 app/Admin/class-impossiblevatprice.php:182 app/Export/Builder/class-fields.php:47
 msgid "Status"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:949
+#: app/Abandoned_Carts/class-tracker.php:1017
 msgid "Created"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:950
+#: app/Abandoned_Carts/class-tracker.php:1018
 msgid "Last activity"
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:1027
+#: app/Abandoned_Carts/class-tracker.php:1095
 msgid "Cart reminder coupons already used on an order are kept for the store's accounts."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:1041
+#: app/Abandoned_Carts/class-tracker.php:1109
 msgid "When abandoned carts are on, the store keeps the email, first name, phone and cart of shoppers who start the checkout and do not order. They are used only to send cart reminder emails."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:1042
+#: app/Abandoned_Carts/class-tracker.php:1110
 msgid "A reminder coupon is made for the email of its cart and is deleted with the cart's personal data, unless it was already used on an order."
 msgstr ""
 
 #. translators: %d: number of days
-#: app/Abandoned_Carts/class-tracker.php:1044
+#: app/Abandoned_Carts/class-tracker.php:1112
 #, php-format
 msgid "A cart is deleted %d days after its last change."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:1045
+#: app/Abandoned_Carts/class-tracker.php:1113
+msgid "When a shopper unsubscribes from the reminders, the store keeps a code made from the email, not the email itself, so no reminder goes to it again."
+msgstr ""
+
+#: app/Abandoned_Carts/class-tracker.php:1114
 msgid "The courier the customer chooses (Econt, Speedy, BOX NOW or Pigeon Express) gets the delivery details when a delivery price or a waybill is made: name, phone, address, office or locker, the parcel and the cash on delivery amount."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:1046
+#: app/Abandoned_Carts/class-tracker.php:1115
 msgid "When the customer opens the office map at checkout, the map page of Econt or Speedy loads with the town of the delivery. The Speedy map uses Google Maps."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:1047
+#: app/Abandoned_Carts/class-tracker.php:1116
 msgid "When the store turns on customer checks, the phone number of the order is sent to the services it chose: nekorekten.com, Connectix or NepoStop. A report the store sends to nekorekten.com carries the name, phone and email of that order."
 msgstr ""
 
-#: app/Abandoned_Carts/class-tracker.php:1048
+#: app/Abandoned_Carts/class-tracker.php:1117
 msgid "A VAT number a company types at checkout is sent to the VIES service of the European Commission to be checked."
 msgstr ""
 
@@ -272,7 +276,7 @@ msgstr ""
 msgid "Reminders"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:337 app/Admin/class-impossiblevatprice.php:175
+#: app/Admin/class-abandoned-carts-page.php:337 app/Admin/class-impossiblevatprice.php:183
 msgid "Actions"
 msgstr ""
 
@@ -284,7 +288,7 @@ msgstr ""
 msgid "Checkout"
 msgstr ""
 
-#: app/Admin/class-abandoned-carts-page.php:386 app/Admin/class-impossiblevatprice.php:97
+#: app/Admin/class-abandoned-carts-page.php:386 app/Admin/class-impossiblevatprice.php:105
 msgid "Edit"
 msgstr ""
 
@@ -414,7 +418,7 @@ msgstr ""
 msgid "Selected"
 msgstr ""
 
-#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:201 app/Admin/Order/class-delivery-box.php:207 app/Front_End/Checkout/class-pickers.php:603
+#: app/Admin/class-boxnow.php:135 app/Admin/class-econt.php:134 app/Admin/class-pigeon.php:278 app/Admin/class-speedy.php:201 app/Admin/Order/class-delivery-box.php:207 app/Front_End/Checkout/class-pickers.php:608
 msgid "Choose"
 msgstr ""
 
@@ -592,27 +596,27 @@ msgstr ""
 msgid "Street number"
 msgstr ""
 
-#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:596 app/Shipping/Econt/class-address.php:47
+#: app/Admin/class-econt.php:142 app/Admin/class-speedy.php:209 app/Front_End/Checkout/class-pickers.php:601 app/Shipping/Econt/class-address.php:47
 msgid "Block"
 msgstr ""
 
-#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:210 app/Front_End/Checkout/class-pickers.php:597 app/Shipping/Econt/class-address.php:48
+#: app/Admin/class-econt.php:143 app/Admin/class-speedy.php:210 app/Front_End/Checkout/class-pickers.php:602 app/Shipping/Econt/class-address.php:48
 msgid "Entrance"
 msgstr ""
 
-#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:211 app/Front_End/Checkout/class-pickers.php:598 app/Shipping/Econt/class-address.php:49
+#: app/Admin/class-econt.php:144 app/Admin/class-speedy.php:211 app/Front_End/Checkout/class-pickers.php:603 app/Shipping/Econt/class-address.php:49
 msgid "Floor"
 msgstr ""
 
-#: app/Admin/class-econt.php:145 app/Admin/class-speedy.php:212 app/Front_End/Checkout/class-pickers.php:599 app/Shipping/Econt/class-address.php:50
+#: app/Admin/class-econt.php:145 app/Admin/class-speedy.php:212 app/Front_End/Checkout/class-pickers.php:604 app/Shipping/Econt/class-address.php:50
 msgid "Apartment"
 msgstr ""
 
-#: app/Admin/class-econt.php:146 app/Shipping/Econt/class-method.php:1007
+#: app/Admin/class-econt.php:146 app/Shipping/Econt/class-method.php:1012
 msgid "Street number is required."
 msgstr ""
 
-#: app/Admin/class-econt.php:147 app/Shipping/Econt/class-method.php:1009
+#: app/Admin/class-econt.php:147 app/Shipping/Econt/class-method.php:1014
 msgid "Fill in at least one of block, entrance, floor or apartment."
 msgstr ""
 
@@ -728,7 +732,7 @@ msgstr ""
 msgid "This option tells the plugin which of your tax classes are for digital goods. This affects the taxable location of the user as of 1st Jan 2015."
 msgstr ""
 
-#: app/Admin/class-eu-vat.php:75 app/Admin/class-eu-vat.php:129 app/Export/Builder/class-fields.php:81 app/Front_End/Checkout/class-company-fields.php:108 app/Front_End/Checkout/class-eu-vat.php:131 app/Front_End/Checkout/class-eu-vat.php:333
+#: app/Admin/class-eu-vat.php:75 app/Admin/class-eu-vat.php:129 app/Export/Builder/class-fields.php:81 app/Front_End/Checkout/class-company-fields.php:108 app/Front_End/Checkout/class-eu-vat.php:133 app/Front_End/Checkout/class-eu-vat.php:386
 msgid "VAT number"
 msgstr ""
 
@@ -748,7 +752,7 @@ msgstr ""
 msgid "IP Address"
 msgstr ""
 
-#: app/Admin/class-eu-vat.php:144 app/Admin/class-eu-vat.php:162 app/Admin/class-eu-vat.php:169
+#: app/Admin/class-eu-vat.php:144 app/Admin/class-eu-vat.php:162 app/Admin/class-eu-vat.php:170
 msgid "Unknown"
 msgstr ""
 
@@ -760,7 +764,7 @@ msgstr ""
 msgid "(self-declared)"
 msgstr ""
 
-#: app/Admin/class-eu-vat.php:168
+#: app/Admin/class-eu-vat.php:169
 msgid "Billing Country"
 msgstr ""
 
@@ -1516,7 +1520,7 @@ msgstr ""
 msgid "Requests show in the orders list (\"Withdrawal\" column) and on the order, with everything the customer submitted."
 msgstr ""
 
-#: app/Admin/class-help-page.php:226 app/Admin/class-settings-page.php:176 app/Admin/Tabs/class-settings-tab.php:72 app/Reports/class-reports.php:167
+#: app/Admin/class-help-page.php:226 app/Admin/class-settings-page.php:176 app/Admin/Tabs/class-settings-tab.php:72 app/Reports/class-reports.php:163
 msgid "Customer checks"
 msgstr ""
 
@@ -1548,7 +1552,7 @@ msgstr ""
 msgid "Connectix and NepoStop can also get tracking information or labels from your orders. Both are optional."
 msgstr ""
 
-#: app/Admin/class-help-page.php:235 app/Admin/class-impossiblevatprice.php:46 app/Admin/class-impossiblevatprice.php:47 app/Admin/class-impossiblevatprice.php:128
+#: app/Admin/class-help-page.php:235 app/Admin/class-impossiblevatprice.php:49 app/Admin/class-impossiblevatprice.php:50 app/Admin/class-impossiblevatprice.php:136
 msgid "Mathematically impossible prices"
 msgstr ""
 
@@ -1899,236 +1903,236 @@ msgstr ""
 msgid "Cancelled order document"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1593 app/Admin/class-settings-page.php:855 app/Admin/class-setup-wizard.php:690 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:569
+#: app/Admin/class-import-sources.php:1603 app/Admin/class-settings-page.php:855 app/Admin/class-setup-wizard.php:690 app/Admin/Order/class-courier-info.php:42 app/Front_End/Checkout/class-pickers.php:574
 msgid "To an office"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1594 app/Admin/class-import-sources.php:1595 app/Admin/class-setup-wizard.php:691 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
+#: app/Admin/class-import-sources.php:1604 app/Admin/class-import-sources.php:1605 app/Admin/class-setup-wizard.php:691 app/Admin/Order/class-courier-info.php:43 app/Admin/Order/class-courier-info.php:44 app/Admin/Order/class-courier-info.php:45
 msgid "To a parcel locker"
 msgstr ""
 
-#: app/Admin/class-import-sources.php:1596 app/Admin/class-settings-page.php:857 app/Admin/class-setup-wizard.php:692 app/Admin/Order/class-courier-info.php:46
+#: app/Admin/class-import-sources.php:1606 app/Admin/class-settings-page.php:857 app/Admin/class-setup-wizard.php:692 app/Admin/Order/class-courier-info.php:46
 msgid "To an address"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:79
+#: app/Admin/class-impossiblevatprice.php:87
 msgid "This price is mathematically impossible with the current VAT."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:80
+#: app/Admin/class-impossiblevatprice.php:88
 msgid "Nearest possible price:"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:81
+#: app/Admin/class-impossiblevatprice.php:89
 msgid "Correct"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:82
+#: app/Admin/class-impossiblevatprice.php:90
 msgid "The price was corrected. Save the product."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:83
+#: app/Admin/class-impossiblevatprice.php:91
 msgid "Preparing..."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:84 app/Admin/class-impossiblevatprice.php:156
+#: app/Admin/class-impossiblevatprice.php:92 app/Admin/class-impossiblevatprice.php:164
 msgid "Not started."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:85 app/Admin/class-impossiblevatprice.php:147
+#: app/Admin/class-impossiblevatprice.php:93 app/Admin/class-impossiblevatprice.php:155
 msgid "Scan products"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:86
+#: app/Admin/class-impossiblevatprice.php:94
 msgid "Scanning..."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:87
+#: app/Admin/class-impossiblevatprice.php:95
 msgid "An error occurred during scanning."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:88
+#: app/Admin/class-impossiblevatprice.php:96
 msgid "AJAX error during scanning."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:89
+#: app/Admin/class-impossiblevatprice.php:97
 msgid "Scanning finished."
 msgstr ""
 
 #. translators: 1: current page, 2: number of pages
-#: app/Admin/class-impossiblevatprice.php:91
+#: app/Admin/class-impossiblevatprice.php:99
 #, php-format
 msgid "Scanning... page %1$s of %2$s"
 msgstr ""
 
 #. translators: 1: products checked, 2: products with a problem
-#: app/Admin/class-impossiblevatprice.php:93
+#: app/Admin/class-impossiblevatprice.php:101
 #, php-format
 msgid "Checked: %1$s | Problematic: %2$s"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:94 app/Admin/class-impossiblevatprice.php:148
+#: app/Admin/class-impossiblevatprice.php:102 app/Admin/class-impossiblevatprice.php:156
 msgid "Fix all"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:95 app/Admin/class-impossiblevatprice.php:110
+#: app/Admin/class-impossiblevatprice.php:103 app/Admin/class-impossiblevatprice.php:118
 msgid "Fixing..."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:96
+#: app/Admin/class-impossiblevatprice.php:104
 msgid "Fix"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:98
+#: app/Admin/class-impossiblevatprice.php:106
 msgid "Problematic"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:99
+#: app/Admin/class-impossiblevatprice.php:107
 msgid "Fixed"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:100
+#: app/Admin/class-impossiblevatprice.php:108
 msgid "Missing target price"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:101
+#: app/Admin/class-impossiblevatprice.php:109
 msgid "AJAX error"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:102
+#: app/Admin/class-impossiblevatprice.php:110
 msgid "Error"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:103
+#: app/Admin/class-impossiblevatprice.php:111
 msgid "No problematic prices found."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:104
+#: app/Admin/class-impossiblevatprice.php:112
 msgid "No problematic prices remain."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:105
+#: app/Admin/class-impossiblevatprice.php:113
 msgid "There are no rows to fix."
 msgstr ""
 
 #. translators: 1: prices fixed so far, 2: prices to fix
-#: app/Admin/class-impossiblevatprice.php:107
+#: app/Admin/class-impossiblevatprice.php:115
 #, php-format
 msgid "Fixing all... %1$s / %2$s"
 msgstr ""
 
 #. translators: 1: prices fixed, 2: prices not fixed
-#: app/Admin/class-impossiblevatprice.php:109
+#: app/Admin/class-impossiblevatprice.php:117
 #, php-format
 msgid "Fixed: %1$s | Not fixed: %2$s"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:122
+#: app/Admin/class-impossiblevatprice.php:130
 msgid "You do not have permission to access this page."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:131
+#: app/Admin/class-impossiblevatprice.php:139
 msgid "This tool scans products and shows only problematic prices."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:132
+#: app/Admin/class-impossiblevatprice.php:140
 msgid "These are prices with VAT that cannot be split into a price without VAT and the VAT without rounding."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:136
+#: app/Admin/class-impossiblevatprice.php:144
 msgid "Store setting:"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:137
+#: app/Admin/class-impossiblevatprice.php:145
 msgid "Prices are entered including tax"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:137
+#: app/Admin/class-impossiblevatprice.php:145
 msgid "Prices are entered excluding tax"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:142
+#: app/Admin/class-impossiblevatprice.php:150
 msgid "This check is mainly applicable when prices are entered including tax."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:164
+#: app/Admin/class-impossiblevatprice.php:172
 msgid "ID"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:165 app/Export/Builder/class-fields.php:155 app/Invoice/Document/class-basedocument.php:290
+#: app/Admin/class-impossiblevatprice.php:173 app/Export/Builder/class-fields.php:155 app/Invoice/Document/class-basedocument.php:290
 msgid "Product"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:166
+#: app/Admin/class-impossiblevatprice.php:174
 msgid "Type"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:167 app/Export/Builder/class-fields.php:156
+#: app/Admin/class-impossiblevatprice.php:175 app/Export/Builder/class-fields.php:156
 msgid "SKU"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:168 app/Front_End/Checkout/class-field-editor.php:932
+#: app/Admin/class-impossiblevatprice.php:176 app/Front_End/Checkout/class-field-editor.php:932
 msgid "Field"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:169
+#: app/Admin/class-impossiblevatprice.php:177
 msgid "Entered price"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:170
+#: app/Admin/class-impossiblevatprice.php:178
 msgid "Tax"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:171
+#: app/Admin/class-impossiblevatprice.php:179
 msgid "Nearest"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:172
+#: app/Admin/class-impossiblevatprice.php:180
 msgid "Down"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:173
+#: app/Admin/class-impossiblevatprice.php:181
 msgid "Up"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:194 app/Admin/class-impossiblevatprice.php:260
+#: app/Admin/class-impossiblevatprice.php:202 app/Admin/class-impossiblevatprice.php:268
 msgid "You do not have permission."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:273
+#: app/Admin/class-impossiblevatprice.php:281
 msgid "Invalid data."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:284
+#: app/Admin/class-impossiblevatprice.php:292
 msgid "The product was not found."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:293 app/Admin/class-impossiblevatprice.php:363
+#: app/Admin/class-impossiblevatprice.php:301 app/Admin/class-impossiblevatprice.php:371
 msgid "Regular price"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:295 app/Admin/class-impossiblevatprice.php:374
+#: app/Admin/class-impossiblevatprice.php:303 app/Admin/class-impossiblevatprice.php:382
 msgid "Sale price"
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:301
+#: app/Admin/class-impossiblevatprice.php:309
 msgid "The price is no longer problematic."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:310
+#: app/Admin/class-impossiblevatprice.php:318
 msgid "The target price no longer matches."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:337
+#: app/Admin/class-impossiblevatprice.php:345
 msgid "The price was fixed."
 msgstr ""
 
-#: app/Admin/class-impossiblevatprice.php:436 app/Admin/class-impossiblevatprice.php:443 app/Admin/class-impossiblevatprice.php:450
+#: app/Admin/class-impossiblevatprice.php:444 app/Admin/class-impossiblevatprice.php:451 app/Admin/class-impossiblevatprice.php:458
 msgid "The sale price was cleared because it was greater than or equal to the regular price."
 msgstr ""
 
 #. translators: %s: sale price
-#: app/Admin/class-impossiblevatprice.php:457
+#: app/Admin/class-impossiblevatprice.php:465
 #, php-format
 msgid "The sale price was adjusted to %s so it stays below the regular price."
 msgstr ""
@@ -2175,7 +2179,7 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:234 app/Front_End/Checkout/class-pickers.php:592
+#: app/Admin/class-pigeon.php:309 app/Admin/class-speedy.php:234 app/Front_End/Checkout/class-pickers.php:597
 msgid "Street or quarter"
 msgstr ""
 
@@ -3121,7 +3125,7 @@ msgstr ""
 msgid "Set up Nashenski Commerce"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:97 app/Admin/Tabs/class-econt-tab.php:39 app/functions.php:841 app/Shipping/Econt/class-method.php:363 app/Shipping/Econt/class-method.php:992
+#: app/Admin/class-setup-wizard.php:97 app/Admin/Tabs/class-econt-tab.php:39 app/functions.php:841 app/Shipping/Econt/class-method.php:363 app/Shipping/Econt/class-method.php:997
 msgid "Econt"
 msgstr ""
 
@@ -3427,7 +3431,7 @@ msgstr ""
 msgid "Side by side: the options as buttons in a row, the fields of the chosen one below them"
 msgstr ""
 
-#: app/Admin/class-setup-wizard.php:719 app/Admin/class-setup-wizard.php:722 app/Front_End/Checkout/class-pickers.php:329
+#: app/Admin/class-setup-wizard.php:719 app/Admin/class-setup-wizard.php:722 app/Front_End/Checkout/class-pickers.php:334
 msgid "Free shipping"
 msgstr ""
 
@@ -3546,7 +3550,7 @@ msgid "The invoice number must be 1 to 10 digits."
 msgstr ""
 
 #. translators: %s: the error message
-#: app/Admin/Order/class-actions.php:279 app/Admin/Order/class-documents.php:104 app/Admin/Order/class-documents.php:140 app/Admin/Order/class-documents.php:164 app/Admin/Order/class-subscriptions.php:62
+#: app/Admin/Order/class-actions.php:279 app/Admin/Order/class-documents.php:104 app/Admin/Order/class-documents.php:140 app/Admin/Order/class-documents.php:164 app/Admin/Order/class-subscriptions.php:68
 #, php-format
 msgid "Some documents were not generated: %s"
 msgstr ""
@@ -4992,7 +4996,7 @@ msgstr ""
 msgid "Shipments"
 msgstr ""
 
-#: app/Export/Builder/class-fields.php:43 app/Reports/class-reports.php:152
+#: app/Export/Builder/class-fields.php:43
 msgctxt "a store order"
 msgid "Order"
 msgstr ""
@@ -5161,7 +5165,7 @@ msgstr ""
 msgid "Discount"
 msgstr ""
 
-#: app/Export/Builder/class-fields.php:126 app/Shipping/Speedy/class-method.php:1156
+#: app/Export/Builder/class-fields.php:126 app/Shipping/Speedy/class-method.php:1161
 msgid "Fees"
 msgstr ""
 
@@ -5237,17 +5241,29 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-#: app/Export/Builder/class-fields.php:428 app/Export/Builder/class-fields.php:429 app/Front_End/Checkout/class-pickers.php:577 app/Front_End/Checkout/class-pickers.php:578 app/Front_End/Checkout/class-pickers.php:579
+#: app/Export/Builder/class-fields.php:428 app/Export/Builder/class-fields.php:429 app/Front_End/Checkout/class-pickers.php:582 app/Front_End/Checkout/class-pickers.php:583 app/Front_End/Checkout/class-pickers.php:584
 msgid "Parcel locker"
 msgstr ""
 
+#: app/Export/InvoiceArchive/class-export.php:76
+msgid "The PHP ZipArchive extension is not available."
+msgstr ""
+
+#: app/Export/InvoiceArchive/class-export.php:131
+msgid "Could not create the invoice archive."
+msgstr ""
+
+#: app/Export/Nra/class-export.php:353
+msgid "The file could not be saved."
+msgstr ""
+
 #. translators: 1: total, 2: VAT, 3: refunded total
-#: app/Export/Nra/class-export.php:356
+#: app/Export/Nra/class-export.php:360
 #, php-format
 msgid "Total: %1$s | Total vat: %2$s | Returned Total: %3$s"
 msgstr ""
 
-#: app/Export/Nra/class-export.php:409
+#: app/Export/Nra/class-export.php:413
 msgid "The PHP XMLWriter extension is required to create the NRA XML file."
 msgstr ""
 
@@ -5385,22 +5401,22 @@ msgstr ""
 msgid "Do you want a company invoice?"
 msgstr ""
 
-#: app/Front_End/Checkout/class-eu-vat.php:230
+#: app/Front_End/Checkout/class-eu-vat.php:231
 msgid "Invalid country code"
 msgstr ""
 
-#: app/Front_End/Checkout/class-eu-vat.php:240
+#: app/Front_End/Checkout/class-eu-vat.php:234
 msgid "Error communicating with the VAT validation server - please try again"
 msgstr ""
 
 #. translators: 1: "VAT number", 2: the number the customer entered, 3: billing country code
-#: app/Front_End/Checkout/class-eu-vat.php:333
+#: app/Front_End/Checkout/class-eu-vat.php:386
 #, php-format
 msgid "You have entered an invalid %1$s (%2$s) for your billing country (%3$s)."
 msgstr ""
 
 #. translators: 1: VAT number, 2: billing country code
-#: app/Front_End/Checkout/class-eu-vat.php:370
+#: app/Front_End/Checkout/class-eu-vat.php:423
 #, php-format
 msgid "You have entered an invalid VAT number (%1$s) for your billing country (%2$s)."
 msgstr ""
@@ -5457,7 +5473,7 @@ msgstr ""
 msgid "Checkbox"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:868 app/Front_End/Checkout/class-pickers.php:595
+#: app/Front_End/Checkout/class-field-editor.php:868 app/Front_End/Checkout/class-pickers.php:600
 msgid "Number"
 msgstr ""
 
@@ -5557,7 +5573,7 @@ msgstr ""
 msgid "Add alternative (or)"
 msgstr ""
 
-#: app/Front_End/Checkout/class-field-editor.php:1001 app/Front_End/Checkout/class-pickers.php:584 app/Front_End/class-quick-order.php:391
+#: app/Front_End/Checkout/class-field-editor.php:1001 app/Front_End/Checkout/class-pickers.php:589 app/Front_End/class-quick-order.php:391
 msgctxt "button that closes a window"
 msgid "Close"
 msgstr ""
@@ -5614,152 +5630,152 @@ msgstr ""
 msgid "Conditions: the classic checkout follows all of them. The block checkout follows conditions on your own fields that read your own fields, and not \"greater\" or \"less\"; other conditions are ignored there."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:307
+#: app/Front_End/Checkout/class-pickers.php:312
 msgid "Complete the fields to calculate"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:353
+#: app/Front_End/Checkout/class-pickers.php:358
 msgid "Choose your office, locker or address to see the delivery price."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:353 app/Front_End/Checkout/class-pickers.php:551
+#: app/Front_End/Checkout/class-pickers.php:358 app/Front_End/Checkout/class-pickers.php:556
 msgid "Price after address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:356 app/Front_End/Checkout/class-pickers.php:552
+#: app/Front_End/Checkout/class-pickers.php:361 app/Front_End/Checkout/class-pickers.php:557
 msgid "to the courier"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:358
+#: app/Front_End/Checkout/class-pickers.php:363
 msgctxt "delivery price"
 msgid "Free"
 msgstr ""
 
 #. translators: %s: delivery price, for example 6,50 €
-#: app/Front_End/Checkout/class-pickers.php:555 app/Shipping/class-courier-fee.php:524
+#: app/Front_End/Checkout/class-pickers.php:560 app/Shipping/class-courier-fee.php:524
 #, php-format
 msgid "%s, paid to the courier on delivery, not included in the total"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:573
+#: app/Front_End/Checkout/class-pickers.php:578
 msgid "To your address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:580
+#: app/Front_End/Checkout/class-pickers.php:585
 msgid "Search by town, name or address"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:581
+#: app/Front_End/Checkout/class-pickers.php:586
 msgid "Change"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:582
+#: app/Front_End/Checkout/class-pickers.php:587
 msgid "Choose on the map"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:583
+#: app/Front_End/Checkout/class-pickers.php:588
 msgid "Choose an office on the map"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:585
+#: app/Front_End/Checkout/class-pickers.php:590
 msgid "Loading..."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:586
+#: app/Front_End/Checkout/class-pickers.php:591
 msgid "Nothing found. Check the town in the address above."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:587
+#: app/Front_End/Checkout/class-pickers.php:592
 msgid "No match. Try another word."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:588
+#: app/Front_End/Checkout/class-pickers.php:593
 msgid "Enter your town in the address above to see the list."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:589
+#: app/Front_End/Checkout/class-pickers.php:594
 msgid "Choose it on the map. The price comes from the courier's public price list."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:590
+#: app/Front_End/Checkout/class-pickers.php:595
 msgid "This is an office. Choose a parcel locker, or pick the office delivery option."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:591
+#: app/Front_End/Checkout/class-pickers.php:596
 msgid "This is a parcel locker. Choose an office, or pick the parcel locker delivery option."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:593
+#: app/Front_End/Checkout/class-pickers.php:598
 msgid "Start typing the street or quarter"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:594
+#: app/Front_End/Checkout/class-pickers.php:599
 msgid "Street and number"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:600
+#: app/Front_End/Checkout/class-pickers.php:605
 msgid "Note for the courier (optional)"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:601
+#: app/Front_End/Checkout/class-pickers.php:606
 msgid "The list could not be loaded. Please try again."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:602
+#: app/Front_End/Checkout/class-pickers.php:607
 msgid "Try again"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:604
+#: app/Front_End/Checkout/class-pickers.php:609
 msgid "Town or village"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:605
+#: app/Front_End/Checkout/class-pickers.php:610
 msgid "Start typing your town or village"
 msgstr ""
 
 #. translators: %s: order total for free shipping, for example 50,00 €
-#: app/Front_End/Checkout/class-pickers.php:607
+#: app/Front_End/Checkout/class-pickers.php:612
 #, php-format
 msgid "Free shipping over %s"
 msgstr ""
 
 #. translators: %s: amount still missing, for example 23,40 €
-#: app/Front_End/Checkout/class-pickers.php:609
+#: app/Front_End/Checkout/class-pickers.php:614
 #, php-format
 msgid "Add %s more for free shipping."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:610
+#: app/Front_End/Checkout/class-pickers.php:615
 msgid "Your order ships for free."
 msgstr ""
 
 #. translators: %s: region name
-#: app/Front_End/Checkout/class-pickers.php:612
+#: app/Front_End/Checkout/class-pickers.php:617
 #, php-format
 msgid "%s region"
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:642
+#: app/Front_End/Checkout/class-pickers.php:647
 msgid "bl."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:643
+#: app/Front_End/Checkout/class-pickers.php:648
 msgid "entr."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:644
+#: app/Front_End/Checkout/class-pickers.php:649
 msgid "fl."
 msgstr ""
 
-#: app/Front_End/Checkout/class-pickers.php:645
+#: app/Front_End/Checkout/class-pickers.php:650
 msgid "ap."
 msgstr ""
 
-#: app/Front_End/Checkout/class-transliterate-address.php:118
+#: app/Front_End/Checkout/class-transliterate-address.php:119
 msgid "Transliterate addresses (Cyrillic in Bulgaria, Latin abroad)"
 msgstr ""
 
-#: app/Front_End/Checkout/class-transliterate-address.php:130
+#: app/Front_End/Checkout/class-transliterate-address.php:131
 msgid "Addresses transliterated."
 msgstr ""
 
@@ -6268,45 +6284,45 @@ msgstr ""
 msgid "Unknown courier."
 msgstr ""
 
-#: app/Reports/class-reports.php:139 app/Reports/class-reports.php:304
+#: app/Reports/class-reports.php:139 app/Reports/class-reports.php:300
 msgid "Reports"
 msgstr ""
 
-#: app/Reports/class-reports.php:156
+#: app/Reports/class-reports.php:152
 msgid "Refresh data"
 msgstr ""
 
 #. translators: %s: link to the Customer checks settings
-#: app/Reports/class-reports.php:166
+#: app/Reports/class-reports.php:162
 #, php-format
 msgid "Not checked: turned on without an API key or token. Add it in %s, or turn the service off there."
 msgstr ""
 
-#: app/Reports/class-reports.php:209
+#: app/Reports/class-reports.php:205
 msgid "Customer has reports for refused parcels. See the Reports box."
 msgstr ""
 
-#: app/Reports/class-reports.php:210
+#: app/Reports/class-reports.php:206
 msgid "No reports for this customer."
 msgstr ""
 
-#: app/Reports/class-reports.php:228
+#: app/Reports/class-reports.php:224
 msgid "Not checked"
 msgstr ""
 
-#: app/Reports/class-reports.php:232
+#: app/Reports/class-reports.php:228
 msgid "No reports"
 msgstr ""
 
 #. translators: %d: number of reports
-#: app/Reports/class-reports.php:236
+#: app/Reports/class-reports.php:232
 #, php-format
 msgid "%d report"
 msgid_plural "%d reports"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/Reports/class-reports.php:389
+#: app/Reports/class-reports.php:385
 msgid "Cash on delivery is not available for this order. Please choose another payment method."
 msgstr ""
 
@@ -6482,17 +6498,17 @@ msgstr ""
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
-#: app/Shipping/BoxNow/class-method.php:468 app/Shipping/Econt/class-method.php:1032 app/Shipping/Speedy/class-method.php:1288
+#: app/Shipping/BoxNow/class-method.php:468 app/Shipping/Econt/class-method.php:1037 app/Shipping/Speedy/class-method.php:1293
 msgid "Please choose a automat."
 msgstr ""
 
 #. translators: 1: waybill number, 2: tracking link
-#: app/Shipping/BoxNow/class-method.php:658 app/Shipping/Econt/class-method.php:1153 app/Shipping/Pigeon/class-method.php:870 app/Shipping/Speedy/class-method.php:1337
+#: app/Shipping/BoxNow/class-method.php:658 app/Shipping/Econt/class-method.php:1158 app/Shipping/Pigeon/class-method.php:873 app/Shipping/Speedy/class-method.php:1342
 #, php-format
 msgid "Label number: %1$s. %2$s"
 msgstr ""
 
-#: app/Shipping/BoxNow/class-method.php:663 app/Shipping/Econt/class-method.php:1158 app/Shipping/Pigeon/class-method.php:875 app/Shipping/Speedy/class-method.php:1342
+#: app/Shipping/BoxNow/class-method.php:663 app/Shipping/Econt/class-method.php:1163 app/Shipping/Pigeon/class-method.php:878 app/Shipping/Speedy/class-method.php:1347
 msgid "Track your order."
 msgstr ""
 
@@ -6730,23 +6746,23 @@ msgstr ""
 msgid "Can be used only in Bulgaria"
 msgstr ""
 
-#: app/Shipping/Econt/class-method.php:522 app/Shipping/Speedy/class-method.php:494
+#: app/Shipping/Econt/class-method.php:522 app/Shipping/Econt/class-method.php:544 app/Shipping/Speedy/class-method.php:494 app/Shipping/Speedy/class-method.php:506
 msgid "Calculation failed. Please try again."
 msgstr ""
 
-#: app/Shipping/Econt/class-method.php:995 app/Shipping/Speedy/class-method.php:1270
+#: app/Shipping/Econt/class-method.php:1000 app/Shipping/Speedy/class-method.php:1275
 msgid "Please fill in your delivery address."
 msgstr ""
 
-#: app/Shipping/Econt/class-method.php:1012 app/Shipping/Pigeon/class-method.php:795 app/Shipping/Speedy/class-method.php:1272
+#: app/Shipping/Econt/class-method.php:1017 app/Shipping/Pigeon/class-method.php:798 app/Shipping/Speedy/class-method.php:1277
 msgid "Please choose delivery option!"
 msgstr ""
 
-#: app/Shipping/Econt/class-method.php:1024 app/Shipping/Speedy/class-method.php:1281
+#: app/Shipping/Econt/class-method.php:1029 app/Shipping/Speedy/class-method.php:1286
 msgid "Please choose a office."
 msgstr ""
 
-#: app/Shipping/Econt/class-method.php:1040
+#: app/Shipping/Econt/class-method.php:1045
 msgid "Please choose address."
 msgstr ""
 
@@ -6803,19 +6819,19 @@ msgstr ""
 msgid "Enter a fixed price that will be payed by the client, and will be included in the COD."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-method.php:428
+#: app/Shipping/Pigeon/class-method.php:428 app/Shipping/Pigeon/class-method.php:434
 msgid "An error occurred while calculating the shipping price. Please try again later."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-method.php:806
+#: app/Shipping/Pigeon/class-method.php:809
 msgid "Please choose an office."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-method.php:813
+#: app/Shipping/Pigeon/class-method.php:816
 msgid "Please choose a locker."
 msgstr ""
 
-#: app/Shipping/Pigeon/class-method.php:821
+#: app/Shipping/Pigeon/class-method.php:824
 msgid "Please choose an address."
 msgstr ""
 
@@ -6860,7 +6876,7 @@ msgid "This delivery cannot be priced now. Choose another delivery method."
 msgstr ""
 
 #. translators: %s: error message from the courier
-#: app/Shipping/Speedy/class-method.php:1268
+#: app/Shipping/Speedy/class-method.php:1273
 #, php-format
 msgid "Speedy - %s"
 msgstr ""

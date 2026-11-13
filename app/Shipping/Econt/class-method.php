@@ -534,10 +534,15 @@ class Method extends \WC_Shipping_Method {
 			)
 		) {
 			$data['errors'] = $request;
-		} elseif ( 'BG' !== $this->label_country() ) {
+		} elseif ( 'BG' !== $this->label_country() && isset( $request['label']['senderDueAmount'] ) ) {
 			$data['price'] = nashenski_tax_based_price( $request['label']['senderDueAmount'] );
-		} elseif ( isset( $request['label']['receiverDueAmount'] ) ) {
+		} elseif ( 'BG' === $this->label_country() && isset( $request['label']['receiverDueAmount'] ) ) {
 			$data['price'] = nashenski_tax_based_price( $request['label']['receiverDueAmount'] );
+		} elseif ( ! $this->free_shipping ) {
+			// A reply without a price is an error, never a free delivery (the shop pays a free one, so that reply may have no amount).
+			$data['errors'] = array(
+				'message' => __( 'Calculation failed. Please try again.', 'nashenski-commerce' ),
+			);
 		}
 
 		return $data;
@@ -1161,6 +1166,6 @@ class Method extends \WC_Shipping_Method {
 
 		$track_number_text = \Nashenski\Hooks::filter( 'nashenski_econt_track_number_text_in_email', 'nashenski/econt/track_number_text_in_email', $track_number_text, $url, $order );
 
-		echo wp_kses_post( wpautop( $track_number_text ) );
+		echo $plain_text ? esc_html( nashenski_plain_email_text( $track_number_text ) ) . "\n\n" : wp_kses_post( wpautop( $track_number_text ) );
 	}
 }

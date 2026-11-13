@@ -2,6 +2,26 @@
 
 Manual: https://nashenski.com/manual/
 
+## 0.21.11 (2026-11-13)
+
+### Fixes
+- WooCommerce Subscriptions: a renewal or a new subscription no longer copies the document files, numbers and dates of the earlier order. A renewal used to delete the earlier order's English order document and invoice files when it made its own, and could repeat its invoice number.
+- Delivery prices: an Econt, Speedy or Pigeon Express reply without a price is an error, so the public price list applies or the option is not shown. Before, such a reply could show the delivery as free.
+- Abandoned cart reminders: links and web addresses typed into the name field are removed, and the email no longer turns shopper text into links. The quick order form uses the same rule.
+- Abandoned carts: a visitor with an empty cart no longer writes to the database on every page view.
+- Abandoned carts: an address that unsubscribed stays unsubscribed after its cart is deleted. The store keeps a code made from the email, not the email itself.
+- EU VAT: the checkout no longer asks an outside service (ipinfo.io) for the shopper's country. It uses only what WooCommerce knows on the site.
+- EU VAT: the VAT box shows on the order screen of stores with WooCommerce's order tables (HPOS), and the VAT number is in the WooCommerce REST API order data. When VIES is down for a country, the check waits 5 minutes before it asks again; a busy service or a wrong number is tried again at once.
+- Exports: the export builder and the import read orders in batches, so large stores no longer run out of time or memory.
+- Exports: the invoice archive and the NRA file show their error on the screen when the file cannot be made.
+- Order documents: an error of any kind while documents are made no longer stops the checkout or the status change.
+- Plain text emails show the tracking number as text with its link, not as HTML.
+- The company name on invoices is no longer transliterated.
+- Econt town search runs only when Econt is used at checkout, accepts only two letter country codes and waits 5 minutes after a failed call.
+- BOX NOW: a refused login is not tried again on every request for 5 minutes; saving the settings tries at once.
+- The REST API media list hides only the private documents, not every PDF, XML or TXT file, and robots.txt no longer blocks the plugin's CSS and JS.
+- Smaller fixes: the Connectix box after a failed label, the Reports box markup on the order screen, the EU VAT box markup, the nekorekten.com delete confirmation without inline script, the impossible price check script loaded only where it is used, the comment on the time of the monthly NRA email.
+
 ## 0.21.10 (2026-11-13)
 
 ### Changes
