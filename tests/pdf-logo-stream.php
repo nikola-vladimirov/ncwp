@@ -134,6 +134,21 @@ namespace {
 		 */
 		public function delete( $file ) {
 			return unlink( $file ); }
+
+		/**
+		 * Move a file over another, as WordPress does: the target is deleted first.
+		 *
+		 * @param string $from      Path.
+		 * @param string $to        New path.
+		 * @param bool   $overwrite Replace an existing file.
+		 * @return bool
+		 */
+		public function move( $from, $to, $overwrite ) {
+			if ( file_exists( $to ) && ( ! $overwrite || ! unlink( $to ) ) ) {
+				return false;
+			}
+
+			return rename( $from, $to ); }
 	}
 
 	function apply_filters( $hook, $value ) {
@@ -164,7 +179,9 @@ namespace {
 	function wp_check_filetype( $file ) {
 		return array( 'type' => 'image/png' ); }
 	function wp_getimagesize( $file ) {
-		return getimagesize( $file ); }
+		return @getimagesize( $file ); } // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- as WordPress does it.
+	function get_post_field( $field, $id ) {
+		return $GLOBALS['modified']; }
 
 	function check( $ok, $what ) {
 		if ( ! $ok ) {
@@ -180,17 +197,18 @@ namespace {
 	use Nashenski\Invoice\PDF\PDF;
 
 	// A logo on a stream: copied into uploads, once.
-	$GLOBALS['logo'] = 'nashlogo://bucket/2026/logo.png';
-	$first           = BaseDocument::get_logo_img();
-	$folder          = str_replace( '\\', '/', Nashenski\File::cache_folder( 'logo' ) );
+	$GLOBALS['logo']     = 'nashlogo://bucket/2026/logo.png';
+	$GLOBALS['modified'] = '2026-11-01 10:00:00';
+	$first               = BaseDocument::get_logo_img();
+	$folder              = str_replace( '\\', '/', Nashenski\File::cache_folder( 'logo' ) );
 
 	check( $first && 0 === strpos( $first['src'], $folder ) && is_file( $first['src'] ), 'the remote logo is copied into the logo cache folder in uploads' );
 	check( file_get_contents( $first['src'] ) === file_get_contents( __DIR__ . '/../assets/images/logo.png' ), 'the copy has the bytes of the logo' );
 	check( $first['width'] > 0 && $first['width'] <= 120 && $first['height'] > 0 && $first['height'] <= 60, 'the logo is measured from the copy and fits the logo box' );
 
-	$opened = $GLOBALS['opened'];
+	$before = $GLOBALS['opened'];
 	$again  = BaseDocument::get_logo_img();
-	check( $again === $first && $GLOBALS['opened'] === $opened, 'the next document uses the copy and does not fetch the logo again' );
+	check( $again === $first && $GLOBALS['opened'] === $before, 'the next document uses the copy and does not fetch the logo again' );
 
 	// The PDF prints the copy: Dompdf may open that one folder.
 	$template = tempnam( sys_get_temp_dir(), 'nash' );
@@ -201,14 +219,26 @@ namespace {
 	unlink( $template );
 	check( '%PDF' === substr( $out, 0, 4 ) && false !== strpos( $out, '/Subtype /Image' ), 'the PDF has the logo in it' );
 
+	// A copy that is not an image (a download cut short) is fetched again.
+	file_put_contents( $first['src'], 'half a file' );
+	$before = $GLOBALS['opened'];
+	$fixed  = BaseDocument::get_logo_img();
+	check( $fixed === $first && $GLOBALS['opened'] === $before + 1 && false !== getimagesize( $fixed['src'] ), 'a damaged copy is fetched again' );
+
+	// A logo replaced under the same path (the attachment changed) gets a new copy.
+	$GLOBALS['modified'] = '2026-11-12 09:30:00';
+	$before              = $GLOBALS['opened'];
+	$newer               = BaseDocument::get_logo_img();
+	check( $newer && $newer['src'] !== $first['src'] && is_file( $newer['src'] ) && $GLOBALS['opened'] === $before + 1, 'a changed attachment gets a new copy' );
+
 	// A remote logo that cannot be read: no logo, and nothing is left in the folder for it.
 	$GLOBALS['logo'] = 'nashlogo://bucket/2026/missing.png';
-	check( array() === BaseDocument::get_logo_img() && 1 === count( glob( $folder . '*' ) ), 'a remote logo that cannot be read gives no logo' );
+	check( array() === BaseDocument::get_logo_img() && 2 === count( glob( $folder . '*' ) ), 'a remote logo that cannot be read gives no logo' );
 
 	// A local logo is used where it is.
 	$GLOBALS['logo'] = __DIR__ . '/../assets/images/logo.png';
 	$local           = BaseDocument::get_logo_img();
-	check( $local && false === strpos( $local['src'], $folder ) && 1 === count( glob( $folder . '*' ) ), 'a local logo is not copied' );
+	check( $local && false === strpos( $local['src'], $folder ) && 2 === count( glob( $folder . '*' ) ), 'a local logo is not copied' );
 
 	// Dompdf keeps its font files open until it is freed (Windows cannot remove the folders before).
 	unset( $pdf );

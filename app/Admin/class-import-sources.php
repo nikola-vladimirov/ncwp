@@ -1039,11 +1039,10 @@ class Import_Sources {
 
 		foreach ( $spec['meta'] ?? array() as $prefix ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time import; no WordPress API finds meta by key prefix.
-			$rows = (array) $wpdb->get_results( $wpdb->prepare( 'SELECT %i AS id, meta_key, meta_value FROM %i WHERE meta_key LIKE %s', $hpos ? 'order_id' : 'post_id', $meta_table, $wpdb->esc_like( $prefix ) . '%' ), ARRAY_A );
+			$ids = (array) $wpdb->get_col( $wpdb->prepare( 'SELECT DISTINCT %i FROM %i WHERE meta_key LIKE %s', $hpos ? 'order_id' : 'post_id', $meta_table, $wpdb->esc_like( $prefix ) . '%' ) );
 
-			foreach ( $rows as $row ) {
-				$data[ $row['id'] ][ $row['meta_key'] ] = self::safe_unserialize( $row['meta_value'] );
-			}
+			// Only which orders have such meta is read here. The values come from the order below: WooCommerce has them ready.
+			$data += array_fill_keys( $ids, array() );
 		}
 
 		$tracking = array();
@@ -1080,8 +1079,19 @@ class Import_Sources {
 				continue;
 			}
 
+			$meta = array();
+
+			foreach ( $order->get_meta_data() as $entry ) {
+				foreach ( $spec['meta'] ?? array() as $prefix ) {
+					// As the LIKE above: the start of the key, in any letter case.
+					if ( 0 === stripos( (string) $entry->key, $prefix ) ) {
+						$meta[ $entry->key ] = self::plain( $entry->value );
+					}
+				}
+			}
+
 			$legacy          = (array) $order->get_meta( self::LEGACY_META );
-			$legacy[ $slug ] = $values;
+			$legacy[ $slug ] = $meta + $values;
 			$order->update_meta_data( self::LEGACY_META, $legacy );
 			$order->save();
 			++$count;
@@ -1245,95 +1255,48 @@ class Import_Sources {
 	}
 
 	/**
-	 * Like maybe_unserialize() for the rows the old plugins stored serialized, without PHP's
-	 * unserialize(): only plain data is read (null, booleans, numbers, strings and arrays of them).
-	 * A row with an object or a reference in it, or a damaged row, comes back as false, with no
-	 * PHP warning.
+	 * The econt_order.data column of the old Econt plugin, which it stored serialized: read as
+	 * plain data only. A damaged row, or one with an object in it, comes back as false.
 	 *
-	 * @param mixed $value Value.
+	 * @param mixed $value Column value.
+	 * @return mixed
 	 */
 	private static function safe_unserialize( $value ) {
 		if ( ! is_serialized( $value ) ) {
 			return $value;
 		}
 
-		$data = trim( $value );
-		$at   = 0;
+		$limits = array(
+			'allowed_classes' => false,
+			'max_depth'       => 64,
+		);
 
-		try {
-			$read = self::read_serialized( $data, $at );
-		} catch ( \UnexpectedValueException $e ) {
-			return false;
-		}
-
-		return strlen( $data ) === $at ? $read : false;
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- a column the old plugin stored serialized; no class is built and the nesting is capped, and plain() drops whatever is not plain data.
+		return self::plain( unserialize( trim( $value ), $limits ) );
 	}
 
 	/**
-	 * Reads one serialized value and moves the position past it.
+	 * The value when it is plain data (null, booleans, numbers, strings and arrays of them), else
+	 * false: an object, also the placeholder PHP makes for a class it may not build, is never
+	 * copied to the order.
 	 *
-	 * @param string $data Serialized data.
-	 * @param int    $at   Position of the value, in bytes.
+	 * @param mixed $value Value.
 	 * @return mixed
-	 * @throws \UnexpectedValueException When the data is damaged or holds anything but plain data.
 	 */
-	private static function read_serialized( $data, &$at ) {
-		$type = $data[ $at ] ?? '';
+	private static function plain( $value ) {
+		$left = array( $value );
 
-		if ( 'N' === $type && ';' === ( $data[ $at + 1 ] ?? '' ) ) {
-			$at += 2;
+		while ( $left ) {
+			$item = array_pop( $left );
 
-			return null;
-		}
-
-		// A boolean, an integer or a float: "b:1;", "i:-5;", "d:0.5;".
-		if ( preg_match( '/\G([bid]):([^;]*);/', $data, $found, 0, $at ) ) {
-			$at += strlen( $found[0] );
-
-			if ( 'b' === $found[1] && in_array( $found[2], array( '0', '1' ), true ) ) {
-				return '1' === $found[2];
-			}
-
-			if ( 'i' === $found[1] && preg_match( '/^[+-]?\d+$/', $found[2] ) ) {
-				return (int) $found[2];
-			}
-
-			if ( 'd' === $found[1] && is_numeric( $found[2] ) ) {
-				return (float) $found[2];
+			if ( is_array( $item ) ) {
+				$left = array_merge( $left, array_values( $item ) );
+			} elseif ( null !== $item && ! is_scalar( $item ) ) {
+				return false;
 			}
 		}
 
-		// A string with its length in bytes: s:5:"hello";.
-		if ( preg_match( '/\Gs:(\d+):"/', $data, $found, 0, $at ) && '";' === substr( $data, $at + strlen( $found[0] ) + (int) $found[1], 2 ) ) {
-			$text = substr( $data, $at + strlen( $found[0] ), (int) $found[1] );
-			$at  += strlen( $found[0] ) + (int) $found[1] + 2;
-
-			return $text;
-		}
-
-		// An array with its number of pairs: a:1:{key;value;}.
-		if ( preg_match( '/\Ga:(\d+):\{/', $data, $found, 0, $at ) ) {
-			$at  += strlen( $found[0] );
-			$list = array();
-
-			for ( $i = 0; $i < (int) $found[1]; $i++ ) {
-				$key = self::read_serialized( $data, $at );
-
-				if ( ! is_int( $key ) && ! is_string( $key ) ) {
-					break;
-				}
-
-				$list[ $key ] = self::read_serialized( $data, $at );
-			}
-
-			if ( (int) $found[1] === $i && '}' === ( $data[ $at ] ?? '' ) ) {
-				++$at;
-
-				return $list;
-			}
-		}
-
-		throw new \UnexpectedValueException( 'Not plain serialized data.' );
+		return $value;
 	}
 
 	/**

@@ -128,11 +128,24 @@ namespace {
 		throw new RuntimeException( 'A built-in font was used: its metric file is not in the release.' ); }
 	if ( false === strpos( $out, 'DejaVuSerif-Bold' ) || false === strpos( $out, 'DejaVuSansMono' ) ) {
 		throw new RuntimeException( 'The built-in families did not print in DejaVu.' ); }
-	$aliases = json_decode( (string) file_get_contents( Nashenski\File::cache_folder( 'fonts' ) . 'installed-fonts.json' ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- offline test, a local file.
-	foreach ( array_keys( Nashenski\Invoice\PDF\PDF::FONT_ALIASES ) as $family ) {
-		if ( false === strpos( (string) ( $aliases[ $family ]['normal'] ?? '' ), 'DejaVu' ) ) {
-			throw new RuntimeException( 'The family ' . $family . ' is not saved as DejaVu.' ); } // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- offline test, printed on the command line.
+	// That comes from the library's own font list (bin/vendor-licenses.php writes it), so it holds for every Dompdf made from it, with no helper and nothing saved beside the custom font.
+	$bundled = json_decode( (string) file_get_contents( __DIR__ . '/../vendor/dompdf/dompdf/lib/fonts/installed-fonts.dist.json' ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- offline test, a local file.
+	foreach ( $bundled as $family => $styles ) {
+		foreach ( $styles as $style => $file ) {
+			if ( 0 !== strpos( $file, 'DejaVu' ) ) {
+				throw new RuntimeException( 'The bundled font list has a font that is not DejaVu: ' . $family . ' ' . $style ); } // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- offline test, printed on the command line.
+		}
 	}
+	$saved = json_decode( (string) file_get_contents( Nashenski\File::cache_folder( 'fonts' ) . 'installed-fonts.json' ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- offline test, a local file.
+	if ( array( 'nashtest' ) !== array_keys( $saved ) ) {
+		throw new RuntimeException( 'Something besides the custom font was saved in the font folder.' ); }
+	$plain = new Dompdf\Dompdf( array( 'fontCache' => Nashenski\File::cache_folder( 'fonts' ) ) );
+	$plain->loadHtml( $html, 'UTF-8' );
+	$plain->render();
+	$out = $plain->output();
+	unset( $plain );
+	if ( preg_match( '~/BaseFont\s*/(Helvetica|Times|Courier|Symbol|ZapfDingbats)~', $out ) || false === strpos( $out, 'DejaVuSerif-Bold' ) || false === strpos( $out, 'DejaVuSansMono' ) ) {
+		throw new RuntimeException( 'A Dompdf made without the plugin\'s own options does not print the built-in families in DejaVu.' ); }
 	foreach ( glob( __DIR__ . '/../vendor/dompdf/dompdf/lib/fonts/*.afm' ) as $afm ) {
 		if ( false === strpos( (string) file_get_contents( __DIR__ . '/../.gitattributes' ), 'vendor/dompdf/dompdf/lib/fonts/*.afm export-ignore' ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- offline test, a local file.
 			throw new RuntimeException( 'The built-in font metrics ship in the release: ' . basename( $afm ) ); } // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- offline test, printed on the command line.
@@ -159,5 +172,5 @@ namespace {
 	rmdir( Nashenski\File::cache_folder() );
 	rmdir( wp_upload_dir()['basedir'] );
 	// phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
-	echo "OK pdf-cyrillic: 13 checks\n";
+	echo "OK pdf-cyrillic: 15 checks\n";
 }

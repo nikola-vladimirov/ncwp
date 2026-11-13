@@ -689,11 +689,14 @@ class BaseDocument {
 		$id   = self::get_logo_id();
 		$file = $id ? (string) get_attached_file( $id ) : '';
 
-		// Media kept outside the server (s3:// and the like): Dompdf opens local files only, so the logo is copied once into the plugin's cache folder in uploads.
+		// Media kept outside the server (s3:// and the like): Dompdf opens local files only, so the logo is copied into the plugin's cache folder in uploads.
 		if ( '' !== $file && wp_is_stream( $file ) ) {
-			$copy = File::cache_folder( 'logo' ) . md5( $file ) . '-' . sanitize_file_name( wp_basename( $file ) );
+			// Named after the file and the time the attachment last changed, so a replaced logo gets a new copy.
+			$copy = File::cache_folder( 'logo' ) . md5( $file . '|' . get_post_field( 'post_modified_gmt', $id ) ) . '-' . sanitize_file_name( wp_basename( $file ) );
+			$svg  = 'image/svg+xml' === wp_check_filetype( $copy )['type'];
 
-			if ( ! is_readable( $copy ) ) {
+			// Fetched when there is no copy yet, and again when the copy is not an image (a download that was cut short).
+			if ( ! is_readable( $copy ) || ( ! $svg && ! wp_getimagesize( $copy ) ) ) {
 				$data = (string) File::get_file( $file );
 
 				if ( '' === $data || ! wp_mkdir_p( dirname( $copy ) ) || ! File::put_to_file( $copy, $data ) ) {
