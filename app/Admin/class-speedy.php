@@ -1154,13 +1154,13 @@ class Speedy {
 	 * Print labels endpoint.
 	 */
 	public static function print_labels_endpoint() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
-		}
-
 		// The print links carry the label nonce of the order screen.
 		if ( null === nashenski_label_request( 'nonce', null ) ) {
 			wp_die( esc_html__( 'This link has expired. Reload the order page and try again.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
 		$container = nashenski()->container();
@@ -1198,7 +1198,8 @@ class Speedy {
 
 		header( 'Content-Type: application/pdf' );
 		header( 'Content-Length: ' . strlen( $pdf_escaped ) );
-		header( 'Content-disposition: inline; filename="' . $parcels[0]['parcel']['id'] . '.pdf"' );
+		header( 'X-Content-Type-Options: nosniff' );
+		header( 'Content-disposition: inline; filename="' . sanitize_file_name( (string) $parcels[0]['parcel']['id'] ) . '.pdf"' );
 
 		echo $pdf_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PDF file from the courier, sent as application/pdf.
 

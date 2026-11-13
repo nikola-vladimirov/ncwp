@@ -707,13 +707,13 @@ class BoxNow {
 	 * AJAX: streams the label PDF of a parcel.
 	 */
 	public static function print_label_endpoint() {
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
-		}
-
 		// The print links carry the label nonce of the order screen.
 		if ( null === nashenski_label_request( 'nonce', null ) ) {
 			wp_die( esc_html__( 'This link has expired. Reload the order page and try again.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
+		}
+
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You do not have permission to perform this action.', 'nashenski-commerce' ), '', array( 'response' => 403 ) );
 		}
 
 		$container = nashenski()->container();
@@ -729,7 +729,8 @@ class BoxNow {
 
 		header( 'Content-Type: application/pdf' );
 		header( 'Content-Length: ' . strlen( $pdf_escaped ) );
-		header( 'Content-disposition: inline; filename="' . $parcel . '.pdf"' );
+		header( 'X-Content-Type-Options: nosniff' );
+		header( 'Content-disposition: inline; filename="' . sanitize_file_name( (string) $parcel ) . '.pdf"' );
 
 		echo $pdf_escaped; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PDF file from the courier, sent as application/pdf.
 
