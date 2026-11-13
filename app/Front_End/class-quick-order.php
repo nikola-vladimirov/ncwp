@@ -661,7 +661,8 @@ class Quick_Order {
 	 * @return mixed Result.
 	 */
 	private static function thanks_text() {
-		return esc_html__( 'Thank you. We have your details and will contact you to confirm the order.', 'nashenski-commerce' );
+		// Plain text: the script shows it with textContent.
+		return __( 'Thank you. We have your details and will contact you to confirm the order.', 'nashenski-commerce' );
 	}
 
 	/**

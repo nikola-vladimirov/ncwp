@@ -694,22 +694,24 @@ class Tracker {
 	public static function resume() {
 		// A link in an email cannot carry a nonce (guests, days later): the cart's secret token is the check.
 		$token = get_query_var( self::RESUME_VAR );
+
+		if ( '' === $token ) {
+			return;
+		}
+
 		$token = is_scalar( $token ) ? sanitize_text_field( (string) $token ) : '';
+		$row   = null;
 
-		if ( '' === $token || ! get_option( self::DB_OPTION ) ) {
-			return;
+		if ( '' !== $token && get_option( self::DB_OPTION ) && function_exists( 'WC' ) && WC()->cart && WC()->session ) {
+			global $wpdb;
+
+			$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE token = %s', self::table(), $token ) );
 		}
 
-		if ( ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->session ) {
-			return;
-		}
-
-		global $wpdb;
-
-		$row = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE token = %s', self::table(), $token ) );
-
+		// A link we cannot use goes to the home page: with a registered query var in the address WordPress would show the posts list, not the static front page.
 		if ( ! $row ) {
-			return;
+			wp_safe_redirect( home_url( '/' ) );
+			exit;
 		}
 
 		if ( ! WC()->cart->is_empty() ) {
@@ -753,10 +755,17 @@ class Tracker {
 	public static function unsubscribe() {
 		// A link in an email cannot carry a nonce (guests, days later): the cart's secret token is the check.
 		$token = get_query_var( self::UNSUBSCRIBE_VAR );
+
+		if ( '' === $token ) {
+			return;
+		}
+
 		$token = is_scalar( $token ) ? sanitize_text_field( (string) $token ) : '';
 
+		// Not usable (feature never set up): to the home page, see resume().
 		if ( '' === $token || ! get_option( self::DB_OPTION ) ) {
-			return;
+			wp_safe_redirect( home_url( '/' ) );
+			exit;
 		}
 
 		global $wpdb;

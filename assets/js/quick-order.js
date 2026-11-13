@@ -18,27 +18,38 @@ function close(){
   if(box._backdrop){box._backdrop.remove();}
   box.remove();box=null;
 }
+// The form is our own escaped fragment from the server; a message (a text node in a paragraph) is added as an element.
+function fill(content){
+  if(typeof content==="string"){box.innerHTML=content;}
+  else{box.textContent="";box.appendChild(content);}
+}
+function para(text){
+  var p=document.createElement("p");p.textContent=text;return p;
+}
+function closeButton(){
+  var b=document.createElement("button");b.type="button";b.className="button nashenski-quick-order-close";b.textContent=cfg.closeText;return b;
+}
 function show(html,trigger){
   close();css();
   var a=cfg.appearance;
   if(a==="modal"){
     box=document.createElement("dialog");box.className="nashenski-quick-order";
     box.addEventListener("click",function(e){if(e.target===box){close();}});
-    document.body.appendChild(box);box.innerHTML=html;box.showModal();
+    document.body.appendChild(box);fill(html);box.showModal();
   } else if(a==="side"){
     box=document.createElement("div");box.className="nashenski-quick-order nashenski-quick-order--side";
     box._backdrop=document.createElement("div");box._backdrop.className="nashenski-quick-order__backdrop";
     box._backdrop.addEventListener("click",close);
-    document.body.appendChild(box._backdrop);document.body.appendChild(box);box.innerHTML=html;
+    document.body.appendChild(box._backdrop);document.body.appendChild(box);fill(html);
   } else {
     box=document.createElement("div");box.className="nashenski-quick-order nashenski-quick-order--inline";
-    box.innerHTML=html;
+    fill(html);
     if(trigger&&trigger.parentNode){trigger.parentNode.insertBefore(box,trigger.nextSibling);}
     else{document.body.appendChild(box);}
   }
   var actions=box.querySelector(".nashenski-quick-order-actions");
-  if(actions){actions.insertAdjacentHTML("beforeend","<button type='button' class='button nashenski-quick-order-close'>"+cfg.closeText+"</button>");}
-  else{box.insertAdjacentHTML("beforeend","<p class='nashenski-quick-order-actions'><button type='button' class='button nashenski-quick-order-close'>"+cfg.closeText+"</button></p>");}
+  if(actions){actions.appendChild(closeButton());}
+  else{actions=document.createElement("p");actions.className="nashenski-quick-order-actions";actions.appendChild(closeButton());box.appendChild(actions);}
   var phone=box.querySelector("[data-nashenski-phone]");
   if(phone){mask(phone);phone.addEventListener("input",function(){mask(phone);});}
 }
@@ -65,7 +76,7 @@ document.addEventListener("click",function(e){
     fetch(cfg.ajax,{method:"POST",credentials:"same-origin",body:new URLSearchParams({action:"nashenski_quick_order_nonce"})}).then(function(r){return r.json();}).then(function(res){
       data._nonce=res&&res.success?res.data:"";
       return fetch(cfg.ajax,{method:"POST",credentials:"same-origin",body:new URLSearchParams(data)});
-    }).then(function(r){return r.text();}).then(function(html){show(html,btn);}).catch(function(){show("<p>"+cfg.errorText+"</p>",btn);});
+    }).then(function(r){return r.text();}).then(function(html){show(html,btn);}).catch(function(){show(para(cfg.errorText),btn);});
     return;
   }
   if(e.target.closest(".nashenski-quick-order-close")){close();}
@@ -78,7 +89,7 @@ document.addEventListener("submit",function(e){
   if(button){button.disabled=true;}
   fetch(cfg.ajax,{method:"POST",credentials:"same-origin",body:new URLSearchParams(new FormData(form))}).then(function(r){return r.json();}).then(function(res){
     var msg=res&&res.data&&res.data.message?res.data.message:cfg.errorText;
-    if(res&&res.success){if(box){box.innerHTML="<p>"+msg+"</p><p><button type='button' class='button nashenski-quick-order-close'>"+cfg.closeText+"</button></p>";}}
+    if(res&&res.success){if(box){fill(para(msg));var p=document.createElement("p");p.appendChild(closeButton());box.appendChild(p);}}
     else{if(button){button.disabled=false;}var note=form.querySelector(".nashenski-quick-order-error");if(note){note.textContent=msg;}}
   }).catch(function(){if(button){button.disabled=false;}});
 });
