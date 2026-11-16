@@ -181,8 +181,20 @@ class Delivery_Box {
 		// The picker lists open below the box: keep them above the boxes that follow.
 		wp_add_inline_style( 'nashenski-checkout', '#nashenski_delivery, #nashenski_delivery .inside { overflow: visible; } #nashenski_delivery { position: relative; z-index: 20; }' );
 		wp_enqueue_script( 'nashenski-pickers', $url . 'js/pickers.js', array( 'wp-element' ), \Nashenski\Plugin::VERSION . '-' . filemtime( $dir . 'js/pickers.js' ), true );
-		// On the order screen the town is always asked: the quick order form may not have it.
-		wp_localize_script( 'nashenski-pickers', 'nashenskiPickers', array_merge( Pickers::config(), array( 'townPicker' => true ) ) );
+		// On the order screen the town is always asked: the quick order form may not have it. The lists
+		// stay as the courier sends them (no locale), whatever the language of the user's profile.
+		wp_localize_script(
+			'nashenski-pickers',
+			'nashenskiPickers',
+			array_merge(
+				Pickers::config(),
+				array(
+					'townPicker' => true,
+					'locale'     => '',
+					'latin'      => false,
+				)
+			)
+		);
 		wp_enqueue_script( 'nashenski-pickers-admin', $url . 'js/pickers-admin.js', array( 'nashenski-pickers' ), \Nashenski\Plugin::VERSION . '-' . filemtime( $dir . 'js/pickers-admin.js' ), true );
 
 		$data = array(

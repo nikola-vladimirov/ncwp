@@ -179,6 +179,8 @@
 
 		body.append( 'action', action );
 		body.append( 'nonce', cfg.nonce || '' );
+		// The page language: offices and lockers come back in Latin for non-Bulgarian pages.
+		body.append( 'locale', cfg.locale || '' );
 		Object.keys( params ).forEach( function ( key ) {
 			body.append( key, params[ key ] == null ? '' : params[ key ] );
 		} );
@@ -377,7 +379,7 @@
 			return base + '?city=' + encodeURIComponent( a.city || '' ) + '&officeType=' + ( 'automat' === type ? 'aps' : 'office' ) + '&shopUrl=' + encodeURIComponent( window.location.origin );
 		}
 
-		return base + '?showOfficesList=0&lang=bg&selectOfficeButtonCaption=' + encodeURIComponent( t.choose || 'OK' ) + ( cityId ? '&siteID=' + encodeURIComponent( cityId ) : '' );
+		return base + '?showOfficesList=0&lang=' + ( cfg.latin ? 'en' : 'bg' ) + '&selectOfficeButtonCaption=' + encodeURIComponent( t.choose || 'OK' ) + ( cityId ? '&siteID=' + encodeURIComponent( cityId ) : '' );
 	}
 
 	/* The office the map sent, in the shape of the courier's list items. */
@@ -385,11 +387,11 @@
 		if ( 'econt' === courier ) {
 			var office = data && data.office;
 
-			return office && office.code ? { code: office.code, id: office.id || office.code, name: office.name, address: office.address, isAPS: !! office.isAPS } : null;
+			return office && office.code ? { code: office.code, id: office.id || office.code, name: ( cfg.latin && office.nameEn ) || office.name, address: cfg.latin && office.address && office.address.fullAddressEn ? { fullAddress: office.address.fullAddressEn } : office.address, isAPS: !! office.isAPS } : null;
 		}
 
 		if ( data && typeof data === 'object' && data.id ) {
-			return { id: data.id, name: data.name || data.nameEn || String( data.id ), type: data.type || '', address: data.address || '' };
+			return { id: data.id, name: ( cfg.latin && data.nameEn ) || data.name || data.nameEn || String( data.id ), type: data.type || '', address: data.address || '' };
 		}
 
 		if ( typeof data === 'number' || ( typeof data === 'string' && /^\d+$/.test( data ) ) ) {

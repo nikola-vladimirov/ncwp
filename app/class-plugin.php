@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * Plugin.
  */
 class Plugin {
-	const VERSION = '0.21.11';
+	const VERSION = '0.21.12';
 
 	/** Cron hook: the one-off 0.21.8 job that turns "Remove delivery from documents" into "Is ... courier?". */
 	const REMOVE_SHIPPING_JOB = 'nashenski/upgrade/remove_shipping';

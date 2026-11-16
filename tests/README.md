@@ -8,6 +8,7 @@ php -d memory_limit=64M tests/boxnow-volume.php
 php -d memory_limit=64M tests/speedy-resources.php
 php -d memory_limit=64M tests/econt-resources.php
 php -d memory_limit=64M tests/pigeon-resources.php
+php tests/place-names.php
 ```
 
 These scripts execute production classes with small WordPress/WooCommerce and

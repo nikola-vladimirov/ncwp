@@ -55,6 +55,92 @@ class Pickers {
 		add_filter( 'body_class', array( __CLASS__, 'body_class' ) );
 		add_action( 'wp_ajax_nashenski_search_towns', array( __CLASS__, 'search_towns' ) );
 		add_action( 'wp_ajax_nopriv_nashenski_search_towns', array( __CLASS__, 'search_towns' ) );
+
+		// Late, so add-ons filter the couriers' own data before the names change language.
+		$lists = array(
+			'econt_offices'  => 'econt',
+			'speedy_offices' => 'speedy',
+			'boxnow_apms'    => 'boxnow',
+			'pigeon_offices' => 'pigeon',
+			'pigeon_lockers' => 'pigeon',
+		);
+
+		foreach ( $lists as $list => $courier ) {
+			add_filter( 'nashenski_shipping_method_' . $list, fn( $items ) => self::localize_places( $items, $courier ), 99 );
+		}
+	}
+
+	/**
+	 * Whether office and locker names show in Latin: the visitor's language is not Bulgarian.
+	 *
+	 * @param string $locale Locale of the page; the current one when empty.
+	 * @return bool
+	 */
+	public static function latin_names( $locale = '' ) {
+		$locale = '' !== $locale ? $locale : determine_locale();
+
+		return (bool) apply_filters( 'nashenski_latin_place_names', 0 !== strpos( $locale, 'bg' ), $locale );
+	}
+
+	/**
+	 * Office and locker lists in the visitor's language, for the checkout pickers. The couriers'
+	 * own English names where they have them (Econt, Speedy, BOX NOW), otherwise the Bulgarian
+	 * text in Latin letters. Display only: the waybill uses the office or locker ID.
+	 *
+	 * @param mixed  $items   Offices or lockers as the courier sends them.
+	 * @param string $courier econt, speedy, boxnow or pigeon.
+	 * @return mixed
+	 */
+	public static function localize_places( $items, $courier ) {
+		$locale = (string) nashenski_picker_request( 'locale' );
+
+		// Only the checkout pickers send the page language; other callers keep the courier's text.
+		if ( ! is_array( $items ) || '' === $locale || ! self::latin_names( $locale ) ) {
+			return $items;
+		}
+
+		$latin = fn( $text ) => \Nashenski\Transliteration::to_latin( (string) $text );
+		$own   = array(
+			'econt'  => 'nameEn',
+			'speedy' => 'nameEn',
+			'boxnow' => 'title',
+		);
+
+		foreach ( $items as &$item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+
+			$name         = (string) ( $item[ $own[ $courier ] ?? '' ] ?? '' );
+			$item['name'] = '' !== trim( $name ) && ! \Nashenski\Transliteration::has_cyrillic( $name ) ? $name : $latin( $item['name'] ?? '' );
+
+			if ( is_array( $item['address'] ?? null ) ) {
+				foreach ( array( 'fullAddress', 'fullAddressString', 'localAddressString', 'siteAddressString' ) as $key ) {
+					if ( isset( $item['address'][ $key ] ) ) {
+						$item['address'][ $key ] = $latin( $item['address'][ $key ] );
+					}
+				}
+
+				// Econt's English address has no town; put it in front, as the Bulgarian one has.
+				$english = trim( (string) ( $item['address']['fullAddressEn'] ?? '' ) );
+				$town    = trim( (string) ( $item['address']['city']['nameEn'] ?? '' ) );
+
+				if ( '' !== $english && ! \Nashenski\Transliteration::has_cyrillic( $english ) ) {
+					$item['address']['fullAddress'] = ( '' !== $town && false === stripos( $english, $town ) ? $town . ', ' : '' ) . $english;
+				}
+			} elseif ( isset( $item['address'] ) ) {
+				$item['address'] = $latin( $item['address'] );
+			}
+
+			foreach ( array( 'addressLine1', 'addressLine2' ) as $key ) {
+				if ( isset( $item[ $key ] ) ) {
+					$item[ $key ] = $latin( $item[ $key ] );
+				}
+			}
+		}
+		unset( $item );
+
+		return $items;
 	}
 
 	/**
@@ -545,6 +631,8 @@ class Pickers {
 		return array(
 			'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
 			'nonce'      => wp_create_nonce( 'nashenski_pickers' ),
+			'locale'     => determine_locale(),
+			'latin'      => self::latin_names(),
 			'rates'      => self::rate_types(),
 			'connected'  => $connected,
 			'townPicker' => self::town_picker(),
