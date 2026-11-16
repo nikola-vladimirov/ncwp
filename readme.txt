@@ -19,50 +19,27 @@ Nashenski Commerce adds what a Bulgarian online store needs to WooCommerce. Ever
 
 **Shipping**
 
-* Econt, Speedy, BOX NOW and Pigeon Express shipping methods: to an office, a locker or an address.
-* Waybills for many orders at once, courier requests for Econt and Speedy (holidays skipped), the order number on the waybill and a tracking link for the customer.
-* Order statuses that follow the shipment (delivered or returned) for Econt, Speedy and BOX NOW.
-* Live shipping prices with your courier account, or from the courier's built-in public price list when you have no account yet.
-* Labels, label printing and shipment status updates from the order screen.
-* Who pays the courier, per method and payment method: you collect it, or the customer pays the courier, outside your total and documents.
-* Works with classic, block and page builder checkouts, multi-step ones included.
-* Office, locker and address pickers with search, and the courier's map for Econt and Speedy.
-* Shipping options as cards with courier logos, styled by your theme or a token-based CSS framework such as TokenForge.
+* Econt, Speedy, BOX NOW and Pigeon Express: to an office, a locker or an address, with search and the courier's map.
+* Live prices with your courier account, or the courier's public price list. If the courier does not answer, the list takes over, so checkout keeps working.
+* Who pays the courier: you, or the customer at delivery, so courier money never passes through your books.
+* Waybills for many orders at once, courier requests, tracking links and order statuses that follow the shipment.
+* Classic, block and page builder checkouts, multi-step ones included. Shipping options as cards with courier logos.
 
 **Documents and Ordinance N-18**
 
-* Order documents, invoices and credit notes as PDF, in Bulgarian and in English. Only the Bulgarian PDF goes with the order emails.
-* The order document is made for every order. Invoices are made automatically, or by hand with your own invoice number.
-* The audit XML file (Annex 38 of Ordinance N-18) for any number of orders, checked against the NRA schema, and optionally emailed to your accountant every month.
-* Invoice archive and Microinvest Delta export for a month. Documents and exports stay in a private folder, never in the Media Library.
-* A custom export builder (CSV, Excel, JSON, XML) and a checkout field editor for every checkout type.
-* Company invoice fields at checkout with the EU VAT number check (VIES), the Article 113(9) setting, the total in words in euro and a check for "mathematically impossible" prices with VAT.
+* Order documents, invoices and credit notes as PDF, in Bulgarian and English.
+* The NRA audit XML file (Annex 38), checked against the schema, optionally emailed to your accountant every month.
+* Invoice archive, Microinvest Delta export and a custom export builder (CSV, Excel, JSON, XML). Files stay private, never in the Media Library.
+* Company invoice fields with the EU VAT number check (VIES), the total in words in euro and a checkout field editor.
 
-**Quick order**
+**More**
 
-* A "Quick order" button on the product page and the cart opens a short form. Only Bulgarian phone numbers are accepted. The order waits for your confirmation; no stock is reserved and no payment link is sent until then.
-
-**Abandoned carts**
-
-* Off by default. Keeps carts that were not ordered and sends reminders through an editable WooCommerce email, with an optional single-use coupon and a link that refills the cart.
-
-**EU withdrawal function**
-
-* The "withdraw from contract here" function of Directive 2011/83/EU, Article 11a (from 19 June 2026), on WooCommerce's own withdrawal form (WooCommerce 11.1 or newer): a link on every page, in My Account and in the order emails, a shortcode and Bulgarian texts.
-
-**Customer checks**
-
-* Optional checks with nekorekten.com, Connectix and NepoStop before allowing cash on delivery, at most 20 an hour from one visitor address.
-
-**Languages**
-
+* Quick order: a short form on the product page and the cart.
+* Abandoned cart reminders with an optional single-use coupon (off by default).
+* The EU withdrawal function (Directive 2011/83/EU, Article 11a, from 19 June 2026).
+* Optional customer checks with nekorekten.com, Connectix and NepoStop before cash on delivery.
+* Import from Bulgarisation for WooCommerce, the mreja.net plugins, Drusoft Shipping, Econt Delivery and Speedy Shipping.
 * English and Bulgarian.
-
-**Moving from another plugin**
-
-Nashenski Commerce is based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3). If you used it, deactivate it, activate Nashenski Commerce and press "Import" on the Help tab: your settings, shipping zones and order data come along.
-
-It also imports from the mreja.net plugins (Ordinance N-18 included), Drusoft Shipping, Econt Delivery and Speedy Shipping. After each import, deactivate the old plugin. The import runs on your site; nothing is sent anywhere.
 
 == Installation ==
 
@@ -79,15 +56,55 @@ No. Your site talks directly to the couriers and services you turn on. The NRA X
 
 = Do I need a courier account? =
 
-No. Without an account, shipping prices come from the courier's public price list. With your account, the prices are live.
+No. Without one, prices come from the courier's public price list, which you can edit. With your account, prices are live.
+
+= What if the courier's system is down? =
+
+For Econt, Speedy and Pigeon Express in Bulgaria, the public price list takes over when the courier does not answer. Checkout keeps working, so no order is lost to an error. Abroad, only the courier's live price is used.
 
 = Who pays the courier? =
 
-You choose on each courier method, per payment method. What the customer pays the courier is shown for information and stays out of the total, the documents and the NRA file.
+You choose per courier method and payment method. If the customer pays the courier at delivery, the fee is shown for information and stays out of the total, the documents and the NRA file. Collecting the courier's money yourself puts it in your turnover, which is an accounting error.
 
-= Can I move from Bulgarisation? =
+= Can I make waybills for many orders? =
 
-Yes, see "Moving from another plugin". Import the mreja.net N-18 plugin while it is off; documents may wait for it. Turned on again, it can reuse numbers, so documents pause until a new import.
+Yes, from the bulk actions of the orders list: make the waybills, then request a courier for all of them.
+
+= Which documents does it make? =
+
+An order document for every order, invoices (automatic, or by hand with your own number) and credit notes for refunds.
+
+= How does the NRA audit file work? =
+
+Choose the month and press "Create XML file". The file is checked against the NRA schema and can go to your accountant by email every month.
+
+= Can my accountant import the documents? =
+
+Yes. Export a month for Microinvest Delta, download the invoice archive, or build your own export in CSV, Excel, JSON or XML.
+
+= Does it check company VAT numbers? =
+
+Yes, with the EU VIES service when a company customer enters a VAT number at checkout.
+
+= What is Quick order? =
+
+A button that opens a short form with a Bulgarian phone number. The order waits for your confirmation; no stock is reserved and no payment link is sent until then.
+
+= How do abandoned cart reminders work? =
+
+Once on, an editable WooCommerce email reminds shoppers who left, with a link that refills the cart and an optional single-use coupon.
+
+= What is the EU withdrawal function? =
+
+The "withdraw from contract here" link required from 19 June 2026: on every page, in My Account and in the order emails, using WooCommerce's withdrawal form (11.1 or newer).
+
+= How do customer checks work? =
+
+Before cash on delivery, the phone number can be checked with nekorekten.com, Connectix or NepoStop. You choose when cash on delivery is held back.
+
+= Can I import from Bulgarisation or another plugin? =
+
+Yes. Deactivate the old plugin and press "Import" on the Help tab: settings, shipping zones and order data come along. Import the mreja.net N-18 plugin while it is off. The import runs on your site.
 
 == Screenshots ==
 
@@ -116,6 +133,8 @@ The plugin contacts a service only for a feature you turn on (a courier, a custo
 == Third-party libraries ==
 
 Vendor libraries: LGPL, MIT or Apache-2.0. DejaVu fonts: Bitstream Vera licence. All GPL-compatible. List and font licence: assets/licenses/third-party-licenses.txt; each library has its licence in its folder.
+
+Code based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3).
 
 == Changelog ==
 

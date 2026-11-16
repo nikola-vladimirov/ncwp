@@ -7,8 +7,7 @@ orders, abandoned carts, the EU withdrawal function and customer checks. English
 Everything runs on the store's own site. Data goes only to the services the store owner turns on
 (listed under "External services" in [readme.txt](readme.txt)).
 
-Based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3 or later). Made by
-[PristaDigital](https://pristadigital.com/). Licence: GPLv3 or later ([license.txt](license.txt)).
+Made by [PristaDigital](https://pristadigital.com/). Licence: GPLv3 or later ([license.txt](license.txt)).
 
 ## Contents
 
@@ -21,6 +20,7 @@ Based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3 or later). 
 - [Documentation](#documentation)
 - [Troubleshooting](#troubleshooting)
 - [For developers](#for-developers)
+- [Credits](#credits)
 
 ## Requirements
 
@@ -230,3 +230,7 @@ document again from the order.
 - The release zip is `git archive` of the tag: everything marked `export-ignore` in
   [.gitattributes](.gitattributes) (docs, this README, repository files, the demos,
   docs and development files of the libraries in `vendor/`) stays out.
+
+## Credits
+
+Based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3 or later).
