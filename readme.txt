@@ -13,7 +13,7 @@ WooCommerce for Bulgaria: Econt, Speedy, BOX NOW and Pigeon shipping, invoices a
 
 == Description ==
 
-= [Manual (Bulgarian and English)](https://nashenski.com/manual/) =
+**[Manual (Bulgarian and English)](https://nashenski.com/manual/)**
 
 Nashenski Commerce adds what a Bulgarian online store needs to WooCommerce. Everything runs on your own site: prices, labels and documents are made by your site and sent only to the services you turn on.
 
