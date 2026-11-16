@@ -94,6 +94,10 @@ plugin's own scheduled jobs (documents, abandoned cart reminders, shipment statu
   delivery in the list. Shipping methods of other plugins keep "Is ... courier?" in Documents >
   Shipping on documents.
 - Each order screen shows the courier, the delivery type and the chosen office, locker or address.
+- Office and locker names follow the page language (WPML, Polylang or the site language). Pages not
+  in Bulgarian show Econt's and Speedy's English names, BOX NOW's Latin locker names and the rest in
+  Latin letters; the Speedy map opens in English. Waybills use the office or locker number, so they
+  do not change. Filter `nashenski_latin_place_names` (bool, locale) turns it off or on.
 - Ship abroad (off by default): Econt to Romania and Greece, Speedy to nine countries on its price
   list. Prices abroad come only from the courier. Free shipping over a total can be set per country,
   for example `RO=150, GR=200`.

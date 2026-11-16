@@ -5,7 +5,7 @@ Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.2
 Requires Plugins: woocommerce
-Stable tag: 0.21.11
+Stable tag: 0.21.12
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -28,7 +28,7 @@ Nashenski Commerce adds what a Bulgarian online store needs to WooCommerce. Ever
 **Documents and Ordinance N-18**
 
 * Order documents, invoices and credit notes as PDF, in Bulgarian and English.
-* The NRA audit XML file (Annex 38), checked against the schema, optionally emailed to your accountant every month.
+* The NRA audit XML file (Annex 38), optionally emailed to your accountant every month.
 * Invoice archive, Microinvest Delta export and a custom export builder (CSV, Excel, JSON, XML). Files stay private, never in the Media Library.
 * Company invoice fields with the EU VAT number check (VIES), the total in words in euro and a checkout field editor.
 
@@ -66,6 +66,10 @@ For Econt, Speedy and Pigeon Express in Bulgaria, the public price list takes ov
 
 You choose per courier method and payment method. If the customer pays the courier at delivery, the fee is shown for information and stays out of the total, the documents and the NRA file. Collecting the courier's money yourself puts it in your turnover, which is an accounting error.
 
+= Does it work with WPML or Polylang? =
+
+Yes. Office and locker names follow the page language: on other languages they show in Latin, with the courier's English names where it has them. Waybills stay the same.
+
 = Can I make waybills for many orders? =
 
 Yes, from the bulk actions of the orders list: make the waybills, then request a courier for all of them.
@@ -96,7 +100,7 @@ Once on, an editable WooCommerce email reminds shoppers who left, with a link th
 
 = What is the EU withdrawal function? =
 
-The "withdraw from contract here" link required from 19 June 2026: on every page, in My Account and in the order emails, using WooCommerce's withdrawal form (11.1 or newer).
+The "withdraw from contract here" link required from 19 June 2026: on every page, in My Account and in the order emails (WooCommerce 11.1 or newer).
 
 = How do customer checks work? =
 
@@ -132,7 +136,7 @@ The plugin contacts a service only for a feature you turn on (a courier, a custo
 
 == Third-party libraries ==
 
-Vendor libraries: LGPL, MIT or Apache-2.0. DejaVu fonts: Bitstream Vera licence. All GPL-compatible. List and font licence: assets/licenses/third-party-licenses.txt; each library has its licence in its folder.
+Vendor libraries: LGPL, MIT or Apache-2.0. DejaVu fonts: Bitstream Vera licence. All GPL-compatible. List and licences: assets/licenses/third-party-licenses.txt.
 
 Code based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3).
 
@@ -140,5 +144,5 @@ Code based on Bulgarisation for WooCommerce 4.0.13 by Autopolis.bg (GPLv3).
 
 All versions: CHANGELOG.md in the plugin folder (Plugins screen > Changelog).
 
-= 0.21.11 =
-* Fixes: subscription renewals keep the earlier order documents, a courier reply without a price is never free shipping, cart reminders without shopper links, no outside IP lookup, batched exports.
+= 0.21.12 =
+* New: office and locker names follow the page language (Latin on pages not in Bulgarian).

@@ -2,6 +2,14 @@
 
 Manual: https://nashenski.com/manual/
 
+## 0.21.12 (2026-11-16)
+
+### New
+- Office and locker names follow the page language. On a page that is not in Bulgarian (WPML, Polylang or the site language) the checkout lists show Econt's and Speedy's own English names, BOX NOW's Latin locker names, and the rest in Latin letters by the Bulgarian Transliteration Act. The Speedy map opens in English there. The waybill does not change: it uses the office or locker number. Add-ons can turn this off with the `nashenski_latin_place_names` filter.
+
+### Changes
+- readme.txt: a shorter description and an FAQ for every feature.
+
 ## 0.21.11 (2026-11-13)
 
 ### Fixes
