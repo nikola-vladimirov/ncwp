@@ -31,7 +31,7 @@ Made by [PristaDigital](https://pristadigital.com/). Licence: GPLv3 or later ([l
 
 ## Install
 
-1. Open the [latest release](https://github.com/nikola-vladimirov/nashenski-commerce/releases/latest)
+1. Open the [latest release](https://github.com/nikola-vladimirov/ncwp/releases/latest)
    and download `nashenski-commerce-<version>.zip` from its Assets.
 2. In WordPress go to Plugins > Add New Plugin > Upload Plugin, choose the zip and activate it.
 
