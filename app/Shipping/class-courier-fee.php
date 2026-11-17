@@ -10,7 +10,7 @@ namespace Nashenski\Shipping;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Who pays the courier (docs/plans/courier-fee-payer.md):
+ * Who pays the courier:
  * - each Econt, Speedy and Pigeon Express method lists the payment methods for which the customer
  *   pays the courier at delivery (BOX NOW cannot charge the customer, so it has no list);
  * - then the rate costs nothing and keeps the fee for information only, so the fee is not in the

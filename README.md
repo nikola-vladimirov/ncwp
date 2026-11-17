@@ -202,7 +202,6 @@ document again from the order.
 - **What changed:** [CHANGELOG.md](CHANGELOG.md), also shown on the Plugins screen ("Changelog") and
   in "View version details".
 - **WordPress.org page:** [readme.txt](readme.txt), with the list of external services.
-- **Plans:** [docs/plans](docs/plans) (repository only, not in the zip).
 
 ## Troubleshooting
 
@@ -219,7 +218,7 @@ document again from the order.
 ## For developers
 
 - PHP 8.2+, namespace `Nashenski\` in `app/`, front-end templates in `templates/`, readable JS and CSS
-  in `assets/`, bundled PHP libraries in `vendor/` (do not edit). There is no compiled code: the old `dist/` bundles were rewritten as readable JS ([plan](docs/plans/dist-rewrite.md)).
+  in `assets/`, bundled PHP libraries in `vendor/` (do not edit). There is no compiled code: the old `dist/` bundles were rewritten as readable JS.
 - Options are `nashenski_settings_{group}_{name}`, read and written with `nashenski_get_option()` and
   `nashenski_set_option()`.
 - Texts are in English; the Bulgarian translation is in `languages/` (PO, MO and the PHP translation
@@ -231,7 +230,7 @@ document again from the order.
   [Release workflow](.github/workflows/release.yml) publishes `vX.Y.Z` with two zips: the plugin, `nashenski-commerce-wporg-X.Y.Z.zip` (for WordPress.org, no bundled translation). A version with
   a dash is published as a pre-release.
 - The release zip is `git archive` of the tag: everything marked `export-ignore` in
-  [.gitattributes](.gitattributes) (docs, this README, repository files, the demos,
+  [.gitattributes](.gitattributes) (this README, repository files, the demos,
   docs and development files of the libraries in `vendor/`) stays out.
 
 ## Credits

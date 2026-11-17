@@ -52,7 +52,7 @@ expect(
 );
 expect( array() === \Nashenski\Shipping\Pigeon\Payment::cookie( 'not an object' ), 'Malformed cookie has no authoritative fields' );
 
-// Who pays the courier: the method's list and the payment method in the cookie (docs/plans/courier-fee-payer.md).
+// Who pays the courier: the method's list and the payment method in the cookie.
 /**
  * Stub of the WooCommerce function.
  *

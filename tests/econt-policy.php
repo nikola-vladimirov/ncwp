@@ -365,7 +365,7 @@ expect( ! isset( $repaired['services']['declaredValueAmount'] ), 'The order repa
 $repaired = \Nashenski\Shipping\Econt\Service_Policy::for_order( array( 'services' => array() ), new EcontPolicyOrder( 'cod' ), array() );
 expect( isset( $repaired['services']['declaredValueAmount'] ) && 'EUR' === $repaired['services']['declaredValueCurrency'], 'The order repair still adds declared value to a COD order' );
 
-// Who pays the courier (docs/plans/courier-fee-payer.md): the rate follows the method's list and the payment method.
+// Who pays the courier: the rate follows the method's list and the payment method.
 foreach ( array(
 	'cod'  => array( 0, '12.00' ),
 	'card' => array( 12, null ),

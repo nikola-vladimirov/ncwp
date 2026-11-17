@@ -130,7 +130,7 @@ $first_order->meta['nashenski_invoice_document']       = 13;
 Mode::mark( $first_order );
 expect( Mode::out_of_nra( $first_order ), 'an order kept out of the file stays out after the setting changes' );
 
-// The upgrade table of docs/plans/invoice-settings-simplify.md: old invoices, old numbering => the pair.
+// The upgrade table: old invoices, old numbering => the pair.
 $table = array(
 	array( 'disable', 'nra', 'no/request' ),
 	array( 'disable', 'own', 'no/request' ),

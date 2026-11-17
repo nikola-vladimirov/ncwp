@@ -1,7 +1,6 @@
 .github export-ignore
 .gitignore export-ignore
 .gitattributes export-ignore
-docs export-ignore
 vendor/**/Tests export-ignore
 vendor/**/tests export-ignore
 composer.lock export-ignore

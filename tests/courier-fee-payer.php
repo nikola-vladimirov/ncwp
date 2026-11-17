@@ -1,6 +1,6 @@
 <?php // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter, Generic.Files.OneObjectStructurePerFile, Universal.Files.SeparateFunctionsFromOO, WordPress.Security.EscapeOutput -- offline CLI test script: no WordPress, so stubs, unused stub parameters and plain-text output are on purpose.
 /**
- * Offline: who pays the courier (docs/plans/courier-fee-payer.md). The one rule for documents and
+ * Offline: who pays the courier. The one rule for documents and
  * the NRA file, the rate the checkout shows, the checkout stamp, the order text and the 0.21.8
  * upgrade of "Remove delivery from documents". Run: php tests/courier-fee-payer.php
  *
