@@ -1,8 +1,6 @@
 # A push to main whose plugin Version has no release yet publishes release vX.Y.Z with two zips:
-# nashenski-commerce-X.Y.Z.zip (the plugin), nashenski-commerce-wporg-X.Y.Z.zip (the same without the bundled
+# nashenski-commerce-X.Y.Z.zip (the plugin) and nashenski-commerce-wporg-X.Y.Z.zip (the same without the bundled
 # Bulgarian .po/.mo/.l10n.php and the .pot, for WordPress.org, which serves translations as language packs).
-# The wporg name does not match the updater's
-# nashenski-commerce-<version>.zip pattern, so sites never update from it.
 # A version with a dash (0.16.0-beta1) is published as a pre-release.
 name: Release
 

@@ -45,7 +45,6 @@ in the database) and upload the release zip.
 Updates come through Dashboard > Updates like any other plugin, once the plugin is on
 WordPress.org. Turn on automatic updates on the Plugins screen if you want them.
 
-
 **Updates never show up?** WordPress checks for updates in the background with WP-Cron. If
 `wp-config.php` has `define( 'DISABLE_WP_CRON', true );`, the server must run `wp-cron.php` on a
 schedule (a system cron job), or WordPress only checks when someone opens Dashboard > Updates. The
